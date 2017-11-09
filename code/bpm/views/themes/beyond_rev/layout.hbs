@@ -1,0 +1,1129 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang='zh_CN'>
+<head>
+    <!-- Metadata -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{projcfg.apptitle}}</title>
+    <meta name="keywords" content="{{projcfg.keywords}}">
+    <meta name="description" content="{{projcfg.appdescription}}">
+
+    <!--Basic Styles-->
+    <link href="{{projcfg.appurl}}/static/{{projcfg.theme}}css/bootstrap.min.css" rel="stylesheet"/>
+
+    <!-- font awesome -->
+    <link href="{{projcfg.appurl}}/static/css/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" type="text/css" href="{{projcfg.appurl}}/static/css/nav/nav.css">
+    <!-- Google Fonts
+    <link href="{{projcfg.appurl}}/static/css/font-google/font-google.css" rel="stylesheet" />
+-->
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="{{projcfg.appurl}}                                           "></script>
+    <script src="{{projcfg.appurl}}                                       "></script>
+    <![endif]-->
+
+    <!--Beyond styles-->
+    <link id="beyond-link-bak" href="{{projcfg.appurl}}/static/{{projcfg.theme}}css/beyond.min.css" rel="stylesheet"
+          type="text/css"/>
+    <!--
+
+    <link href="{{projcfg.appurl}}/static/{{projcfg.theme}}css/demo.min.css" rel="stylesheet" />
+    <link href="{{projcfg.appurl}}/static/{{projcfg.theme}}css/typicons.min.css" rel="stylesheet" />
+    <link href="{{projcfg.appurl}}/static/{{projcfg.theme}}css/animate.min.css" rel="stylesheet" />
+
+    <link id="skin-link" href="" rel="stylesheet" type="text/css" />
+-->
+    <!--Skin Script: Place this script in head to load scripts for skins and rtl support-->
+    <script src="{{projcfg.appurl}}/static/{{projcfg.theme}}js/skins.js"></script>
+
+    <!--Basic Scripts-->
+    <script src="{{projcfg.appurl}}/static/{{projcfg.theme}}js/jquery.min.js"></script>
+    <script src="{{projcfg.appurl}}/static/{{projcfg.theme}}js/bootstrap.min.js"></script>
+    <script src="{{projcfg.appurl}}/static/{{projcfg.theme}}js/slimscroll/jquery.slimscroll.min.js"></script>
+    <script type="text/javascript" src="{{projcfg.appurl}}/static/js/mydatetimetools.js"></script>
+    <link rel="stylesheet" type="text/css" href="{{projcfg.appurl}}/static/js/easyui/themes/bootstrap/easyui.css">
+    <link rel="stylesheet" type="text/css" href="{{projcfg.appurl}}/static/js/easyui/themes/icon.css">
+    <script type="text/javascript" src="{{projcfg.appurl}}/static/js/easyui/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="{{projcfg.appurl}}/static/js/easyui/locale/easyui-lang-zh_CN.js"></script>
+    <link rel="stylesheet" type="text/css" href="{{projcfg.appurl}}/static/css/common/style_rev.css">
+    <link rel="stylesheet" type="text/css" href="{{projcfg.appurl}}/static/css/pgwmenu.css">
+    <link href="{{projcfg.appurl}}/static/css/dedicated.css" rel="stylesheet"/>
+    <script type="text/javascript" src="{{projcfg.appurl}}/static/js/project/constant.js"></script>
+    <script type="text/javascript" src="{{projcfg.appurl}}/static/js/project/organization.js"></script>
+    <script type="text/javascript" src="static/js/ajaxfileupload.js"></script>
+    <script type="text/javascript" src="static/js/accounting.js"></script>
+    <style>
+        .navbar-header {
+            float: none !important;
+        }
+
+        .navbar .navbar-inner .navbar-container {
+            padding: 0 !important;
+        }
+
+        .page-sidebar .sidebar-menu a .menu-colletion {
+            display: inline-block;
+            position: absolute;
+            font-size: 13px;
+            line-height: 10px;
+            height: 10px;
+            width: 10px;
+            right: 12px;
+            top: 15px;
+            margin: 0;
+            text-align: center;
+            padding: 0;
+            -webkit-text-shadow: none;
+            text-shadow: none;
+            color: #666;
+            -webkit-transition: all 300ms ease-in-out;
+            -moz-transition: all 300ms ease-in-out;
+            -o-transition: all 300ms ease-in-out;
+            transition: all 300ms ease-in-out;
+            font-family: 'FontAwesome';
+            font-style: normal;
+            font-weight: normal;
+        }
+
+        .crrentusername {
+            width: 120px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+    </style>
+    <script src="{{projcfg.appurl}}/static/js/pgwmenu.min.js"></script>
+    <script type="text/javascript">
+        var qcloud = {};
+        function initMenu() {
+
+            $('[_t_nav]').hover(function () {
+                var _nav = $(this).attr('_t_nav');
+                clearTimeout(qcloud[_nav + '_timer']);
+                qcloud[_nav + '_timer'] = setTimeout(function () {
+                    $('[_t_nav]').each(function () {
+                        $(this)[_nav == $(this).attr('_t_nav') ? 'addClass' : 'removeClass']('nav-up-selected');
+                    });
+                    $('#' + _nav).stop(true, true).slideDown(200);
+                }, 150);
+            }, function () {
+                var _nav = $(this).attr('_t_nav');
+                clearTimeout(qcloud[_nav + '_timer']);
+                qcloud[_nav + '_timer'] = setTimeout(function () {
+                    $('[_t_nav]').removeClass('nav-up-selected');
+                    $('#' + _nav).stop(true, true).slideUp(200);
+                }, 150);
+            });
+        }
+        jQuery(document).ready(function () {
+            initSysNotice();
+        });
+
+        var notice_id = "";
+        //获取系统公告，设置跑马灯...
+        function initSysNotice() {
+            $.ajax({
+                url: '{{projcfg.appurl}}/admin/api/common/syscfg/notice/newest',
+                method: 'get',
+                success: function (data) {
+                    var data = data.data[0];
+                    notice_id = data._id;
+
+                    var strHtm = ' <i class="fa fa-bullhorn danger"></i> <a href="javascript:void(0);" onclick="openNoticeDetails()">';
+                    strHtm += '<span class="text-muted">'+data.notice_title+'【'+new Date(data.notice_time).toLocaleString()+'】</span></a> ';
+                    strHtm += '<a href="javascript:void(0);"onclick="openMoreSystemNoticeList()">更多</a>';
+
+//                    $("#sys_notice").html(strHtm);
+                }
+            });
+        }
+
+        //系统公告详情
+        function openNoticeDetails(id) {
+
+            if (!id) {
+                id = notice_id;
+            }
+
+            $.ajax({
+                url: '{{projcfg.appurl}}/admin/api/common/syscfg/notice/' + id,
+                type: 'get',
+                data: {},
+                success: function (data) {
+                    console.log(data);
+
+                    if (data.success) {
+                        var html = '';
+                        if (data.data != '' && data.data != null) {
+                            var type;
+                            var noticeType = data.data[0].notice_status;
+                            if (noticeType == 1) {
+                                type = '<span class="label label-danger">重要</span>';
+                            } else if (noticeType == 2) {
+                                type = '<span class="label label-azure">限时</span>';
+                            } else if (noticeType == 3) {
+                                type = '<span class="label label-warning">通报</span>';
+                            }
+                            var temp = '<tr>'
+                                    + '<td align="center">'
+                                    + data.data[0].notice_title + type
+                                    + '<br>'
+                                    + '</td>'
+                                    + '</tr>'
+                                    + '<tr>'
+                                    + '<td>'
+                                    + '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'
+                                    + data.data[0].notice_info
+                                    + '</td>'
+                                    + '</tr>'
+                                    + '<tr>'
+                                    + '<td align="right" style="padding-right: 40px;">'
+                                    + '<br>'
+                                    + '发布时间：' + new Date(data.data[0].notice_time).toLocaleString()
+                                    + '</td>'
+                                    + '</tr>';
+                            html += temp;
+
+                            openPageModal('systemNoticeDetails_Modal', "<i class='widget-icon fa fa-tags themeprimary'></i>&nbsp;<span class='widget-caption themeprimary'>系统公告详情</span>");
+
+                        } else {
+                            msgError("获取公告详情失败！");
+                        }
+
+                        $('#systemNoticeDetailsTablelist').html(html);
+                    }
+                    else {
+                        msgError(data.msg + ',错误代码:' + data.code);
+                    }
+                }
+            });
+        }
+
+        function openPageModal(id, title) {
+            //获取页面滚动距离
+            var scrollTop = window.pageYOffset
+                    || document.documentElement.scrollTop
+                    || document.body.scrollTop
+                    || 0;
+            var top = ($(window).height() - 500) / 2 + scrollTop;
+            $('#' + id).show();
+            $('#' + id).mydialog({
+                title: title,
+                width: 1000,
+                height: 500,
+                top: top,
+                modal: true,
+                myButtons: [
+                    {
+                        text: '关闭',
+                        btnCls: 'btn btn-danger',
+                        handler: function () {
+                            $('#' + id).dialog('close');
+                        }
+                    }
+                ]
+            });
+        }
+
+    </script>
+</head>
+<body class="{{projcfg.skin}}" style="font-family:'Microsoft YaHei'">
+<!-- Loading Container -->
+<div class="hidden loading-container">
+    <div class="loader"></div>
+</div>
+<!--  /Loading Container -->
+<!-- Navbar -->
+<div class="navbar">
+    <div class="navbar-inner">
+        <div class="navbar-container">
+            <!-- Navbar Barnd -->
+            <div class="navbar-header">
+                <!--<a href="#" class="navbar-brand">
+                    <img src="{{projcfg.appurl}}/static/images/top_logo.png" alt="" />
+                </a>-->
+                <div class="head-v3">
+                    <div class="navigation-up">
+                        <div class="navigation-inner">
+                            <div class="logo">{{projcfg.appname}}</div>
+                            <div class="navigation-v3">
+                                <ul class="pgwMenu">
+                                    {{#each sysmenus}}
+                                        {{#ifCond @key ../currentUserRole.sys_id}}
+                                            {{#each this}}
+                                                {{#containKey ../../../currentUserRoleMenus menu_code
+                                                              ../../../currentUser.login_account}}
+                                                    <li _t_nav="nav_{{_id}}">
+                                                        {{#if children}}
+                                                            {{#eq menu_url '#'}}
+                                                                <a target="{{menu_target}}" href="#">{{menu_name}}</a>
+                                                            {{/eq}}
+                                                            {{#neq menu_url '#'}}
+                                                                <a target="{{menu_target}}"
+                                                                   href="{{../../../../../../projcfg.appurl}}/{{menu_code}}">{{menu_name}}</a>
+                                                            {{/neq}}
+                                                        {{else}}
+                                                            <a target="{{menu_target}}"
+                                                               href="{{../../../../../projcfg.appurl}}/{{menu_code}}">{{menu_name}}</a>
+                                                        {{/if}}
+                                                    </li>
+                                                {{/containKey}}
+                                            {{/each}}
+                                        {{/ifCond}}
+                                    {{/each}}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /Navbar Barnd -->
+            <!-- Sidebar Collapse -->
+            <!--<div class="sidebar-collapse" id="sidebar-collapse">
+                <i class="collapse-icon fa fa-bars"></i>
+            </div>-->
+            <!-- /Sidebar Collapse -->
+            <!-- Account Area and Settings -->
+
+            <div class="navbar-header" style="position: absolute;top:0;right:0;z-index: 1000">
+                <div class="navbar-account">
+                    <ul class="account-area ">
+                        <li>
+                            <a class="login-area dropdown-toggle" data-toggle="dropdown" style="width:215px">
+                                <div class="avatar" title="View your public profile" style="float:left;width:30px">
+                                    <img src="{{projcfg.appurl}}/static/{{projcfg.theme}}img/avatars/cmcc.jpg">
+                                </div>
+                                <section style="float:left;">
+                                    <h2><span class="profile"><span class="crrentusername">{{currentUser.user_name}}
+                                        &nbsp;&nbsp;</span></span></h2>
+                                </section>
+                            </a>
+                            {{#if currentUser.login_account}}
+
+
+                                <!--Login Area Dropdown-->
+                                <ul class="pull-right dropdown-menu dropdown-arrow dropdown-login-area">
+                                    <li class="username"><a class="pull-left">{{currentUser.login_account}}</a></li>
+                                    <li class="email"><a>{{currentUser.login_account}}</a></li>
+                                    <li class="email"><a
+                                            href="javascript:openCurtUserRoleModal()">(角色:{{currentUserRole.role_name}}
+                                        )</a></li>
+                                    <!--Avatar Area-->
+                                    <li class="hidden">
+                                        <div class="avatar-area">
+                                            <img src="{{projcfg.appurl}}/static/{{projcfg.theme}}img/avatars/adam-jansen.jpg"
+                                                 class="avatar">
+                                            <span class="caption">Change Photo</span>
+                                        </div>
+                                    </li>
+                                    <!--Avatar Area-->
+                                    <!--<li class="edit">-->
+                                    <!--<a href="{{__ "link_profile"}}" class="pull-left">{{__ "btn_profile"}}</a>-->
+                                    <!--<a href="{{__ "link_setting"}}" class="pull-right">{{__ "btn_setting"}}</a>-->
+                                    <!--</li>-->
+                                    <li class="edit">
+                                        <!--<a href="{{projcfg.appurl}}/api/common_user_profile/user_profile/to_profile" class="pull-left">{{__
+                                                "btn_profile"}}</a>-->
+                                        <a href="javascript:openMyProfileModal();" class="pull-left">{{__
+                                                "btn_profile"}}</a>
+                                        <!--<a href="{{projcfg.appurl}}/api/common_user_profile/user_profile/to_edit" class="pull-right">{{__
+                                                "btn_setting"}}</a>-->
+                                        <a href="javascript:openEditProfileModal()" class="pull-right">{{__
+                                                "btn_setting"}}</a>
+                                    </li>
+                                    <!--Theme Selector Area-->
+                                    <li class="theme-area">
+                                        <ul class="colorpicker" id="skin-changer">
+                                            <li><a class="colorpick-btn" href="#" style="background-color:#5DB2FF;"
+                                                   rel="{{projcfg.appurl}}/static/{{projcfg.theme}}css/skins/blue.min.css"></a>
+                                            </li>
+                                            <li><a class="colorpick-btn" href="#" style="background-color:#2dc3e8;"
+                                                   rel="{{projcfg.appurl}}/static/{{projcfg.theme}}css/skins/azure.min.css"></a>
+                                            </li>
+                                            <li><a class="colorpick-btn" href="#" style="background-color:#03B3B2;"
+                                                   rel="{{projcfg.appurl}}/static/{{projcfg.theme}}css/skins/teal.min.css"></a>
+                                            </li>
+                                            <li><a class="colorpick-btn" href="#" style="background-color:#53a93f;"
+                                                   rel="{{projcfg.appurl}}/static/{{projcfg.theme}}css/skins/green.min.css"></a>
+                                            </li>
+                                            <li><a class="colorpick-btn" href="#" style="background-color:#FF8F32;"
+                                                   rel="{{projcfg.appurl}}/static/{{projcfg.theme}}css/skins/orange.min.css"></a>
+                                            </li>
+                                            <li><a class="colorpick-btn" href="#" style="background-color:#cc324b;"
+                                                   rel="{{projcfg.appurl}}/static/{{projcfg.theme}}css/skins/pink.min.css"></a>
+                                            </li>
+                                            <li><a class="colorpick-btn" href="#" style="background-color:#AC193D;"
+                                                   rel="{{projcfg.appurl}}/static/{{projcfg.theme}}css/skins/darkred.min.css"></a>
+                                            </li>
+                                            <li><a class="colorpick-btn" href="#" style="background-color:#8C0095;"
+                                                   rel="{{projcfg.appurl}}/static/{{projcfg.theme}}css/skins/purple.min.css"></a>
+                                            </li>
+                                            <li><a class="colorpick-btn" href="#" style="background-color:#0072C6;"
+                                                   rel="{{projcfg.appurl}}/static/{{projcfg.theme}}css/skins/darkblue.min.css"></a>
+                                            </li>
+                                            <li><a class="colorpick-btn" href="#" style="background-color:#585858;"
+                                                   rel="{{projcfg.appurl}}/static/{{projcfg.theme}}css/skins/gray.min.css"></a>
+                                            </li>
+                                            <li><a class="colorpick-btn" href="#" style="background-color:#474544;"
+                                                   rel="{{projcfg.appurl}}/static/{{projcfg.theme}}css/skins/black.min.css"></a>
+                                            </li>
+                                            <li><a class="colorpick-btn" href="#" style="background-color:#001940;"
+                                                   rel="{{projcfg.appurl}}/static/{{projcfg.theme}}css/skins/deepblue.min.css"></a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                    <!--/Theme Selector Area-->
+                                    <li class="dropdown-footer">
+                                        <a href="javascript:InitSys.logout('{{projcfg.appurl}}')">
+                                            {{__ "btn_logout"}}
+                                        </a>
+                                    </li>
+                                </ul>
+                            {{/if}}
+                            <!--/Login Area Dropdown-->
+                        </li>
+                        <!-- /Account Area -->
+                        <!--Note: notice that setting div must start right after account area list.
+                        no space must be between these elements-->
+                        <!-- Settings -->
+                    </ul>
+                    <!--<div class="setting">
+                        <a id="btn-setting" title="{{__ "tips_setting"}}" href="#">
+                            <i class="icon glyphicon glyphicon-cog"></i>
+                        </a>
+                    </div>
+                    <div class="setting-container">
+                        <label>
+                            <input type="checkbox" id="checkbox_fixednavbar">
+                            <span class="text">{{__ "tips_fixed_navbar"}}</span>
+                        </label>
+                        <label>
+                            <input type="checkbox" id="checkbox_fixedsidebar">
+                            <span class="text">{{__ "tips_fixed_sideBar"}}</span>
+                        </label>
+                        <label>
+                            <input type="checkbox" id="checkbox_fixedbreadcrumbs">
+                            <span class="text">{{__ "tips_fixed_breadcrumbs"}}</span>
+                        </label>
+                        <label>
+                            <input type="checkbox" id="checkbox_fixedheader">
+                            <span class="text">{{__ "tips_fixed_header"}}</span>
+                        </label>
+                    </div>-->
+                    <!-- Settings -->
+                </div>
+            </div>
+            <!-- /Account Area and Settings -->
+        </div>
+    </div>
+</div>
+<!-- /Navbar -->
+<!-- Main Container -->
+<div class="main-container container-fluid">
+    <!-- Page Container -->
+    <div class="page-container">
+        <!-- Page Sidebar -->
+        {{#isempty root_menu}}
+            <div class="page-sidebar" id="sidebar">
+                <!-- Sidebar Menu -->
+                <ul class="nav sidebar-menu">
+                    {{#each root_menu}}
+                        {{#ifCond @key ../currentUserRole.sys_id}}
+                            {{#each this}}
+                                {{#eq menu_hidden 0}}
+                                    {{#containKey ../../../../currentUserRoleMenus menu_code
+                                                  ../../../../currentUser.login_account}}
+                                        <li {{#ifCond @index 0}}class="open"{{/ifCond}}>
+                                            {{#if children}}
+                                            <a href="#" class="menu-dropdown">
+                                            {{else}}
+                                            <a target="{{menu_target}}"
+                                               href="{{../../../../../../projcfg.appurl}}/{{menu_code}}">
+                                            {{/if}}
+                                            <i class="{{menu_cls}}"></i>
+                                            <span class="menu-text"> {{menu_name}} </span>
+                                            {{#if children}}
+                                                <i class="menu-expand"></i>
+                                            {{else}}
+                                                <i id="mc_{{_id}}" class="menu-colletion fa fa-heart-o"
+                                                   onclick="menuCollect('{{_id}}');return false;"></i>
+                                            {{/if}}
+                                        </a>
+                                            {{#if children}}
+                                                <ul class="submenu">
+                                                    {{#each children}}
+                                                        {{#eq menu_hidden 0}}
+                                                            {{#containKey ../../../../../../../../currentUserRoleMenus
+                                                                          menu_code
+                                                                          ../../../../../../../../currentUser.login_account}}
+                                                                <li>
+                                                                    {{#if children}}
+                                                                    <a href="#" class="menu-dropdown">
+                                                                    {{else}}
+                                                                    <a target="{{menu_target}}"
+                                                                       href="{{../../../../../../../../../../projcfg.appurl}}/{{menu_code}}">
+                                                                    {{/if}}
+                                                                    <span class="menu-text">{{menu_name}}</span>
+                                                                    {{#if children}}
+                                                                        <i class="menu-expand"></i>
+                                                                    {{else}}
+                                                                        <i id="mc_{{_id}}"
+                                                                           class="menu-colletion fa fa-heart-o"
+                                                                           onclick="menuCollect('{{_id}}');return false;"></i>
+                                                                    {{/if}}
+                                                                </a>
+                                                                    {{#if children}}
+                                                                        <ul class="submenu">
+                                                                            {{#each children}}
+                                                                                {{#eq menu_hidden 0}}
+                                                                                    {{#containKey
+                                                                                            ../../../../../../../../../../../../currentUserRoleMenus
+                                                                                            menu_code
+                                                                                            ../../../../../../../../../../../../currentUser.login_account}}
+                                                                                        <li>
+                                                                                            <a target="{{menu_target}}"
+                                                                                               href="{{../../../../../../../../../../../../../projcfg.appurl}}/{{menu_code}}">
+                                                                                                <i class="{{menu_cls}}"></i>
+                                                                                                <span class="menu-text">{{menu_name}}</span>
+                                                                                                <i id="mc_{{_id}}"
+                                                                                                   class="menu-colletion fa fa-heart-o"
+                                                                                                   onclick="menuCollect('{{_id}}');return false;"></i>
+                                                                                            </a>
+                                                                                        </li>
+                                                                                    {{/containKey}}
+                                                                                {{/eq}}
+                                                                            {{/each}}
+                                                                        </ul>
+                                                                    {{/if}}
+                                                                </li>
+                                                            {{/containKey}}
+                                                        {{/eq}}
+                                                    {{/each}}
+                                                </ul>
+                                            {{/if}}
+                                        </li>
+                                    {{/containKey}}
+                                {{/eq}}
+                            {{/each}}
+                        {{/ifCond}}
+                    {{/each}}
+                </ul>
+                <!-- /Sidebar Menu -->
+            </div>
+            <!-- /Page Sidebar -->
+        {{/isempty}}
+        <!-- Page Content -->
+        <div {{#isempty root_menu}}class="page-content"{{/isempty}}>
+            <div class="page-header position-relative">
+                <div class="row">
+                    <!--<div  class="col-xs-3 col-md-3">-->
+                    <div class="col-xs-4 col-md-4">
+                        <div class="header-title" style="line-height: 40px;">
+                            <i class="widget-icon fa fa-sitemap themeprimary"></i>
+                            <a href="{{menu_code}}"><span
+                                    class='widget-caption themeprimary'>{{menu.menu_nav}}</span></a>
+                        </div>
+                    </div>
+                    <div class="col-xs-6 col-md-6">
+                        <marquee id="sys_notice" onmouseover="javascript:this.stop()"
+                                 onmouseout="javascript:this.start()">
+                        </marquee>
+                    </div>
+                    <div class="col-xs-2 col-md-2 pull-right">
+                        <!--Header Buttons-->
+                        <div class="header-buttons" style="margin-right: 10px;">
+                            <a class="fullscreen" id="fullscreen-toggler" href="#">
+                                <i class="glyphicon glyphicon-fullscreen"></i>
+                            </a>
+                            {{#if can_customize}}
+                                <a id="setting-toggler" href="javascript:openModuleDialog();">
+                                    <i class="glyphicon glyphicon-plus"></i>
+                                </a>
+                            {{/if}}
+                        </div>
+                    </div>
+
+
+                </div>
+
+
+                <!--Header Buttons End-->
+            </div>
+            <!-- /Page Header -->
+            <!-- Page Body -->
+            <div class="page-body" style="padding: 0px 8px 0px 8px;">
+                <!-- Your Content Goes Here -->
+                {{{body}}}
+            </div>
+            <!-- /Page Body -->
+        </div>
+        <!-- /Page Content -->
+    </div>
+    <!-- /Page Container -->
+    <!-- Main Container -->
+    <!--Beyond Scripts-->
+    <script src="{{projcfg.appurl}}/static/{{projcfg.theme}}js/beyond.min.js"></script>
+    <script src="{{projcfg.appurl}}/static/js/bootbox/bootbox.js"></script>
+    <script src="{{projcfg.appurl}}/static/js/common/sys-init.js"></script>
+    <script src="{{projcfg.appurl}}/static/themes/beyond/js/toastr/toastr.js"></script>
+    <script>
+        InitSys.init();
+        InitSys.initNavLeftMenu('{{projcfg.appurl}}/{{menu.menu_code}}');
+        InitSys.initRevMenu('{{projcfg.appurl}}/{{menu.menu_code}}');
+        InitSys.initRevChildMenu('{{menu.menu_root_id}}');
+
+        $(document).ready(function () {
+            var height1 = $(window).height() - 130;
+            $("#cc").parent().parent().attr("style", "margin: 0 0 2px 0;");
+            $("#cc").attr("style", "overflow-y:hidden;width:100%;height:" + height1 + "px");
+            $("#cc").layout("resize", {
+                width: "100%",
+                height: height1 + "px"
+            });
+        });
+
+
+        $(window).resize(function () {
+            var height1 = $(window).height() - 130;
+            $("#cc").parent().parent().attr("style", "margin: 0 0 2px 0;");
+            $("#cc").attr("style", "width:100%;height:" + height1 + "px");
+            $("#cc").layout("resize", {
+                width: "100%",
+                height: height1 + "px"
+            });
+        });
+
+        $(function () {
+            $('.pgwMenu').pgwMenu({
+                dropDownLabel: '<span class="collapse-icon fa fa-bars"></span>',
+                viewMoreLabel: '<span class="collapse-icon fa fa-bars"></span>',
+                callback: initMenu
+            });
+
+            setMenuCollectTag();
+        });
+        function setMenuCollectTag() {
+            $.ajax({
+                url: "{{projcfg.appurl}}/public/shortcutMenu",
+                type: "get",
+                success: function (result) {
+                    if (result.success) {
+                        for (var i = 0; i < result.data.length; i++) {
+                            var menu = result.data[i].menu_id;
+                            if ($("#mc_" + menu._id).length > 0) {
+                                $("#mc_" + menu._id).removeClass('fa-heart-o').addClass('orange fa-heart');
+                            }
+                        }
+                    }
+                    else {
+                        //msgError(result.msg + ',错误代码:' + result.code);
+                    }
+                },
+                error: function () {
+                }
+            });
+        }
+        function menuCollect(menu_id) {//alert('---'+menu_id);
+            $.ajax({
+                url: "{{projcfg.appurl}}/public/shortcutMenu",
+                type: "post",
+                data: {
+                    menu_id: menu_id
+                },
+                success: function (result) {
+                    if (result.success) {
+                        //msgSuccess(result.msg);
+                        //setMenuCollectTag();
+                        if ($("#mc_" + menu_id).hasClass('fa-heart-o')) {
+                            $("#mc_" + menu_id).removeClass('fa-heart-o').addClass('orange fa-heart');
+                        }
+                        else {
+                            $("#mc_" + menu_id).removeClass('orange fa-heart').addClass('fa-heart-o');
+                        }
+                    }
+                    else {
+                        msgError(result.msg + ',错误代码:' + result.code);
+                    }
+                },
+                error: function () {
+                }
+            });
+        }
+    </script>
+</div>
+<div id="currentUserRoleModal" style="display:none;">
+    <div class="row">
+        <div class="tickets-container padding-0" style="background-color:#fff;padding-top: 0px;">
+            <ul class="tickets-list">
+                {{#each currentUser.user_roles}}
+                    <li class="ticket-item margin-10" onclick="switchRole('{{../projcfg.appurl}}','{{_id}}')"
+                        style="width:29%;float:left;cursor: pointer;">
+                        <div class="row">
+                            <div class="ticket-type">
+                                <i class="fa fa-users blue"></i>
+                                <span class="type">{{role_name}}</span>
+                            </div>
+                            <div class="ticket-state bg-palegreen">
+                                <i class="fa fa-check"></i>
+                            </div>
+                        </div>
+                    </li>
+                {{/each}}
+            </ul>
+        </div>
+    </div>
+</div>
+<div id="myProfileModal" style="display: none">
+    <div class="row">
+        <div class="col-lg-12 col-sm-12 col-xs-12">
+            <div class="row">
+                <div class="col-lg-12 col-sm-12 col-xs-12">
+                    <div class="widget flat radius-bordered">
+                        <div class="widget-body">
+                            <div id="registration-form">
+                                <form role="form" id="editMyForm">
+                                    <div class="form-title">
+                                        基本信息
+                                    </div>
+                                    <div class="row">
+                                        <label class="col-sm-3 control-label no-padding-right"
+                                               style="line-height: 34px">姓　　名：</label>
+                                        <div class="col-sm-9">
+                                            <div class="last-form-group">
+                                        <span class="input-icon icon-right">
+                                            <input type="text" value="{{currentUser.user_name}}" class="form-control"
+                                                   id="" disabled="disabled" placeholder="">
+                                            <!--<i class="fa fa-user"></i>-->
+                                        </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <label class="col-sm-3 control-label no-padding-right"
+                                               style="line-height: 34px">手机号码：</label>
+                                        <div class="col-sm-9">
+                                            <div class="last-form-group">
+                                        <span class="input-icon icon-right">
+                                            <input type="text" class="form-control" value="{{currentUser.user_phone}}"
+                                                   id="" disabled="disabled" placeholder="">
+                                            <!--<i class="glyphicon glyphicon-earphone"></i>-->
+                                        </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <label class="col-sm-3 control-label no-padding-right"
+                                               style="line-height: 34px">邮　　箱：</label>
+                                        <div class="col-sm-9">
+                                            <div class="last-form-group">
+                                        <span class="input-icon icon-right">
+                                            <input type="text" class="form-control" value="{{currentUser.user_email}}"
+                                                   id="" disabled="disabled" placeholder="">
+                                            <!--<i class="glyphicon glyphicon-earphone"></i>-->
+                                        </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <label class="col-sm-3 control-label no-padding-right"
+                                               style="line-height: 34px">所属机构：</label>
+                                        <div class="col-sm-9">
+                                            <div class="last-form-group">
+                                        <span class="input-icon icon-right">
+                                            <input type="text" value="{{currentUser.user_org.org_name}}"
+                                                   class="form-control" id="" disabled="disabled" placeholder="">
+                                            <!--<i class="fa fa-user"></i>-->
+                                        </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <label class="col-sm-3 control-label no-padding-right"
+                                               style="line-height: 34px">所属机构编码：</label>
+                                        <div class="col-sm-9">
+                                            <div class="last-form-group">
+                                        <span class="input-icon icon-right">
+                                            <input type="text" class="form-control"
+                                                   value="{{currentUser.user_org.org_code}}" id="" disabled="disabled"
+                                                   placeholder="">
+                                            <!--<i class="glyphicon glyphicon-earphone"></i>-->
+                                        </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="editProfileModal" style="display: none">
+    <div class="row">
+        <div class="col-lg-12 col-sm-12 col-xs-12">
+            <div class="row">
+                <div class="col-lg-12 col-sm-12 col-xs-12">
+                    <div class="widget flat radius-bordered">
+                        <div class="widget-body">
+                            <div id="registration-form">
+                                <form role="form" id="editMyForm">
+                                    <div class="form-title">
+                                        基本信息
+                                    </div>
+                                    <div class="row">
+                                        <label class="col-sm-3 control-label no-padding-right"
+                                               style="line-height: 34px">姓　　名：</label>
+                                        <div class="col-sm-9">
+                                            <div class="last-form-group">
+                                        <span class="input-icon icon-right">
+                                            <input type="text" value="{{currentUser.user_name}}" class="form-control"
+                                                   id="edit_user_name" disabled="disabled" placeholder="姓名">
+                                            <i class="fa fa-user"></i>
+                                        </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <label class="col-sm-3 control-label no-padding-right"
+                                               style="line-height: 34px">手机号码：</label>
+                                        <div class="col-sm-9">
+                                            <div class="last-form-group">
+                                        <span class="input-icon icon-right">
+                                            <input type="text" class="form-control" value="{{currentUser.user_phone}}"
+                                                   id="edit_user_phone" disabled="disabled" placeholder="手机号码">
+                                            <i class="glyphicon glyphicon-earphone"></i>
+                                        </span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <hr class="wide"/>
+                                    <div class="form-title">
+                                        密码修改
+                                    </div>
+                                    <div class="row">
+                                        <label class="col-sm-3 control-label no-padding-right"
+                                               style="line-height: 34px">登录账号：</label>
+                                        <div class="col-sm-9">
+                                            <div class="form-group">
+                                        <span class="input-icon icon-right">
+                                            <input type="text" class="form-control"
+                                                   value="{{currentUser.login_account}}" data-value2=""
+                                                   disabled="disabled" id="user_account_" placeholder="账号">
+                                            <i class="glyphicon glyphicon-user circular"></i>
+                                        </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <label class="col-sm-3 control-label no-padding-right"
+                                               style="line-height: 34px">密　　码：</label>
+                                        <div class="col-sm-9">
+                                            <div class="form-group">
+                                        <span class="input-icon icon-right">
+                                            <input type="password" class="form-control" data-value=""
+                                                   name="old_password_" id="old_password_" placeholder="请输入旧密码">
+                                            <i class="fa fa-lock circular"></i>
+                                        </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <label class="col-sm-3 control-label no-padding-right"
+                                               style="line-height: 34px">新 密 码：</label>
+                                        <div class="col-sm-9">
+                                            <div class="form-group">
+                                        <span class="input-icon icon-right">
+                                            <input type="password" class="form-control" data-value=""
+                                                   name="new_password" id="new_password" placeholder="请输入新密码">
+                                            <i class="fa fa-lock circular"></i>
+                                        </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <label class="col-sm-3 control-label no-padding-right"
+                                               style="line-height: 34px">确认密码：</label>
+                                        <div class="col-sm-9">
+                                            <div class="form-group">
+                                        <span class="input-icon icon-right">
+                                            <input type="password" class="form-control" data-value=""
+                                                   name="confirm_password" id="confirm_password" placeholder="请确认新密码">
+                                            <i class="fa fa-lock circular"></i>
+                                        </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="autoNewWindow"></div>
+
+<!-- 更多公告 -->
+<div id="systemNotice_Modal" class="mydialog" style="padding-top:0px;">
+    <div class="easyui-layout" data-options="fit:true,border:false">
+        <div data-options="region:'center',border:false,fit:true" style="overflow-x:hidden;overflow-y:hidden">
+            <table id="moreSystemNoticeTablelist">
+
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- 通知详情Modal -->
+<div id="systemNoticeDetails_Modal" style="display:none;overflow:hidden">
+    <div class="row">
+        <div class="col-md-12">
+            <table class="table table-hover">
+                <tbody id="systemNoticeDetailsTablelist">
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    var user_tag = '{{currentUser.user_tag}}';
+    var user_id = '{{currentUser._id}}';
+    function openMyProfileModal() {
+        bootbox.dialog({
+            message: $("#myProfileModal").html(),
+            title: '个人信息',
+            className: "modal-blue",
+            buttons: {
+                "关闭": {
+                    className: "btn-danger",
+                    callback: function () {
+                        $("#myProfileModal").modal('hide');
+                    }
+                }
+            }
+        });
+    }
+    function openEditProfileModal() {
+        bootbox.dialog({
+            message: $("#editProfileModal").html(),
+            title: '信息修改',
+            className: "modal-blue",
+            buttons: {
+                "修改": {
+                    className: "btn-danger",
+                    callback: function () {
+                        //保存数据
+                        return submitPwdInfo();
+                    }
+                },
+                "关闭": {
+                    className: "btn-danger",
+                    callback: function () {
+                        $("#editProfileModal").modal('hide');
+                    }
+                },
+            }
+        });
+    }
+    function submitPwdInfo() {
+        /*var edit_user_name = $("input[id='edit_user_name']").get(1).value;
+        var edit_user_phone = $("input[id='edit_user_phone']").get(1).value;*/
+        var old_password = $("input[id='old_password_']").get(1).value;
+        var new_password = $("input[id='new_password']").get(1).value;
+        var confirm_password = $("input[id='confirm_password']").get(1).value;
+        if (old_password == '') {
+//            bootbox.alert('请输入原密码！', function(result){});
+            msgError("请输入原密码！");
+            return false;
+        }
+        if (new_password == '') {
+            msgError("请输入新密码！");
+            return false;
+        }
+        var reg = /^(?:(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!@$%^&*])(?=.*[^A-Za-z0-9])).{6,18}$/;
+        if (!reg.test(new_password)) {
+            msgError("密码格式需要长度在6~18之间，必须包含大写、小写、数字、特殊字符(特殊字符不能是#号)！");
+            return false;
+        }
+        if (new_password != confirm_password) {
+            msgError("两次输入的密码不一致！");
+            return false;
+        }
+        var oldpwd = hex_md5(old_password);
+        var newpwd = hex_md5(new_password);
+        var cfmpwd = hex_md5(confirm_password);
+        var flag = false;
+        $.ajax({
+            url: "{{projcfg.appurl}}/api/common_user_profile/user_profile/edit_info",
+            method: "post",
+            async: false,
+            data: {
+                tag: user_tag,
+                user_id: user_id,
+//                user_name:edit_user_name,
+//                user_phone:edit_user_phone,
+                old_pwd: oldpwd,
+                new_pwd: newpwd,
+                cfm_pwd: cfmpwd
+            },
+            success: function (data) {
+                if (data.success == true) {
+                    msgSuccess(data.msg);
+                    flag = true;
+                } else {
+                    msgError(data.msg);
+                }
+            }
+        });
+        return flag;
+    }
+
+    //更多公告列表
+    function openMoreSystemNoticeList() {
+        var currentSysId = '{{currentUser.user_sys._id}}';
+        //初始化grid
+        $('#moreSystemNoticeTablelist').datagrid({
+            url: '{{projcfg.appurl}}/admin/api/common/syscfg/notice',
+            method: 'get',
+            queryParams: {notice_system: currentSysId,notice_status:1},
+            rownumbers: true,
+            striped: true,
+            fitColumns: true,
+            border: true,
+            //toolbar: '#toolbar',
+            fit: true,
+            singleSelect: true,
+            selectOnCheck: true,
+            checkOnSelect: true,
+            columns: [[
+                {"field": "notice_title", "title": "公告标题", "width": 100},
+                {"field": "notice_system", hidden: true},
+                {
+                    "field": "notice_role", "title": "所属角色", "width": 30,
+                    "formatter": function (value, rowData, rowIndex) {
+                        if (value) {
+                            return value.role_name;
+                        } else {
+                            return "所有角色";
+                        }
+                    }
+                },
+                {
+                    "field": "notice_status", "title": "状态", "width": 30,
+                    "formatter": function (value, rowData, rowIndex) {
+                        if (value == 1) {
+                            return '<span class="success">正常</span>';
+                        } else if (value == 0) {
+                            return '<span class="danger">禁用</span>';
+                        }
+                    }
+                },
+                {"field": "notice_author", "title": "发布人", "width": 30},
+                {
+                    "field": "notice_time", "title": "发布时间", "width": 50,
+                    formatter: function (value, rowData, rowIndex) {
+                        return new Date(value).toLocaleString();
+                    }
+                },
+                {
+                    "field": "__v", "title": "操作", "width": 30,
+                    formatter: function (value, rowData, rowIndex) {
+                        return '<a href="javascript:void(0);" onclick="openNoticeDetails(\'' + rowData._id + '\')">查看详情</a>';
+                    }
+                }
+            ]],
+            onLoadSuccess: function (json) {
+                if (!json.success) {
+                    msgError(json.msg + ',错误代码:' + json.code);
+                }
+            },
+            onLoadError: function () {
+                msgError('加载数据出现时发生错误,请稍候重试...');
+            },
+            pagination: true,
+            loadMsg: '正在加载...'
+        });
+
+        openPage('systemNotice_Modal', "<i class='widget-icon fa fa-tags themeprimary'></i>&nbsp;<span class='widget-caption themeprimary'>系统公告</span>");
+
+    }
+
+    function openPage(id, title) {
+        //获取页面滚动距离
+        var scrollTop = window.pageYOffset
+                || document.documentElement.scrollTop
+                || document.body.scrollTop
+                || 0;
+        var top = ($(window).height() - 500) / 2 + scrollTop;
+        $('#' + id).show();
+        $('#' + id).mydialog({
+            title: title,
+            width: 1000,
+            height: 500,
+            top: top,
+            modal: true,
+            myButtons: [
+                {
+                    text: '关闭',
+                    btnCls: 'btn btn-danger',
+                    handler: function () {
+                        $('#' + id).dialog('close');
+                    }
+                }
+            ]
+        });
+    }
+</script>
+<script src="{{projcfg.appurl}}/static/js/common/md5.js"></script>
+<script src="{{projcfg.appurl}}/static/js/common/security.mini.js"></script>
+<style>
+    #toolbar input {
+        height: 25px !important;
+        line-height: 25px !important;
+        margin-left: 0px;
+        margin-right: 0px;
+        padding-top: 0px;
+        padding-bottom: 0px;
+        width: 160px !important;
+    }
+
+    #toolbar .textbox {
+        height: 25px !important;
+        line-height: 25px !important;
+        margin-left: 0px;
+        margin-right: 0px;
+        padding-top: 0px;
+        padding-bottom: 0px;
+        width: 160px !important;
+    }
+
+    #toolbar #searchFrom button {
+        height: 25px !important;
+        width: 80px;
+        padding: 1px 2px 1px 2px !important;
+
+    }
+
+    #toolbar #searchForm button {
+        height: 25px !important;
+        width: 80px;
+        padding: 1px 2px 1px 2px !important;
+
+    }
+
+    #toolbar .combo-arrow {
+        height: 25px !important;
+
+    }
+</style>
+</body>
+</html>
