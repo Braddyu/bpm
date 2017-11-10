@@ -1,0 +1,70 @@
+
+<div id="logsModal" class="mydialog" style="padding-top:0px;">
+    <div class="easyui-layout" data-options="fit:true,border:false">
+        <div data-options="region:'center',border:false,fit:true" style="overflow-x:hidden;overflow-y:hidden">
+            <table id="orderTablelist">
+
+            </table>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+
+    $(document).ready(function () {
+        loadOrderListDatagrid();
+
+    });
+    function loadOrderListDatagrid(){
+        // 加载流程基本属性列表
+        $('#orderTablelist').datagrid({
+            url:'{{projcfg.appurl}}/api/order_manage/order_list/list',
+            method:'post',
+            rownumbers:true,
+            striped:true,
+            fitColumns:true,
+            border:false,
+            fit:true,
+            toolbar: '#toolbar1',
+            singleSelect:true,
+            selectOnCheck:true,
+            checkOnSelect:true,
+            columns:[[
+                {"field":"_id",checkbox:true},
+                {"field": "proc_code","title":"工单标题","width":150},
+                {"field": "proc_name","title":"流程名称","width":30},
+                {"field": "proc_latest_ver","title":"流程最后版本号","width":20},
+                {"field": "status","title":"状态","width":20,
+                    formatter:function(value,row,index){
+                        if(value == '1'){
+                            return "启用";
+                        }else{
+                            return "禁用";
+                        }
+                    }
+                },
+                {"field": "opt_time",hidden:true},
+                {"field": "proc_user",hidden:true}
+            ]],
+            onClickRow:function(rowIndex, rowData){
+                $('#processDefineDataTable').datagrid({
+                    url:'{{projcfg.appurl}}/process/process/version',
+                    <!--url:'{{projcfg.appurl}}/admin/api/common/bpm/process/procdefine',-->
+                    queryParams:{proc_id:rowData._id}
+                });
+            },
+            onLoadSuccess:function(json) {
+                if(!json.success) {
+                    msgError(json.msg + ',错误代码:' + json.code);
+                }
+            },
+            onLoadError:function() {
+                msgError('加载数据出现时发生错误,请稍候重试...');
+            },
+            pagination:true,
+            loadMsg:'正在加载...'
+        });
+    }
+
+</script>
