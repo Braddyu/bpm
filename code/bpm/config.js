@@ -99,7 +99,8 @@ var config = {
             '/project/bpm/routes/': project_url_prefix + '/bpm/manual/',//人工抽查路由匹配路径
             '/project/statecos/routes/': project_url_prefix + '/api/statecos/',//人工抽查路由匹配路径
           '/project/bpm_resource/routes/': project_url_prefix + '/api/bpm_resource/',//给外部用户 不要需要权限的 用户 调用的  URL
-          '/project/workflow/routes/':project_url_prefix+'/api/workflow/'//用于平台页面接口的访问
+          '/project/workflow/routes/':project_url_prefix+'/api/workflow/',//用于平台页面接口的访问
+            '/project/project_control/routes/':project_url_prefix+'/api/project_control/'//查询待办已办
 
 
 
