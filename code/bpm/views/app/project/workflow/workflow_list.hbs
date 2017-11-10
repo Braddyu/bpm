@@ -168,7 +168,7 @@
         $('#processBaseDataTable').datagrid({
             url:'{{projcfg.appurl}}/api/workflow/process/list',
             <!--url:'{{projcfg.appurl}}/admin/api/common/bpm/process/procbase',-->
-            method:'post',
+            method:'get',
             rownumbers:true,
             striped:true,
             fitColumns:true,
@@ -197,7 +197,7 @@
             ]],
             onClickRow:function(rowIndex, rowData){
                 $('#processDefineDataTable').datagrid({
-                    url:'{{projcfg.appurl}}/process/process/version',
+                    url:'{{projcfg.appurl}}/api/workflow/process/version',
                     <!--url:'{{projcfg.appurl}}/admin/api/common/bpm/process/procdefine',-->
                     queryParams:{proc_id:rowData._id}
                 });
@@ -263,7 +263,7 @@
         loadProDefineDatagrid();
         $("#catalog").combobox({
             method: 'get',
-            url: '/process/dict?dict_code=proc_catalog',
+            url: '{{projcfg.appurl}}/api/workflow/process/dict?dict_code=proc_catalog',
             valueField:'field_value',
             textField:'field_name',
             editable:false
@@ -278,7 +278,7 @@
                 msgError('提示,请先选择流程基本属性信息再进行新增流程实例操作');
                 return false;
             }
-            window.open('{{projcfg.appurl}}/process/process_chart.html?flag=1&proc_code='+encodeURI(encodeURI(rows[0].proc_code))+'&proc_name='+encodeURI(encodeURI(rows[0].proc_name)));
+            window.open('{{projcfg.appurl}}/project/workflow/process_chart.html?flag=1&proc_code='+encodeURI(encodeURI(rows[0].proc_code))+'&proc_name='+encodeURI(encodeURI(rows[0].proc_name)));
             <!--window.open('{{projcfg.appurl}}/process/process_chart?flag=1&proc_code='+encodeURI(encodeURI(rows[0].proc_code))+'&proc_name='+encodeURI(encodeURI(rows[0].proc_name)));-->
         }else if(flag == 2){
             // 获得选择行
@@ -287,7 +287,7 @@
                 msgError('提示,请选择一条数据再进行修改');
                 return false;
             }
-            window.open('{{projcfg.appurl}}/process/process_chart.html?flag=2&id='+rows[0]._id);
+            window.open('{{projcfg.appurl}}/api/workflow/process/process_chart.html?flag=2&id='+rows[0]._id);
             <!--window.open('{{projcfg.appurl}}/process/process_chart?flag=2&id='+rows[0]._id);-->
             <!--window.open('{{projcfg.appurl}}/process_chart?flag=2&id='+rows[0]._id);-->
         }

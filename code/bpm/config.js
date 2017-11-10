@@ -112,7 +112,8 @@ var config = {
             project_url_prefix + '/captcha',
             project_url_prefix + '/test/*',
             project_url_prefix +'/static/*',
-          project_url_prefix + '/api/bpm_resource/*',
+            project_url_prefix + '/api/bpm_resource/*',
+            project_url_prefix + '/project/workflow/*',
 
 
         ],
@@ -123,6 +124,7 @@ var config = {
             project_url_prefix + '/portal',
             project_url_prefix +'/profile',
             project_url_prefix +'/setting',
+            project_url_prefix +'/api/workflow/*',
             // project_url_prefix + '/api/demo/*',
             // project_url_prefix+"api/workflow/*"
         ]
