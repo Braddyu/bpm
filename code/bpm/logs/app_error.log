@@ -4,3 +4,15 @@
 [2017-11-09 17:49:54.118] [ERROR] error - { code: 'E1105',
   info: 'uncaught_web_err',
   msg: 'MongoError: failed to connect to server [10.201.253.162:27017] on first connect [MongoError: connect ETIMEDOUT 10.201.253.162:27017]\r\n' }
+[2017-11-10 14:39:32.271] [ERROR] error - { code: 'E1105',
+  info: 'uncaught_web_err',
+  msg: 'SyntaxError: Unexpected token F in JSON at position 0\r\n' }
+[2017-11-10 14:40:01.501] [ERROR] error - { code: 'E1105',
+  info: 'uncaught_web_err',
+  msg: 'SyntaxError: Unexpected token F in JSON at position 0\r\n' }
+[2017-11-10 14:40:49.669] [ERROR] error - { code: 'E1105',
+  info: 'uncaught_web_err',
+  msg: 'SyntaxError: Unexpected token F in JSON at position 0\r\n' }
+[2017-11-10 14:43:02.890] [ERROR] error - { code: 'E1105',
+  info: 'uncaught_web_err',
+  msg: 'SyntaxError: Unexpected token F in JSON at position 0\r\n' }
