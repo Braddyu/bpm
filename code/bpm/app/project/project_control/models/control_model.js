@@ -3,7 +3,7 @@
  */
 // 引入mongoose工具类
 // 引入mongoose工具类
-var mongoUtils  = require('../../../../lib/mongoose_utils');
+var mongoUtils  = require('../../../common/core/mongodb/mongoose_utils');
 var mongoose = mongoUtils.init();
 mongoose.set("debug",true);
 

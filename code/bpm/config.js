@@ -104,8 +104,6 @@ var config = {
             '/project/workflow/routes/':project_url_prefix+'/api/workflow/',//用于平台页面接口的访问
             '/project/order_manage/routes/':project_url_prefix+'/api/order_manage/'
 
-
-
         },
         welcome_path:project_url_prefix + '/home',
         // 不做权限检查url（支持通配符*，尽量少用）

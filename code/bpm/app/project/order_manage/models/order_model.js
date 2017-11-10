@@ -1,6 +1,6 @@
 
 
-var mongoUtils  = require('../../../../lib/mongoose_utils');
+var mongoUtils  = require('../../../common/core/mongodb/mongoose_utils');
 var mongoose = mongoUtils.init();
 mongoose.set("debug",false)
 var Schema = mongoose.Schema;

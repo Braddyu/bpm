@@ -7,3 +7,15 @@
 [2017-11-10 15:46:36.316] [ERROR] error - { code: 'E1105',
   info: 'uncaught_web_err',
   msg: 'MongoError: failed to connect to server [192.168.9.48:27017] on first connect [MongoError: connect ETIMEDOUT 192.168.9.48:27017]\r\n' }
+[2017-11-10 15:59:40.057] [ERROR] error - { code: 'E1105',
+  info: 'uncaught_web_err',
+  msg: 'MongoError: failed to connect to server [192.168.9.48:27017] on first connect [MongoError: connect ETIMEDOUT 192.168.9.48:27017]\r\n' }
+[2017-11-10 16:56:52.829] [ERROR] error - { code: 'E1105',
+  info: 'uncaught_web_err',
+  msg: 'TypeError: Cannot read property \'login_password\' of undefined\r\n' }
+[2017-11-10 17:02:03.265] [ERROR] error - { code: 'E1105',
+  info: 'uncaught_web_err',
+  msg: 'TypeError: Cannot read property \'org_belong\' of null\r\n' }
+[2017-11-10 17:02:12.304] [ERROR] error - { code: 'E1105',
+  info: 'uncaught_web_err',
+  msg: 'TypeError: Cannot read property \'org_belong\' of null\r\n' }

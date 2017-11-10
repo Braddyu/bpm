@@ -1,56 +1,153 @@
-<link href="{{projcfg.appurl}}/static/css/dedicated.css" rel="stylesheet"/>
-<script type="text/javascript" src="static/js/ajaxfileupload.js"></script>
-
-<div class="row">
+<link rel="stylesheet" type="text/css" href="{{projcfg.appurl}}/static/order/css/order_detail.css">
+<div id="processDiv" class="row">
     <div class="col-xs-12 col-md-12">
         <div class="widget">
             <div class="widget-body">
-                <div class="tabbable">
-                    <div class="tab-content tabs-flat" style="padding: 1px 0px;">
-                        <div id="api_mgr" class="tab-pane active">
-                            <div id="cc" class="easyui-layout" data-options="fit:true,border:false"
-                                 style="width: 800px; height:585px;background-color: #fbfbfb;">
-                                <div data-options="region:'center',border:false" style="overflow-x:hidden;overflow-y:hidden">
-                                    <div id="apitoolbar" class="row tbRow">
-                                        <div class="col-xs-12 col-md-12">
-                                            <div class="widget" style="margin: 0 0 5px 0;">
-                                                <div class="widget-body">
-                                                    <form id="searchFrom" class="form-inline">
-                                                        <div class="form-group query-list">
-                                                            <li>工单标题: <input id="v_type" name="v_type"
-                                                                             style="width: 190px;height: 34px"></li>
+                <div id="processLayout" class="easyui-layout" data-options="fit:true" style="width:600px;height:666px;">
 
-                                                            <li>
-                                                                <button type="button" class="btn btn-default" onclick="doSearch()"
-                                                                        id="research" data-title="查询">
-                                                                    <i class="fa fa-search"></i> 查询
-                                                                </button>
+                        <div id="toolbar1" class="row tbRow">
+                            <div class="col-xs-8 col-md-8">
+                                <div class="btn-group" role="group" aria-label="...">
+                                    <button type="button" class="btn btn-default" onclick="openPage('新增流程基本属性',null,doAddProcessBase)"><i class="fa fa-plus"></i>新增</button>
 
-                                                                <button type="button" class="btn btn-default"
-                                                                        onclick="showOpen()"
-                                                                        data-title="新增">
-                                                                    <i class="fa fa-plus"></i> 新建工单
-                                                                </button>
-
-                                                            </li>
-                                                        </div>
-                                                    </form>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                    </div>
-                                    <table id="orderTablelist"></table>
                                 </div>
                             </div>
+                            <div class="col-xs-4 col-md-4 text-right">
+                                <form class="form-inline">
+                                    <div class="form-group">
+                                        <div class="input-group">
+                                            <input type="input" id="filterParam1" class="form-control" style="width:130px;" placeholder="输入标题查询"/>
+                                            <span class="input-group-btn">
+                                                <button class="btn btn-default" type="button" onclick="doSearch(1)"><i class="fa fa-search"></i>查询</button>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
                         </div>
+                        <table id="orderTablelist">
 
-                    </div>
+                        </table>
+
+
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<div id="orderDetail"  class="mydialog"  >
+    <fieldset>
+        <legend ><b>任务基本信息</b></legend>
+
+        <table cellpadding="5" align="center" style="border-collapse:separate; border-spacing:0px 5px;">
+            <tr>
+                <td align="right" class="tdLabel">工单标题:</td>
+                <td colspan="3"><input style="width: 678px" class="easyui-textbox"type="text"id="proc_inst_task_title" ></input></td>
+
+
+            </tr>
+            <tr>
+                <td align="right" class="tdLabel">工单类型:</td>
+                <td><input style="width: 280px" class="easyui-textbox"type="text" id="warn_type"
+                           ></input></td>
+
+                <td align="right" class="tdLabel">工作天数:</td>
+                <td><input style="width: 280px"class="easyui-textbox" type="text" id="work_day"
+                           ></input></td>
+            </tr>
+            <tr>
+                <td align="right" class="tdLabel">开始时间:</td>
+                <td><input style="width: 280px"class="easyui-textbox" type="text"
+                           id="proc_inst_task_arrive_time" ></input></td>
+                <td align="right" class="tdLabel">完成时间:</td>
+                <td><input style="width: 280px" class="easyui-textbox"type="text"
+                           id="proc_inst_task_end_time" ></input></td>
+                <td colspan="2"></td>
+
+
+            </tr>
+            <tr>
+                <td align="right" class="tdLabel">发起人角色:</td>
+                <td><input style="width: 280px"class="easyui-textbox" type="text"
+                           id="proc_task_start_user_role_names" ></input></td>
+
+                <td align="right" class="tdLabel">发起人:</td>
+                <td><input style="width: 280px" class="easyui-textbox"type="text"
+                           id="proc_task_start_name" ></input></td>
+
+            </tr>
+
+
+            <tr>
+                <td align="right" class="tdLabel">派单内容:</td>
+                <td colspan="3"><input
+                        style="width: 695px; height: 50px; resize: none;" cols="30"
+                        id="remark" rows="4"  class="easyui-textbox" label="Description:" labelPosition="top" multiline="true"/>
+
+				</td>
+            </tr>
+        </table>
+    </fieldset>
+
+
+    <form id="jobDetail" method="post" enctype="multipart/form-data">
+        <fieldset id="handlerTable">
+
+            <legend><b>节点处理</b></legend>
+
+            <table cellpadding="5" align="center" style="border-collapse:separate; border-spacing:0px 5px;">
+                <tr>
+                    <td align="right" class="tdLabel">当前节点:</td>
+                    <td colspan="3"><input style="width: 695px" type="text" class="easyui-textbox" name="proc_inst_task_name" id="proc_inst_task_name" ></input></td>
+
+
+
+                </tr>
+                <tr id="tr_4">
+                    <td align="right" class="tdLabel">操作:</td>
+                    <td align="right" class="tdLabel">
+                        <div id="isHandleY" style="float: left;">
+                            <input type="radio" name="isHandle" value="1" />通过
+                        </div>
+                        <div id="isHandleN" style="float: left;">
+                            <input type="radio" name="isHandle" value="2"/>退回
+                        </div>
+
+
+                    </td>
+                </tr>
+                <tr id="tr_5">
+                    <td align="right" class="tdLabel">下一节点处理人:</td>
+                    <td colspan="3"><select class="easyui-combobox"
+                                            id="nextJobHandler" name="nextJobHandler" style="width: 200px;">
+
+                    </select> </td>
+
+
+                </tr>
+
+
+                <tr>
+                    <td align="right" class="tdLabel">处理意见:</td>
+                    <td colspan="2"><input name="memo" class="easyui-textbox" label="Description:" labelPosition="top" multiline="true" style="width: 700px; height: 54px; resize: none;"/>
+
+                    </td>
+
+                </tr>
+                <tr>
+                    <td align="right" class="tdLabel">附件上传:</td>
+                    <td>  <input class="easyui-filebox"labelPosition="top" data-options="prompt:'选择文件...',buttonText:'选择'" style="width:250px"/>
+                    </td>
+                </tr>
+
+
+            </table>
+        </fieldset>
+
+    </form>
+</div>
+
 
 
 <script type="text/javascript">
@@ -86,6 +183,7 @@
             fitColumns:true,
             border:false,
             fit:true,
+            toolbar: '#toolbar1',
             singleSelect:true,
             selectOnCheck:true,
             checkOnSelect:true,
@@ -112,12 +210,39 @@
                        return  new Date(value).Format("yyyy-MM-dd hh:mm:ss");
                     }}
             ]],
-            onClickRow:function(rowIndex, rowData){
-                $('#processDefineDataTable').datagrid({
-                    url:'{{projcfg.appurl}}/process/process/version',
-                    <!--url:'{{projcfg.appurl}}/admin/api/common/bpm/process/procdefine',-->
-                    queryParams:{proc_id:rowData._id}
+            onDblClickRow:function(rowIndex, rowData){
+                $('#orderDetail').show();
+                $('#orderDetail').mydialog({
+                    title:"新增工单",
+                    width: 900,
+                    height: 500,
+                    top:150,
+                    modal: true,
+                    myButtons:[
+                        {
+                            text:'保存',
+                            btnCls:'btn btn-blue',
+                            handler:function(){
+                                callback(1);
+                            }
+                        },
+                        {
+                            text:'提交流程',
+                            btnCls:'btn btn-blue',
+                            handler:function(){
+                                callback(2);
+                            }
+                        },
+                        {
+                            text:'关闭',
+                            btnCls:'btn btn-danger',
+                            handler:function(){
+                                closeDialog();
+                            }
+                        }
+                    ]
                 });
+               /* $('#orderDetail').dialog('open')*/
             },
             onLoadSuccess:function(json) {
                 if(!json.success) {
