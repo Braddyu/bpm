@@ -1,13 +1,57 @@
+<link href="{{projcfg.appurl}}/static/css/dedicated.css" rel="stylesheet"/>
+<script type="text/javascript" src="static/js/ajaxfileupload.js"></script>
 
-<div id="logsModal" class="mydialog" style="padding-top:0px;">
-    <div class="easyui-layout" data-options="fit:true,border:false">
-        <div data-options="region:'center',border:false,fit:true" style="overflow-x:hidden;overflow-y:hidden">
-            <table id="orderTablelist">
+<div class="row">
+    <div class="col-xs-12 col-md-12">
+        <div class="widget">
+            <div class="widget-body">
+                <div class="tabbable">
+                    <div class="tab-content tabs-flat" style="padding: 1px 0px;">
+                        <div id="api_mgr" class="tab-pane active">
+                            <div id="cc" class="easyui-layout" data-options="fit:true,border:false"
+                                 style="width: 800px; height:585px;background-color: #fbfbfb;">
+                                <div data-options="region:'center',border:false" style="overflow-x:hidden;overflow-y:hidden">
+                                    <div id="apitoolbar" class="row tbRow">
+                                        <div class="col-xs-12 col-md-12">
+                                            <div class="widget" style="margin: 0 0 5px 0;">
+                                                <div class="widget-body">
+                                                    <form id="searchFrom" class="form-inline">
+                                                        <div class="form-group query-list">
+                                                            <li>工单标题: <input id="v_type" name="v_type"
+                                                                             style="width: 190px;height: 34px"></li>
 
-            </table>
+                                                            <li>
+                                                                <button type="button" class="btn btn-default" onclick="doSearch()"
+                                                                        id="research" data-title="查询">
+                                                                    <i class="fa fa-search"></i> 查询
+                                                                </button>
+
+                                                                <button type="button" class="btn btn-default"
+                                                                        onclick="showOpen()"
+                                                                        data-title="新增">
+                                                                    <i class="fa fa-plus"></i> 新建工单
+                                                                </button>
+
+                                                            </li>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <table id="orderTablelist"></table>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
+
 
 <script type="text/javascript">
 
@@ -16,8 +60,24 @@
         loadOrderListDatagrid();
 
     });
+    //时间格式化:new Date().Format("yyyy-MM-dd hh:mm:ss");
+    Date.prototype.Format = function (fmt) { //author: meizz
+        var o = {
+            "M+": this.getMonth() + 1, //月份
+            "d+": this.getDate(), //日
+            "h+": this.getHours(), //小时
+            "m+": this.getMinutes(), //分
+            "s+": this.getSeconds(), //秒
+            "q+": Math.floor((this.getMonth() + 3) / 3), //季度
+            "S": this.getMilliseconds() //毫秒
+        };
+        if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+        for (var k in o)
+            if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+        return fmt;
+    }
     function loadOrderListDatagrid(){
-        // 加载流程基本属性列表
+        // 加载工单基本属性列表
         $('#orderTablelist').datagrid({
             url:'{{projcfg.appurl}}/api/order_manage/order_list/list',
             method:'post',
@@ -26,26 +86,31 @@
             fitColumns:true,
             border:false,
             fit:true,
-            toolbar: '#toolbar1',
             singleSelect:true,
             selectOnCheck:true,
             checkOnSelect:true,
             columns:[[
                 {"field":"_id",checkbox:true},
-                {"field": "proc_code","title":"工单标题","width":150},
-                {"field": "proc_name","title":"流程名称","width":30},
-                {"field": "proc_latest_ver","title":"流程最后版本号","width":20},
-                {"field": "status","title":"状态","width":20,
+                {"field": "application_title","title":"工单标题","width":100},
+                {"field": "proc_base_name","title":"所属流程","width":50},
+                {"field": "proc_inst_id","title":"版本","width":20},
+                {"field": "node_name","title":"当前处理节点","width":50},
+                {"field": "application_status","title":"状态","width":50,
                     formatter:function(value,row,index){
                         if(value == '1'){
-                            return "启用";
+                            return "处理中";
+                        }else if(value == '2'){
+                            return "已归档";
                         }else{
-                            return "禁用";
+                            return "未提交";
                         }
                     }
                 },
-                {"field": "opt_time",hidden:true},
-                {"field": "proc_user",hidden:true}
+                {"field": "application_create_user_name","title":"申请人","width":50},
+                {"field": "start_date","title":"创建时间","width":80,
+                    formatter:function(value,row,index){
+                       return  new Date(value).Format("yyyy-MM-dd hh:mm:ss");
+                    }}
             ]],
             onClickRow:function(rowIndex, rowData){
                 $('#processDefineDataTable').datagrid({
