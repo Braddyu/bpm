@@ -20,7 +20,7 @@ var model = require('../models/process_model');
 var Promise = require("bluebird")
 var proc = require('./process_service');
 var nodeAnalysisService=require("./node_analysis_service");
-var userService = require('./user_service');
+var userService = require('../../workflow/services/user_service');
 var utils = require('../../../utils/app_utils');
 var nodeTransferService=require("./node_transfer_service");
 var nodeDetail,data_define;

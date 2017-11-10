@@ -1,4 +1,4 @@
-var model = require('../models/user_model');
+var model = require('../../bpm_resource/models/user_model');
 var Promise = require("bluebird")
 var utils = require('../../../../lib/utils/app_utils');
 var tree = require('../../../../lib/utils/tree_utils');
