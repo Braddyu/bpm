@@ -4,7 +4,7 @@ var logger = require('../../../../lib/logHelper').helper;
 var utils = require('../../../../lib/utils/app_utils');
 var inst = require('../services/instance_service');
 var nodeTransferService=require("../services/node_transfer_service");
-var userService = require('../services/user_service');
+var userService = require('../../workflow/services/user_service');
 var nodeAnalysisService=require("../services/node_analysis_service");
 
 

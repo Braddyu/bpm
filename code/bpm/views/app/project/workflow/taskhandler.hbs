@@ -1,0 +1,386 @@
+<div id="processDiv" class="row">
+    <div class="row">
+        <div class="col-md-12">
+            <div>
+                <form id="processBaseForm" class="form-horizontal form-bordered" role="form" method="post" enctype="multipart/form-data">
+                    <table width="100%"><tr style="border-bottom: 1px solid #7F8B91"><td>
+                    <div class="form-group" style="margin-top:0.5rem;margin-bottom: 0.5rem;">
+                        <label for="proc_code1" class="col-sm-2 control-label no-padding-right" style="width:8.666666%">所属流程</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="easyui-validatebox form-control" data-options="required:true" name="proc_name" id="proc_name" disabled="disabled" style="width:50%;height:31px;">
+                        </div>
+                        <label for="proc_name1" class="col-sm-2 control-label no-padding-right" style="width:8.666666%">业务编号</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="easyui-validatebox form-control" name="application_code" id="application_code"  disabled="disabled" style="width:50%;height:31px;">
+                        </div>
+
+                        <label for="proc_name1" class="col-sm-2 control-label no-padding-right" style="width:8.666666%">业务标题</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="easyui-validatebox form-control" name="application_title" id="application_title" disabled="disabled" style="width:50%;height:31px;">
+                        </div>
+
+                        <label for="proc_name1" class="col-sm-2 control-label no-padding-right" style="width:8.666666%">创建人</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="easyui-validatebox form-control" name="application_create_user_name" id="application_create_user_name" disabled="disabled" style="width:50%;height:31px;">
+                        </div>
+                        <label for="proc_name1" class="col-sm-2 control-label no-padding-right" style="width:8.666666%">业务描述</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="easyui-textbox form-control" name="application_content_desciption" id="application_content_desciption" disabled="disabled"  multiline="true" style="width:80%;height:120px;">
+                        </div>
+                    </div>
+                    </td></tr>
+                        <tr style="height: 8px"><td></td></tr>
+                    <tr><td>
+                        <h2>流程处理信息</h2>
+                    </td></tr>
+                    <tr style="height: 260px;"><td>
+                        <table id="handlerLogsTable"></table>
+                    </td></tr>
+                    <tr style="height: 20px"><td>
+                    </td></tr>
+                    <tr style="border-top: 1px solid #7F8B91;"><td>
+                        <div class="form-group" style="margin-top:0.5rem;margin-bottom: 0.5rem;">
+                            <label for="proc_name1" class="col-sm-2 control-label no-padding-right" style="width:8.666666%">下一节点</label>
+                            <div class="col-sm-10" style="border-bottom: 0.3rem;">
+                                <input type="text" class="easyui-validatebox form-control" name="next_node_name" id="next_node_name" disabled="disabled" style="width:50%;height:31px;">
+                                <input type="hidden" name="next_node_code" id="next_node_code"/>
+                                <input type="hidden" name="application_detail_id" id="application_detail_id"/>
+                                <input type="hidden" name="handler_node_code" id="handler_node_code"/>
+                                <input type="hidden" name="handler_node_name" id="handler_node_name"/>
+                                <input type="hidden" name="proc_task_id" id="proc_task_id"/>
+                                <input type="hidden" name="userNo" id="userNo"/>
+                                <input type="hidden" name="params" id="params"/>
+                                <input type="hidden" name="application_handler_user_no" id="application_handler_user_no"/>
+                                <input type="hidden" name="application_handler_user_name" id="application_handler_user_name"/>
+                            </div>
+                            <label for="proc_name1" class="col-sm-2 control-label no-padding-right" style="width:8.666666%">下一节点处理人</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="easyui-validatebox form-control" name="next_node_handler_user_name" id="next_node_handler_user_name" disabled="disabled" style="width:50%;height:31px;">
+                                <input type="hidden" name="next_node_handler_user_no" id="next_node_handler_user_no"/>
+                            </div>
+                            <label for="proc_name1" class="col-sm-2 control-label no-padding-right" style="width:8.666666%">附件上传</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="easyui-filebox form-control" name="application_attachs" id="application_attachs"  buttonText="上传文件" data-options="prompt:'请选择一个文件·····'"  style="width:20%;height:31px;">
+                                <!--<input type="hidden" name="next_node_handler_user_no" id="next_node_handler_user_no"/>-->
+                            </div>
+
+                            <label for="proc_name1" class="col-sm-2 control-label no-padding-right" style="width:8.666666%">处理意见</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="easyui-textbox form-control" name="application_handler_content" id="application_handler_content"  multiline="true" style="width:80%;height:120px;">
+                            </div>
+                        </div>
+                    </td></tr>
+                        <tr align="center" style="height: 3.5rem;"><td>
+                                    <button type="button" class="btn btn-default" onclick="return completeTask()">提交下一步</button>
+                        </td></tr>
+                    </table>
+                </form>
+            </div>
+        </div>
+    </div>
+<script>
+    function GetQueryString(name) {
+        var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
+        var r = window.location.search.substr(1).match(reg);
+        if(r!=null)return  unescape(r[2]); return null;
+    }
+    var userNo = GetQueryString('user_no');
+    function getUserName(){
+        $.ajax({
+            url: '{{projcfg.appurl}}/user/user/'+userNo,
+            type: 'get',
+            data:{
+                userno:userNo
+            },
+            dataType:'json',
+            async:false,
+            success: function (data) {
+                if(data && data.success) {
+                    $("#application_handler_user_no").val(userNo);
+                    $("#application_handler_user_name").val(data.data.user_name);
+                }
+                else {
+                    msgError(data.msg+',查询无数据');
+                }
+            }
+        });
+    }
+    function getBunissDetail(){
+        var instid = GetQueryString("inst_id");
+        $.ajax({
+            url: '{{projcfg.appurl}}/demo/bunisses/detail',
+            type: 'get',
+            data: {
+                inst_id:instid
+            },
+            dataType:'json',
+            async:false,
+            success: function (data) {
+                if(data.success && data.data.length > 0) {
+                    $("#proc_name").val(data.data[0].proc_base_name);
+                    $("#application_detail_id").val(data.data[0]._id);
+                    $("#application_code").val(data.data[0].application_code);
+                    $("#application_title").val(data.data[0].application_title);
+                    $("#application_create_user_name").val(data.data[0].application_create_user_name);
+                    $("#application_content_desciption").textbox('setValue',data.data[0].application_content_desciption);
+                }
+                else {
+                    msgError(data.msg+',查询无数据');
+                }
+            }
+        });
+    }
+
+    function loadTaskDatagrid(){
+//        var detail_id = GetQueryString("detail_id");
+//        console.info(detail_id);
+        // 加载待办列表
+        $('#handlerLogsTable').datagrid({
+            url:'/demo/handler/logs',
+            queryParams:{'detail_id':$('#application_detail_id').val()},
+            method:'get',
+            rownumbers:true,
+            striped:true,
+            fitColumns:true,
+            border:false,
+            fit:true,
+//            toolbar: '#toolbar1',
+            singleSelect:true,
+            selectOnCheck:true,
+            checkOnSelect:true,
+            columns:[[
+                {"field":"_id",hidden:true},
+                {"field": "handler_node_name","title":"处理节点","width":50
+                },
+                {"field": "application_handler_content","title":"处理内容","width":150},
+                {"field": "application_handler_user_name","title":"处理人员","width":80},
+                {"field": "application_handler_date","title":"处理时间","width":80},
+                {"field": "application_attachs","title":"附件","width":200, formatter:function(value,row,index){
+                   var handler_id=row._id;
+                   console.log(handler_id);
+                   var html="";
+                    $.ajax({
+                        url: '{{projcfg.appurl}}/demo/query/attachList',
+                        type: 'get',
+                        data: {
+                            handler_id:handler_id
+                        },
+                        async:false,
+                        dataType:'json',
+                        success: function (result) {
+                            console.log(result);
+                            console.log("111111111111111111111111ppppppppppppppp")
+                            if(result.success && result.data.length > 0) {
+                                var results=result.data;
+                                html+="<ul>";
+                                for(var i=0;i<results.length;i++){
+                                    html+="<li><a href='{{projcfg.appurl}}/demo/query/attach?_id="+results[i]._id+"'"+">"+results[i].attachment_name+"</a>"+"</li>";
+                                }
+                                html+"</ul>";
+                            }
+                        }
+                    });
+                    console.log(html);
+                    return html;
+
+                }}
+            ]],
+            onLoadError:function() {
+                msgError('加载数据出现时发生错误,请稍候重试...');
+            },
+            pagination:true,
+            loadMsg:'正在加载...'
+        });
+    }
+
+    function getHandlerLogInfoByNodeCode(code){
+        var flag = false;
+        $.ajax({
+            url: '{{projcfg.appurl}}/demo/handler/log',
+            type: 'get',
+            data: {
+                handler_node_code:code,
+                application_detail_id:$('#application_detail_id').val()
+            },
+            async:false,
+            dataType:'json',
+            success: function (data) {
+                if(data.success && data.data.length > 0) {
+                    flag = true;
+                }
+            }
+        });
+        return flag;
+    }
+
+    var taskid = GetQueryString("task_id");
+    var nodecode = GetQueryString("node_code");
+    var instid = GetQueryString("inst_id");
+    var param = GetQueryString("params");
+    $("#proc_task_id").val(taskid);
+
+
+    var params={};
+
+
+
+    function getTaskById(){
+        $.ajax({
+            url: '{{projcfg.appurl}}/demo/getTask/'+taskid,
+            type: 'get',
+            dataType:'json',
+            success: function (data) {
+                console.log("task===="+data);
+                if(data.success) {
+                    $("#handler_node_code").val(data.data.proc_inst_task_code);
+                    $("#handler_node_name").val(data.data.proc_inst_task_name);
+                }
+            }
+        });
+    }
+
+//window.close();
+    function getNextNodeInfo(){
+        $.ajax({
+            url: '{{projcfg.appurl}}/demo/getNextNodeAndUser',
+            type: 'get',
+            data: {
+                node_code:nodecode,
+                proc_inst_id:instid,
+                proc_task_id:taskid,
+                user_no:userNo,
+                params:JSON.stringify(params)
+            },
+            dataType:'json',
+            success: function (data) {
+                console.log("nextnode=====",data);
+                if(data.success && data.data.length > 0) {
+                    $("#next_node_name").val(data.data[0].node_name);
+                    $("#next_node_code").val(data.data[0].node_code);
+                    $("#next_node_handler_user_name").val(data.data[0].user_name);
+                    $("#next_node_handler_user_no").val(data.data[0].user_no);
+                }
+                else {
+                    msgError(data.msg+',错误代码:'+data.code);
+                }
+            }
+        });
+
+    }
+
+    //认领任务
+    function acceptTask(){
+        var rows = $('#taskTable').datagrid('getChecked');
+        if (rows.length != 1) {
+            msgError('提示,请先选择一条数据进行任务认领操作');
+            return false;
+        }
+        var userNo = '';
+        if(rows[0].proc_inst_task_assignee){
+            userNo = rows[0].proc_inst_task_assignee
+        }else{
+            userNo = $.trim($('#filterParam1').val());
+        }
+        $.ajax({
+            url: '{{projcfg.appurl}}/demo/acceptTask',
+            type: 'post',
+            data: {
+                id:rows[0]._id,
+                userNo:userNo
+            },
+            dataType:'json',
+            success: function (data) {
+                if(data.success) {
+                    msgSuccess(data.msg);
+                    doSearch(1);
+                }
+                else {
+                    msgError(data.msg+',错误代码:'+data.code);
+                }
+            }
+        });
+    }
+
+    //完成任务
+    function completeTask(){
+        $.messager.confirm('确认','确认提交下一步吗？提交成功会关闭当前窗口',function(r) {
+            if (r) {
+                $("#processBaseForm").form("submit",{
+                    url: '{{projcfg.appurl}}/demo/complete',
+                    onSubmit:function(){
+                        console.info(JSON.stringify(params))
+                        $("#userNo").val(userNo);
+                        $("#params").val(JSON.stringify(params));
+                    },
+                    success:function(result){
+                        var data=JSON.parse(result);
+                        if (data.success) {
+                            console.log(data,"111111111111111111111111111111111111111111");
+                            updateDetailNode();
+                            $.messager.alert("提示","任务处理成功","info",function(){
+                                window.close();
+                            });
+                        }
+                        else {
+                            msgError(data.msg + ',错误代码:' + data.code);
+                        }
+                    }
+                })
+            }
+        });
+    }
+
+    function updateDetailNode(){
+        var nodename = $('#next_node_name').val();
+        var status = 1;
+        if(nodename == "结束"){
+            status = 2;
+        }
+        $.ajax({
+            url: '{{projcfg.appurl}}/demo/update/detail',
+            type: 'put',
+            data: {
+                detail_id: $('#application_detail_id').val(),//application_detail表的ID
+                node_code: $('#next_node_code').val(),//下一节点编号
+                node_name: nodename,//下一节点名称
+                application_status: status
+            },
+            async: false,
+            success: function (data) {
+                if (data.success) {
+                    console.log('update detail success');
+                }
+                else {
+                    console.log('update detail failed');
+                }
+            }
+        });
+    }
+
+
+    $(document).ready(function(){
+        getBunissDetail();
+        if(param){
+            var keys=param.split(",")
+            console.log("keys    :",keys);
+            for(var item in keys){
+                if(nodecode == 'processDefineDiv_node_6'  && !getHandlerLogInfoByNodeCode('processDefineDiv_node_9') && keys[item] == 'flag'){
+                    params[keys[item]]=true;
+                }else if(nodecode == 'processDefineDiv_node_6' && getHandlerLogInfoByNodeCode('processDefineDiv_node_9') && keys[item] == 'flag' ){
+                    params[keys[item]]=false;
+                }else if(nodecode == 'processDefineDiv_node_5'){
+                    params[keys[item]]=1;
+                }else{
+                    params[keys[item]]=1;
+                }
+            }
+            console.log("params    :",params);
+        }
+        getUserName();
+        getTaskById();
+        loadTaskDatagrid();
+        getNextNodeInfo();
+    });
+
+
+</script>
