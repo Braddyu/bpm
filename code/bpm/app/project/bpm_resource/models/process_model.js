@@ -134,6 +134,7 @@ var commonProcessInstSchema = new Schema(
         proc_start_user:String,//流程发起人(开始用户)
         proc_start_user_name : String,// 流程发起人名(开始用户姓名)
         proc_start_time : Date,// 流程发起时间(开始时间)
+        proc_content : String,// 流程派单内容
         proc_params : String,// 流转参数
         proc_inst_status : Number,// 流程流转状态 1 已启用  0 已禁用,2 流转中，3子流程流转中 ,4  归档,5 回退，6 废弃
         proc_attached_type : Number,// 流程附加类型(1:待办业务联系函;2:待办工单;3:待办考核;4:其他待办)
@@ -141,6 +142,7 @@ var commonProcessInstSchema = new Schema(
         proce_reject_params : {},// 流程驳回附加参数
         proc_cur_task_code_num : String,//节点编号
         proc_task_overtime : [],//超时时间设置
+        proc_work_day : Number,//工作天数
         proc_cur_task_overtime : Date,//当前节点的超时时间
         proc_cur_task_remark : String,//节点备注
         proc_city : String,// 地市
