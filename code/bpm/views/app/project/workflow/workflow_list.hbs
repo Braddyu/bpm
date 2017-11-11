@@ -166,7 +166,7 @@
     function loadProBaseDatagrid(){
         // 加载流程基本属性列表
         $('#processBaseDataTable').datagrid({
-            url:'{{projcfg.appurl}}/api/workflow/process/list',
+            url:'{{projcfg.appurl}}/api/workflow/process/process',
             <!--url:'{{projcfg.appurl}}/admin/api/common/bpm/process/procbase',-->
             method:'get',
             rownumbers:true,
@@ -278,7 +278,7 @@
                 msgError('提示,请先选择流程基本属性信息再进行新增流程实例操作');
                 return false;
             }
-            window.open('{{projcfg.appurl}}/project/workflow/process_chart.html?flag=1&proc_code='+encodeURI(encodeURI(rows[0].proc_code))+'&proc_name='+encodeURI(encodeURI(rows[0].proc_name)));
+            window.open('{{projcfg.appurl}}/api/workflow/process/process_chart?flag=1&proc_code='+encodeURI(encodeURI(rows[0].proc_code))+'&proc_name='+encodeURI(encodeURI(rows[0].proc_name)));
             <!--window.open('{{projcfg.appurl}}/process/process_chart?flag=1&proc_code='+encodeURI(encodeURI(rows[0].proc_code))+'&proc_name='+encodeURI(encodeURI(rows[0].proc_name)));-->
         }else if(flag == 2){
             // 获得选择行
@@ -287,26 +287,30 @@
                 msgError('提示,请选择一条数据再进行修改');
                 return false;
             }
-            window.open('{{projcfg.appurl}}/api/workflow/process/process_chart.html?flag=2&id='+rows[0]._id);
+            window.open('{{projcfg.appurl}}/api/workflow/process/process_chart?flag=2&id='+rows[0]._id);
             <!--window.open('{{projcfg.appurl}}/process/process_chart?flag=2&id='+rows[0]._id);-->
             <!--window.open('{{projcfg.appurl}}/process_chart?flag=2&id='+rows[0]._id);-->
         }
     }
-
-    function doSearch(flag) {
+    function doSearch(flag,proc_id) {
         if(flag == 1){//查询流程基本属性信息
             $('#processBaseDataTable').datagrid('reload',{
                 'filterParam1':$.trim($('#filterParam1').val())
             });
         }else if(flag == 2){//查询流程实例信息
+//            $('#processDefineDataTable').datagrid('reload',{
+//                'filterParam2':$.trim($('#filterParam2').val())
+//            });
             $('#processDefineDataTable').datagrid('reload',{
-                'filterParam2':$.trim($('#filterParam2').val())
+                'proc_id':proc_id,'filterParam2':$.trim($('#filterParam2').val())
             });
         }
     }
 
     function changeStatus(flag,value){
         var rows;
+        var proc_id='';
+        var url='{{projcfg.appurl}}/api/workflow/process/processChangeStatus/';
         if(flag == 1){
             // 获得选择行
             rows = $('#processBaseDataTable').datagrid('getChecked');
@@ -314,16 +318,20 @@
                 msgError('提示,请选择一条数据再进行修改');
                 return false;
             }
+            proc_id=rows[0]._id;
         }else if(flag == 2){
+            url='{{projcfg.appurl}}/api/workflow/process/versionStatus/';
             // 获得选择行
             rows = $('#processDefineDataTable').datagrid('getChecked');
             if (rows.length != 1) {
                 msgError('提示,请选择一条数据再进行修改');
                 return false;
             }
+            var  bb = $('#processBaseDataTable').datagrid('getChecked');
+            proc_id=bb[0]._id;
         }
         $.ajax({
-            url: '{{projcfg.appurl}}/process/processChangeStatus/'+rows[0]._id,
+            url: url+rows[0]._id,
             <!--url: '{{projcfg.appurl}}/admin/api/common/bpm/process/processChangeStatus/'+rows[0]._id,-->
             type: 'put',
             data: {
@@ -333,10 +341,10 @@
             success: function (data) {
                 if(data.success) {
                     msgSuccess(data.msg);
-                    doSearch(flag);
+                    doSearch(flag,proc_id);
                 }
                 else {
-                    msgError(data.msg+',错误代码:'+data.code);
+                    msgError(data.msg+',错误代码000:'+data.code);
                 }
             }
         });
@@ -349,7 +357,7 @@
             return false;
         }
         $.ajax({
-            url: '{{projcfg.appurl}}/process/procbase',
+            url: '{{projcfg.appurl}}/api/workflow/process/procbase',
             <!--url: '{{projcfg.appurl}}/admin/api/common/bpm/process/procbase',-->
             type: 'post',
             data: $('#processBaseForm').serializeJson(),
@@ -360,7 +368,7 @@
                     doSearch(1);
                 }
                 else {
-                    msgError(data.msg+',错误代码:'+data.code);
+                    msgError(data.msg+',错误代码0000:'+data.code);
                 }
             }
         });
@@ -417,7 +425,7 @@
             return false;
         }
         $.ajax({
-            url: '{{projcfg.appurl}}/process/procbase/'+value,
+            url: '{{projcfg.appurl}}/api/workflow/process/procbase/'+value,
             <!--url: '{{projcfg.appurl}}/admin/api/common/bpm/process/procbase/'+value,-->
             type: 'put',
             data: $('#processBaseForm').serializeJson(),
