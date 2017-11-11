@@ -100,8 +100,6 @@ var config = {
             '/project/statecos/routes/': project_url_prefix + '/api/statecos/',//人工抽查路由匹配路径
             '/project/bpm_resource/routes/': project_url_prefix + '/api/bpm_resource/',//给外部用户 不要需要权限的 用户 调用的  URL
             '/project/workflow/routes/':project_url_prefix+'/api/workflow/',//用于平台页面接口的访问
-            '/project/bpm_resource/routes/': project_url_prefix + '/api/bpm_resource/',//给外部用户 不要需要权限的 用户 调用的  URL
-            '/project/workflow/routes/':project_url_prefix+'/api/workflow/',//用于平台页面接口的访问
             '/project/order_manage/routes/':project_url_prefix+'/api/order_manage/'
 
         },

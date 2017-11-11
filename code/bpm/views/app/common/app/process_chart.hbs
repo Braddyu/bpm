@@ -465,7 +465,7 @@
                 });
                 $('#roleId').combogrid({
                     method: 'get',
-                    url: '{{projcfg.appurl}}/process/role/combobox',
+                    url: '{{projcfg.appurl}}/api/workflow/process/role/combobox',
                     valueField: '_id',
                     textField:'role_name',
                     columns: [[
@@ -484,7 +484,7 @@
             }else if(flag == 3){//选择参照人
                 $('#win3_roleId').combogrid({
                     method: 'get',
-                    url: '{{projcfg.appurl}}/process/role/combobox',
+                    url: '{{projcfg.appurl}}/api/workflow/process/role/combobox',
                     valueField: '_id',
                     textField:'role_name',
                     columns: [[
@@ -519,12 +519,12 @@
                         var url;
                         var type;
                         if(flag == 1){
-                            url = '{{projcfg.appurl}}/process/process/version';
+                            url = '{{projcfg.appurl}}/api/workflow/process/version';
                             <!--url = '{{projcfg.appurl}}/admin/api/common/bpm/process/procdefine';-->
                             type = 'post';
                         }else if(flag == 2){
                             var id = $('#proc_defineId').val();
-                            url = '{{projcfg.appurl}}/process/process/version/'+id;
+                            url = '{{projcfg.appurl}}/api/workflow/process/version/'+id;
                             <!--url = '{{projcfg.appurl}}/admin/api/common/bpm/process/procdefine/'+id;-->
                             type = 'put';
                         }
@@ -647,7 +647,7 @@
                 $('#proc_name').textbox('setValue',decodeURI(GetQueryString("proc_name"),"UTF-8"));
             }else if(flag == 2){
                 $.ajax({
-                    url: '{{projcfg.appurl}}/process/process/version',
+                    url: '{{projcfg.appurl}}/api/workflow/process/version',
                     <!--url: '{{projcfg.appurl}}/admin/api/common/bpm/process/procdefine',-->
                     type: 'get',
                     data: {

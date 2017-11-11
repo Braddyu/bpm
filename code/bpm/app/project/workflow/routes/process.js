@@ -11,62 +11,7 @@ var logger = require('../../../../lib/logHelper').helper;
 var config = require('../../../../config');
 
 
-router.route('/list').get(function(req,res){
-  var page = req.body.page;
-  var length = req.body.rows;
-  var filterParam1 = req.query.filterParam1;
-  console.log(page);
-  console.log(length);
-  var conditionMap = {};
-        if(filterParam1){
-            conditionMap['$or'] = [{'proc_code':new RegExp(filterParam1)},{'proc_name':new RegExp(filterParam1)}];
-        }
 
-        proc.getProcessList(page, length, conditionMap)
-            .then(function(result){
-                utils.respJsonData(res, result);
-            })
-            .catch(function(err){
-                console.log('err');
-                console.log(err);
-                logger.error("route-query","查询流程基本属性",err);
-            });
-})
-
-
-router.route('/version').get(function(req,res){
-    var filterParam2 = req.body.filterParam2;
-    var proc_id = req.body.proc_id;
-    var _id = req.body.id;
-    // 分页参数
-    var page = req.body.page;
-    var length = req.body.rows;
-
-    var conditionMap = {};
-    if(filterParam2){
-        conditionMap.proc_code = filterParam2;
-    }
-    if(proc_id){
-        conditionMap.proc_id = proc_id;
-    }
-    if(_id){
-        conditionMap._id = _id;
-    }
-    // 调用分页
-    proc.getProcessDefineList(page,length,conditionMap).then(function(result1){
-            if(_id){
-                result1.items = JSON.parse(result1.rows[0]._doc.item_config);
-                utils.respJsonData(res, result1);
-            }else{
-                utils.respJsonData(res, result1);
-            }
-        })
-        .catch(function(err){
-            console.log('err');
-            console.log(err);
-            logger.error("route-query-define","查询流程定义",err);
-        });
-})
 
 /**
  * 根据字典编号查询字典数据
@@ -93,7 +38,7 @@ router.route('/dict')
     });
 
 
-router.get('/', function(req, res, next) {
+/*router.get('/', function(req, res, next) {
     utils.authentication(req,res);
     res.render('bpm/process/process', {
         title: '首页' ,
@@ -115,9 +60,10 @@ router.get('/flow.html', function(req, res, next) {
     });
 
 });
-router.get('/process_chart.html', function(req, res, next) {
+*/
+router.get('/process_chart', function(req, res, next) {
 
-    res.render('project/workflow/process_chart', {
+    res.render(config.project.appviewurl+'common/app/process_chart', {
         title: '首页' ,
         subtitle: 'Hello',
         layout:'themes/admin/blank',
@@ -186,7 +132,7 @@ router.route('/process')
 
 
 router.route('/procbase')
-    // -------------------------------query查询流程基本属性列表-------------------------------
+    // -------------------------------query查询流程基本属性列表不分页-------------------------------
     .get(function(req,res){
       console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
 
@@ -351,7 +297,7 @@ function updateDefineItemProCodeByFor(i,arr,proc_code,res){
     }
 }
 
-router.route('/process/versionStatus/:id')
+router.route('/versionStatus/:id')
     // -------------------------------启用、禁用操作-------------------------------
     .put(function(req,res) {
         var id = req.params.id;//流程基本属性id
@@ -367,7 +313,7 @@ router.route('/process/versionStatus/:id')
 /**
  * 流程版本
  */
-router.route('/process/version')
+router.route('/version')
     // -------------------------------query查询流程定义内容列表-------------------------------
     .get(function(req,res){
         // 分页条件
@@ -376,6 +322,9 @@ router.route('/process/version')
         var _id = req.query.id;
         // 分页参数
         var page = req.query.page;
+        if(page==0){
+            page=1;
+        }
         var length = req.query.rows;
 
         var conditionMap = {};

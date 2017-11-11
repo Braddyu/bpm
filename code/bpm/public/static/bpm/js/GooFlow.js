@@ -1744,13 +1744,20 @@ GooFlow.prototype = {
 	},
 	//用颜色标注/取消标注一个结点或转换线，常用于显示重点或流程的进度。
 	//这是一个在编辑模式中无用,但是在纯浏览模式中非常有用的方法，实际运用中可用于跟踪流程的进度。
-	markItem:function(id,type,mark){
+	markItem:function(id,type,mark,amd_flag){
 		if(type == "node"){
 			if(!this.$nodeData[id]) return;
 			if(this.onItemMark != null&&!this.onItemMark(id,"node",mark)) return;
 			this.$nodeData[id].marked = mark||false;
-			if(mark)    this.$nodeDom[id].addClass("item_mark");
-			else    this.$nodeDom[id].removeClass("item_mark");
+			if(mark){
+				if(amd_flag){
+                    this.$nodeDom[id].addClass("item_marks");
+				}else{
+                    this.$nodeDom[id].addClass("item_mark");
+				}
+			}else{
+                this.$nodeDom[id].removeClass("item_mark");
+			}
 
 		}else if(type == "line"){
 			if(!this.$lineData[id]) return;
@@ -1758,15 +1765,16 @@ GooFlow.prototype = {
 			this.$lineData[id].marked = mark||false;
 			if(GooFlow.prototype.useSVG != ""){
 				if(mark){
-					this.$nodeDom[id].childNodes[1].setAttribute("stroke","#D3D3D3");
-					this.$nodeDom[id].childNodes[1].setAttribute("marker-end","url(#arrow2)");
+					console.log(this);
+					this.$lineDom[id].childNodes[1].setAttribute("stroke","#21d447");
+					this.$lineDom[id].childNodes[1].setAttribute("marker-end","url(#arrow2)");
 				}else{
-					this.$nodeDom[id].childNodes[1].setAttribute("stroke","#5068AE");
-					this.$nodeDom[id].childNodes[1].setAttribute("marker-end","url(#arrow1)");
+					this.$lineDom[id].childNodes[1].setAttribute("stroke","#5068AE");
+					this.$lineDom[id].childNodes[1].setAttribute("marker-end","url(#arrow1)");
 				}
 			}else{
-				if(mark)    this.$nodeDom[id].strokeColor = "#D3D3D3";
-				else    this.$nodeDom[id].strokeColor = "#5068AE"
+				if(mark)    this.$lineDom[id].strokeColor = "#D3D3D3";
+				else    this.$lineDom[id].strokeColor = "#5068AE"
 			}
 		}
 		if(this.$undoStatck){
@@ -1897,12 +1905,12 @@ jQuery.extend({
 		if(property.haveTool
 			|| typeof(property.haveTool) == "undefined"){
 			property.haveTool = true;
-			property.toolBtns = ["start round", "end round", "task"];
-			property.toolText = ["开始", "结束", "任务"];
-			//property.toolBtns = ["start round", "end round", "task", "fork round", "join round", "node"];
-			//property.toolText = ["开始", "结束", "任务", "分支", "聚合", "动作"];
-			//property.haveGroup = true;
-			//property.groupText = '区域';
+			// property.toolBtns = ["start round", "end round", "task"];
+			// property.toolText = ["开始", "结束", "任务"];
+			property.toolBtns = ["start  round","end  round","task","node","chat","state","join","fork","complex mix"];
+			property.toolText = ["开始", "结束", "任务", "动作","决策","状态","联合","分支", "复合"];
+			property.haveGroup = true;
+			property.groupText = '区域';
 		}
 
 		// 构造流程图
@@ -1911,16 +1919,31 @@ jQuery.extend({
 		// 设置提示
 		if(property.haveTool){
 			// 工具栏提示
-			var remark = {
-				cursor: "重置指针",
-				direct: "关系箭头",
-				start: "开始结点",
-				task: "任务结点",
-				fork: "分支节点",
-				join: "聚合节点",
-				node: "动作节点",
-				end: "结束结点",
-				group:"区域划分框编辑开关"
+			// var remark = {
+			// 	cursor: "重置指针",
+			// 	direct: "关系箭头",
+			// 	start: "开始结点",
+			// 	task: "任务结点",
+			// 	fork: "分支节点",
+			// 	join: "聚合节点",
+			// 	node: "动作节点",
+			// 	end: "结束结点",
+			// 	group:"区域划分框编辑开关"
+			// };
+			var remark={
+				cursor:"选择指针",
+				direct:"结点连线",
+				start:"入口结点",
+				"end":"结束结点",
+				"task":"任务结点",
+				node:"动作结点",
+				chat:"决策结点",
+				state:"状态结点",
+				// plug:"附加插件",
+				fork:"分支结点",
+				"join":"联合结点",
+				"complex mix":"复合结点",
+				group:"组织划分框编辑开关"
 			};
 			designer.setNodeRemarks(remark);
 		}
