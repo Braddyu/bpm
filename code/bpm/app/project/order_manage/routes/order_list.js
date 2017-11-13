@@ -83,11 +83,13 @@ router.route("/createAndAcceptAssign").post(function(req,res){
     var biz_vars=req.body.biz_vars;
     var proc_vars=req.body.proc_vars;
     var memo=req.body.memo;
+    var proc_day=req.body.day;//天数
+    var proc_content = req.body.content;
 
     // 调用
     //p-108 渠道酬金 undefined 00000 管理员 processDefineDiv_node_3 00000 {"audit_id":"1800","table_name":"ywcj_workbench_audit"}
     console.log(proc_code,proc_title,proc_ver,user_code,userName,node_code,assign_user_no,biz_vars);
-    inst.createInstance(proc_code,proc_ver,proc_title,"",proc_vars,biz_vars,user_code,userName)
+    inst.createInstance(proc_code,proc_ver,proc_title,"",proc_vars,biz_vars,user_code,userName,proc_day,proc_content)
         .then(function(result){
             if(result.success){
                 var task_id=result.data[0]._id;

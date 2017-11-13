@@ -311,7 +311,7 @@ function saveSubIns(dataMap,data,user_code,parent_proc_inst_id){
  */
 
 
-exports.createInstance=function(proc_code,proc_ver,proc_title,param_json_str,proc_vars_json,biz_vars_json,user_code,user_name){
+exports.createInstance=function(proc_code,proc_ver,proc_title,param_json_str,proc_vars_json,biz_vars_json,user_code,user_name,proc_day,proc_content){
     var params;
     //解析参数
     if(!(!param_json_str || param_json_str=="undefined"||param_json_str=="{}")){
@@ -378,6 +378,7 @@ exports.createInstance=function(proc_code,proc_ver,proc_title,param_json_str,pro
                                                     condition.proc_start_user_role_code = resu[0].user_roles.toString();
                                                     condition.proc_start_user_name =user_name;
 
+
                                                     var node_detail=rss.data;
                                                     var orgs=rsss.data;
                                                     nodeDetail=node_detail;
@@ -412,7 +413,10 @@ exports.createInstance=function(proc_code,proc_ver,proc_title,param_json_str,pro
                                                     if(orgs.proc_inst_task_assignee_name){
                                                         condition.proc_inst_task_assignee_name=orgs.proc_inst_task_assignee_name;
                                                     }
+                                                    condition.proc_content = proc_content;
+                                                    condition.proc_work_day = proc_day;
                                                     condition.proc_vars = proc_vars_json;
+
                                                     console.log(condition);
                                                     //写入数据库 创建流程实例化方法
                                                     saveIns(condition,proc_code,proc_title,user_code).then(function(insresult){
@@ -426,6 +430,11 @@ exports.createInstance=function(proc_code,proc_ver,proc_title,param_json_str,pro
                                                                     condition.proc_task_start_user_role_code = rs[0].proc_start_user_role_code;
                                                                     condition.proc_task_start_user_role_names = rs[0].proc_start_user_role_names;
                                                                     condition.proc_task_start_name = user_name;
+                                                                    condition.proc_task_work_day = rs[0].proc_work_day;
+                                                                    condition.proc_task_ver = rs[0].proc_ver;
+                                                                    condition.proc_task_name = rs[0].proc_name;
+                                                                    condition.proc_task_content = rs[0].proc_content;
+
 
                                                                     condition.proc_inst_task_title = proc_title;
                                                                     condition.proc_inst_biz_vars = biz_vars_json;
@@ -553,6 +562,10 @@ function insertTask(result,condition){
             task.proc_task_start_name = condition.proc_start_user_name;//流程发起人姓名
             task.proc_task_start_user_role_names = condition.proc_start_user_role_names;//流程发起人角色
             task.proc_task_start_user_role_code = condition.proc_start_user_role_code;//流程发起人id
+            task.proc_task_name = condition.proc_name;//流程名
+            task.proc_task_work_day =condition.proc_work_day;//天数
+            task.proc_task_ver = condition.proc_ver;//版本号
+            task.proc_task_content = condition.proc_content;
 
             var arr=[];
             arr.push(task);
@@ -643,7 +656,9 @@ function saveIns(dataMap,proc_code,proc_title,user_code){
             inst.proc_start_user_role_names = dataMap.proc_start_user_role_names;//流程发起人角色名
             inst.proc_define=data_define.proc_define;//流程定义文件
             inst.item_config=data_define.item_config;//流程节点信息
+            inst.proc_work_day = dataMap.proc_work_day;//天数
             inst.proc_vars=dataMap.proc_vars;//流程变量
+            inst.proc_content = dataMap.proc_content;//工单内容
 
             var arr = [];
             arr.push(inst);
