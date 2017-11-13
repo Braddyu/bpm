@@ -1,5 +1,5 @@
 
-var model = require('../../bpm_resource/models/user_model');
+var model = require('../../bpm_resource/models/process_model');
 
 var utils = require('../../../../lib/utils/app_utils');
 var logger = require('../../../../lib/logHelper').helper;

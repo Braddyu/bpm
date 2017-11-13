@@ -3,17 +3,20 @@ var router = express.Router();
 var utils = require('../../../../lib/utils/app_utils');
 var service = require('../services/order_list_service');
 var formidable=require("formidable");
-var nodeAnalysisService=require("../services/node_analysis_service");
+var inst = require('../services/instance_service');
 var nodeTransferService=require("../services/node_transfer_service");
+var userService = require('../../workflow/services/user_service');
+var nodeAnalysisService=require("../services/node_analysis_service");
 /**
  * 工单列表
  */
 router.route('/list').post(function(req,res){
     console.log("开始获取所有工单列表...");
+    var userNo = req.session.current_user.user_no;//用户编号
     var page = req.body.page;
     var size = req.body.rows;
     console.log(req.session.current_user)
-    var conditionMap = {};
+    var conditionMap = {proc_start_user:userNo};
 
     // 调用分页
     service.getOrderListPage(page,size,conditionMap)
@@ -84,11 +87,11 @@ router.route("/createAndAcceptAssign").post(function(req,res){
     // 调用
     //p-108 渠道酬金 undefined 00000 管理员 processDefineDiv_node_3 00000 {"audit_id":"1800","table_name":"ywcj_workbench_audit"}
     console.log(proc_code,proc_title,proc_ver,user_code,userName,node_code,assign_user_no,biz_vars);
-    service.createInstance(proc_code,proc_ver,proc_title,"",proc_vars,biz_vars,user_code,userName)
+    inst.createInstance(proc_code,proc_ver,proc_title,"",proc_vars,biz_vars,user_code,userName)
         .then(function(result){
             if(result.success){
                 var task_id=result.data[0]._id;
-                service.acceptTask(task_id,user_code,userName).then(function(rs){
+                inst.acceptTask(task_id,user_code,userName).then(function(rs){
                     if(rs.success){
                         console.log("11111111111",task_id,node_code,user_code,assign_user_no,proc_title,biz_vars,proc_vars);
                         //  nodeTransferService.assign_transfer(task_id,node_code,user_code,assign_user_no,proc_title,biz_vars,proc_vars,memo).then(function(results){

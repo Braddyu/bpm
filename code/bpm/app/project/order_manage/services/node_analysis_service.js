@@ -2,8 +2,8 @@
  * Created by aurora on 2017/6/12.
  */
 
-var model = require('../models/process_model');
-var model_user=require("../models/user_model");
+var model = require('../../bpm_resource/models/process_model');
+var model_user=require("../../bpm_resource/models/user_model");
 var utils = require('../../../utils/app_utils');
 var Promise = require("bluebird");
 var proc=require("./instance_service");
