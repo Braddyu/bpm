@@ -3,7 +3,8 @@ var router = express.Router();
 var utils = require('../../../../lib/utils/app_utils');
 var service = require('../services/order_list_service');
 var formidable=require("formidable");
-
+var nodeAnalysisService=require("../services/node_analysis_service");
+var nodeTransferService=require("../services/node_transfer_service");
 /**
  * 工单列表
  */
@@ -83,11 +84,11 @@ router.route("/createAndAcceptAssign").post(function(req,res){
     // 调用
     //p-108 渠道酬金 undefined 00000 管理员 processDefineDiv_node_3 00000 {"audit_id":"1800","table_name":"ywcj_workbench_audit"}
     console.log(proc_code,proc_title,proc_ver,user_code,userName,node_code,assign_user_no,biz_vars);
-    inst.createInstance(proc_code,proc_ver,proc_title,"",proc_vars,biz_vars,user_code,userName)
+    service.createInstance(proc_code,proc_ver,proc_title,"",proc_vars,biz_vars,user_code,userName)
         .then(function(result){
             if(result.success){
                 var task_id=result.data[0]._id;
-                inst.acceptTask(task_id,user_code,userName).then(function(rs){
+                service.acceptTask(task_id,user_code,userName).then(function(rs){
                     if(rs.success){
                         console.log("11111111111",task_id,node_code,user_code,assign_user_no,proc_title,biz_vars,proc_vars);
                         //  nodeTransferService.assign_transfer(task_id,node_code,user_code,assign_user_no,proc_title,biz_vars,proc_vars,memo).then(function(results){
@@ -110,5 +111,7 @@ router.route("/createAndAcceptAssign").post(function(req,res){
         logger.error("route-createInstance","创建流程实例异常",err);
     });
 });
+
+
 
 module.exports = router;
