@@ -11,6 +11,7 @@ router.route('/list').post(function(req,res){
     console.log("开始获取所有工单列表...");
     var page = req.body.page;
     var size = req.body.rows;
+    console.log(req.session.current_user)
     var conditionMap = {};
 
     // 调用分页
@@ -61,88 +62,53 @@ router.route('/procDefineDetail').post(function(req,res){
 
         });
 })
-
 /**
- * 新增工单
+ * 创建工单
  */
-router.route("/createAndSaveApplication").post(function(req,res){
+router.route("/createAndAcceptAssign").post(function(req,res){
 
-        var form =new formidable.IncomingForm();
-        form.encoding='utf-8';
-        form.maxFieldsSize=5*1024*1024;
-        form.maxFields = 1000;
-        form.parse(req,function(err,fields,files){
-            if(err){
-                console.log(err);
-            }else{
-                console.log("fields     :  ",fields);
-                console.log("files      :  ",files);
+    // 分页条件
+    var proc_code = req.body.proc_code;
+    // 分页参数
+    var proc_ver = req.body.proc_ver;
+    var proc_title = req.body.title;
+    var user_code = req.body.user_no;
+    var assign_user_no=req.body.assign_user_no;
+    var userName=req.body.user_name;
+    var node_code=req.body.node_code;//要流转到的节点编号
+    var biz_vars=req.body.biz_vars;
+    var proc_vars=req.body.proc_vars;
+    var memo=req.body.memo;
 
-                var flag=fields.flag;
-                var application_code=fields.application_code;
-                var proc_inst_id=fields.proc_inst_id;
-                var proc_code=fields.proc_code;
-                var proc_name=fields.proc_name;
-                var proc_ver =fields.proc_ver;
-                var userNo = fields.application_create_user_no;
-                var userName = fields.application_create_user_name;
-                // var userNo = '50001';
-                // var userName = '演示用户';
-                var title = fields.application_title;
-                var applicationDetailId=fields._id;
-                var description = fields.application_content_desciption;
-                // var start_date= new Date;
-                var condition={};
-                console.log("dddffffffdddddddddddddddddd",flag)
-                condition.userNo=userNo;
-                condition.userName=userName;
-                condition.proc_code=proc_code;
-                condition.proc_name=proc_name;
-                condition.proc_ver=proc_ver;
-                condition.title=title;
-                condition.application_code=application_code;
-                condition.description=description;
-                var attach_array=[];
-                for(var k in files){
-                    var conditions={}
-                    console.log(files[k].path,"./files/"+files[k].name);      //很多文件的时候使用for in循环来进行遍历 此时 k是files对象的某个索引 或者是后面提到的FormData.append的名字
-                    var file=files[k];
-                    if(file.name){
-                        conditions.name=file.name;
-                        conditions.type=file.type;
-                        conditions.path=file.path;
-                        var data_b = fs.readFileSync(file.path,"binary");
-                        console.info("filesssssssssssssssssssssssssss",data_b)
-                        conditions.data=data_b;
-                        attach_array.push(conditions);
-                    }
-                }
-                condition.attach=attach_array;
-                if(applicationDetailId){
-                    condition.applicationDetailId=applicationDetailId;
-                }else{
-                    condition.applicationDetailId="";
-                }
-
-                if (flag == 1) {
-                    //保存业务申请
-                    console.log(condition);
-                    service.saveApplication(condition).then(function(rs){
-                        utils.respJsonData(res, rs);
-                    });
-
-                } else if (flag == 2) {
-                    //保存业务申请并创建
-                    service.createApplication(condition).then(function(rs){
-                        console.log(rs)
+    // 调用
+    //p-108 渠道酬金 undefined 00000 管理员 processDefineDiv_node_3 00000 {"audit_id":"1800","table_name":"ywcj_workbench_audit"}
+    console.log(proc_code,proc_title,proc_ver,user_code,userName,node_code,assign_user_no,biz_vars);
+    inst.createInstance(proc_code,proc_ver,proc_title,"",proc_vars,biz_vars,user_code,userName)
+        .then(function(result){
+            if(result.success){
+                var task_id=result.data[0]._id;
+                inst.acceptTask(task_id,user_code,userName).then(function(rs){
+                    if(rs.success){
+                        console.log("11111111111",task_id,node_code,user_code,assign_user_no,proc_title,biz_vars,proc_vars);
+                        //  nodeTransferService.assign_transfer(task_id,node_code,user_code,assign_user_no,proc_title,biz_vars,proc_vars,memo).then(function(results){
+                        nodeTransferService.do_payout(task_id,node_code,user_code,assign_user_no,proc_title,biz_vars,proc_vars,memo).then(function(results){
+                            utils.respJsonData(res,results);
+                        });
+                    }else{
                         utils.respJsonData(res,rs);
-                    });
-                }
+                    }
+
+                })
+            }else{
+                utils.respJsonData(res,result);
 
             }
-        });
 
-    })
-
+        }).catch(function(err){
+        console.log('err');
+        // console.log(err);
+        logger.error("route-createInstance","创建流程实例异常",err);
+    });
+});
 
 module.exports = router;

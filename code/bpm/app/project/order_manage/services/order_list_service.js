@@ -73,3 +73,37 @@ exports.getProcDefineDetail= function(proc_code) {
 
     return p;
 };
+/**
+ * 验证角色
+ * @param userNo
+ * @returns {Promise}
+ */
+exports.getUsreRolesByUserNo= function(userNo) {
+    var p = new Promise(function(resolve,reject){
+        var query = model.$User.find({'user_no':userNo,'user_status':1});
+        query.exec(function(error,result){
+            if (error) {
+                var resuMap = {};
+                resuMap.orgs = null;
+                resuMap.roles = [];
+                resolve(resuMap);
+            } else {
+                resolve(setRoleIdArr(result));
+            }
+        });
+    });
+    return p;
+};
+function setRoleIdArr(arr){
+    var resuMap = {};
+    var result = [];
+    if(arr && arr.length > 0){
+        var roles = arr[0]._doc.user_roles;
+        for(var i=0;i<roles.length;i++){
+            result.push(roles[i].toString());
+        }
+        resuMap.orgs = arr[0]._doc.user_org?arr[0]._doc.user_org:null;
+        resuMap.roles = result;
+    }
+    return resuMap;
+}

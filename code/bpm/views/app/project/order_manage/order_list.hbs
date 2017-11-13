@@ -107,9 +107,9 @@
                 <tr id="tr_4">
                     <td align="right" class="tdLabel">操作:</td>
                     <td colspan="3" class="tdLabel">
-                        <select class="easyui-combobox"
+                        <select class="easyui-combobox" id="handle"
                                 style="width: 80px;"  disabled panelHeight="auto">
-                            <option value="1">通过</option>
+                            <option value="1" selected = "selected">通过</option>
                           <!--  <option value="0">不通过</option>-->
 
                         </select>
@@ -256,6 +256,7 @@
 
     //新增工单
     function addNewOrder(){
+
         $('#orderDetail').form('clear');
         //当前登录用户名
         var user_name = '{{currentUser.user_name}}';
@@ -265,6 +266,7 @@
         $("#start_name").textbox("setValue",user_name);
         //用户角色
         $("#user_role_names").textbox("setValue",user_roles);
+        $("#handle").combobox("setValue","1");
 
         //当前填单时间
         var time=new Date();
