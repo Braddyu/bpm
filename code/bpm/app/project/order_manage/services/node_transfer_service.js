@@ -1731,9 +1731,13 @@ exports.do_payout=function(proc_task_id,node_code,user_code,assign_user_code,pro
                                                         delete obj._id;
                                                         var arr_c=[];
                                                         arr_c.push(obj);
-                                                        var role_code = r[0].proc_task_start_user_role_code;
-                                                        var role_name = r[0].proc_task_start_user_role_names;
-                                                        var name = r[0].proc_task_start_name;
+                                                        var role_code = r[0].proc_task_start_user_role_code;//发起人角色id
+                                                        var role_name = r[0].proc_task_start_user_role_names;//发起人角色名
+                                                        var name = r[0].proc_task_start_name;//流程发起人
+                                                        var days = r[0].proc_task_work_day;//天数
+                                                        var proc_name = r[0].proc_task_name;//流程类型
+                                                        var ver = r[0].proc_task_ver;//版本号
+                                                        var content = r[0].proc_content;//工单内容
                                                         // console.log(r);3
                                                         model.$ProcessTaskHistroy.create(arr_c,function (es,ress){
                                                             if(es){
@@ -1813,7 +1817,11 @@ exports.do_payout=function(proc_task_id,node_code,user_code,assign_user_code,pro
                                                                                     //console.log(r[0].proc_start_user_role_names,'sghdssdshg');
                                                                                    condition_task.proc_task_start_user_role_names = role_name;//流程发起人角色
                                                                                     condition_task.proc_task_start_user_role_code = role_code;//流程发起人id
-                                                                                    condition_task.proc_task_start_name = name;
+                                                                                    condition_task.proc_task_start_name = name;//流程发起人角色
+                                                                                    condition_task.proc_task_work_day = days;//天数
+                                                                                    condition_task.proc_task_name = proc_name;//流程名
+                                                                                    condition_task.proc_task_ver = ver;//版本号
+                                                                                    condition_task.proc_task_content = content;//工单内容
 
                                                                                     // var arr = [];
                                                                                     // arr.push(condition_task);

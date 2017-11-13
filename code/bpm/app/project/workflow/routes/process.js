@@ -759,7 +759,7 @@ router.route("/orgTreeDataAsyn").get(function (req,res) {
     var condition={};
     var org_pid = req.query.org_pid;
     condition.org_pid = org_pid;
-    condition.org_status = 1;
+    condition.org_status =1 ;
     user.getOrgTreeDataAsyn(condition).then(function (result) {
         // utils.respJsonData(res, result)
         if(org_pid != "0"){

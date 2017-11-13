@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 var utils = require('../../../../lib/utils/app_utils');
 var todoService = require('../services/order_todo_service');
-var service = require('../services/order_list_service');
+var userService = require('../../workflow/services/user_service');
 var formidable=require("formidable");
 
 /**
@@ -21,7 +21,7 @@ router.route('/list').post(function(req,res){
         return;
     }
 
-    service.getUsreRolesByUserNo(userNo).then(function(result){
+    userService.getUsreRolesByUserNo(userNo).then(function(result){
         console.log(result);
         if(result){
             todoService.getMyTaskQuery4Eui(page,length,userNo,result).then(function(taskresult){
@@ -29,7 +29,7 @@ router.route('/list').post(function(req,res){
                 utils.respJsonData(res, taskresult);
             }).catch(function(err_inst){
                 // console.log(err_inst);
-                logger.error("route-getMyTaskList","获取我的待办数据异常",err_inst);
+                console.log("route-getMyTaskList","获取我的待办数据异常",err_inst);
                 utils.respMsg(res, false, '1000', '获取数据异常', null, err_inst);
 
             });
