@@ -1,4 +1,5 @@
 <script type="text/javascript" src="{{projcfg.appurl}}/static/js/mydatetimetools.js"></script>
+<link rel="stylesheet" type="text/css" href="{{projcfg.appurl}}/static/order/css/order_detail.css">
 <div id="workbench" class="row">
     <div class="col-xs-12 col-md-12">
         <div class="widget">
@@ -15,7 +16,7 @@
                                 </div>
                             </div>
                             <div class="widget-body no-padding" style="height: 400px;">
-                                <table id="worksheet_datatable"></table>
+                                <table id="orderTablelist1"></table>
                             </div>
                         </div>
                     </div>
@@ -29,1417 +30,318 @@
                                 </div>
                             </div>
                             <div class="widget-body no-padding" style="height: 400px;">
-                                <table id="keyWork_datatable"></table>
+                                <table id="orderTablelist2"></table>
                             </div>
                         </div>
                     </div>
-
-                </div>
-<!--------------------------------------------------------------------------------------------------------------------->
-                <!--<div class="row">-->
-
-                    <!--<div class="col-xs-6 col-md-6">-->
-                        <!--<div class="widget">-->
-                            <!--<div class="widget-header bordered-bottom bordered-themeprimary">-->
-                                <!--<i class="widget-icon fa fa-tags themeprimary"></i>-->
-                                <!--<span class="widget-caption themeprimary">重点业务稽核</span>-->
-                                <!--<div class="widget-buttons">-->
-
-                                <!--</div>-->
-                            <!--</div>-->
-
-                            <!--<div class="widget-body no-padding" style="height: 400px;">-->
-                                <!--<table id="keyAudit_datatable"></table>-->
-                            <!--</div>-->
-
-                        <!--</div>-->
-                    <!--</div>-->
-
-                    <!--<div class="col-xs-6 col-md-6">-->
-
-                        <!--<div class="widget">-->
-                            <!--<div class="widget-header bordered-bottom bordered-themeprimary">-->
-                                <!--<i class="widget-icon fa fa-tags themeprimary"></i>-->
-                                <!--<span class="widget-caption themeprimary">异动监控</span>-->
-                                <!--<div class="widget-buttons">-->
-
-                                <!--</div>-->
-                            <!--</div>-->
-
-                            <!--<div class="widget-body no-padding" style="height: 400px;">-->
-                                <!--<table id="transaction_datatable"></table>-->
-                            <!--</div>-->
-
-                        <!--</div>-->
-                    <!--</div>-->
-
-                <!--</div>-->
-
-                <!--<div class="row">-->
-
-                    <!--<div class="col-xs-6 col-md-6">-->
-                        <!--<div class="widget">-->
-                            <!--<div class="widget-header bordered-bottom bordered-themeprimary">-->
-                                <!--<i class="widget-icon fa fa-tags themeprimary"></i>-->
-                                <!--<span class="widget-caption themeprimary">常态抽查稽核</span>-->
-                                <!--<div class="widget-buttons">-->
-
-                                <!--</div>-->
-                            <!--</div>-->
-                            <!--<div class="widget-body no-padding" style="height: 400px;">-->
-                                <!--<table id="normalAudit_datatable"></table>-->
-                            <!--</div>-->
-                        <!--</div>-->
-                    <!--</div>-->
-
-                    <!--<div class="col-xs-6 col-md-6">-->
-
-                        <!--<div class="widget">-->
-                            <!--<div class="widget-header bordered-bottom bordered-themeprimary">-->
-                                <!--<i class="widget-icon fa fa-tags themeprimary"></i>-->
-                                <!--<span class="widget-caption themeprimary">临时稽核</span>-->
-                                <!--<div class="widget-buttons">-->
-
-                                <!--</div>-->
-                            <!--</div>-->
-
-                            <!--<div class="widget-body no-padding" style="height: 400px;">-->
-                                <!--<table id="interimAudit_datatable"></table>-->
-                            <!--</div>-->
-
-                        <!--</div>-->
-                    <!--</div>-->
-
-                <!--</div>-->
-
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- 审核通过MODAL -->
-<div id="auditPassModal" class="mydialog" style="padding-top:0px;overflow-y:auto;">
-    <div class="row">
-        <div class="col-lg-12 col-sm-12 col-xs-12">
-            <div class="widget">
-                <div class="widget-header bordered-left bordered-darkorange">
-                    <span class="widget-caption themeprimary">稽核信息</span>
-                </div>
-                <div class="widget-body bordered-left bordered-warning">
-                    <form class="form-inline" role="form">
-                        <table id="auditPass_remarks" class="table" style="border: none">
-
-                        </table>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-lg-12 col-sm-12 col-xs-12">
-            <div class="widget">
-                <div class="widget-header bordered-left bordered-darkorange">
-                    <span class="widget-caption themeprimary">稽核情况</span>
-                </div>
-                <div class="widget-body bordered-left bordered-warning">
-                    <form class="form-inline" role="form">
-                        <table class="table" style="border: none">
-                            <tr>
-                                <td class="info widget-caption themeprimary" width="11%"
-                                    style="vertical-align:middle;">省级稽核情况：
-                                </td>
-                                <td>
-                                    <input  id="auditPass_provincial_audit" type="text" name="auditPass_provincial_audit" class="form-control" placeholder="省级稽核情况" style="width: 100%;">
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="info widget-caption themeprimary" width="11%"
-                                    style="vertical-align:middle;">添加附件：
-                                </td>
-                                <td>
-                                    <a href="javascript:void(0);" onclick="openAttachment('auditPass');" class="btn btn-danger btn-circle btn-sm"><i class="fa fa-folder-open"></i></a>
-                                    <span id="auditPass_attach"></span>
-                                </td>
-                            </tr>
-                        </table>
-                    </form>
                 </div>
             </div>
         </div>
     </div>
 </div>
-<!-- 深度稽核MODAL -->
-<div id="depthAuditModal" class="mydialog" style="padding-top:0px;overflow-y:auto;">
-    <div class="row">
-        <div class="col-lg-12 col-sm-12 col-xs-12">
-            <div class="widget">
-                <div class="widget-header bordered-left bordered-darkorange">
-                    <span class="widget-caption themeprimary">稽核信息</span>
-                </div>
-                <div class="widget-body bordered-left bordered-warning">
-                    <form class="form-inline" role="form">
-                        <table id="depthAudit_remarks" class="table" style="border: none">
 
-                        </table>
-                        <div class="form-title bordered-bottom bordered-danger">
-                            <span class="info widget-caption themeprimary">预警说明</span> ：
-                            <span id="depthAudit_warning_type"></span>-<span id="depthAudit_describes"></span>
-                            <a id="depthAudit_details" href="javascript:void(0)" class="btn btn-info btn-xs" onclick="openTransactionDetails();">查看详情</a>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-lg-12 col-sm-12 col-xs-12">
-            <div class="widget">
-                <div class="widget-header bordered-left bordered-darkorange">
-                    <span class="widget-caption themeprimary">派单信息</span>
-                </div>
-                <div class="widget-body bordered-left bordered-warning">
-                    <form class="form-inline" role="form">
-                        <table class="table" style="border: none">
-                            <tr>
-                                <td class="info widget-caption themeprimary" width="12%" style="vertical-align:middle;">所在机构/部门：
-                                </td>
-                                <td width="25%">
-                                    <select id="filter_org" name="filter_org" class="form-control" style="width: 100%;height:31px;"></select>
-                                </td>
-                                <td class="info widget-caption themeprimary" width="11%" style="vertical-align:middle;">选择接单用户：
-                                </td>
-                                <td width="25%">
-                                    <select id="filter_user" name="filter_user" class="form-control" style="width: 100%;height:31px;"></select>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="info widget-caption themeprimary" width="11%"
-                                    style="vertical-align:middle;">省级稽核情况：
-                                </td>
-                                <td colspan="3">
-                                    <input  id="depthAudit_provincial_audit" type="text" name="depthAudit_provincial_audit" class="form-control" placeholder="省级稽核情况" style="width: 100%;">
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="info widget-caption themeprimary" width="11%"
-                                    style="vertical-align:middle;">添加附件：
-                                </td>
-                                <td>
-                                    <a href="javascript:void(0);" onclick="openAttachment('depthAudit');" class="btn btn-danger btn-circle btn-sm"><i class="fa fa-folder-open"></i></a>
-                                    <span id="depthAudit_attach"></span>
-                                </td>
-                            </tr>
-                        </table>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- 异动监控详情MODAL -->
-<div id="transaction_details_Modal" class="mydialog" style="padding-top:0px;">
-    <div class="easyui-layout" data-options="fit:true,border:false">
-        <div data-options="region:'center',border:false,fit:true" style="overflow-x:hidden;overflow-y:hidden">
-            <table id="transaction_details_datatable">
 
+<div id="orderDetail"  class="mydialog"  >
+    <fieldset>
+        <legend ><b>任务基本信息</b></legend>
+        <form id="orderDetail" method="post" enctype="multipart/form-data">
+            <table cellpadding="5" align="center" style="border-collapse:separate; border-spacing:0px 5px;">
+                <tr>
+                    <td align="right" class="tdLabel">工单标题:</td>
+                    <td colspan="3"><input style="width: 665px" class="easyui-textbox"data-options="required:true, missingMessage:'请输入工单标题'" id="proc_title" name="proc_title" ></input></td>
+
+
+                </tr>
+                <tr>
+                    <td align="right" class="tdLabel">工单类型:</td>
+                    <td> <input class="easyui-combobox" name="proc_name" id="proc_name"required="true"  style="width: 280px"></td>
+
+                    <td align="right" class="tdLabel">工作天数:</td>
+                    <td><input style="width: 280px"class="easyui-numberbox"data-options="required:true, missingMessage:'请输入工作天数'"  data-options="precision:0" id="proc_work_day" name="proc_work_day"
+                    ></input></td>
+                </tr>
+                <tr>
+                    <td align="right" class="tdLabel">开始时间:</td>
+                    <td><input disabled style="width: 280px"class="easyui-textbox"
+                               id="start_time" name="start_time"></input></td>
+                    <td align="right" class="tdLabel">完成时间:</td>
+                    <td><input disabled style="width: 280px"  class="easyui-textbox"
+                               id="end_time" ></input></td>
+                    <td colspan="2"></td>
+
+
+                </tr>
+                <tr>
+                    <td align="right" class="tdLabel">发起人角色:</td>
+                    <td><input disabled style="width: 280px"class="easyui-textbox"
+                               id="user_role_names" ></input></td>
+
+                    <td align="right" class="tdLabel">发起人:</td>
+                    <td><input disabled style="width: 280px" class="easyui-textbox"
+                               id="start_name" ></input></td>
+
+                </tr>
+
+
+                <tr>
+                    <td align="right" class="tdLabel">派单内容:</td>
+                    <td colspan="3"><input
+                            style="width: 670px; height: 50px; resize: none;" cols="30"
+                            name="proc_content" id="proc_content" rows="4"  class="easyui-textbox"  labelPosition="top" multiline="true"/>
+
+                    </td>
+                </tr>
             </table>
-        </div>
-    </div>
-</div>
-
-<!-- 待办工单处理MODAL -->
-<div id="wordOrderModal" class="mydialog" style="padding-top:0px;overflow-y:auto;">
-    <div class="row">
-        <div class="col-lg-12 col-sm-12 col-xs-12">
-            <div class="widget">
-                <div class="widget-header bordered-bottom bordered-darkorange">
-                    <span class="widget-caption themeprimary">稽核信息</span>
-                </div>
-                <div class="widget-body">
-                    <form class="form-inline" role="form">
-                        <table id="wordOrder_remarks" class="table" style="border: none">
-
-                        </table>
-                        <div class="form-title bordered-bottom bordered-danger">
-                            <span class="info widget-caption themeprimary">省级稽核情况</span> ：
-                            <span id="wordOrder_provincial_audit"></span>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-lg-12 col-sm-12 col-xs-12">
-            <div class="widget">
-                <div class="widget-header bordered-bottom bordered-warning">
-                    <span class="widget-caption themeprimary">处理信息</span>
-                </div>
-                <div class="widget-body">
-                    <form class="form-horizontal form-bordered" role="form" method="post">
-                        <table class="table" style="border: none">
-                            <tr>
-                                <td class="info widget-caption themeprimary" width="11%"
-                                    style="vertical-align:middle;">稽核说明：
-                                </td>
-                                <td colspan="3">
-                                    <input  id="wordOrder_audit_explain" type="text" name="wordOrder_audit_explain" class="form-control" placeholder="稽核说明">
-                                </td>
-                            </tr>
-
-                        </table>
-                    </form>
-
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- 回单详情MODAL -->
-<div id="receiptModal" class="mydialog" style="padding:0;overflow-x:hidden;overflow-y:scroll">
-    <table class="table" style="border: none">
-        <tr>
-            <td class="info widget-caption themeprimary" width="13%">预警类型：</td>
-            <td width="20%"><span id="receipt_warning_type"></span></td>
-            <td class="info widget-caption themeprimary" width="13%">预警说明：</td>
-            <td width="20%"><span id="receipt_describes"></span></td>
-            <td class="info widget-caption themeprimary" width="13%">省级稽核情况：</td>
-            <td width="21%"><span id="receipt_provincial_audit"></span></td>
-        </tr>
-        <tr>
-            <td class="info widget-caption themeprimary" width="13%">派单员：</td>
-            <td width="20%"><span id="receipt_dispatch_operator"></span></td>
-            <td class="info widget-caption themeprimary" width="13%">处理人员：</td>
-            <td width="20%"><span id="receipt_order_taking_operator"></span></td>
-            <td class="info widget-caption themeprimary" width="13%">附件：</td>
-            <td width="21%"><span id="receipt_attachments_url"></span></td>
-        </tr>
-        <tr>
-            <td class="info widget-caption themeprimary" width="13%">处理状态：</td>
-            <td width="20%"><span id="receipt_pro_status"></span></td>
-            <td class="info widget-caption themeprimary" width="13%">派单时间：</td>
-            <td width="20%"><span id="receipt_add_time"></span></td>
-            <td class="info widget-caption themeprimary" width="13%">回单时间：</td>
-            <td width="21%"><span id="receipt_update_time"></span></td>
-        </tr>
-        <tr>
-            <td class="info widget-caption themeprimary" width="13%">详细说明：</td>
-            <td width="21%" colspan="5"><span id="receipt_audit_explain"></span></td>
-        </tr>
-    </table>
-</div>
-
-<!-- 附件上传MODAL -->
-<div id="attachmentModal" class="mydialog" style="padding-top:0px;overflow-y:auto;">
-    <div class="row">
-        <div class="col-lg-12 col-sm-12 col-xs-12">
-            <div class="widget">
-                <div class="widget-header bordered-bottom bordered-pink">
-                    <span class="widget-caption">请上传附件</span>
-                </div>
-                <div class="widget-body">
-                    <form id="attachmentForm" class="form-inline" role="form">
-                        <table class="table" style="border: none">
-                            <tr id="attachsDiv">
-                                <td class="info widget-caption themeprimary" width="15%" style="vertical-align:middle;">附件列表：</td>
-                                <td id="uploadEdAttachs">
-
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="info widget-caption themeprimary" width="15%" style="vertical-align:middle;">添加附件：</td>
-                                <td>
-                                    <input type="file" name="inputFile" id="attach">
-                                </td>
-                            </tr>
-                            <div id="deleteAttachs" style="display:none;"></div>
-                        </table>
-                    </form>
-                    <form id="attachForm" style="display:none;" method="post" enctype="multipart/form-data" action="{{projcfg.appurl}}/api/attachment/attachment"></form>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- 处理日志 -->
-<div id="logsModal" class="mydialog" style="padding-top:0px;">
-    <div class="easyui-layout" data-options="fit:true,border:false">
-        <div data-options="region:'center',border:false,fit:true" style="overflow-x:hidden;overflow-y:hidden">
-            <table id="logsTablelist">
-
-            </table>
-        </div>
-    </div>
-</div>
+    </fieldset>
 
 <script type="text/javascript">
-
-    var reason = '';
-    var warning_time = '';
-
-    var order_taking_id = '';
-    var order_taking_operator = '';
-    var order_taking_user_no = '';
-
-    var proc_code = '{{projcfg.proc_code}}';//流程编码
-    var user_name = '{{currentUser.user_name}}';
-
-    var proc = {};//我的待办信息
-
     $(document).ready(function () {
 
-//        initWorksheet();//待办工单
-
-//        initKeyAudit();//重点业务稽核
-//        initNormalAudit();//常态抽查稽核
-//        initTransaction();//异动监控
-//        initKeyWork();//重点工作
-
-//        uploadAttach();//上传附件
-
+        //加载我的待办列表
+        loadOrderTodaoListDatagrid();
+        loadOrderListDatagrid();
+        //初始化工单类型下拉框
+        getAllProBase();
     });
+    //填写工作天数，给完成时间赋值
+    $('#proc_work_day').textbox({
+        onChange: function(value) {
+            var work_day= parseInt($("#proc_work_day").textbox("getValue"))  ;
+            time.setDate(time.getDate()+work_day)
+            $("#end_time").textbox("setValue",time.Format("yyyy-MM-dd hh:mm:ss"));
 
-    function uploadAttach(){
-        $("#attachsDiv").hide();
-        //工单处理-添加附件处理
-        $('#attachmentForm').delegate('#attach', 'change', function () {
-            if ($(this).val()) {
-                var newFile = $(this).clone();
-                newFile.val('');
-                $(this).parent().append(newFile);
-                $(this).appendTo('#attachForm');
-
-                $('#attachForm').form('submit', {
-                    success: function (data) {
-                        console.log(data);
-                        $('#attachForm').empty();
-                        var attach = JSON.parse(data);
-                        var item = '<div><a href="{{projcfg.appurl}}/api/attachment/attachment/download/' + attach._id + '">' + attach.file_name + '</a>'
-                                + '<input type="hidden" name="attachs_ids" value="' + attach._id + '"/>'
-                                + '<input type="hidden" name="attachs_file_names" value="' + attach.file_name + '"/>'
-                                + '&nbsp;&nbsp;&nbsp;&nbsp;<a href="javaScript:;" class="deleteAttachLink"><i class="fa fa-times"></i></a></div>';
-                        $('#uploadEdAttachs').append(item);
-                        $('#attachsDiv').show();
-                    }
-                });
-            }
-        });
-
-        //删除附件处理
-        $('#uploadEdAttachs').delegate('.deleteAttachLink', 'click', function () {
-            var parent = $(this).parent();
-            var deleteEl = parent.find('[name="attachs_ids"]');
-            deleteEl.attr('name', 'deleteAttach_ids').appendTo('#deleteAttachs');
-            parent.remove();
-            if ($('#uploadEdAttachs').find('div').length == 0) {
-                $('#attachsDiv').hide();
-            }
-        });
+        }
+    });
+    //时间格式化:new Date().Format("yyyy-MM-dd hh:mm:ss");
+    Date.prototype.Format = function (fmt) { //author: meizz
+        var o = {
+            "M+": this.getMonth() + 1, //月份
+            "d+": this.getDate(), //日
+            "h+": this.getHours(), //小时
+            "m+": this.getMinutes(), //分
+            "s+": this.getSeconds(), //秒
+            "q+": Math.floor((this.getMonth() + 3) / 3), //季度
+            "S": this.getMilliseconds() //毫秒
+        };
+        if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+        for (var k in o)
+            if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+        return fmt;
     }
+    function loadOrderTodaoListDatagrid(){
+        // 加载工单基本属性列表
+        $('#orderTablelist1').datagrid({
+            url:'{{projcfg.appurl}}/api/order_manage/order_todo/list',
+            method:'post',
+            rownumbers:true,
+            striped:true,
+            fitColumns:true,
+            border:false,
+            fit:true,
+            toolbar: '#toolbar1',
+            singleSelect:true,
+            selectOnCheck:true,
+            checkOnSelect:true,
+            columns:[[
+                {"field": "proc_inst_task_title","title":"工单标题","width":31,
+                    formatter:function(value,row,index){
+                        return "<span title='" + value + "'>" + value + "</span>";
 
-    //重点业务稽核
-    function initKeyAudit() {
-        $('#keyAudit_datatable').datagrid({
-            method: 'get',
-            url: '{{projcfg.appurl}}/api/workbench/workbench',
-            rownumbers: true,
-            striped: true,
-            fitColumns: true,
-            //toolbar: '#',
-            fit: true,
-            border: false,
-            singleSelect: true,
-            selectOnCheck: false,
-            queryParams: {
-                'category': 1,
-            },
-            columns: [[
-                {"field": "warning_type", "title": "预警类型", "width": 30},
-                {
-                    "field": "describes", "title": "预警说明", "width": 60,
-                    formatter: function (value, rowData, rowIndex) {
-                        if (value) {
-                            return '<span title=" '+ value + '">' + value + '</span>';
-                        }
-                    }
-                },
-                {
-                    "field": "warning_time", "title": "预警时间", "width": 30,
-                    formatter: function (value, rowData, rowIndex) {
-                        if (value) {
-                            return value;
-                        }
-                    }
-                },
-                {
-                    "field": "pro_status", "title": "处理状态", "width": 25,
-                    formatter: function (value, rowData, rowIndex) {
-                        if (value == 1) {
-                            return '<span class="text-success">处理中</span>';
-                        } else if (value == 2) {
-                            return '<a href="javascript:void(0)"  onclick="openReceipt(\'重点业务稽核-回单详情\',\'' + rowData.id + '\',\'receipt\',initKeyAudit)"<span class="text-primary">已回单</span></a>';
-                        } else {
-                            return '<span class="text-danger">未处理</span>';
-                        }
-                    }
-                },
-                {
-                    "field": "pro_mark", "title": "操作", "width": 50, "align": 'center',
-                    formatter: function (value, rowData, rowIndex) {
-
-//                        var btn_htm = '<span class="btn btn-primary btn-xs" onclick="openAudited(\'重点业务稽核-审核\',\'' + rowData.id + '\',\'auditPass\',initKeyAudit)">审核通过</span>&nbsp;&nbsp;<span class="btn btn-danger btn-xs" onclick="openDepthAudit(\'重点业务稽核-深度稽核\',\'' + rowData.id + '\',\'depthAudit\',initKeyAudit)">深度稽核</span></a>';
-                        var btn_htm = '&nbsp;&nbsp;<span class="btn btn-danger btn-xs" onclick="openDepthAudit(\'重点业务稽核-深度稽核\',\'' + rowData.id + '\',\'depthAudit\',initKeyAudit)">深度稽核</span></a>';
-                        if(rowData.pro_status!=0){
-                            btn_htm = '&nbsp;&nbsp;<span class="label label-default">深度稽核</span>';
-//                            btn_htm = '<span class="label label-default">审核通过</span>&nbsp;&nbsp;<span class="label label-default">深度稽核</span>';
-                        }
-                        return btn_htm;
+                    }},
+                {"field": "proc_inst_task_type","title":"所属流程","width":25,
+                    formatter:function(value,row,index){
+                        return "<span title='" + value + "'>" + value + "</span>";
 
                     }
-                }
+                },
+                {"field": "proc_ver","title":"版本","width":15,
+                    formatter:function(value,row,index){
+                        return "<span title='" + value + "'>" + value + "</span>";
+
+                    }},
+                {"field": "proc_inst_task_name","title":"当前处理节点","width":28,
+                    formatter:function(value,row,index){
+                        return "<span title='" + value + "'>" + value + "</span>";
+
+                    }},
+                {"field": "proc_task_start_name","title":"申请人","width":20,
+                    formatter:function(value,row,index){
+                        return "<span title='" + value + "'>" + value + "</span>";
+
+                    }},
+                {"field": "proc_inst_task_arrive_time","title":"创建时间","width":26,
+                    formatter:function(value,row,index){
+                        return  new Date(value).Format("yyyy-MM-dd ");
+                    }}
             ]],
-            onLoadSuccess: function (json) {
-                if (!json.success) {
-                    msgError('提示,' + json.msg + ',错误代码:' + json.code);
-                }
+            onDblClickRow:function(rowIndex, rowData){
+
+                /* $('#orderDetail').dialog('open')*/
             },
-            onLoadError: function () {
-                msgError('提示,加载数据出现时发生错误,请稍候重试...');
-            },
-            pagination: true,
-            loadMsg: '正在加载...'
-        });
-    }
-
-    //常态抽查稽核
-    function initNormalAudit() {
-
-        $('#normalAudit_datatable').datagrid({
-            method: 'get',
-            url: '{{projcfg.appurl}}/api/workbench/workbench',
-            rownumbers: true,
-            striped: true,
-            fitColumns: true,
-            //toolbar: '#',
-            fit: true,
-            border: false,
-            singleSelect: true,
-            selectOnCheck: false,
-            queryParams: {
-                'category': 2,
-            },
-            columns: [[
-                {"field": "warning_type", "title": "预警类型", "width": 30},
-                {
-                    "field": "describes", "title": "预警说明", "width": 60,
-                    formatter: function (value, rowData, rowIndex) {
-                        if (value) {
-                            return '<span title=" '+ value + '">' + value + '</span>';
-                        }
-                    }
-                },
-                {
-                    "field": "warning_time", "title": "预警时间", "width": 30,
-                    formatter: function (value, rowData, rowIndex) {
-                        if (value) {
-                            return value;
-                        }
-                    }
-                },
-                {
-                    "field": "pro_status", "title": "处理状态", "width": 25,
-                    formatter: function (value, rowData, rowIndex) {
-                        if (value == 1) {
-                            return '<span class="text-success">处理中</span>';
-                        } else if (value == 2) {
-                            return '<a href="javascript:void(0)"  onclick="openReceipt(\'重点业务稽核-回单详情\',\'' + rowData.id + '\',\'receipt\',initNormalAudit)"<span class="text-primary">已回单</span></a>';
-                        } else {
-                            return '<span class="text-danger">未处理</span>';
-                        }
-                    }
-                },
-                {
-                    "field": "pro_mark", "title": "操作", "width": 50, "align": 'center',
-                    formatter: function (value, rowData, rowIndex) {
-
-                        return '<span class="btn btn-primary btn-xs" onclick="openAudited(\'常态抽查稽核-审核\',\'' + rowData.id + '\',\'auditPass\',initNormalAudit)">审核通过</span>&nbsp;&nbsp;<span class="btn btn-danger btn-xs" onclick="openDepthAudit(\'常态抽查稽核-深度稽核\',\'' + rowData.id + '\',\'depthAudit\',initNormalAudit)">深度稽核</span>';
-
-                    }
-                }
-            ]],
-            onLoadSuccess: function (json) {
-                if (!json.success) {
-                    msgError('提示,' + json.msg + ',错误代码:' + json.code);
-                }
-            },
-            onLoadError: function () {
-                msgError('提示,加载数据出现时发生错误,请稍候重试...');
-            },
-            pagination: true,
-            loadMsg: '正在加载...'
-        });
-    }
-
-    //异动监控
-    function initTransaction() {
-
-        $('#transaction_datatable').datagrid({
-            method: 'get',
-            url: '{{projcfg.appurl}}/api/workbench/workbench',
-            rownumbers: true,
-            striped: true,
-            fitColumns: true,
-            //toolbar: '#',
-            fit: true,
-            border: false,
-            singleSelect: true,
-            selectOnCheck: false,
-            queryParams: {
-                'category': 3,
-            },
-            columns: [[
-                {
-                    "field": "warning_type", "title": "预警类别", "width": 30,
-                    formatter: function (value, rowData, rowIndex) {
-                        if (value) {
-                            return value;
-                        }
-                    }
-                },
-                {
-                    "field": "describes", "title": "预警说明", "width": 60,
-                    formatter: function (value, rowData, rowIndex) {
-                        if (value) {
-                            return '<span title=" '+ value + '">' + value + '</span>';
-                        }
-                    }
-                },
-                {
-                    "field": "warning_time", "title": "预警时间", "width": 30,
-                    formatter: function (value, rowData, rowIndex) {
-                        if (value) {
-                            return value;
-                        }
-                    }
-                },
-                {
-                    "field": "pro_status", "title": "处理状态", "width": 25,
-                    formatter: function (value, rowData, rowIndex) {
-                        if (value == 1) {
-                            return '<span class="text-success">处理中</span>';
-                        } else if (value == 2) {
-                            return '<a href="javascript:void(0)"  onclick="openReceipt(\'重点业务稽核-回单详情\',\'' + rowData.id + '\',\'receipt\',initTransaction)"<span class="text-primary">已回单</span></a>';
-                        } else {
-                            return '<span class="text-danger">未处理</span>';
-                        }
-                    }
-                },
-                {
-                    "field": "pro_mark", "title": "操作", "width": 50, "align": 'center',
-                    formatter: function (value, rowData, rowIndex) {
-
-                        return '&nbsp;&nbsp;<span class="btn btn-danger btn-xs" onclick="openDepthAudit(\'异动监控-深度稽核\',\'' + rowData.id + '\',\'depthAudit\',initTransaction)">深度稽核</span>';
-//                        return '<span class="btn btn-primary btn-xs" onclick="openAudited(\'异动监控-审核\',\'' + rowData.id + '\',\'auditPass\',initTransaction)">审核通过</span>&nbsp;&nbsp;<span class="btn btn-danger btn-xs" onclick="openDepthAudit(\'异动监控-深度稽核\',\'' + rowData.id + '\',\'depthAudit\',initTransaction)">深度稽核</span>';
-
-                    }
-                }
-            ]],
-            onLoadSuccess: function (json) {
-                if (!json.success) {
-                    msgError('提示,' + json.msg + ',错误代码:' + json.code);
-                }
-            },
-            onLoadError: function () {
-                msgError('提示,加载数据出现时发生错误,请稍候重试...');
-            },
-            pagination: true,
-            loadMsg: '正在加载...'
-        });
-    }
-
-    //重点工作
-    function initKeyWork() {
-
-        $('#keyWork_datatable').datagrid({
-            method: 'get',
-            url: '{{projcfg.appurl}}/api/desk/desk/havetodo',
-            rownumbers: true,
-            striped: true,
-            fitColumns: true,
-            //toolbar: '#',
-            fit: true,
-            border: false,
-            singleSelect: true,
-            selectOnCheck: false,
-            columns: [[
-                {
-                    "field": "proc_inst_task_title", "title": "标题", "width": 40,
-                    formatter: function (value, rowData, rowIndex) {
-                        if (value) {
-                            return value;
-                        }
-                    }
-                },
-                {
-                    "field": "proc_inst_task_name", "title": "处理步骤", "width": 40,
-                    formatter: function (value, rowData, rowIndex) {
-                        if (value) {
-                            return value;
-                        }
-                    }
-                },
-                {
-                    "field": "proc_inst_task_remark", "title": "处理内容", "width": 150,
-                    "formatter": function (value, rowData, rowIndex) {
-
-                        if(value){
-                            return '<span title=" '+ value + '">' + value + '</span>';
-                        }else{
-                            return '<span class="text-muted">无</span>';
-                        }
-
-                    }
-                },
-//                {
-//                    "field": "proc_inst_task_assignee_name", "title": "处理人员", "width": 80,
-//                    "formatter": function (value, rowData, rowIndex) {
-//                        return value;
-//                    }
-//                },
-                {
-                    "field": "proc_inst_task_handle_time", "title": "处理时间", "width": 100,
-                    formatter: function (value, rowData, rowIndex) {
-                        return new Date(value).toLocaleString();
-                    }
-                },
-                {
-                    "field": "pro_mark", "title": "操作", "width": 40, "align": 'center',
-                    formatter: function (value, rowData, rowIndex) {
-
-                        return '&nbsp;&nbsp;<span class="btn btn-success btn-xs" onclick="openTask(\'' + rowData.proc_inst_id + '\')">处理日志</span>';
-
-                    }
-                }
-            ]],
-            onLoadSuccess: function (json) {
-                if (!json.success) {
-                    msgError('提示,' + json.msg + ',错误代码:' + json.code);
-                }
-            },
-            onLoadError: function () {
-                msgError('提示,加载数据出现时发生错误,请稍候重试...');
-            },
-            pagination: true,
-            loadMsg: '正在加载...'
-        });
-    }
-
-    //待办工单
-    function initWorksheet() {
-
-        $('#worksheet_datatable').datagrid({
-            method: 'get',
-            url: '{{projcfg.appurl}}/api/desk/desk',
-            rownumbers: true,
-            striped: true,
-            fitColumns: true,
-            //toolbar: '#',
-            fit: true,
-            border: false,
-            singleSelect: true,
-            selectOnCheck: false,
-            columns: [[
-                {
-                    "field": "proc_inst_task_title", "title": "标题", "width": 40,
-                    formatter: function (value, rowData, rowIndex) {
-                        if (value) {
-                            return value;
-                        }
-                    }
-                },
-                {
-                    "field": "proc_inst_task_name", "title": "当前步骤", "width": 25,
-                    formatter: function (value, rowData, rowIndex) {
-                        if (value) {
-                            return value;
-                        }
-                    }
-                },
-                {
-                    "field": "proc_inst_task_arrive_time", "title": "派单时间", "width": 50,
-                    formatter: function (value, rowData, rowIndex) {
-                        if (value) {
-                            return new Date(value).toLocaleString();
-                        }
-                    }
-                },
-                {
-                    "field": "proc_inst_task_assignee_name", "title": "处理人", "width": 25,
-                    formatter: function (value, rowData, rowIndex) {
-                        return value;
-                    }
-                },
-                {
-                    "field": "pro_mark", "title": "操作", "width": 40, "align": 'center',
-                    formatter: function (value, rowData, rowIndex) {
-
-                        return '<span class="btn btn-danger btn-xs" onclick="openProOrder(\'' + rowIndex + '\')">工单处理</span>&nbsp;&nbsp;<span class="btn btn-success btn-xs" onclick="openTask(\'' + rowData.proc_inst_id + '\')">处理日志</span>';
-
-                    }
-                }
-            ]],
-            onLoadSuccess: function (json) {
-                if (!json.success) {
-                    msgError('提示,' + json.msg + ',错误代码:' + json.code);
-                }
-            },
-            onLoadError: function () {
-                msgError('提示,加载数据出现时发生错误,请稍候重试...');
-            },
-            pagination: true,
-            loadMsg: '正在加载...'
-        });
-    }
-
-    /**
-     * 审核通过
-     * @param title
-     * @param value
-     * @param modal
-     */
-    function openAudited(title, value, modal, callback) {
-        //初始化表单
-        $("input").each(function(){
-            $(this).val('');
-        });
-        $('#' + modal + '_attach').html('');
-        $('#uploadEdAttachs').html('');
-        //清空数据
-        $('#uploadEdAttachs').empty();
-        $('#attachsDiv').hide();
-        $('#deleteAttachs').empty();
-        $('#' + modal + '_provincial_audit').val('');//初始化
-
-        $.ajax({
-            type: 'get',
-            url: '{{projcfg.appurl}}/api/workbench/workbench/' + value,
-            success: function (data) {
-                $('#' + modal + '_warning_type').html(data[0].warning_type);
-                $('#' + modal + '_describes').html(data[0].describes);
-                var rHtm = data[0].remarks;
-                rHtm += '<tr><td class="info widget-caption themeprimary" width="13%" style="vertical-align:middle;">预警说明：</td><td id="wordOrder_describes" width="87%" colspan="5">'+data[0].describes+'&nbsp;&nbsp;<a id="auditPass_details" href="javascript:void(0)" class="btn btn-info btn-xs" onclick="openTransactionDetails();">查看详情</a></td></tr>';
-                $('#' + modal + '_remarks').html(rHtm);
-                reason = data[0].reason;
-
-                if(reason){
-                    $('#' + modal + '_details').show();
-                }else{
-                    $('#' + modal + '_details').hide();
-                }
-
-                warning_time = data[0].warning_time;
-            }
-        });
-
-        var scrollTop = window.pageYOffset
-                || document.documentElement.scrollTop
-                || document.body.scrollTop
-                || 0;
-        var top = ($(window).height() - 500) / 2 + scrollTop;
-
-        $('#' + modal + 'Form').form('reset');
-
-        $('#' + modal + 'Modal').show();
-        $('#' + modal + 'Modal').mydialog({
-            title: "<i class='widget-icon fa fa-tags themeprimary'></i>&nbsp;<span class='widget-caption themeprimary'>" + title + "</span>",
-            width: 1200,
-            height: 500,
-            top: top,
-            modal: true,
-            myButtons: [
-                {
-                    text: '通过',
-                    btnCls: 'btn btn-blue',
-                    handler: function () {
-
-                        var provincial_audit = $('#' + modal + '_provincial_audit').val();
-
-                        if (!provincial_audit) {
-                            msgError('请输入省级稽核情况！');
-                            return;
-                        }
-
-                        var params = {
-                            provincial_audit: provincial_audit
-                        };
-
-                        if ($('[name="attachs_ids"]').length > 0) {
-                            var attachs_ids = [];
-                            $('[name="attachs_ids"]').each(function () {
-                                attachs_ids.push($(this).val());
-                            });
-                            params.attachs_ids = attachs_ids;
-                        }
-
-                        if ($('[name="deleteAttach_ids"]').length > 0) {
-                            var deleteAttach_ids = [];
-                            $('[name="deleteAttach_ids"]').each(function () {
-                                deleteAttach_ids.push($(this).val());
-                            });
-                            params.deleteAttach_ids = deleteAttach_ids;
-                        }
-
-                        $.ajaxSettings.traditional = true;
-
-                        $.ajax({
-                            url: '{{projcfg.appurl}}/api/workbench/workbench/pass/' + value,
-                            type: 'post',
-                            data: params,
-                            success: function (data) {
-                                if (data.success) {
-                                    $('#' + modal + 'Modal').dialog('close');
-                                    msgSuccess(title + data.msg);
-                                    callback();
-                                } else {
-                                    msgError(data.msg + ',错误代码:' + data.code);
-                                }
-                            },
-                            error: function () {
-                                msgError("出错了，请稍后再试！");
-                            }
-                        });
-
-                    }
-                },
-                {
-                    text: '关闭',
-                    btnCls: 'btn btn-danger',
-                    handler: function () {
-                        $('#' + modal + 'Modal').dialog('close');
-                        callback();
-                    }
-                }
-            ]
-        });
-
-    }
-
-    /**
-     * 深度稽核
-     * @param title
-     * @param value
-     * @param modal
-     * @param callback
-     */
-    function openDepthAudit(title, value, modal, callback) {
-
-        //初始化表单
-        $("input").each(function(){
-            $(this).val('');
-        });
-        $('#' + modal + '_attach').html('');
-        $('#uploadEdAttachs').html('');
-        $('#uploadEdAttachs').empty();
-        $('#attachsDiv').hide();
-        $('#deleteAttachs').empty();
-
-        order_taking_id = '';
-        order_taking_operator = '';
-        order_taking_user_no = '';
-
-        $('#filter_org').combotree({
-            method: 'get',
-            url: '{{projcfg.appurl}}/public/orgRootTreeDataAsyn',
-            editable: false,
-            value: '请选择机构/部门',
-            onSelect: function (node) {
-                var user_org = node.id;
-                $('#filter_user').combobox({
-                    method: 'get',
-                    url: '{{projcfg.appurl}}/public/sysUser?user_org=' + user_org,
-                    valueField: '_id',
-                    textField: 'user_name',
-                    editable: false,
-                    value: '请选择用户',
-                    onSelect: function (node) {
-                        order_taking_id = node._id;
-                        order_taking_user_no = node.user_no;
-                        order_taking_operator = node.user_name;
-                    }
-                });
-            }
-        });
-
-        $.ajax({
-            type: 'get',
-            url: '{{projcfg.appurl}}/api/workbench/workbench/' + value,
-            success: function (data) {
-                $('#' + modal + '_warning_type').html(data[0].warning_type);
-                $('#' + modal + '_describes').html(data[0].describes);
-                $('#' + modal + '_remarks').html(data[0].remarks);
-                reason = data[0].reason;
-                if(reason){
-                    $('#' + modal + '_details').show();
-                }else{
-                    $('#' + modal + '_details').hide();
-                }
-                warning_time = data[0].warning_time;
-            }
-        });
-
-        var scrollTop = window.pageYOffset
-                || document.documentElement.scrollTop
-                || document.body.scrollTop
-                || 0;
-        var top = ($(window).height() - 500) / 2 + scrollTop;
-
-        $('#' + modal + 'Form').form('reset');
-
-        $('#' + modal + 'Modal').show();
-        $('#' + modal + 'Modal').mydialog({
-            title: "<i class='widget-icon fa fa-tags themeprimary'></i>&nbsp;<span class='widget-caption themeprimary'>" + title + "</span>",
-            width: 1200,
-            height: 500,
-            top: top,
-            modal: true,
-            myButtons: [
-                {
-                    text: '派单',
-                    btnCls: 'btn btn-blue',
-                    handler: function () {
-
-                        if (!order_taking_id) {
-                            msgError('请选择接单用户！');
-                            return;
-                        }
-
-                        var provincial_audit = $('#' + modal + '_provincial_audit').val();
-
-                        if (!provincial_audit) {
-                            msgError('请输入省级稽核情况！');
-                            return;
-                        }
-
-                        var data = {
-                            'audit_id': value,
-                            'order_taking_id': order_taking_id,
-                            'order_taking_operator': order_taking_operator,
-                            'provincial_audit': provincial_audit,
-                            'proc_code':proc_code,
-                            'order_taking_user_no':order_taking_user_no
-                        };
-
-                        if ($('[name="attachs_ids"]').length > 0) {
-                            var attachs_ids = [];
-                            $('[name="attachs_ids"]').each(function () {
-                                attachs_ids.push($(this).val());
-                            });
-                            data.attachs_ids = attachs_ids;
-                        }
-
-                        if ($('[name="deleteAttach_ids"]').length > 0) {
-                            var deleteAttach_ids = [];
-                            $('[name="deleteAttach_ids"]').each(function () {
-                                deleteAttach_ids.push($(this).val());
-                            });
-                            data.deleteAttach_ids = deleteAttach_ids;
-                        }
-
-                        $.ajaxSettings.traditional = true;
-                        $.ajax({
-                            url: '{{projcfg.appurl}}/api/workbench/workbench/dispatch',
-                            type: 'post',
-                            data: data,
-                            success: function (data) {
-                                if (data.success) {
-                                    $('#' + modal + 'Modal').dialog('close');
-                                    msgSuccess(title + data.msg);
-                                    callback();
-                                    initWorksheet();
-                                } else {
-                                    msgError(data.msg + ',错误代码:' + data.code);
-                                }
-                            },
-                            error: function () {
-                                msgError("出错了，请稍后再试！");
-                            }
-                        });
-
-                    }
-                },
-                {
-                    text: '关闭',
-                    btnCls: 'btn btn-danger',
-                    handler: function () {
-                        $('#' + modal + 'Modal').dialog('close');
-                        callback();
-                    }
-                }
-            ]
-        });
-
-    }
-
-    /**
-     * 异动监控详情
-     */
-    function openTransactionDetails() {
-
-        //初始化grid
-        $('#transaction_details_datatable').datagrid({
-            url: '{{projcfg.appurl}}/api/workbench/workbench/transaction',
-            method: 'get',
-            rownumbers: true,
-            striped: true,
-            fitColumns: true,
-            //toolbar: '#toolbar',
-            fit: true,
-            border: true,
-            singleSelect: true,
-            selectOnCheck: false,
-            nowrap: false,
-            queryParams: {
-                'reason': reason,
-                'warning_time': warning_time
-            },
-            columns: [[
-                {"field": "phoneNum", "title": "手机号码", "width": 50},
-                {"field": "description", "title": "预警说明", "width": 100},
-                {"field": "reason", "title": "预警原因", "width": 100}
-            ]],
-            onLoadSuccess: function (json) {
-                if (!json.success) {
-                    msgError('提示,' + json.msg + ',错误代码:' + json.code);
-                }
-            },
-            onLoadError: function () {
-                msgError('加载数据出现时发生错误,请稍候重试...');
-            },
-            pagination: true,
-            loadMsg: '正在加载...'
-        });
-
-        //获取页面滚动距离
-        var scrollTop = window.pageYOffset
-                || document.documentElement.scrollTop
-                || document.body.scrollTop
-                || 0;
-        var top = ($(window).height() - 550) / 2 + scrollTop;
-
-
-        $('#transaction_details_Modal').show();
-        $('#transaction_details_Modal').mydialog({
-            title: "<i class='widget-icon fa fa-tags themeprimary'></i>&nbsp;<span class='widget-caption themeprimary'>详情</span>",
-            width: 1200,
-            height: 500,
-            modal: true,
-            top: top,
-            myButtons: [
-
-                {
-                    text: '关闭',
-                    btnCls: 'btn btn-danger',
-                    handler: function () {
-                        $('#transaction_details_Modal').dialog('close');
-                    }
-                }
-            ]
-        });
-    }
-
-
-    /**
-     * 待办工单-处理
-     * @param title
-     * @param value
-     * @param modal
-     * @param callback
-     */
-    function openProOrder(rowIndex) {
-        var rows = $('#worksheet_datatable').datagrid('getRows');
-        proc = rows[rowIndex];
-        var p_url = 'portal/module/' + proc.proc_inst_node_vars;
-        window.open(p_url);
-    }
-
-    /**
-     * 传值到新页面
-     */
-    function getVal(){
-        return proc;
-    }
-
-    /**
-     * 回单信息
-     * @param title
-     * @param value
-     * @param modal
-     * @param callback
-     */
-    function openReceipt(title, value, modal, callback) {
-
-        $.ajax({
-            type: 'get',
-            url: '{{projcfg.appurl}}/api/workbench/workbench/receipt/' + value,
-            success: function (data) {
-                $('#' + modal + '_warning_type').html(data[0].warning_type);
-                $('#' + modal + '_describes').html(data[0].describes);
-                $('#' + modal + '_dispatch_operator').html(data[0].dispatch_operator);
-                $('#' + modal + '_order_taking_operator').html(data[0].order_taking_operator);
-
-                var add_time = '<p class="text-muted">' + new Date(data[0].add_time).toLocaleString() + '</p>';
-                $('#' + modal + '_add_time').html(add_time);
-
-                var update_time = '<p class="text-muted">' + new Date(data[0].update_time).toLocaleString() + '</p>';
-                $('#' + modal + '_update_time').html(update_time);
-                $('#' + modal + '_provincial_audit').html(data[0].provincial_audit);
-
-                var pro_status = '未回单';
-                if(data[0].pro_status==1){
-                    pro_status = '已回单';
-                }
-                $('#' + modal + '_pro_status').html(pro_status);
-                $('#' + modal + '_audit_explain').html(data[0].audit_explain);
-
-                var attachments_url = '<a href="{{projcfg.appurl}}/api/remuneration/audit/download/' + data[0].attachments_url + '">下载附件</a>';
-                if(!data[0].attachments_url){
-                    attachments_url = '无附件';
-                }
-                $('#' + modal + '_attachments_url').html(attachments_url);
-
-
-            }
-        });
-
-        var scrollTop = window.pageYOffset
-                || document.documentElement.scrollTop
-                || document.body.scrollTop
-                || 0;
-        var top = ($(window).height() - 500) / 2 + scrollTop;
-
-        $('#' + modal + 'Modal').show();
-        $('#' + modal + 'Modal').mydialog({
-            title: "<i class='widget-icon fa fa-tags themeprimary'></i>&nbsp;<span class='widget-caption themeprimary'>" + title + "</span>",
-            width: 1200,
-            height: 500,
-            top: top,
-            modal: true,
-            myButtons: [
-                {
-                    text: '通过',
-                    btnCls: 'btn btn-blue',
-                    handler: function () {
-
-                        var params = {};
-
-                        if ($('[name="attachs_ids"]').length > 0) {
-                            var attachs_ids = [];
-                            $('[name="attachs_ids"]').each(function () {
-                                attachs_ids.push($(this).val());
-                            });
-                            params.attachs_ids = attachs_ids;
-                        }
-
-                        if ($('[name="deleteAttach_ids"]').length > 0) {
-                            var deleteAttach_ids = [];
-                            $('[name="deleteAttach_ids"]').each(function () {
-                                deleteAttach_ids.push($(this).val());
-                            });
-                            params.deleteAttach_ids = deleteAttach_ids;
-                        }
-
-                        $.ajaxSettings.traditional = true;
-
-                        $.ajax({
-                            url: '{{projcfg.appurl}}/api/workbench/workbench/pass/' + value,
-                            type: 'post',
-                            data: params,
-                            success: function (data) {
-                                if (data.success) {
-                                    $('#' + modal + 'Modal').dialog('close');
-                                    msgSuccess(title + data.msg);
-                                    callback();
-                                } else {
-                                    msgError(data.msg + ',错误代码:' + data.code);
-                                }
-                            },
-                            error: function () {
-                                msgError("出错了，请稍后再试！");
-                            }
-                        });
-
-                    }
-                },
-                {
-                    text: '关闭',
-                    btnCls: 'btn btn-danger',
-                    handler: function () {
-                        $('#' + modal + 'Modal').dialog('close');
-                        callback();
-                    }
-                }
-            ]
-        });
-
-    }
-
-    /**
-     * 处理日志
-     * @param proc_inst_id
-     */
-    function openTask(proc_inst_id){
-        //var process_engine_url = '{{projcfg.process_engine_url}}';
-        //var process_engine_port_demo = '{{projcfg.process_engine_port_demo}}';
-        //var url = process_engine_url + ":" + process_engine_port_demo + "/process/show/progressed?proc_inst_id=" + proc_inst_id;
-        //window.open(url);
-        //初始化grid
-        $('#logsTablelist').datagrid({
-            url: '{{projcfg.appurl}}/api/process/engine/logs',
-            method: 'get',
-            queryParams: {proc_inst_id: proc_inst_id},
-            rownumbers: true,
-            striped: true,
-            fitColumns: true,
-            border: true,
-            //toolbar: '#toolbar',
-            fit: true,
-            singleSelect: true,
-            selectOnCheck: true,
-            checkOnSelect: true,
-            columns: [[
-                {"field": "proc_inst_task_name", "title": "处理节点", "width": 80},
-                {
-                    "field": "proc_inst_task_remark", "title": "处理内容", "width": 150,
-                    "formatter": function (value, rowData, rowIndex) {
-
-                        if(value){
-                            return '<span title=" '+ value + '">' + value + '</span>';
-                        }else{
-                            return '<span class="text-muted">无</span>';
-                        }
-
-                    }
-                },
-                {
-                    "field": "proc_inst_task_assignee_name", "title": "处理人员", "width": 80,
-                    "formatter": function (value, rowData, rowIndex) {
-                        return value;
-                    }
-                },
-                {
-                    "field": "proc_inst_task_handle_time", "title": "处理时间", "width": 120,
-                    formatter: function (value, rowData, rowIndex) {
-                        return new Date(value).toLocaleString();
-                    }
-                },
-                {
-                    "field": "proc_inst_task_status", "title": "处理状态", "width": 50,
-                    "formatter": function (value, rowData, rowIndex) {
-                        if(value==1){
-                            return '<span class="text-success">已处理</span>';
-                        }else{
-                            return '<span class="text-danger">处理中</span>';
-                        }
-
-                    }
-                }
-
-            ]],
-            onLoadSuccess: function (json) {
-                if (!json.success) {
+            onLoadSuccess:function(json) {
+                if(!json.success) {
                     msgError(json.msg + ',错误代码:' + json.code);
                 }
             },
-            onLoadError: function () {
+            onLoadError:function() {
                 msgError('加载数据出现时发生错误,请稍候重试...');
             },
-            pagination: true,
-            loadMsg: '正在加载...'
+            pagination:true,
+            loadMsg:'正在加载...'
         });
+    }
 
-        var scrollTop = window.pageYOffset
-                || document.documentElement.scrollTop
-                || document.body.scrollTop
-                || 0;
-        var top = ($(window).height() - 400) / 2 + scrollTop;
+    //新增工单
+    function addNewOrder(){
+        $('#orderDetail').form('clear');
+        //当前登录用户名
+        var user_name = '{{currentUser.user_name}}';
+        //用户角色
+        var user_roles = '{{currentUserRole.role_name}}';
+        //用户名
+        $("#start_name").textbox("setValue",user_name);
+        //用户角色
+        $("#user_role_names").textbox("setValue",user_roles);
 
-        $('#logsModal').show();
-        $('#logsModal').mydialog({
-            title: "<i class='widget-icon fa fa-tags themeprimary'></i>&nbsp;<span class='widget-caption themeprimary'>处理日志</span>",
-            width: 800,
-            height: 400,
-            top: top,
+        //当前填单时间
+        var time=new Date();
+        $("#start_time").textbox("setValue",time.Format("yyyy-MM-dd hh:mm:ss"));
+        $('#orderDetail').show();
+        $('#orderDetail').mydialog({
+            title:"处理工单",
+            width: 900,
+            height: 550,
+            top:150,
             modal: true,
-            myButtons: [
+            myButtons:[
                 {
-                    text: '确定',
-                    btnCls: 'btn btn-blue',
-                    handler: function () {
-
-                        $('#logsModal').dialog('close');
-
+                    text:'提交',
+                    btnCls:'btn btn-blue',
+                    handler:function(){
+                        callback(1);
                     }
                 },
+
                 {
-                    text: '关闭',
-                    btnCls: 'btn btn-danger',
-                    handler: function () {
-                        $('#logsModal').dialog('close');
+                    text:'关闭',
+                    btnCls:'btn btn-danger',
+                    handler:function(){
+                        $('#orderDetail').dialog("close");
                     }
                 }
             ]
         });
-
     }
 
     /**
-     * 附件上传
-     * @param modal
+     * 初始化工单类型下拉框
      */
-    function openAttachment(modal) {
+    function getAllProBase(){
+        $("#proc_name").combobox({
+            method: 'get',
+            url: '{{projcfg.appurl}}/api/order_manage/order_list/proBase',
+            valueField:'proc_code',
+            textField:'proc_name',
+            onSelect:function(record){
+                //回填流程编码
+                $("#proc_code").val(record.proc_code);
 
-        var scrollTop = window.pageYOffset
-                || document.documentElement.scrollTop
-                || document.body.scrollTop
-                || 0;
-        var top = ($(window).height() - 400) / 2 + scrollTop;
-
-        $('#attachmentModal').show();
-        $('#attachmentModal').mydialog({
-            title: "<i class='widget-icon fa fa-tags themeprimary'></i>&nbsp;<span class='widget-caption themeprimary'>附件上传</span>",
-            width: 800,
-            height: 400,
-            top: top,
-            modal: true,
-            myButtons: [
-                {
-                    text: '确定',
-                    btnCls: 'btn btn-blue',
-                    handler: function () {
-
-                        var h5 = '';
-                        if ($('[name="attachs_file_names"]').length > 0) {
-                            $('[name="attachs_file_names"]').each(function () {
-                                h5 += '&nbsp;&nbsp;<h5 class="row-title">'+$(this).val()+'</h5>';
-                            });
-                            $("#" + modal + "_attach").html(h5);
+                $.ajax({
+                    url: '{{projcfg.appurl}}/api/order_manage/order_list/procDefineDetail',
+                    type: 'post',
+                    dataType:'json',
+                    data: {proc_code:record.proc_code},
+                    success: function (data) {
+                        if(data.success){
+                            $("#proc_inst_task_name").textbox("setValue",data.data.name);
                         }else{
-                            $("#" + modal + "_attach").html('');
+                            $("#proc_inst_task_name").textbox("setValue","");
+                            $.messager.alert('错误提示',data.error);
                         }
-                        $('#attachmentModal').dialog('close');
+                    }
+                });
+            }
+        });
+
+    }
+
+    function loadOrderListDatagrid(){
+        // 加载工单基本属性列表
+        $('#orderTablelist2').datagrid({
+            url:'{{projcfg.appurl}}/api/order_manage/order_list/list',
+            method:'post',
+            rownumbers:true,
+            striped:true,
+            fitColumns:true,
+            border:false,
+            fit:true,
+            toolbar: '#toolbar1',
+            singleSelect:true,
+            selectOnCheck:true,
+            checkOnSelect:true,
+            columns:[[
+                {"field": "proc_title","title":"工单标题","width":28,
+                    formatter:function(value,row,index){
+                        return "<span title='" + value + "'>" + value + "</span>";
+
+                    }},
+                {"field": "proc_name","title":"所属流程","width":33,
+                    formatter:function(value,row,index){
+                        return "<span title='" + value + "'>" + value + "</span>";
+
+                    }},
+                {"field": "proc_ver","title":"版本","width":13},
+                {"field": "proc_cur_task_name","title":"当前处理节点","width":32,
+                    formatter:function(value,row,index){
+                        return "<span title='" + value + "'>" + value + "</span>";
+
+                    }},
+                {"field": "proc_inst_status","title":"状态","width":18,
+                    formatter:function(value,row,index){
+                        //1 已启用  0 已禁用,2 流转中，3子流程流转中 ,4  归档,5 回退，6 废弃
+                        if(value == '1'){
+                            return "启用";
+                        }else if(value == '2'){
+                            return "流转中";
+                        }else if(value == '3'){
+                            return "子流程流转中";
+                        }else if(value == '4'){
+                            return "归档";
+                        }else if(value == '5'){
+                            return "回退";
+                        }else if(value == '6'){
+                            return "废弃";
+                        }else if(value == '0'){
+                            return "已禁用";
+                        }
 
                     }
                 },
-                {
-                    text: '关闭',
-                    btnCls: 'btn btn-danger',
-                    handler: function () {
-                        $('#attachmentModal').dialog('close');
-                    }
+                {"field": "proc_start_user_name","title":"申请人","width":18,
+                    formatter:function(value,row,index){
+                        return "<span title='" + value + "'>" + value + "</span>";
+
+                    }},
+                {"field": "proc_start_time","title":"创建时间","width":30,
+                    formatter:function(value,row,index){
+                        return  new Date(value).Format("yyyy-MM-dd");
+                    }}
+            ]],
+            onDblClickRow:function(rowIndex, rowData){
+
+                /* $('#orderDetail').dialog('open')*/
+            },
+            onLoadSuccess:function(json) {
+                if(!json.success) {
+                    msgError(json.msg + ',错误代码:' + json.code);
                 }
-            ]
+            },
+            onLoadError:function() {
+                msgError('加载数据出现时发生错误,请稍候重试...');
+            },
+            pagination:true,
+            loadMsg:'正在加载...'
         });
     }
+
 </script>

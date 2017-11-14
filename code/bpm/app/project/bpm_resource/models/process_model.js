@@ -203,6 +203,8 @@ var commonProcessInstTaskSchema = new Schema(
         proc_task_ver :Number,//版本号
         proc_task_name : { type: String,  required: false ,index: true },//流程名
         proc_task_content : String,// 流程派单内容
+        proc_task_code : String,// 流程编码
+        proc_start_time : Date,// 流程发起时间(开始时间)
         proc_vars : String// 流程变量
     },
     {collection: "common_bpm_proc_inst_task"}// mongodb集合名
@@ -247,6 +249,8 @@ var commonProcessTaskHistroySchema = new Schema(
         proc_task_work_day:Number,//天数
         proc_task_ver :Number,//版本号
         proc_task_content : String,// 流程派单内容
+        proc_task_code : String,// 流程编码
+        proc_start_time : Date,// 流程发起时间(开始时间)
         proc_vars : String,// 流程变量
     },
     {collection: "common_bpm_proc_task_histroy"}// mongodb集合名

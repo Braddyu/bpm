@@ -1738,6 +1738,8 @@ exports.do_payout=function(proc_task_id,node_code,user_code,assign_user_code,pro
                                                         var proc_name = r[0].proc_task_name;//流程类型
                                                         var ver = r[0].proc_task_ver;//版本号
                                                         var content = r[0].proc_task_content;//工单内容
+                                                        var proc_task_code = r[0].proc_task_code;//流程编码
+                                                        var start_time = r[0].proc_start_time;//流程开始时间
                                                         // console.log(r);3
                                                         model.$ProcessTaskHistroy.create(arr_c,function (es,ress){
                                                             if(es){
@@ -1822,6 +1824,8 @@ exports.do_payout=function(proc_task_id,node_code,user_code,assign_user_code,pro
                                                                                     condition_task.proc_task_name = proc_name;//流程名
                                                                                     condition_task.proc_task_ver = ver;//版本号
                                                                                     condition_task.proc_task_content = content;//工单内容
+                                                                                    condition_task.proc_task_code = proc_task_code;//流程编码
+                                                                                    condition_task.proc_start_time = start_time;//流程开始时间
 
                                                                                     // var arr = [];
                                                                                     // arr.push(condition_task);
