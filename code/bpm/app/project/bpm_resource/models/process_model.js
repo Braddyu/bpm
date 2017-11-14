@@ -201,7 +201,7 @@ var commonProcessInstTaskSchema = new Schema(
         proc_task_start_name:String,//流程发起人姓名
         proc_task_work_day:Number,//天数
         proc_task_ver :Number,//版本号
-        proc_task_name : { type: String,  required: true ,index: true },//流程名
+        proc_task_name : { type: String,  required: false ,index: true },//流程名
         proc_task_content : String,// 流程派单内容
         proc_vars : String// 流程变量
     },
@@ -243,7 +243,7 @@ var commonProcessTaskHistroySchema = new Schema(
         proc_task_start_user_role_names:String,//流程发起人角色
         proc_task_start_user_role_code:[], //流程发起人id
         proc_task_start_name:String,//流程发起人姓名
-        proc_task_name:{ type: String,  required: true ,index: true },//流程名
+        proc_task_name:{ type: String,  required: false ,index: true },//流程名
         proc_task_work_day:Number,//天数
         proc_task_ver :Number,//版本号
         proc_task_content : String,// 流程派单内容

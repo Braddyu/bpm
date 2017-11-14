@@ -114,7 +114,7 @@ router.route('/process')
             conditionMap['$or'] = [{'proc_code':new RegExp(filterParam1)},{'proc_name':new RegExp(filterParam1)}];
         }
 
-        proc.getProcessList4Page()
+        proc.getProcessList4Page(page, length, conditionMap)
             .then(function(result){
 
                 utils.respJsonData(res, result);
@@ -322,9 +322,9 @@ router.route('/version')
         var _id = req.query.id;
         // 分页参数
         var page = req.query.page;
-        if(page==0){
-            page=1;
-        }
+        // if(page==0){
+        //     page=1;
+        // }
         var length = req.query.rows;
 
         var conditionMap = {};
