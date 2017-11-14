@@ -1737,7 +1737,7 @@ exports.do_payout=function(proc_task_id,node_code,user_code,assign_user_code,pro
                                                         var days = r[0].proc_task_work_day;//天数
                                                         var proc_name = r[0].proc_task_name;//流程类型
                                                         var ver = r[0].proc_task_ver;//版本号
-                                                        var content = r[0].proc_content;//工单内容
+                                                        var content = r[0].proc_task_content;//工单内容
                                                         // console.log(r);3
                                                         model.$ProcessTaskHistroy.create(arr_c,function (es,ress){
                                                             if(es){

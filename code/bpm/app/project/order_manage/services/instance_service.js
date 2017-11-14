@@ -443,6 +443,7 @@ exports.createInstance=function(proc_code,proc_ver,proc_title,param_json_str,pro
                                                                     condition.proc_vars = proc_vars_json;
 
 
+
                                                                     //创建流程任务
                                                                     insertTask(insresult,condition).then(function(taskresult){
                                                                         resolve(taskresult);
@@ -562,10 +563,11 @@ function insertTask(result,condition){
             task.proc_task_start_name = condition.proc_start_user_name;//流程发起人姓名
             task.proc_task_start_user_role_names = condition.proc_start_user_role_names;//流程发起人角色
             task.proc_task_start_user_role_code = condition.proc_start_user_role_code;//流程发起人id
-            task.proc_task_name = condition.proc_name;//流程名
+            task.proc_task_name = condition.proc_task_name;//流程名
             task.proc_task_work_day =condition.proc_work_day;//天数
-            task.proc_task_ver = condition.proc_ver;//版本号
+            task.proc_task_ver = condition.proc_task_ver;//版本号
             task.proc_task_content = condition.proc_content;
+
 
             var arr=[];
             arr.push(task);
