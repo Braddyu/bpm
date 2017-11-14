@@ -109,7 +109,65 @@
 
     </fieldset>
 
-<script type="text/javascript">
+    <legend><b>节点处理</b></legend>
+
+    <table cellpadding="5" align="center" style="border-collapse:separate; border-spacing:0px 5px;">
+        <input  type="hidden"id="proc_code"  name="proc_code"/>
+        <tr>
+            <td align="right" class="tdLabel">当前节点:</td>
+            <td colspan="3"><input disabled style="width: 670px" class="easyui-textbox" name="proc_inst_task_name" id="proc_inst_task_name" ></input></td>
+
+
+
+        </tr>
+        <tr id="tr_4">
+            <td align="right" class="tdLabel">操作:</td>
+            <td colspan="3" class="tdLabel">
+                <select class="easyui-combobox"
+                        style="width: 80px;"   panelHeight="auto">
+                    <option value="1">通过</option>
+                    <option value="0">拒绝</option>
+
+                </select>
+
+
+            </td>
+        </tr>
+        <tr id="tr_5">
+            <td align="right" class="tdLabel">下一节点处理人:</td>
+            <td colspan="3"><select class="easyui-combobox"
+                                    id="nextJobHandler" name="nextJobHandler" style="width: 180px;">
+
+            </select> </td>
+
+
+        </tr>
+
+
+        <tr>
+            <td align="right" class="tdLabel">处理意见:</td>
+            <td colspan="2"><input name="proc_inst_task_remark" class="easyui-textbox"  labelPosition="top" multiline="true" style="width: 670px; height: 54px; resize: none;"/>
+
+            </td>
+
+        </tr>
+        <tr>
+            <td align="right" class="tdLabel">附件上传:</td>
+            <td>  <input class="easyui-filebox"labelPosition="top" data-options="prompt:'选择文件...',buttonText:'选择'" style="width:250px"/>
+            </td>
+        </tr>
+
+
+    </table>
+    </fieldset>
+
+    </form>
+</div>
+
+
+
+
+    <script type="text/javascript">
     $(document).ready(function () {
 
         //加载我的待办列表
@@ -158,33 +216,32 @@
             selectOnCheck:true,
             checkOnSelect:true,
             columns:[[
-                {"field": "proc_inst_task_title","title":"工单标题","width":31,
+                {"field": "proc_inst_task_title","title":"工单标题","width":50,
                     formatter:function(value,row,index){
                         return "<span title='" + value + "'>" + value + "</span>";
 
                     }},
-                {"field": "proc_inst_task_type","title":"所属流程","width":25,
-                    formatter:function(value,row,index){
-                        return "<span title='" + value + "'>" + value + "</span>";
-
-                    }
-                },
-                {"field": "proc_ver","title":"版本","width":15,
+                {"field": "proc_task_name","title":"所属流程","width":40,
                     formatter:function(value,row,index){
                         return "<span title='" + value + "'>" + value + "</span>";
 
                     }},
-                {"field": "proc_inst_task_name","title":"当前处理节点","width":28,
+                {"field": "proc_task_ver","title":"版本","width":20,
                     formatter:function(value,row,index){
                         return "<span title='" + value + "'>" + value + "</span>";
 
                     }},
-                {"field": "proc_task_start_name","title":"申请人","width":20,
+                {"field": "proc_inst_task_name","title":"当前处理节点","width":55,
                     formatter:function(value,row,index){
                         return "<span title='" + value + "'>" + value + "</span>";
 
                     }},
-                {"field": "proc_inst_task_arrive_time","title":"创建时间","width":26,
+                {"field": "proc_task_start_name","title":"申请人","width":50,
+                    formatter:function(value,row,index){
+                        return "<span title='" + value + "'>" + value + "</span>";
+
+                    }},
+                {"field": "proc_inst_task_arrive_time","title":"创建时间","width":50,
                     formatter:function(value,row,index){
                         return  new Date(value).Format("yyyy-MM-dd ");
                     }}
@@ -301,34 +358,12 @@
         });
     }
 
-    /**
-     * 初始化工单类型下拉框
-     */
     function getAllProBase(){
-        $("#proc_name").combobox({
+        $("#proc_task_code").combobox({
             method: 'get',
             url: '{{projcfg.appurl}}/api/order_manage/order_list/proBase',
             valueField:'proc_code',
-            textField:'proc_name',
-            onSelect:function(record){
-                //回填流程编码
-                $("#proc_code").val(record.proc_code);
-
-                $.ajax({
-                    url: '{{projcfg.appurl}}/api/order_manage/order_list/procDefineDetail',
-                    type: 'post',
-                    dataType:'json',
-                    data: {proc_code:record.proc_code},
-                    success: function (data) {
-                        if(data.success){
-                            $("#proc_inst_task_name").textbox("setValue",data.data.name);
-                        }else{
-                            $("#proc_inst_task_name").textbox("setValue","");
-                            $.messager.alert('错误提示',data.error);
-                        }
-                    }
-                });
-            }
+            textField:'proc_name'
         });
 
     }
