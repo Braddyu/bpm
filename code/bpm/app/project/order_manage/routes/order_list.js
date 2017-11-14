@@ -40,7 +40,6 @@ router.route('/proBase').get(function(req,res){
             console.log("获取下拉框结果:",result.success);
             if(result.success){
                 utils.respJsonData(res, result.data);
-
             }
         })
         .catch(function(err){
@@ -53,9 +52,13 @@ router.route('/proBase').get(function(req,res){
  * 获取对应流程的第二节点信息，即发起工单的开始节点信息
  */
 router.route('/procDefineDetail').post(function(req,res){
+    //流程编码
     var proc_code=req.body.proc_code;
-    console.log("开始获取对应流程的详细信息.......");
-    service.getProcDefineDetail(proc_code)
+    //当前节点
+    var proc_inst_task_code=req.body.proc_inst_task_code;
+
+    console.log("开始获取对应流程的详细信息.......","proc_code:",proc_code,";proc_inst_task_code:",proc_inst_task_code);
+    service.getProcDefineDetail(proc_code,proc_inst_task_code)
         .then(function(result){
             console.log("获取获取对应流程的详细信息结果:",result);
              utils.respJsonData(res, result);
@@ -71,20 +74,19 @@ router.route('/procDefineDetail').post(function(req,res){
  */
 router.route("/createAndAcceptAssign").post(function(req,res){
 
-    // 分页条件
     var proc_code = req.body.proc_code;
-    // 分页参数
     var proc_ver = req.body.proc_ver;
-    var proc_title = req.body.title;
-    var user_code = req.body.user_no;
+    var proc_title = req.body.proc_title;
+    var user_code = req.session.current_user.user_no;
     var assign_user_no=req.body.assign_user_no;
-    var userName=req.body.user_name;
-    var node_code=req.body.node_code;//要流转到的节点编号
+    var userName=req.session.current_user.user_name;
+    //var node_code=req.body.node_code;//要流转到的节点编号
+    var node_code='processDefineDiv_node_3';
     var biz_vars=req.body.biz_vars;
     var proc_vars=req.body.proc_vars;
     var memo=req.body.memo;
-    var proc_day=req.body.day;//天数
-    var proc_content = req.body.content;
+    var proc_day=req.body.proc_work_day;//天数
+    var proc_content = req.body.proc_content;
 
     // 调用
     //p-108 渠道酬金 undefined 00000 管理员 processDefineDiv_node_3 00000 {"audit_id":"1800","table_name":"ywcj_workbench_audit"}
@@ -98,7 +100,7 @@ router.route("/createAndAcceptAssign").post(function(req,res){
                         console.log("11111111111",task_id,node_code,user_code,assign_user_no,proc_title,biz_vars,proc_vars);
                         //  nodeTransferService.assign_transfer(task_id,node_code,user_code,assign_user_no,proc_title,biz_vars,proc_vars,memo).then(function(results){
                         nodeTransferService.do_payout(task_id,node_code,user_code,assign_user_no,proc_title,biz_vars,proc_vars,memo).then(function(results){
-                            utils.respJsonData(res,results);
+                        utils.respJsonData(res,results);
                         });
                     }else{
                         utils.respJsonData(res,rs);
@@ -107,9 +109,7 @@ router.route("/createAndAcceptAssign").post(function(req,res){
                 })
             }else{
                 utils.respJsonData(res,result);
-
             }
-
         }).catch(function(err){
         console.log('err');
         // console.log(err);

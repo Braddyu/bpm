@@ -39,11 +39,13 @@
 </div>
 
 <div id="orderDetail"  class="mydialog"  >
+    <form id="draftsDetail" method="post" enctype="multipart/form-data">
     <fieldset>
         <legend ><b>任务基本信息</b></legend>
-        <form id="draftsDetail" method="post" enctype="multipart/form-data">
+
             <table cellpadding="5" align="center" style="border-collapse:separate; border-spacing:0px 5px;">
                 <tr>
+                    <input  type="hidden"id="_id"  name="_id"/>
                     <td align="right" class="tdLabel">工单标题:</td>
                     <td colspan="3"><input style="width: 665px" class="easyui-textbox"data-options="required:true, missingMessage:'请输入工单标题'" id="proc_title" name="proc_title" ></input></td>
 
@@ -51,10 +53,10 @@
                 </tr>
                 <tr>
                     <td align="right" class="tdLabel">工单类型:</td>
-                    <td> <input class="easyui-combobox" name="proc_name" id="proc_name"required="true"  style="width: 280px"></td>
+                    <td> <input class="easyui-combobox"data-options="required:true, missingMessage:'请选择工单类型'" name="proc_code" id="proc_code"  style="width: 280px"></td>
 
                     <td align="right" class="tdLabel">工作天数:</td>
-                    <td><input style="width: 280px"class="easyui-numberbox"data-options="required:true, missingMessage:'请输入工作天数'"  data-options="precision:0" id="proc_work_day" name="proc_work_day"
+                    <td><input style="width: 280px"class="easyui-numberbox" data-options="precision:0,required:true, missingMessage:'请输入工作天数'"id="proc_work_day" name="proc_work_day"
                     ></input></td>
                 </tr>
                 <tr>
@@ -98,7 +100,7 @@
         <legend><b>节点处理</b></legend>
 
         <table cellpadding="5" align="center" style="border-collapse:separate; border-spacing:0px 5px;">
-            <input  type="hidden"id="proc_code"  name="proc_code"/>
+            <input  type="hidden"id="proc_name"  name="proc_name"/>
             <tr>
                 <td align="right" class="tdLabel">当前节点:</td>
                 <td colspan="3"><input disabled style="width: 670px" class="easyui-textbox" name="proc_inst_task_name" id="proc_inst_task_name" ></input></td>
@@ -139,8 +141,8 @@
             </tr>
             <tr>
                 <td align="right" class="tdLabel">附件上传:</td>
-                <td>  <input class="easyui-filebox"labelPosition="top" data-options="prompt:'选择文件...',buttonText:'选择'" style="width:250px"/>
-                </td>
+                <td>
+                    <input class="easyui-filebox"labelPosition="top" data-options="prompt:'选择文件...',buttonText:'选择'" style="width:250px"/>                </td>
             </tr>
 
 
@@ -148,6 +150,7 @@
     </fieldset>
 
     </form>
+
 </div>
 
 
@@ -162,17 +165,23 @@
         loadOrderListDatagrid();
         //初始化工单类型下拉框
         getAllProBase();
-    });
-    //填写工作天数，给完成时间赋值
-    $('#proc_work_day').textbox({
-        onChange: function(value) {
+        //填写工作天数，给完成时间赋值
+        $('#proc_work_day').textbox({
+            onChange: function(value) {
+                if(value!=''&&value!=null){
+                    var time=new Date($("#start_time").textbox("getValue"));
+                    var work_day= parseInt(value)  ;
+                    time.setDate(time.getDate()+work_day)
+                    $("#end_time").textbox("setValue",time.Format("yyyy-MM-dd hh:mm:ss"));
+                }else{
+                    $("#end_time").textbox("setValue","");
+                }
 
-            var work_day= parseInt($("#proc_work_day").textbox("getValue"))  ;
-            time.setDate(time.getDate()+work_day)
-            $("#end_time").textbox("setValue",time.Format("yyyy-MM-dd hh:mm:ss"));
 
-        }
+            }
+        });
     });
+
     //时间格式化:new Date().Format("yyyy-MM-dd hh:mm:ss");
     Date.prototype.Format = function (fmt) { //author: meizz
         var o = {
@@ -210,13 +219,18 @@
                         return "<span title='" + value + "'>" + value + "</span>";
 
                     }},
+                {"field": "proc_code","title":"所属流程",hidden:true},
                 {"field": "proc_name","title":"所属流程","width":50},
-                {"field": "proc_start_user_name","title":"工单内容","width":50},
-                {"field": "proc_start_time","title":"创建时间","width":80,
+                {"field": "proc_content","title":"工单内容","width":50,
+                    formatter:function(value,row,index){
+                    return "<span title='" + value + "'>" + value + "</span>";
+
+                }},
+                {"field": "dtafts_create_time","title":"创建时间","width":80,
                     formatter:function(value,row,index){
                         return  new Date(value).Format("yyyy-MM-dd hh:mm:ss");
                     }},
-                {"field": "proc_name1","title":"发起人","width":50},
+                {"field": "dtafts_user_name","title":"发起人","width":50},
 
             ]],
             onDblClickRow:function(rowIndex, rowData){
@@ -238,8 +252,9 @@
 
     //新增工单
     function addDrafts(){
+     $('#draftsDetail')[0].reset();
 
-        $('#orderDetail').form('clear');
+//        $('#draftsDetail').form('clear');
         //当前登录用户名
         var user_name = '{{currentUser.user_name}}';
         //用户角色
@@ -290,14 +305,14 @@
      * 初始化工单类型下拉框
      */
     function getAllProBase(){
-        $("#proc_name").combobox({
+        $("#proc_code").combobox({
             method: 'get',
             url: '{{projcfg.appurl}}/api/order_manage/order_list/proBase',
             valueField:'proc_code',
             textField:'proc_name',
             onSelect:function(record){
-                //回填流程编码
-                $("#proc_code").val(record.proc_code);
+                //回填流程名称
+                $("#proc_name").val(record.proc_name);
 
                 $.ajax({
                     url: '{{projcfg.appurl}}/api/order_manage/order_list/procDefineDetail',
@@ -322,15 +337,123 @@
      * 暂存草稿箱
      */
     function saveDrafts(){
-    alert(JSON.stringify($('#draftsDetail').serializeJson()));
+        // 验证表单
+        var validate = $('#draftsDetail').form('validate');
+        if(!validate) {
+            return false;
+        }
         $.ajax({
             url: '{{projcfg.appurl}}/api/order_manage/order_drafts/saveDrafts',
             type: 'post',
             dataType:'json',
             data: $('#draftsDetail').serializeJson(),
             success: function (data) {
+              if(data.success){
+                  $('#orderDetail').dialog("close");
+                  $('#orderTablelist').datagrid('reload');
+                  $.messager.alert('提示','保存成功');
 
+
+              }else{
+                  $.messager.alert('错误提示',data.error);
+
+              }
             }
         });
+    }
+
+    function editDrafts(){
+        $('#draftsDetail')[0].reset();
+
+        // $('#orderDetail').form('clear');
+        //当前登录用户名
+        var user_name = '{{currentUser.user_name}}';
+        //用户角色
+        var user_roles = '{{currentUserRole.role_name}}';
+        //用户名
+        $("#start_name").textbox("setValue",user_name);
+        //用户角色
+        $("#user_role_names").textbox("setValue",user_roles);
+        $("#handle").combobox("setValue","1");
+
+        //当前填单时间
+        var time=new Date();
+        $("#start_time").textbox("setValue",time.Format("yyyy-MM-dd hh:mm:ss"));
+        var row = $('#orderTablelist').datagrid('getSelected');
+        //回填当前节点
+        $.ajax({
+            url: '{{projcfg.appurl}}/api/order_manage/order_list/procDefineDetail',
+            type: 'post',
+            dataType:'json',
+            data: {proc_code:row.proc_code},
+            success: function (data) {
+                if(data.success){
+                    $("#proc_inst_task_name").textbox("setValue",data.data.name);
+                }else{
+                    $("#proc_inst_task_name").textbox("setValue","");
+                    $.messager.alert('错误提示',data.error);
+                }
+            }
+        });
+
+        $('#draftsDetail').form('load', row);
+        $('#orderDetail').show();
+        $('#orderDetail').mydialog({
+            title:"新增工单",
+            width: 900,
+            height: 550,
+            top:150,
+            modal: true,
+            myButtons:[
+                {
+                    text:'提交',
+                    btnCls:'btn btn-blue',
+                    handler:function(){
+                        callback(1);
+                    }
+                },
+                {
+                    text:'暂存',
+                    btnCls:'btn btn-blue',
+                    handler:function(){
+                        saveDrafts();
+                    }
+                },
+                {
+                    text:'关闭',
+                    btnCls:'btn btn-danger',
+                    handler:function(){
+                        $('#orderDetail').dialog("close");
+                    }
+                }
+            ]
+        });
+    }
+    /**
+     * 删除草稿箱
+     */
+    function deleteDrafts(){
+        var row = $('#orderTablelist').datagrid('getSelected');
+        if(row){
+            //删除工单
+            $.ajax({
+                url: '{{projcfg.appurl}}/api/order_manage/order_drafts/deleteDrafts',
+                type: 'post',
+                dataType:'json',
+                data: {_id:row._id},
+                success: function (data) {
+                    if(data.success){
+                        $('#orderTablelist').datagrid('reload');
+                        $.messager.alert('提示','删除成功');
+                    }else{
+                        $.messager.alert('错误提示',data.error);
+                    }
+                }
+            });
+        }else{
+            $.messager.alert('提示','请先选择');
+
+        }
+
     }
 </script>

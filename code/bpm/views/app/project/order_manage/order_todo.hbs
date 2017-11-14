@@ -38,20 +38,20 @@
 <div id="orderDetail"  class="mydialog"  >
     <fieldset>
         <legend ><b>任务基本信息</b></legend>
-        <form id="orderDetail" method="post" enctype="multipart/form-data">
+        <form id="orderDetailForm" method="post" enctype="multipart/form-data">
             <table cellpadding="5" align="center" style="border-collapse:separate; border-spacing:0px 5px;">
                 <tr>
                     <td align="right" class="tdLabel">工单标题:</td>
-                    <td colspan="3"><input style="width: 665px" class="easyui-textbox"data-options="required:true, missingMessage:'请输入工单标题'" id="proc_title" name="proc_title" ></input></td>
+                    <td colspan="3"><input disabled style="width: 665px" class="easyui-textbox"data-options="required:true, missingMessage:'请输入工单标题'" id="proc_inst_task_title" name="proc_inst_task_title" ></input></td>
 
 
                 </tr>
                 <tr>
                     <td align="right" class="tdLabel">工单类型:</td>
-                    <td> <input class="easyui-combobox" name="proc_name" id="proc_name"required="true"  style="width: 280px"></td>
+                    <td> <input disabled class="easyui-combobox" name="proc_name" id="proc_name"required="true"  style="width: 280px"></td>
 
                     <td align="right" class="tdLabel">工作天数:</td>
-                    <td><input style="width: 280px"class="easyui-numberbox"data-options="required:true, missingMessage:'请输入工作天数'"  data-options="precision:0" id="proc_work_day" name="proc_work_day"
+                    <td><input disabled style="width: 280px"class="easyui-numberbox"data-options="required:true, missingMessage:'请输入工作天数'"  data-options="precision:0" id="proc_work_day" name="proc_work_day"
                     ></input></td>
                 </tr>
                 <tr>
@@ -107,9 +107,9 @@
                 <td align="right" class="tdLabel">操作:</td>
                 <td colspan="3" class="tdLabel">
                     <select class="easyui-combobox"
-                            style="width: 80px;"  disabled panelHeight="auto">
+                            style="width: 80px;"   panelHeight="auto">
                         <option value="1">通过</option>
-                        <!--  <option value="0">不通过</option>-->
+                        <option value="0">拒绝</option>
 
                     </select>
 
@@ -205,7 +205,7 @@
                     formatter:function(value,row,index){
                         return "<span title='" + value + "'>" + value + "</span>";
 
-                    }},
+                }},
                 {"field": "proc_inst_task_type","title":"所属流程","width":50},
                 {"field": "proc_ver","title":"版本","width":20},
                 {"field": "proc_inst_task_name","title":"当前处理节点","width":50},
@@ -216,8 +216,25 @@
                     }}
             ]],
             onDblClickRow:function(rowIndex, rowData){
+                $('#orderDetailForm').form('load', rowData);
+                $('#orderDetail').show();
+                $('#orderDetail').mydialog({
+                    title:"查看工单",
+                    width: 900,
+                    height: 550,
+                    top:150,
+                    modal: true,
+                    myButtons:[
 
-                /* $('#orderDetail').dialog('open')*/
+                        {
+                            text:'关闭',
+                            btnCls:'btn btn-danger',
+                            handler:function(){
+                                $('#orderDetail').dialog("close");
+                            }
+                        }
+                    ]
+                });
             },
             onLoadSuccess:function(json) {
                 if(!json.success) {
