@@ -39,20 +39,20 @@
 <div id="orderDetail"  class="mydialog"  >
     <fieldset>
         <legend ><b>任务基本信息</b></legend>
-        <form id="orderDetail" method="post" enctype="multipart/form-data">
+        <form id="orderDetailForm" method="post" enctype="multipart/form-data">
             <table cellpadding="5" align="center" style="border-collapse:separate; border-spacing:0px 5px;">
                 <tr>
                     <td align="right" class="tdLabel">工单标题:</td>
-                    <td colspan="3"><input style="width: 665px" class="easyui-textbox"data-options="required:true, missingMessage:'请输入工单标题'" id="proc_title" name="proc_title" ></input></td>
+                    <td colspan="3"><input disabled style="width: 665px" class="easyui-textbox"  name="proc_inst_task_title" ></input></td>
 
 
                 </tr>
                 <tr>
                     <td align="right" class="tdLabel">工单类型:</td>
-                    <td> <input class="easyui-combobox" name="proc_name" id="proc_name"required="true"  style="width: 280px"></td>
+                    <td> <input disabled class="easyui-combobox" name="proc_code" style="width: 280px"></td>
 
                     <td align="right" class="tdLabel">工作天数:</td>
-                    <td><input style="width: 280px"class="easyui-numberbox"data-options="required:true, missingMessage:'请输入工作天数'"  data-options="precision:0" id="proc_work_day" name="proc_work_day"
+                    <td><input disabled style="width: 280px"class="easyui-numberbox" name="proc_task_work_day"
                     ></input></td>
                 </tr>
                 <tr>
@@ -69,20 +69,20 @@
                 <tr>
                     <td align="right" class="tdLabel">发起人角色:</td>
                     <td><input disabled style="width: 280px"class="easyui-textbox"
-                               id="user_role_names" ></input></td>
+                               name="proc_task_start_user_role_names" ></input></td>
 
                     <td align="right" class="tdLabel">发起人:</td>
                     <td><input disabled style="width: 280px" class="easyui-textbox"
-                               id="start_name" ></input></td>
+                               name="proc_task_start_name" ></input></td>
 
                 </tr>
 
 
                 <tr>
                     <td align="right" class="tdLabel">派单内容:</td>
-                    <td colspan="3"><input
+                    <td colspan="3"><input disabled
                             style="width: 670px; height: 50px; resize: none;" cols="30"
-                            name="proc_content" id="proc_content" rows="4"  class="easyui-textbox"  labelPosition="top" multiline="true"/>
+                            name="proc_task_content" rows="4"  class="easyui-textbox"  labelPosition="top" multiline="true"/>
 
                     </td>
                 </tr>
@@ -93,56 +93,16 @@
 
     <fieldset id="handlerTable">
 
-        <legend><b>节点处理</b></legend>
-
-        <table cellpadding="5" align="center" style="border-collapse:separate; border-spacing:0px 5px;">
-            <input  type="hidden"id="proc_code"  name="proc_code"/>
+        <legend><b>流程日志</b></legend>
+        <table cellpadding="5" align="center">
             <tr>
-                <td align="right" class="tdLabel">当前节点:</td>
-                <td colspan="3"><input disabled style="width: 670px" class="easyui-textbox" name="proc_inst_task_name" id="proc_inst_task_name" ></input></td>
-
-
-
-            </tr>
-            <tr id="tr_4">
-                <td align="right" class="tdLabel">操作:</td>
-                <td colspan="3" class="tdLabel">
-                    <select class="easyui-combobox"
-                            style="width: 80px;"  disabled panelHeight="auto">
-                        <option value="1">通过</option>
-                        <!--  <option value="0">不通过</option>-->
-
-                    </select>
-
-
+                <td colspan="4">
+                    <table id="dg"></table>
                 </td>
             </tr>
-            <tr id="tr_5">
-                <td align="right" class="tdLabel">下一节点处理人:</td>
-                <td colspan="3"><select class="easyui-combobox"
-                                        id="nextJobHandler" name="nextJobHandler" style="width: 180px;">
-
-                </select> </td>
-
-
-            </tr>
-
-
-            <tr>
-                <td align="right" class="tdLabel">处理意见:</td>
-                <td colspan="2"><input name="proc_inst_task_remark" class="easyui-textbox"  labelPosition="top" multiline="true" style="width: 670px; height: 54px; resize: none;"/>
-
-                </td>
-
-            </tr>
-            <tr>
-                <td align="right" class="tdLabel">附件上传:</td>
-                <td>  <input class="easyui-filebox"labelPosition="top" data-options="prompt:'选择文件...',buttonText:'选择'" style="width:250px"/>
-                </td>
-            </tr>
-
 
         </table>
+
     </fieldset>
 
     </form>
@@ -203,25 +163,71 @@
             checkOnSelect:true,
             columns:[[
                 {"field":"_id",checkbox:true},
+                {"field":"proc_inst_id",hidden:true},
                 {"field": "proc_inst_task_title","title":"工单标题","width":100,
                     formatter:function(value,row,index){
                         return "<span title='" + value + "'>" + value + "</span>";
 
                     }},
-                {"field": "proc_name","title":"工单类型","width":50},
-                {"field": "proc_ver","title":"版本","width":20},
+                {"field": "proc_task_name","title":"工单类型","width":50},
                 {"field": "proc_inst_task_remark","title":"处理意见","width":50},
                 {"field": "proc_inst_task_name","title":"处理节点","width":50},
                 {"field": "proc_inst_task_complete_time","title":"处理时间","width":80,
                     formatter:function(value,row,index){
                         return  new Date(value).Format("yyyy-MM-dd hh:mm:ss");
                     }},
-                {"field": "proc_cur_task_name","title":"发起人","width":50}
+                {"field": "proc_task_start_name","title":"发起人","width":50}
 
             ]],
             onDblClickRow:function(rowIndex, rowData){
+                $('#orderDetailForm')[0].reset();
+                $('#orderDetailForm').form('load', rowData);
+                $('#orderDetail').show();
+                $('#orderDetail').mydialog({
+                    title:"查看工单",
+                    width: 900,
+                    height: 550,
+                    top:150,
+                    modal: true,
+                    myButtons:[
 
-                /* $('#orderDetail').dialog('open')*/
+                        {
+                            text:'关闭',
+                            btnCls:'btn btn-danger',
+                            handler:function(){
+                                $('#orderDetail').dialog("close");
+                            }
+                        }
+                    ]
+                });
+                $('#dg').datagrid({
+                    url:'{{projcfg.appurl}}/api/order_manage/order_complete/logs',
+                    width:800,
+                    queryParams: {
+                        inst_id: rowData.proc_inst_id
+                    },
+                    method:'post',
+                    columns:[[
+                        {field:'proc_inst_task_name',title:'任务名称',width:130},
+                        {field:'proc_inst_task_assignee_name',title:'处理人',width:100},
+                        {field:'proc_inst_task_complete_time',title:'处理时间',width:125,
+                            formatter:function(value,row,index){
+                                if(value!=null){
+                                    var isoDateStr = value;
+                                    var d2 = new Date(isoDateStr);
+                                    return new Date(d2).Format("yyyy-MM-dd hh:mm:ss");
+                                }else{
+                                    return '';
+                                }
+
+                            }},
+                        {field:'proc_inst_task_remark',title:'处理意见',width:350,
+                            halign:'center',
+                            formatter: function (value) {
+                                return "<span title='" + value + "'>" + value + "</span>";
+                            }}
+                    ]]
+                });
             },
             onLoadSuccess:function(json) {
                 if(!json.success) {

@@ -1756,7 +1756,7 @@ exports.do_payout=function(proc_task_id,node_code,user_code,assign_user_code,pro
                                                                                 var user_no = users[i];
                                                                                 console.log(user_no,'qqqqqqqqqqqqqqqqqqqqqqqqqq');
                                                                                 let resultss = await  model_user.$User.find({"user_no": user_no});
-
+                                                                                console.log("@@@@@@@@@@@@@@@",resultss);
                                                                                 if (resultss.length>0) {
 
                                                                                     var user_org = resultss[0].user_org;
