@@ -49,7 +49,7 @@ router.route('/list').post(function(req,res){
 router.route("/logs").post(function(req,res){
     console.log("开始获取流程日志...")
     var inst_id=req.body.inst_id;
-    var user_no=req.session.current_user.user_no;
+    var user_no='';
     var page=req.body.page;
     var rows=req.body.rows;
     console.log("inst_id:",inst_id)

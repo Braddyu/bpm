@@ -49,7 +49,7 @@
                 </tr>
                 <tr>
                     <td align="right" class="tdLabel">工单类型:</td>
-                    <td> <input disabled class="easyui-combobox" name="proc_code" style="width: 280px"></td>
+                    <td> <input disabled class="easyui-combobox" id="proc_task_code" name="proc_task_code" style="width: 280px"></td>
 
                     <td align="right" class="tdLabel">工作天数:</td>
                     <td><input disabled style="width: 280px"class="easyui-numberbox" name="proc_task_work_day"
@@ -58,7 +58,7 @@
                 <tr>
                     <td align="right" class="tdLabel">开始时间:</td>
                     <td><input disabled style="width: 280px"class="easyui-textbox"
-                               id="start_time" name="start_time"></input></td>
+                             id="proc_start_time" name="proc_start_time"></input></td>
                     <td align="right" class="tdLabel">完成时间:</td>
                     <td><input disabled style="width: 280px"  class="easyui-textbox"
                                id="end_time" ></input></td>
@@ -119,16 +119,7 @@
         //加载已办工单列表
         loadOrderCompleteteListDatagrid();
         //初始化工单类型下拉框
-      //  getAllProBase();
-    });
-    //填写工作天数，给完成时间赋值
-    $('#proc_work_day').textbox({
-        onChange: function(value) {
-            var work_day= parseInt($("#proc_work_day").textbox("getValue"))  ;
-            time.setDate(time.getDate()+work_day)
-            $("#end_time").textbox("setValue",time.Format("yyyy-MM-dd hh:mm:ss"));
-
-        }
+         getAllProBase();
     });
     //时间格式化:new Date().Format("yyyy-MM-dd hh:mm:ss");
     Date.prototype.Format = function (fmt) { //author: meizz
@@ -163,7 +154,6 @@
             checkOnSelect:true,
             columns:[[
                 {"field":"_id",checkbox:true},
-                {"field":"proc_inst_id",hidden:true},
                 {"field": "proc_inst_task_title","title":"工单标题","width":100,
                     formatter:function(value,row,index){
                         return "<span title='" + value + "'>" + value + "</span>";
@@ -182,6 +172,11 @@
             onDblClickRow:function(rowIndex, rowData){
                 $('#orderDetailForm')[0].reset();
                 $('#orderDetailForm').form('load', rowData);
+                var time=new Date(rowData.proc_start_time);
+                var work_day= parseInt(rowData.proc_task_work_day)  ;
+                $("#proc_start_time").textbox("setValue",time.Format("yyyy-MM-dd hh:mm:ss"));
+                time.setDate(time.getDate()+work_day)
+                $("#end_time").textbox("setValue",time.Format("yyyy-MM-dd hh:mm:ss"));
                 $('#orderDetail').show();
                 $('#orderDetail').mydialog({
                     title:"查看工单",
@@ -200,6 +195,7 @@
                         }
                     ]
                 });
+                //流程日志
                 $('#dg').datagrid({
                     url:'{{projcfg.appurl}}/api/order_manage/order_complete/logs',
                     width:800,
@@ -242,82 +238,17 @@
         });
     }
 
-    //新增工单
-    function addNewOrder(){
-        $('#orderDetail').form('clear');
-        //当前登录用户名
-        var user_name = '{{currentUser.user_name}}';
-        //用户角色
-        var user_roles = '{{currentUserRole.role_name}}';
-        //用户名
-        $("#start_name").textbox("setValue",user_name);
-        //用户角色
-        $("#user_role_names").textbox("setValue",user_roles);
 
-        //当前填单时间
-        var time=new Date();
-        $("#start_time").textbox("setValue",time.Format("yyyy-MM-dd hh:mm:ss"));
-        $('#orderDetail').show();
-        $('#orderDetail').mydialog({
-            title:"新增工单",
-            width: 900,
-            height: 550,
-            top:150,
-            modal: true,
-            myButtons:[
-                {
-                    text:'提交',
-                    btnCls:'btn btn-blue',
-                    handler:function(){
-                        callback(1);
-                    }
-                },
-                {
-                    text:'暂存',
-                    btnCls:'btn btn-blue',
-                    handler:function(){
-                        callback(2);
-                    }
-                },
-                {
-                    text:'关闭',
-                    btnCls:'btn btn-danger',
-                    handler:function(){
-                        $('#orderDetail').dialog("close");
-                    }
-                }
-            ]
-        });
-    }
 
     /**
      * 初始化工单类型下拉框
      */
     function getAllProBase(){
-        $("#proc_name").combobox({
+        $("#proc_task_code").combobox({
             method: 'get',
             url: '{{projcfg.appurl}}/api/order_manage/order_list/proBase',
             valueField:'proc_code',
-            textField:'proc_name',
-            onSelect:function(record){
-                //回填流程编码
-                $("#proc_code").val(record.proc_code);
-
-                $.ajax({
-                    url: '{{projcfg.appurl}}/api/order_manage/order_list/procDefineDetail',
-                    type: 'post',
-                    dataType:'json',
-                    data: {proc_code:record.proc_code},
-                    success: function (data) {
-                        if(data.success){
-                            $("#proc_inst_task_name").textbox("setValue",data.data.name);
-                        }else{
-                            $("#proc_inst_task_name").textbox("setValue","");
-                            $.messager.alert('错误提示',data.error);
-                        }
-                    }
-                });
-            }
+            textField:'proc_name'
         });
 
     }
