@@ -72,16 +72,7 @@ router.get('/process_chart', function(req, res, next) {
 
 });
 
-//展示流程进程
-router.get('/show/progressed', function(req, res, next) {
 
-    res.render('bpm/process/process_showChart', {
-        title: '首页' ,
-        subtitle: 'Hello',
-        layout:'themes/admin/blank',
-        //menuid:'/home',
-    });
-});
 
 
 router.route('/processChangeStatus/:id')

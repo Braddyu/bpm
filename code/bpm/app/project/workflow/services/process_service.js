@@ -259,7 +259,6 @@ exports.getProcessList= function(page, size, conditionMap) {
 
 exports.getProcessList4Page= function(page, size, conditionMap) {
 
-
     var p = new Promise(function(resolve,reject){
 
         utils.pagingQuery4Eui(model.$ProcessBase, page, size, conditionMap, resolve, '',  {});
@@ -268,7 +267,6 @@ exports.getProcessList4Page= function(page, size, conditionMap) {
 
     return p;
 };
-
 
 
 /**
