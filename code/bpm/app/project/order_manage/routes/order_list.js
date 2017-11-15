@@ -166,15 +166,21 @@ router.route("/assignTask").post(function(req,res){
 /**
  * 完成任务
  */
-router.route('/complete')
-// -------------------------------完成任务接口-------------------------------
-    .post(function(req,res) {
-        var id = req.body.id;//任务id
+router.route('/complete') .post(function(req,res) {
+        console.log("开始完成任务...");
+        var id = req.body._id;//任务id
         var memo = req.body.memo;//处理意见
-        var user_code = req.body.user_no;//处理人编码
-        var params = req.body.params;//流转参数
-        var biz_vars = req.body.biz_vars;//业务变量
-        var proc_vars = req.body.proc_vars;//流程变量
+        var user_code = req.session.current_user.user_no;//处理人编码
+        var handle = req.body.handle;//操作
+        var params={};//流转参数
+        //通过或者归档
+        if(handle=='1'){
+            params.flag=true;
+         }else{
+            params.flag=false;
+        }
+        var biz_vars;
+        var proc_vars;
         // 任务是否为空
         if(!id) {
             utils.respMsg(res, false, '2001', '任务ID不能为空。', null, null);
@@ -192,14 +198,14 @@ router.route('/complete')
                     utils.respJsonData(res, result1);
                 }).catch(function(err_inst){
                     // console.log(err_inst);
-                    logger.error("route-transfer","流程流转异常",err_inst);
+                    console.log("route-transfer","流程流转异常",err_inst);
                     utils.respMsg(res, false, '1000', '流程流转异常', null, err_inst);
                 });
             }else{
                 utils.respJsonData(res, taskresult);
             }
         }).catch(function(err_inst){
-            logger.error("route-getTaskById","获取任务异常",err_inst);
+            console.log("route-getTaskById","获取任务异常",err_inst);
             utils.respMsg(res, false, '1000', '获取任务异常', null, err_inst);
         });
     });
