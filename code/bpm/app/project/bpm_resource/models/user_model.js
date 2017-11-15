@@ -32,7 +32,7 @@ var userSchema = new Schema(
             theme_skin : String,// 使用皮肤
             user_photo : String,// 用户头像/照片
             user_roles : [{type: Schema.Types.ObjectId}],// 菜单访问权限使用角色
-            process_roles:[{type:Schema.Types.ObjectId}],//流程使用的角色
+            sys_roles:[{type:Schema.Types.ObjectId}],//流程使用的角色
             boss_id:String,//对接外部系统专用的 Boss_id
             smart_visual_sys_user_id:String,//慧眼系统的 User_id
             athena_sys_user_id:String,//Athena系统的user_id
@@ -43,7 +43,7 @@ var userSchema = new Schema(
             // user_sys : {type: Schema.Types.ObjectId, ref: 'CommonCoreSys'},// 所属系统
 
     },
-    {collection: "common_bpm_user_info_20171113"}// mongodb集合名
+    {collection: "common_bpm_user_info"}// mongodb集合名
 );
 //将User类给予接口
 var User = mongoose.model('User', userSchema);
@@ -71,7 +71,7 @@ var roleSchema = new Schema(
         inspect_sys_role_id:String,//稽查系统的role_id
 
     },
-    {collection: "common_bpm_role_info_20171113"}// mongodb集合名
+    {collection: "common_bpm_role_info"}// mongodb集合名
 );
 //将User类给予接口
 var Role = mongoose.model('Role', roleSchema);
@@ -125,7 +125,7 @@ var commonOrgSchema = new Schema(
         inspect_sys_org_id:String,//稽查系统的org_id
 
     },
-    {collection: "common_bpm_org_info_20171113"}//mongodb集合名
+    {collection: "common_bpm_org_info"}//mongodb集合名
 );
 
 // 机构model
