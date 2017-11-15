@@ -36,6 +36,7 @@ router.route('/saveDrafts').post(function(req,res){
     var userNo = req.session.current_user.user_no;//用户编号
     var userName = req.session.current_user.user_name;//用户编号
 
+    var _id=req.body._id;
     //工单标题
     var proc_title=req.body.proc_title;
     //工单类型/流程名称
@@ -50,6 +51,7 @@ router.route('/saveDrafts').post(function(req,res){
     var proc_inst_task_remark=req.body.proc_inst_task_remark;
 
     var drafts={};
+
     drafts.proc_title=proc_title;
     drafts.dtafts_user=userNo;
     drafts.dtafts_user_name=userName;
@@ -61,7 +63,7 @@ router.route('/saveDrafts').post(function(req,res){
 
     console.log("用户编号",drafts);
     // 调用分页
-    service.saveDrafts(drafts)
+    service.saveDrafts(drafts,_id)
         .then(function(result){
             console.log("获取我的草稿箱列表成功");
             utils.respJsonData(res, result);

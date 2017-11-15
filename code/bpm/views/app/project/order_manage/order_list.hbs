@@ -60,7 +60,7 @@
                 <tr>
                     <td align="right" class="tdLabel">开始时间:</td>
                     <td><input disabled style="width: 280px"class="easyui-textbox"
-                               id="start_time" name="start_time"></input></td>
+                               id="proc_start_time" name="start_time"></input></td>
                     <td align="right" class="tdLabel">完成时间:</td>
                     <td><input disabled style="width: 280px"  class="easyui-textbox"
                                id="end_time" ></input></td>
@@ -71,11 +71,11 @@
                 <tr>
                     <td align="right" class="tdLabel">发起人角色:</td>
                     <td><input disabled style="width: 280px"class="easyui-textbox"
-                               id="user_role_names" ></input></td>
+                               id="proc_start_user_role_names"  name="proc_start_user_role_names"></input></td>
 
                     <td align="right" class="tdLabel">发起人:</td>
                     <td><input disabled style="width: 280px" class="easyui-textbox"
-                               id="start_name" ></input></td>
+                               id="proc_start_user_name" name="proc_start_user_name" ></input></td>
 
                 </tr>
 
@@ -91,7 +91,18 @@
             </table>
         </fieldset>
 
+        <fieldset id="log" >
+            <legend><b>流程日志</b></legend>
+            <table cellpadding="5" align="center">
+                <tr>
+                    <td colspan="4">
+                        <table id="dg"></table>
+                    </td>
+                </tr>
 
+            </table>
+
+        </fieldset>
 
         <fieldset id="handlerTable">
 
@@ -163,10 +174,13 @@
         loadOrderListDatagrid();
         //初始化工单类型下拉框
         getAllProBase();
+        //这里combobox默认会赋一个的选项的值
+        $("#assign_user_no") .combobox('setValue','') ;
+        $("#handle") .combobox('setValue','') ;
         //填写工作天数，给完成时间赋值
         $('#proc_work_day').textbox({
             onChange: function(value) {
-                var time=new Date($("#start_time").textbox("getValue"));
+                var time=new Date($("#proc_start_time").textbox("getValue"));
                 var work_day= parseInt(value)  ;
                 time.setDate(time.getDate()+work_day)
                 $("#end_time").textbox("setValue",time.Format("yyyy-MM-dd hh:mm:ss"));
@@ -243,8 +257,72 @@
                     }}
             ]],
             onDblClickRow:function(rowIndex, rowData){
+                $('#orderDetailForm').form('load', rowData);
+                //赋值开始时间与结束时间
+                var time=new Date(rowData.proc_start_time);
+                var work_day= parseInt(rowData.proc_work_day) ;
+                $("#proc_start_time").textbox("setValue",time.Format("yyyy-MM-dd hh:mm:ss"));
+                time.setDate(time.getDate()+work_day)
+                $("#end_time").textbox("setValue",time.Format("yyyy-MM-dd hh:mm:ss"));
+                //表单不可编辑
+                $("#proc_work_day").numberbox("disable");
+                $("#proc_content").textbox("disable");
+                $("#proc_title").textbox("disable");
+                $("#proc_code").combobox("disable");
 
-               /* $('#orderDetail').dialog('open')*/
+                $("#log").show();
+                $("#handlerTable").hide();
+                $('#orderDetail').show();
+                $('#orderDetail').mydialog({
+                    title:"查看工单",
+                    width: 900,
+                    height: 550,
+                    top:150,
+                    modal: true,
+                    myButtons:[
+
+                        {
+                            text:'关闭',
+                            btnCls:'btn btn-danger',
+                            handler:function(){
+                                $('#orderDetail').dialog("close");
+                            }
+                        }
+                    ]
+                });
+                //流程日志
+                $('#dg').datagrid({
+                    url:'{{projcfg.appurl}}/api/order_manage/order_complete/logs',
+                    width:800,
+                    queryParams: {
+                        inst_id: rowData._id
+                    },
+                    method:'post',
+                    columns:[[
+                        {field:'proc_inst_task_name',title:'节点名称',width:130, halign:'center',
+                            formatter:function(value,row,index){
+                                return "<span title='" + value + "'>" + value + "</span>";
+
+                            }},
+                        {field:'proc_inst_task_assignee_name',title:'处理人',width:100, halign:'center'},
+                        {field:'proc_inst_task_complete_time',title:'处理时间',width:145, halign:'center',
+                            formatter:function(value,row,index){
+                                if(value!=null){
+                                    var isoDateStr = value;
+                                    var d2 = new Date(isoDateStr);
+                                    return new Date(d2).Format("yyyy-MM-dd hh:mm:ss");
+                                }else{
+                                    return '';
+                                }
+
+                            }},
+                        {field:'proc_inst_task_remark',title:'处理意见',width:350,
+                            halign:'center',
+                            formatter: function (value) {
+                                return "<span title='" + value + "'>" + value + "</span>";
+                            }}
+                    ]]
+                });
             },
             onLoadSuccess:function(json) {
                 if(!json.success) {
@@ -261,21 +339,27 @@
 
     //新增工单
     function addNewOrder(){
-        $('#orderDetailForm')[0].reset();
-
+        $('#orderDetailForm').form('clear');
+        $("#handlerTable").show();
+        $("#log").hide();
+        //表单编辑
+        $("#proc_work_day").numberbox("enable");
+        $("#proc_content").textbox("enable");
+        $("#proc_title").textbox("enable");
+        $("#proc_code").combobox("enable");
         //当前登录用户名
         var user_name = '{{currentUser.user_name}}';
         //用户角色
         var user_roles = '{{currentUserRole.role_name}}';
         //用户名
-        $("#start_name").textbox("setValue",user_name);
+        $("#proc_start_user_name").textbox("setValue",user_name);
         //用户角色
-        $("#user_role_names").textbox("setValue",user_roles);
+        $("#proc_start_user_role_names").textbox("setValue",user_roles);
         $("#handle").combobox("setValue","1");
 
         //当前填单时间
         var time=new Date();
-        $("#start_time").textbox("setValue",time.Format("yyyy-MM-dd hh:mm:ss"));
+        $("#proc_start_time").textbox("setValue",time.Format("yyyy-MM-dd hh:mm:ss"));
         $('#orderDetail').show();
         $('#orderDetail').mydialog({
             title:"新增工单",
@@ -302,6 +386,7 @@
                     text:'关闭',
                     btnCls:'btn btn-danger',
                     handler:function(){
+
                         $('#orderDetail').dialog("close");
                     }
                 }

@@ -204,9 +204,13 @@
                     },
                     method:'post',
                     columns:[[
-                        {field:'proc_inst_task_name',title:'任务名称',width:130},
-                        {field:'proc_inst_task_assignee_name',title:'处理人',width:100},
-                        {field:'proc_inst_task_complete_time',title:'处理时间',width:125,
+                        {field:'proc_inst_task_name',title:'节点名称',width:130, halign:'center',
+                            formatter:function(value,row,index){
+                                return "<span title='" + value + "'>" + value + "</span>";
+
+                            }},
+                        {field:'proc_inst_task_assignee_name',title:'处理人',width:100, halign:'center'},
+                        {field:'proc_inst_task_complete_time',title:'处理时间',width:145, halign:'center',
                             formatter:function(value,row,index){
                                 if(value!=null){
                                     var isoDateStr = value;
