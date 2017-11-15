@@ -1,4 +1,4 @@
-<script type="text/javascript" src="{{projcfg.appurl}}/static/js/mydatetimetools.js"></script>
+<!--<script type="text/javascript" src="{{projcfg.appurl}}/static/js/mydatetimetools.js"></script>-->
 <link rel="stylesheet" type="text/css" href="{{projcfg.appurl}}/static/order/css/order_detail.css">
 <div id="workbench" class="row">
     <div class="col-xs-12 col-md-12">
@@ -109,9 +109,9 @@
 
     </fieldset>
 
-    <legend><b>节点处理</b></legend>
+    <legend><b id="b">节点处理</b></legend>
 
-    <table cellpadding="5" align="center" style="border-collapse:separate; border-spacing:0px 5px;">
+    <table cellpadding="5" align="center" style="border-collapse:separate; border-spacing:0px 5px;" id="table">
         <input  type="hidden"id="proc_code"  name="proc_code"/>
         <tr>
             <td align="right" class="tdLabel">当前节点:</td>
@@ -161,6 +161,7 @@
     </table>
     </fieldset>
 
+
     </form>
 </div>
 
@@ -202,7 +203,7 @@
         return fmt;
     }
     function loadOrderTodaoListDatagrid(){
-        // 加载工单基本属性列表
+        // 加载待办工单基本属性列表
         $('#orderTablelist1').datagrid({
             url:'{{projcfg.appurl}}/api/order_manage/order_todo/list',
             method:'post',
@@ -221,7 +222,7 @@
                         return "<span title='" + value + "'>" + value + "</span>";
 
                     }},
-                {"field": "proc_task_name","title":"所属流程","width":40,
+                {"field": "proc_task_name","title":"所属流程","width":56,
                     formatter:function(value,row,index){
                         return "<span title='" + value + "'>" + value + "</span>";
 
@@ -236,7 +237,7 @@
                         return "<span title='" + value + "'>" + value + "</span>";
 
                     }},
-                {"field": "proc_task_start_name","title":"申请人","width":50,
+                {"field": "proc_task_start_name","title":"申请人","width":30,
                     formatter:function(value,row,index){
                         return "<span title='" + value + "'>" + value + "</span>";
 
@@ -259,8 +260,8 @@
                 $('#orderDetail').mydialog({
                     title:"查看工单",
                     width: 900,
-                    height: 550,
-                    top:150,
+                    height: 650,
+                    top:50,
                     modal: true,
                     myButtons:[
 
@@ -282,9 +283,13 @@
                     },
                     method:'post',
                     columns:[[
-                        {field:'proc_inst_task_name',title:'任务名称',width:130},
+                        {field:'proc_inst_task_name',title:'节点名称',width:150,
+                            formatter:function(value,row,index){
+                                return "<span title='" + value + "'>" + value + "</span>";
+
+                            }},
                         {field:'proc_inst_task_assignee_name',title:'处理人',width:100},
-                        {field:'proc_inst_task_complete_time',title:'处理时间',width:125,
+                        {field:'proc_inst_task_complete_time',title:'处理时间',width:145,
                             formatter:function(value,row,index){
                                 if(value!=null){
                                     var isoDateStr = value;
@@ -302,6 +307,7 @@
                             }}
                     ]]
                 });
+                $('#proc_inst_task_name').textbox('setValue',);
             },
             onLoadSuccess:function(json) {
                 if(!json.success) {
@@ -316,47 +322,6 @@
         });
     }
 
-    //新增工单
-    function addNewOrder(){
-        $('#orderDetail').form('clear');
-        //当前登录用户名
-        var user_name = '{{currentUser.user_name}}';
-        //用户角色
-        var user_roles = '{{currentUserRole.role_name}}';
-        //用户名
-        $("#start_name").textbox("setValue",user_name);
-        //用户角色
-        $("#user_role_names").textbox("setValue",user_roles);
-
-        //当前填单时间
-        var time=new Date();
-        $("#start_time").textbox("setValue",time.Format("yyyy-MM-dd hh:mm:ss"));
-        $('#orderDetail').show();
-        $('#orderDetail').mydialog({
-            title:"处理工单",
-            width: 900,
-            height: 550,
-            top:150,
-            modal: true,
-            myButtons:[
-                {
-                    text:'提交',
-                    btnCls:'btn btn-blue',
-                    handler:function(){
-                        callback(1);
-                    }
-                },
-
-                {
-                    text:'关闭',
-                    btnCls:'btn btn-danger',
-                    handler:function(){
-                        $('#orderDetail').dialog("close");
-                    }
-                }
-            ]
-        });
-    }
 
     function getAllProBase(){
         $("#proc_task_code").combobox({
@@ -370,7 +335,7 @@
 
     function loadOrderCompleteteListDatagrid(){
 
-        // 加载工单基本属性列表
+        // 加载已办工单基本属性列表
         $('#orderTablelist2').datagrid({
             url:'{{projcfg.appurl}}/api/order_manage/order_complete/list',
             method:'post',
@@ -428,8 +393,8 @@
                 $('#orderDetail').mydialog({
                     title:"查看工单",
                     width: 900,
-                    height: 550,
-                    top:150,
+                    height: 650,
+                    top:50,
                     modal: true,
                     myButtons:[
 
@@ -451,9 +416,13 @@
                     },
                     method:'post',
                     columns:[[
-                        {field:'proc_inst_task_name',title:'任务名称',width:130},
+                        {field:'proc_inst_task_name',title:'节点名称',width:150,
+                            formatter:function(value,row,index){
+                                return "<span title='" + value + "'>" + value + "</span>";
+
+                            }},
                         {field:'proc_inst_task_assignee_name',title:'处理人',width:100},
-                        {field:'proc_inst_task_complete_time',title:'处理时间',width:125,
+                        {field:'proc_inst_task_complete_time',title:'处理时间',width:145,
                             formatter:function(value,row,index){
                                 if(value!=null){
                                     var isoDateStr = value;
@@ -471,6 +440,8 @@
                             }}
                     ]]
                 });
+                $('#b').hide();
+                $('#table').hide();
             },
             onLoadSuccess:function(json) {
                 if(!json.success) {
