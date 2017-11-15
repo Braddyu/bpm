@@ -4,16 +4,322 @@ var utils = require('../../../../lib/utils/app_utils');
 var new_model=require("../models/newest_user_model");
 var async=require("async");
 
+
+// link_user_and_role_main().then(function(rs){
+//     console.log(rs);
 //
+// });
+
+
+function link_user_and_role_main(){
+    return new Promise(function(resolve,reject){
+        model_user.$User.find({},function(error,result){
+            if(error){
+                console.log(error);
+                resolve({"data":null,"error":error,"msg":"角link org to user错误 2"});
+            }else{
+                link_user_and_role_sub(0,result,resolve);
+
+            }
+        });
+    });
+}
 //
-//用于更新数据表（org） 因为 OA 系统 导入的org 表格 中的 省公司和 市公司 实在同一级别 因此需要通过字段判别，
-//把省公司的级别提升一级，同时市公司放在省公司的下面 ，构成从属关系。
-// function update_org_ascend(){
+
+function link_user_and_role_sub(k,array,resolve){
+    if(array&&array.length>k){
+        var user=array[k];
+
+        if(user){
+            var roles=user.user_roles;
+            new_model.$Role.find({"_id":{$in:roles}},function(error,result){
+                if(error){
+                    console.log(error);
+                    resolve({"data":null,"error":error,"msg":"funcking   !!!!"});
+                }else{
+                    if(result.length>0){
+                        var role_names=[];
+                        for(var i in result){
+                            var role=result[i];
+                            role_names.push(role.role_name);
+                        }
+
+                        model_user.$Role.find({"role_name":{$in:role_names}},function(errors,results){
+                            if(errors){
+                                console.log(errors);
+                                resolve({"data":null,"error":errors,"msg":"funcking   !!!!"});
+                            } else{
+                                if(results.length>0){
+                                    var role_ids=[];
+                                    for(var m in results){
+                                        role_ids.push(results[m]._id);
+                                    }
+                                    model_user.$User.update({"_id":user._id},{$set:{"user_roles":role_ids}},{},function(e,r){
+                                        if(e){
+                                            console.log(e);
+                                            resolve({"data":null,"error":e,"msg":"funcking   !!!!"});
+                                        }else{
+                                            k++;
+                                            link_user_and_role_sub(k,array,resolve);
+                                        }
+                                    });
+
+                                }else{
+                                    k++;
+                                    link_user_and_role_sub(k,array,resolve);
+                                }
+                            }
+                        });
+
+                    }else{
+                        k++;
+                        link_user_and_role_sub(k,array,resolve);
+
+                    }
+                }
+            });
+
+        }else{
+            k++;
+            link_user_and_role_sub(k,array,resolve);
+        }
+
+    }else{
+     resolve({"data":null,"error":null,"msg":"角link or 2"});
+     return ;
+    }
+}
+
+
+function link_user_and_org_main(){
+    return new Promise(function(resolve,reject){
+        model_user.$User.find({},function(error,result){
+            if(error){
+                console.log(error);
+                resolve({"data":null,"error":error,"msg":"角link org to user错误 2"});
+            }else{
+                link_user_and_org_sub(0,result,resolve);
+            }
+
+        });
+    });
+}
+
+function link_user_and_org_sub(k,array,resolve){
+    if(array&&array.length>k){
+        var user=array[k];
+        var user_org=user.user_org;
+        new_model.$CommonCoreOrg.find({"_id":user_org},function(error,result){
+            if(error){
+                console.log(error);
+                resolve({"data":null,"error":error,"msg":"角link org to user错误 3"});
+            }else{
+                if(result.length>0){
+                    var org_name=result[0].org_name;
+                    model_user.$CommonCoreOrg.find({"org_name":org_name},function(errors,results){
+                       if(errors){
+                           console.log(errors);
+                           resolve({"data":null,"error":errors,"msg":"角link org to user错误 4"});
+                       }else{
+                           if(results.length>0){
+                               // var org_id=results[0]._id;
+                               var map={};
+                               map.user_org=results[0]._id;
+                               model_user.$User.update({"_id":user._id},{$set:map},{},function(e,r){
+                                   if(e){
+                                       console.log(e);
+                                       resolve({"data":null,"error":e,"msg":"角link org to user错误 5"});
+                                   }else{
+                                       k++;
+                                       link_user_and_org_sub(k,array,resolve);
+                                   }
+                               });
+                           }else{
+                               k++;
+                               link_user_and_org_sub(k,array,resolve);
+                           }
+                       }
+                    });
+                }else{
+                    k++;
+                    link_user_and_org_sub(k,array,resolve);
+                }
+            }
+        });
+    }else{
+        resolve({"data":null,"error":null,"msg":"角link org to user is over"});
+        return ;
+
+    }
+
+}
+
 //
-//
-//
-//
-// }
+function update_user_main(){
+    return new Promise(function(resolve,reject){
+        new_model.$User.find({},function(error,result){
+            if(error){
+                console.log(error);
+            }else{
+                update_user_sub(0,result,resolve);
+            }
+        });
+    });
+}
+
+function update_user_sub(k,array,resolve){
+    if(array&&array.length>k){
+        var user=array[k];
+        var user_no=user.user_no;
+        var map={};
+         map.login_account=user.login_account;// : String,// 登录账号
+         map.user_status=user.user_status;// : Number,// 用户状态
+         map.user_id=user.user_id;//:String,//用户ID
+         map.user_no=user.user_no;// : String,// 用户工号
+         map.user_name=user.user_name;// : String,// 用户姓名
+         map.user_gender=user.user_gender;// : String,// 用户性别
+         map.user_phone=user.user_phone;// : String,// 用户手机
+         map.user_tel=user.user_tel;// : String,// 用户联系电话
+         map.user_email=user.user_email;// : String,// 用户邮箱
+         map.login_password=user.login_password;// : String,// 登录密码
+         map.user_org=user.user_org;// : {type: Schema.Types.ObjectId, ref: 'CommonCoreOrg'},// 所在部门
+         map.user_sys=user.user_sys;// : String,// 所属系统
+         map.user_org_desc=user.user_org_desc;//:String,//所属系统的 描述
+         map.theme_name=user.theme_name;// : String,// 使用主题
+         map.theme_skin=user.theme_skin;// : String,// 使用皮肤
+         map.user_photo=user.user_photo;// : String,// 用户头像/照片
+         map.sys_roles=user.user_roles;// : [{type: Schema.Types.ObjectId}],// 菜单访问权限使用角色
+         map.user_roles=user.process_roles;//:[{type:Schema.Types.ObjectId}],//流程使用的角色
+         map.boss_id="";//:String=""//对接外部系统专用的 Boss_id
+         map.smart_visual_sys_user_id="";  //:String,//慧眼系统的 User_id
+         map.athena_sys_user_id="";//:String=""///Athena系统的user_id
+         map.athena_app_sys_user_id="";//:String,//Athena_app系统的user_id
+         map.inspect_sys_user_id="";//:String,//稽查系统的user_id
+         map.token="";//String//不知道是什么东西，留着吧
+         map.special_sign="";//:String,//也不知道是什么东西 留着把
+
+        model_user.$User.find({"user_no":user_no},function(error,result){
+            if(error){
+                console.log(error);
+            }else{
+                if(result.length>0){
+                    //update
+                    model_user.$User.update({"_id":result[0]._id},{$set:map},{},function(errors,results){
+                        if(errors){
+                            console.log(errors);
+                            resolve({"data":null,"error":errors,"msg":"插入角色表错误 2"});
+                        }else{
+                            k++;
+                            update_user_sub(k,array,resolve);
+                        }
+
+
+                    });
+                }else{
+                    //create
+                    model_user.$User.create(map,function(errors,results){
+                        if(errors){
+                            console.log(errors);
+                        }else{
+                            k++;
+                            update_user_sub(k,array,resolve);
+                        }
+                    });
+                }
+
+            }
+        });
+
+    }else{
+        resolve({"data":null,"error":null,"msg":"game is over  ~~! 2"});
+        return ;
+    }
+
+
+}
+
+function update_role_main(){
+    return new Promise(function(resolve,reject){
+        new_model.$Role.find({},function(error,result){
+            if(error){
+                console.log(error);
+                resolve({"data":null,"error":error,"msg":"查询角色表错误 "});
+            }else{
+                if(result.length>0){
+                    // console.log(result);
+                    update_role_sub(0,result,resolve);
+                    // model_user.$Role.create(result,function(err,res){
+                    //     if(err){
+                    //         console.log(err);
+                    //         resolve({"data":null,"error":err,"msg":"插入角色表错误 "});
+                    //     }else{
+                    //         resolve({"data":null,"error":null,"msg":"time is over "});
+                    //     }
+                    // });
+                }
+            }
+        });
+    });
+}
+
+function update_role_sub(k,array,resolve){
+    if(array&&array.length>k){
+        var role=array[k];
+        var role_name=role.role_name;
+        model_user.$Role.find({"role_name":role_name},function(error,result){
+            if(error){
+                console.log(error);
+                resolve({"data":null,"error":error,"msg":"插入角色表错误1 "});
+            }else{
+                var map={};
+                map.role_code=role.role_code;//: String,//角色编码
+                map.role_name=role.role_name;//: String,//角色名称
+                map.role_tag=role.role_tag;//: Number,//角色标志：1-内部，2-外部
+                map.role_level=role.role_level;//: Number,//角色级别：1-省级，2-市级，3-县级
+                map.role_status=role.role_status;//:Number,//状态：1-有效，2-停用
+                map.role_remark=role.role_remark;//:String,//角色描述
+                map.role_order= role.role_order;//: Number,//序号
+                map.smart_visual_sys_role_id="";//:String,//慧眼系统的role_id
+                map.athena_sys_role_id="";//:String=//,//Athena系统的role_id
+                map.athena_app_sys_role_id="";//:String,//Athena_app系统的role_id
+                map.inspect_sys_role_id="";//:String,//稽查系统的role_id
+                if(result.length>0){
+                    model_user.$Role.update({"_id":result[0]._id},{$set:map},{},function(errors,results){
+                        if(error){
+                            console.log(errors);
+                            resolve({"data":null,"error":errors,"msg":"插入角色表错误 2"});
+                        }else{
+                            console.log(results);
+                            k++;
+                            update_role_sub(k,array,resolve);
+                        }
+                    });
+
+                }else{
+                    // delete role._id;
+                    model_user.$Role.create(map,function(errors,results){
+                        if(errors){
+                            console.log(errors);
+                            resolve({"data":null,"error":errors,"msg":"插入角色表错误3 "});
+                        }else{
+                            console.log(results);
+                            k++;
+                            update_role_sub(k,array,resolve);
+                        }
+
+                    });
+                }
+            }
+        });
+    }else{
+        resolve({"data":null,"error":null,"msg":"time is over "});
+        return ;
+
+    }
+
+
+
+}
 // update_org_pid_main().then(function(rs){
 //    console.log(rs);
 //
