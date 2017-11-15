@@ -93,23 +93,23 @@ exports.getProcDefineDetail= function(proc_code,proc_inst_task_code) {
                     }
                     console.log("processDefineDiv_node：",processDefineDiv_node);
                     //类型为"chat"表示有分支,获取分支节点
-                    // if(processDefineDiv_node.type=='chat' ){
-                    //
-                    //     for(var item in lines){
-                    //        var line=lines[item];
-                    //        //判断是否是第二节点的分支
-                    //        if(line.from==proc_inst_task_code){
-                    //            var toNode=line.to;
-                    //            //判断下一节点分支是否存在结束节点，如果存在则即可归档
-                    //            if(nodes[toNode].type=='end  round'){
-                    //                isEnd=true;
-                    //            }else{
-                    //                 nodesArray.push(nodes[line.from]);
-                    //
-                    //            }
-                    //        }
-                    //     }
-                    // }
+                    if(processDefineDiv_node.type=='chat' ){
+
+                        for(var item in lines){
+                           var line=lines[item];
+                           //判断是否是第二节点的分支
+                           if(line.from==proc_inst_task_code){
+                               var toNode=line.to;
+                               //判断下一节点分支是否存在结束节点，如果存在则即可归档
+                               if(nodes[toNode].type=='end  round'){
+                                   isEnd=true;
+                               }else{
+                                    nodesArray.push(nodes[line.from]);
+
+                               }
+                           }
+                        }
+                    }
                     //判断是否属于归档节点
                     if(isEnd){
                         resultData.flag="3" ;

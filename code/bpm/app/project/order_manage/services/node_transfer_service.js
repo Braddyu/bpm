@@ -281,7 +281,8 @@ exports.transfer=function(proc_inst_task_id,node_code,user_code,opts,memo,param_
         //解析参数
         if(!(!param_json_str||param_json_str=="undefined"||param_json_str=="{}")){
 
-            var params_json=JSON.parse(param_json_str);
+          //  var params_json=JSON.parse(param_json_str);
+            var params_json=param_json_str;
             // console.log(params_json)
             var flag=true;
             for(var items_ in params_json){
