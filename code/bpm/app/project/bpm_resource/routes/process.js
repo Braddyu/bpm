@@ -53,6 +53,17 @@ router.get('/show/progressed', function(req, res, next) {
         //menuid:'/home',
     });
 });
+
+//调用流程进度和处理日志的页面
+router.get('/show/andProgressed', function(req, res, next) {
+
+    res.render(config.project.appviewurl+'common/app/instance_showChart', {
+        title: '首页' ,
+        subtitle: 'Hello',
+        layout:'themes/admin/blank',
+        //menuid:'/home',
+    });
+});
 //
 //流程处理日志
 router.route("/handler/logs").get(function(req,res){
