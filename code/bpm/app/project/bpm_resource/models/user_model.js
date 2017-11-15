@@ -43,7 +43,7 @@ var userSchema = new Schema(
             // user_sys : {type: Schema.Types.ObjectId, ref: 'CommonCoreSys'},// 所属系统
 
     },
-    {collection: "common_bpm_user_info"}// mongodb集合名
+    {collection: "common_bpm_user_info_20171113"}// mongodb集合名
 );
 //将User类给予接口
 var User = mongoose.model('User', userSchema);
@@ -71,7 +71,7 @@ var roleSchema = new Schema(
         inspect_sys_role_id:String,//稽查系统的role_id
 
     },
-    {collection: "common_bpm_role_info"}// mongodb集合名
+    {collection: "common_bpm_role_info_20171113"}// mongodb集合名
 );
 //将User类给予接口
 var Role = mongoose.model('Role', roleSchema);
@@ -125,7 +125,7 @@ var commonOrgSchema = new Schema(
         inspect_sys_org_id:String,//稽查系统的org_id
 
     },
-    {collection: "common_bpm_org_info"}//mongodb集合名
+    {collection: "common_bpm_org_info_20171113"}//mongodb集合名
 );
 
 // 机构model

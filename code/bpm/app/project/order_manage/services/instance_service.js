@@ -434,6 +434,8 @@ exports.createInstance=function(proc_code,proc_ver,proc_title,param_json_str,pro
                                                                     condition.proc_task_ver = rs[0].proc_ver;
                                                                     condition.proc_task_name = rs[0].proc_name;
                                                                     condition.proc_task_content = rs[0].proc_content;
+                                                                    condition.proc_task_code = rs[0].proc_code;
+                                                                    condition.proc_start_time = rs[0].proc_start_time;
 
 
                                                                     condition.proc_inst_task_title = proc_title;
@@ -441,6 +443,7 @@ exports.createInstance=function(proc_code,proc_ver,proc_title,param_json_str,pro
                                                                     condition.proc_vars = proc_vars_json; condition.proc_inst_task_title = proc_title;
                                                                     condition.proc_inst_biz_vars = biz_vars_json;
                                                                     condition.proc_vars = proc_vars_json;
+
 
 
                                                                     //创建流程任务
@@ -562,10 +565,13 @@ function insertTask(result,condition){
             task.proc_task_start_name = condition.proc_start_user_name;//流程发起人姓名
             task.proc_task_start_user_role_names = condition.proc_start_user_role_names;//流程发起人角色
             task.proc_task_start_user_role_code = condition.proc_start_user_role_code;//流程发起人id
-            task.proc_task_name = condition.proc_name;//流程名
+            task.proc_task_name = condition.proc_task_name;//流程名
             task.proc_task_work_day =condition.proc_work_day;//天数
-            task.proc_task_ver = condition.proc_ver;//版本号
-            task.proc_task_content = condition.proc_content;
+            task.proc_task_ver = condition.proc_task_ver;//版本号
+            task.proc_task_content = condition.proc_content;//工单内容
+            task.proc_task_code = condition.proc_task_code;//流程编码
+            task.proc_start_time = condition.proc_start_time;//流程开始时间
+
 
             var arr=[];
             arr.push(task);

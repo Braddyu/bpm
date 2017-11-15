@@ -2,9 +2,8 @@ var express = require('express');
 var router = express.Router();
 var utils = require('../../../../lib/utils/app_utils');
 var completeService = require('../services/order_complete_service');
-var service = require('../services/order_list_service');
+var nodeTransferService = require('../services/node_transfer_service');
 var userService = require('../../workflow/services/user_service');
-var formidable=require("formidable");
 
 /**
  * 获取我的已办集合
@@ -44,7 +43,23 @@ router.route('/list').post(function(req,res){
         utils.respMsg(res, false, '1000', '获取数据异常', null, err_inst);
     });
 });
-
+/**
+ * 获取工单的流程日志
+ */
+router.route("/logs").post(function(req,res){
+    console.log("开始获取流程日志...")
+    var inst_id=req.body.inst_id;
+    var user_no='';
+    var page=req.body.page;
+    var rows=req.body.rows;
+    console.log("inst_id:",inst_id)
+    if(!inst_id){
+        utils.respMsg(res, false, '1000', '流程实例inst_id不能为空', null, null);
+    }
+    nodeTransferService.find_log(inst_id,user_no,page,rows).then(function(rs){
+        utils.respJsonData(res,rs);
+    });
+});
 
 module.exports = router;
 
