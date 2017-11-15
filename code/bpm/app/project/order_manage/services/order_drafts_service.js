@@ -23,19 +23,38 @@ exports.getDraftsListPage= function(page,size,paramMap) {
  * 保存草稿箱
  * @param drafts
  */
-exports.saveDrafts= function(drafts) {
+exports.saveDrafts= function(drafts,_id) {
     var arr=[];
-    arr.push(drafts);
+
     var p = new Promise(function(resolve,reject) {
-        //写入数据 创建任务
-        model.$ProcessDreafts.create(arr, function (error, rs) {
-            if (error) {
-                resolve(utils.returnMsg(false, '1000', '保存草稿箱出现异常。', null, error));
-            }
-            else {
-                resolve(utils.returnMsg(true, '0000', '保存草稿箱成功。', rs, null));
-            }
-        })
+        if(!_id){
+            console.log("新建。。。");
+            arr.push(drafts);
+            //写入数据 创建任务
+            model.$ProcessDreafts.create(arr, function (error, rs) {
+                if (error) {
+                    console.log(error)
+                    resolve(utils.returnMsg(false, '1000', '保存草稿箱出现异常。', null, error));
+                }
+                else {
+                    resolve(utils.returnMsg(true, '0000', '保存草稿箱成功。', rs, null));
+                }
+            })
+        }else{
+            console.log("修改。。。");
+            var conditions = {_id: _id};
+            var update = {$set: drafts};
+            var options = {};
+            model.$ProcessDreafts.update(conditions, update, {}, function (error) {
+                if (error) {
+                    console.log(error)
+                    resolve(utils.returnMsg(false, '1000', '保存草稿箱出现异常。', null, error));
+                }
+                else {
+                    resolve(utils.returnMsg(true, '0000', '保存草稿箱成功。', null, null));
+                }
+            })
+        }
     });
     return p;
 };

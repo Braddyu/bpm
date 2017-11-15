@@ -117,7 +117,92 @@ router.route("/createAndAcceptAssign").post(function(req,res){
     });
 });
 
+/**
+ * 获取下一步节点或者操作人
+  */
 
+router.route("/nextNodeUser").post(function(req,res){
+    console.log("开始获取下一节点处理人...");
+    var node_code=req.body.node_code;
+    var proc_task_id=req.body.proc_task_id;
+    var proc_inst_id=req.body.proc_inst_id;
+    var user_no= req.session.current_user.user_no;
+    var params_str=req.body.params;
+    var params={};
+    if(params_str){
+        params=JSON.parse(params_str);
+    }
+    nodeAnalysisService.getNextNodeAndHandlerInfo(node_code,proc_task_id,proc_inst_id,params,user_no).then(function(rs){
+        console.log("下一节点处理人:",rs);
+        utils.respJsonData(res,rs);
+    });
+});
+
+
+/**
+ * 指派任务
+ */
+router.route("/assignTask").post(function(req,res){
+    var task_id=req.body._id;
+    var node_code=req.body.next_code;
+    var user_no=req.session.current_user.user_no;
+    var assign_user_no=req.body.assign_user_no;
+    var proc_title=req.body.proc_inst_task_title;
+    var biz_vars=req.body.biz_vars;//业务变量
+    var proc_vars=req.body.proc_vars;//流程变量
+    var memo=req.body.memo;//流程变量
+    if(task_id){
+        nodeTransferService.assign_transfer(task_id,node_code,user_no,assign_user_no,proc_title,biz_vars,proc_vars,memo).then(function(rs){
+            utils.respJsonData(res,rs);
+        }).catch(function(err){
+            utils.respMsg(res, false, '1000', 'rouute-assign/task', null, err);
+        });
+    }else{
+        utils.respMsg(res, false, '1000', '任务ID为空', null, null);
+    }
+
+});
+
+/**
+ * 完成任务
+ */
+router.route('/complete')
+// -------------------------------完成任务接口-------------------------------
+    .post(function(req,res) {
+        var id = req.body.id;//任务id
+        var memo = req.body.memo;//处理意见
+        var user_code = req.body.user_no;//处理人编码
+        var params = req.body.params;//流转参数
+        var biz_vars = req.body.biz_vars;//业务变量
+        var proc_vars = req.body.proc_vars;//流程变量
+        // 任务是否为空
+        if(!id) {
+            utils.respMsg(res, false, '2001', '任务ID不能为空。', null, null);
+            return;
+        }
+        inst.getTaskById(id).then(function(taskresult){
+            if(taskresult.success){
+                var node_code = taskresult.data._doc.proc_inst_task_code;
+                //流程流转方法
+                console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                console.log(id,node_code,user_code,true,memo,params,biz_vars,proc_vars);
+                console.info(params)
+                nodeTransferService.transfer(id,node_code,user_code,true,memo,params,biz_vars,proc_vars).then(function(result1){
+                    console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!",id,node_code,user_code,true,memo,params)
+                    utils.respJsonData(res, result1);
+                }).catch(function(err_inst){
+                    // console.log(err_inst);
+                    logger.error("route-transfer","流程流转异常",err_inst);
+                    utils.respMsg(res, false, '1000', '流程流转异常', null, err_inst);
+                });
+            }else{
+                utils.respJsonData(res, taskresult);
+            }
+        }).catch(function(err_inst){
+            logger.error("route-getTaskById","获取任务异常",err_inst);
+            utils.respMsg(res, false, '1000', '获取任务异常', null, err_inst);
+        });
+    });
 
 
 
