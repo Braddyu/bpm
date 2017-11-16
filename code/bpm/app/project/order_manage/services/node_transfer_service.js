@@ -958,6 +958,8 @@ function deleteById(ids,k){
 }
 
 
+
+
 //正常流转方法
 function normal_process(current_detail,next_detail, next_node, proc_inst_id, resolve,reject,proc_define_id,proc_inst_task_id,user_code,current_node,params,biz_vars,prev_node,prev_user,proc_vars,memo) {
     var proc_cur_task = next_detail.item_code;
