@@ -281,7 +281,8 @@ exports.transfer=function(proc_inst_task_id,node_code,user_code,opts,memo,param_
         //解析参数
         if(!(!param_json_str||param_json_str=="undefined"||param_json_str=="{}")){
 
-            var params_json=JSON.parse(param_json_str);
+          //  var params_json=JSON.parse(param_json_str);
+            var params_json=param_json_str;
             // console.log(params_json)
             var flag=true;
             for(var items_ in params_json){
@@ -957,6 +958,8 @@ function deleteById(ids,k){
 }
 
 
+
+
 //正常流转方法
 function normal_process(current_detail,next_detail, next_node, proc_inst_id, resolve,reject,proc_define_id,proc_inst_task_id,user_code,current_node,params,biz_vars,prev_node,prev_user,proc_vars,memo) {
     var proc_cur_task = next_detail.item_code;
@@ -1019,6 +1022,16 @@ function normal_process(current_detail,next_detail, next_node, proc_inst_id, res
                                     delete obj._id;
                                     var arr_c=[];
                                     arr_c.push(obj)
+
+                                    var role_code = r[0].proc_task_start_user_role_code;//发起人角色id
+                                    var role_name = r[0].proc_task_start_user_role_names;//发起人角色名
+                                    var name = r[0].proc_task_start_name;//流程发起人
+                                    var days = r[0].proc_task_work_day;//天数
+                                    var proc_name = r[0].proc_task_name;//流程类型
+                                    var ver = r[0].proc_task_ver;//版本号
+                                    var content = r[0].proc_task_content;//工单内容
+                                    var proc_task_code = r[0].proc_task_code;//流程编码
+                                    var start_time = r[0].proc_start_time;//流程开始时间
                                     // console.log(arr_c);2
                                     model.$ProcessTaskHistroy.create(arr_c, function (es,results){
                                         if(es){
@@ -1107,7 +1120,17 @@ function normal_process(current_detail,next_detail, next_node, proc_inst_id, res
                                                         }
                                                        
                                                     }
-                                                        xunhuan().then(function(res){ 
+                                                        xunhuan().then(function(res){
+
+                                                            condition_task.proc_task_start_user_role_names = role_name;//流程发起人角色
+                                                            condition_task.proc_task_start_user_role_code = role_code;//流程发起人id
+                                                            condition_task.proc_task_start_name = name;//流程发起人角色
+                                                            condition_task.proc_task_work_day = days;//天数
+                                                            condition_task.proc_task_name = proc_name;//流程名
+                                                            condition_task.proc_task_ver = ver;//版本号
+                                                            condition_task.proc_task_content = content;//工单内容
+                                                            condition_task.proc_task_code = proc_task_code;//流程编码
+                                                            condition_task.proc_start_time = start_time;//流程开始时间
                                                             var arr = [];
                                                             arr.push(condition_task);
                                                             //创建新流转任务
@@ -1399,6 +1422,16 @@ exports.assign_transfer=function(proc_task_id,node_code,user_code,assign_user_co
                                                        var arr_c=[];
                                                        arr_c.push(obj);
                                                        // console.log(r);3
+                                                       var role_code = r[0].proc_task_start_user_role_code;//发起人角色id
+                                                       var role_name = r[0].proc_task_start_user_role_names;//发起人角色名
+                                                       var name = r[0].proc_task_start_name;//流程发起人
+                                                       var days = r[0].proc_task_work_day;//天数
+                                                       var proc_name = r[0].proc_task_name;//流程类型
+                                                       var ver = r[0].proc_task_ver;//版本号
+                                                       var content = r[0].proc_task_content;//工单内容
+                                                       var proc_task_code = r[0].proc_task_code;//流程编码
+                                                       var start_time = r[0].proc_start_time;//流程开始时间
+
                                                        model.$ProcessTaskHistroy.create(arr_c,function (es,ress){
                                                            if(es){
                                                                console.log(es);
@@ -1464,6 +1497,16 @@ exports.assign_transfer=function(proc_task_id,node_code,user_code,assign_user_co
                                                                                        condition_task.proc_inst_task_sms = "";// Number,// 流程是否短信提醒
                                                                                        condition_task.proc_inst_task_remark = "";// : String// 流程处理意见
                                                                                        condition_task.proc_inst_task_assignee = assign_user_code;
+
+                                                                                       condition_task.proc_task_start_user_role_names = role_name;//流程发起人角色
+                                                                                       condition_task.proc_task_start_user_role_code = role_code;//流程发起人id
+                                                                                       condition_task.proc_task_start_name = name;//流程发起人角色
+                                                                                       condition_task.proc_task_work_day = days;//天数
+                                                                                       condition_task.proc_task_name = proc_name;//流程名
+                                                                                       condition_task.proc_task_ver = ver;//版本号
+                                                                                       condition_task.proc_task_content = content;//工单内容
+                                                                                       condition_task.proc_task_code = proc_task_code;//流程编码
+                                                                                       condition_task.proc_start_time = start_time;//流程开始时间
                                                                                        var arr = [];
                                                                                        arr.push(condition_task);
                                                                                        //创建新流转任务

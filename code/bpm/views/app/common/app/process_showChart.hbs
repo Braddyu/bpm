@@ -29,11 +29,10 @@
 
         function initProcChatPage(){
             var proc_inst_id = decodeURI(GetQueryString("proc_inst_id"),"UTF-8");
-            var status = decodeURI(GetQueryString("proc_inst_status"),"UTF-8");
-            if(!proc_inst_id || !status){
+            if(!proc_inst_id){
                 return {'success':false,'msg':'参数不能为空'};
             }else{
-                return {'success':true,'data':{proc_inst_id:proc_inst_id,proc_inst_status:status}};
+                return {'success':true,'data':{proc_inst_id:proc_inst_id}};
             }
         }
 
@@ -46,7 +45,6 @@
         }
 
         $(function($){
-
             initGooFlow();
             var params = initProcChatPage();
             if(!params.success){
@@ -62,9 +60,10 @@
                     async:false,
                     data:data,
                     success: function (data) {
-//                        console.info(data.data)
+                        console.info(data.data)
                         if(data.success) {
                             var results=data.data;
+
                             var processChart = results.proc_define;
                             processDefineDiv.loadData(JSON.parse(processChart));
                             processDefineDiv.$editable = false;
@@ -95,22 +94,22 @@
                                     }
                                 }
                             }
+
                         }else{
                             $.messager.alert('提示',data.msg+',错误代码:'+data.code,'error');
                         }
                     }
                 });
-                var proc_inst_status = params.data.proc_inst_status;
-                handlerLogs(proc_inst_id,proc_inst_status);
+                handlerLogs(data);
             }
         });
 
-        function handlerLogs(inst_id,status){
+        function handlerLogs(data){
             // 加载流程基本属性列表
             $('#handlerLogsDataTable').datagrid({
                 url:'/api/bpm_resource/process/handler/logs',
                 method:'get',
-                queryParams:{proc_inst_id:inst_id,proc_inst_status:status},
+                queryParams:data,
                 rownumbers:true,
                 striped:true,
                 fitColumns:true,
@@ -141,7 +140,6 @@
                 loadMsg:'正在加载...'
             });
         }
-
 
         /**
          * @author ZhaoJing
@@ -187,9 +185,6 @@
 <body id="layout" class="easyui-layout" data-options="fit:true">
     <div data-options="region:'center',title:'流程进度'">
         <div id="processDefineDiv"></div>
-    </div>
-    <div data-options="region:'east',title:'处理日志',width:'50%',collapsible:false">
-        <table id="handlerLogsDataTable"></table>
     </div>
 </body>
 </html>

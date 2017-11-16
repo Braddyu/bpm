@@ -453,10 +453,10 @@
             }else if(flag == 2){//选择参与角色
                 $('#orgId').combotree({
                     method: 'get',
-                    url: '{{projcfg.appurl}}/api/workflow/process/orgTreeDataAsyn?org_pid=0',
+                    url: '{{projcfg.appurl}}/api/workflow/process/orgTreeDataAsyn?org_pid=5968d315e4b099ef68fd3772',
                     //url: '{{projcfg.appurl}}/process/orgTreeData',
                     onBeforeExpand:function(node,param){
-                       $('#orgId').combotree("tree").tree("options").url =  '{{projcfg.appurl}}/process/orgTreeDataAsyn?org_pid=' + node.id;
+                       $('#orgId').combotree("tree").tree("options").url =  '{{projcfg.appurl}}/api/workflow/process/orgTreeDataAsyn?org_pid=' + node.id;
                     },
                     editable:false,
                     required:true,
@@ -870,7 +870,7 @@
     <div id="win1">
         <div class="easyui-layout" data-options="fit:true">
             <div data-options="region:'center',border:false" style="padding:5px;">
-                <table id="win1_datagrid" class="easyui-datagrid" data-options="url:'{{projcfg.appurl}}/process/user',method:'get',fit:true,fitColumns:true,toolbar:'#win1_tb',singleSelect:true">
+                <table id="win1_datagrid" class="easyui-datagrid" data-options="url:'{{projcfg.appurl}}/api/workflow/process/user',method:'get',fit:true,fitColumns:true,toolbar:'#win1_tb',singleSelect:true">
                     <thead>
                     <tr>
                         <th data-options="field:'user_no',width:100">用户编号</th>
