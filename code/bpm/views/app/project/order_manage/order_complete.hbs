@@ -111,7 +111,7 @@
         </div>
         <div title="流程图" style="padding:10px">
 
-            <iframe frameborder=0 width=470 height=800 marginheight=0 marginwidth=0 scrolling=no src=http://www.163.com></iframe>
+            <iframe id="iframeId" frameborder=0 width=850 height=430 marginheight=0 marginwidth=0 scrolling=no src=></iframe>
         </div>
     </div>
 </div>
@@ -178,7 +178,10 @@
 
             ]],
             onDblClickRow:function(rowIndex, rowData){
-                $('#orderDetailForm')[0].reset();
+                var url='{{projcfg.appurl}}/api/bpm_resource/process/show/progressed?proc_inst_id='+rowData.proc_inst_id;
+                parent.document.getElementById("iframeId").src=url;
+
+                $('#orderDetailForm').form('clear');
                 $('#orderDetailForm').form('load', rowData);
                 var time=new Date(rowData.proc_start_time);
                 var work_day= parseInt(rowData.proc_task_work_day)  ;

@@ -37,7 +37,7 @@
 </div>
 
 <div id="orderDetail"  class="mydialog"  >
-    <div class="easyui-tabs" >
+    <div class="easyui-tabs" id="tabs">
         <div title="工单信息" style="padding:10px">
             <form id="orderDetailForm" method="post" enctype="multipart/form-data">
                 <fieldset>
@@ -137,7 +137,7 @@
                         <tr id="tr_5">
                             <td align="right" class="tdLabel">下一节点处理人:</td>
                             <td colspan="3"><select class="easyui-combobox"
-                                                    id="assign_user_no" name="assign_user_no" style="width: 180px;">
+                                                    id="nextJobHandler" name="assign_user_no" style="width: 180px;">
                                 <option value="90001">test</option>
                             </select> </td>
 
@@ -165,9 +165,9 @@
             </form>
 
 </div>
-    <div title="流程图" style="padding:10px">
+    <div title="流程图" style="padding:10px" id="workflow">
 
-        <iframe frameborder=0 width=470 height=800 marginheight=0 marginwidth=0 scrolling=no src=http://www.163.com></iframe>
+        <iframe id="iframeId" frameborder=0 width=850 height=430 marginheight=0 marginwidth=0 scrolling=no src=></iframe>
     </div>
     </div>
 </div>
@@ -264,6 +264,8 @@
                     }}
             ]],
             onDblClickRow:function(rowIndex, rowData){
+                var url='{{projcfg.appurl}}/api/bpm_resource/process/show/progressed?proc_inst_id='+rowData._id;
+                parent.document.getElementById("iframeId").src=url;
                 $('#orderDetailForm').form('load', rowData);
                 //赋值开始时间与结束时间
                 var time=new Date(rowData.proc_start_time);
@@ -276,7 +278,8 @@
                 $("#proc_content").textbox("disable");
                 $("#proc_title").textbox("disable");
                 $("#proc_code").combobox("disable");
-
+                var tab = $('#tabs').tabs('getTab',"流程图").panel('options').tab; //title替换成tab的title
+                tab.show();
                 $("#log").show();
                 $("#handlerTable").hide();
                 $('#orderDetail').show();
@@ -349,6 +352,11 @@
         $('#orderDetailForm').form('clear');
         $("#handlerTable").show();
         $("#log").hide();
+        //隐藏流程图
+
+        $("#tabs").tabs("select",0);
+        var tab = $('#tabs').tabs('getTab',"流程图").panel('options').tab; //title替换成tab的title
+        tab.hide();
         //表单编辑
         $("#proc_work_day").numberbox("enable");
         $("#proc_content").textbox("enable");
@@ -451,7 +459,12 @@
         if(!validate) {
             return false;
         }
+        var nextNodeUser= $('#nextJobHandler').combobox('getValue');
+        if(!nextNodeUser){
+            $.messager.alert('提示','请选择下一节点处理人');
+            return false;
 
+        }
        $.ajax({
             url: '{{projcfg.appurl}}/api/order_manage/order_list/createAndAcceptAssign',
             type: 'post',
