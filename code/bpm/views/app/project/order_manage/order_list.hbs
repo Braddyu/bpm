@@ -194,6 +194,17 @@
 
             }
         });
+        //重新加载流程图
+        $('#tabs').tabs({
+            border:false,
+            onSelect:function(title,index){
+               if(title=='流程图'){
+                   var url='{{projcfg.appurl}}/api/bpm_resource/process/show/progressed?proc_inst_id='+$("#_id").val();
+                   parent.document.getElementById("iframeId").src=url;
+               }
+
+            }
+        });
     });
 
     //时间格式化:new Date().Format("yyyy-MM-dd hh:mm:ss");
@@ -264,8 +275,11 @@
                     }}
             ]],
             onDblClickRow:function(rowIndex, rowData){
-                var url='{{projcfg.appurl}}/api/bpm_resource/process/show/progressed?proc_inst_id='+rowData._id;
+                //选回第一个tab
+                $("#tabs").tabs("select",0);
+                var url='{{projcfg.appurl}}/api/bpm_resource/process/show/progressed?proc_inst_id='+rowData.proc_inst_id;
                 parent.document.getElementById("iframeId").src=url;
+
                 $('#orderDetailForm').form('load', rowData);
                 //赋值开始时间与结束时间
                 var time=new Date(rowData.proc_start_time);
@@ -352,8 +366,7 @@
         $('#orderDetailForm').form('clear');
         $("#handlerTable").show();
         $("#log").hide();
-        //隐藏流程图
-
+        //隐藏流程图,且选回第一个tab
         $("#tabs").tabs("select",0);
         var tab = $('#tabs').tabs('getTab',"流程图").panel('options').tab; //title替换成tab的title
         tab.hide();
@@ -394,7 +407,7 @@
                     text:'暂存',
                     btnCls:'btn btn-blue',
                     handler:function(){
-                        callback(2);
+                        saveDrafts();
                     }
                 },
                 {
@@ -419,6 +432,8 @@
             valueField:'proc_code',
             textField:'proc_name',
             onSelect:function(record){
+                //回填流程名称
+                $("#proc_name").val(record.proc_name);
                 //回填版本号
                $("#proc_ver").val(record.proc_latest_ver) ;
                 $.ajax({
@@ -475,6 +490,36 @@
                     $('#orderDetail').dialog("close");
                     $('#orderTablelist').datagrid('reload');
                     $.messager.alert('提示','提交成功');
+                }else{
+                    $.messager.alert('错误提示',data.error);
+
+                }
+            }
+        });
+    }
+
+    /**
+     * 暂存草稿箱
+     */
+    function saveDrafts(){
+        // 验证表单
+        var validate = $('#orderDetailForm').form('validate');
+        if(!validate) {
+            return false;
+        }
+        $.ajax({
+            url: '{{projcfg.appurl}}/api/order_manage/order_drafts/saveDrafts',
+            type: 'post',
+            dataType:'json',
+            data: $('#orderDetailForm').serializeJson(),
+            success: function (data) {
+                if(data.success){
+
+                    $('#orderDetail').dialog("close");
+                    $('#orderTablelist').datagrid('reload');
+                    $.messager.alert('提示','保存成功');
+
+
                 }else{
                     $.messager.alert('错误提示',data.error);
 

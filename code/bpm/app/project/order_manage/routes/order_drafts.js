@@ -13,7 +13,7 @@ router.route('/list').post(function(req,res){
     var userNo = req.session.current_user.user_no;//用户编号
     var page = req.body.page;//页码
     var rows = req.body.rows;//每页条数
-    var conditionMap = {dtafts_user:userNo};
+    var conditionMap = {proc_cur_user:userNo};
     console.log("用户编号",userNo);
     // 调用分页
     service.getDraftsListPage(page,rows,conditionMap)
@@ -53,13 +53,13 @@ router.route('/saveDrafts').post(function(req,res){
     var drafts={};
 
     drafts.proc_title=proc_title;
-    drafts.dtafts_user=userNo;
-    drafts.dtafts_user_name=userName;
+    drafts.proc_cur_user=userNo;
+    drafts.proc_cur_user_name=userName;
     drafts.proc_code=proc_code;
     drafts.proc_name=proc_name;
     drafts.proc_content=proc_content;
     drafts.proc_work_day=proc_work_day;
-    drafts.dtafts_create_time=new Date();
+    drafts.proc_create_time=new Date();
 
     console.log("用户编号",drafts);
     // 调用分页

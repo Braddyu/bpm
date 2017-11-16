@@ -37,12 +37,13 @@
 </div>
 
 <div id="orderDetail"  class="mydialog"  >
-    <div class="easyui-tabs" >
+    <div class="easyui-tabs" id="tabs">
         <div title="工单信息" style="padding:10px">
             <fieldset>
                 <legend ><b>任务基本信息</b></legend>
                 <form id="orderDetailForm" method="post" enctype="multipart/form-data">
                     <table cellpadding="5" align="center" style="border-collapse:separate; border-spacing:0px 5px;">
+                      <input id="proc_inst_id"  name="proc_inst_id"hidden="true"/>
                         <tr>
                             <td align="right" class="tdLabel">工单标题:</td>
                             <td colspan="3"><input disabled style="width: 665px" class="easyui-textbox"  name="proc_inst_task_title" ></input></td>
@@ -128,6 +129,18 @@
         loadOrderCompleteteListDatagrid();
         //初始化工单类型下拉框
          getAllProBase();
+        //重新加载流程图
+        $('#tabs').tabs({
+            border:false,
+            onSelect:function(title,index){
+                if(title=='流程图'){
+
+                    var url='{{projcfg.appurl}}/api/bpm_resource/process/show/progressed?proc_inst_id='+$("#proc_inst_id").val();
+                    parent.document.getElementById("iframeId").src=url;
+                }
+
+            }
+        });
     });
     //时间格式化:new Date().Format("yyyy-MM-dd hh:mm:ss");
     Date.prototype.Format = function (fmt) { //author: meizz
@@ -178,6 +191,8 @@
 
             ]],
             onDblClickRow:function(rowIndex, rowData){
+                //选回第一个tab
+                $("#tabs").tabs("select",0);
                 var url='{{projcfg.appurl}}/api/bpm_resource/process/show/progressed?proc_inst_id='+rowData.proc_inst_id;
                 parent.document.getElementById("iframeId").src=url;
 
