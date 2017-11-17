@@ -70,7 +70,7 @@ router.route('/procDefineDetail').post(function(req,res){
         });
 })
 /**
- * 创建工单
+ * 创建工单,三合一
  */
 router.route("/createAndAcceptAssign").post(function(req,res){
 
@@ -115,6 +115,30 @@ router.route("/createAndAcceptAssign").post(function(req,res){
         // console.log(err);
         logger.error("route-createInstance","创建流程实例异常",err);
     });
+});
+
+/**
+ * 创建工单
+ */
+router.route('/createInstance').post(function(req,res){
+    // 分页条件
+    var proc_code = req.body.proc_code;
+    // 分页参数
+    var proc_ver = req.body.proc_ver;
+    var proc_title = req.body.title;
+    var user_code = req.body.user_no;
+    var biz_vars = req.body.biz_vars;
+    var proc_vars = req.body.proc_vars;
+    // 调用
+    inst.createInstance(proc_code,proc_ver,proc_title,user_code,"",proc_vars,biz_vars)
+        .then(function(result){
+            utils.respJsonData(res, result);
+        })
+        .catch(function(err){
+            console.log('err');
+            // console.log(err);
+            logger.error("route-createInstance","创建流程实例异常",err);
+        });
 });
 
 /**
