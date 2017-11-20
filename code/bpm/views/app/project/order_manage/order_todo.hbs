@@ -367,7 +367,7 @@
 
                         endFlag=true;
                         var data=[{ value: '1', text: '归档' },
-                            { field: '0', text: '拒绝'}];
+                            { value: '0', text: '拒绝'}];
                         $("#handle") .combobox('loadData',data) ;
                         $("#handle") .combobox('setValue','1') ;
                     }else{
@@ -375,7 +375,7 @@
                         getNextNodeUser();
                         $("#tr_5").show();
                         endFlag=false;
-                        var data=[{ value: '1', text: '通过' }];
+                        var data=[{ value: '1', text: '通过' },   { value: '0', text: '拒绝'}];
                         $("#handle") .combobox('loadData',data) ;
                         $("#handle") .combobox('setValue','1') ;
                     }
