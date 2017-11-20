@@ -175,7 +175,7 @@ var config = {
         password_daily_err_count:5
     },
     mqtt:{
-        is_use:true,// 是否使用mqtt
+        is_use:false,// 是否使用mqtt
         server:{// mqtt服务器端配置
             is_load:true,// 是否需要加载mqtt服务器模块，若为false，则不启用mqtt服务器
             host:'127.0.0.1',// mqtt服务器地址
