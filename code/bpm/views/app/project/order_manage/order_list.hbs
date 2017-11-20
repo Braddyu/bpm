@@ -40,12 +40,16 @@
     <div class="easyui-tabs" id="tabs">
         <div title="工单信息" style="padding:10px">
             <form id="orderDetailForm" method="post" enctype="multipart/form-data">
-                <fieldset>
+                <fieldset id="detail">
                     <legend ><b>任务基本信息</b></legend>
 
                     <table cellpadding="5" align="center" style="border-collapse:separate; border-spacing:0px 5px;">
                         <tr>
                             <input  type="hidden"id="_id"  name="_id"/>
+                            <input  type="hidden"id="proc_inst_id"  name="proc_inst_id"/>
+                            <input  type="hidden"id="node_code"  name="node_code"/>
+                            <input  type="hidden"id="proc_task_id"  name="proc_task_id"/>
+
                             <td align="right" class="tdLabel">工单标题:</td>
                             <td colspan="3"><input style="width: 665px" class="easyui-textbox"data-options="required:true, missingMessage:'请输入工单标题'" id="proc_title" name="proc_title" ></input></td>
 
@@ -113,6 +117,7 @@
                     <table cellpadding="5" align="center" style="border-collapse:separate; border-spacing:0px 5px;">
                         <input  type="hidden"id="proc_name"  name="proc_name"/>
                         <input  type="hidden"id="proc_ver"  name="proc_ver"/>
+                        <input  type="hidden"id="next_code" name="next_code"/>
 
                         <tr>
                             <td align="right" class="tdLabel">当前节点:</td>
@@ -138,7 +143,6 @@
                             <td align="right" class="tdLabel">下一节点处理人:</td>
                             <td colspan="3"><select class="easyui-combobox"
                                                     id="nextJobHandler" name="assign_user_no" style="width: 180px;">
-                                <option value="90001">test</option>
                             </select> </td>
 
 
@@ -155,7 +159,7 @@
                         <tr>
                             <td align="right" class="tdLabel">附件上传:</td>
                             <td>
-                                <input class="easyui-filebox"labelPosition="top" data-options="prompt:'选择文件...',buttonText:'选择'" style="width:250px"/>                </td>
+                                <input type="file" name="file"style="width:250px"/>  </td>
                         </tr>
 
 
@@ -280,22 +284,31 @@
                 var url='{{projcfg.appurl}}/api/bpm_resource/process/show/progressed?proc_inst_id='+rowData.proc_inst_id;
                 parent.document.getElementById("iframeId").src=url;
 
+                //基本信息显示
+                $("#detail").show();
+
+                //表单赋值
                 $('#orderDetailForm').form('load', rowData);
+
                 //赋值开始时间与结束时间
                 var time=new Date(rowData.proc_start_time);
                 var work_day= parseInt(rowData.proc_work_day) ;
                 $("#proc_start_time").textbox("setValue",time.Format("yyyy-MM-dd hh:mm:ss"));
                 time.setDate(time.getDate()+work_day)
                 $("#end_time").textbox("setValue",time.Format("yyyy-MM-dd hh:mm:ss"));
+
                 //表单不可编辑
                 $("#proc_work_day").numberbox("disable");
                 $("#proc_content").textbox("disable");
                 $("#proc_title").textbox("disable");
                 $("#proc_code").combobox("disable");
+
                 var tab = $('#tabs').tabs('getTab',"流程图").panel('options').tab; //title替换成tab的title
                 tab.show();
+
                 $("#log").show();
                 $("#handlerTable").hide();
+
                 $('#orderDetail').show();
                 $('#orderDetail').mydialog({
                     title:"查看工单",
@@ -361,11 +374,18 @@
         });
     }
 
+
+
     //新增工单
     function addNewOrder(){
         $('#orderDetailForm').form('clear');
-        $("#handlerTable").show();
+        //基本信息显示
+        $("#detail").show();
+        //节点处理隐藏
+        $("#handlerTable").hide();
+        //日志隐藏
         $("#log").hide();
+
         //隐藏流程图,且选回第一个tab
         $("#tabs").tabs("select",0);
         var tab = $('#tabs').tabs('getTab',"流程图").panel('options').tab; //title替换成tab的title
@@ -397,10 +417,10 @@
             modal: true,
             myButtons:[
                 {
-                    text:'提交',
+                    text:'下一步',
                     btnCls:'btn btn-blue',
                     handler:function(){
-                        saveNewOrder();
+                        nextNewOrder();
                     }
                 },
                 {
@@ -422,6 +442,76 @@
         });
     }
 
+
+    //获取下一节点信息
+    function nextNewOrder(){
+        // 验证表单
+        var validate = $('#orderDetailForm').form('validate');
+        if(!validate) {
+            return false;
+        }
+        //先创建工单，才能获取下一节点信息
+        $.ajax({
+            url: '{{projcfg.appurl}}/api/order_manage/order_list/createInstance',
+            type: 'post',
+            dataType:'json',
+            data: $('#orderDetailForm').serializeJson(),
+            success: function (data) {
+                if(data.success){
+                    var taskData=data.data[0];
+                    //实例id
+                    $("#proc_inst_id").val(taskData.proc_inst_id);
+                    //节点编码
+                    $("#node_code").val(taskData.proc_inst_task_code);
+                    //任务id
+                    $("#proc_task_id").val(taskData._id);
+
+                    getNextNodeUser();
+                    //基本信息隐藏
+                    $("#detail").hide();
+                    //节点处理显示
+                    $("#handlerTable").show();
+                    //日志显示
+                    $("#log").hide();
+
+                    $('#orderDetail').show();
+                    $('#orderDetail').mydialog({
+                        title:"新增工单",
+                        width: 900,
+                        height: 550,
+                        top:150,
+                        modal: true,
+                        myButtons:[
+
+                            {
+                                text:'提交',
+                                btnCls:'btn btn-blue',
+                                handler:function(){
+                                    saveNewOrder();
+                                }
+                            },
+                            {
+                                text:'关闭',
+                                btnCls:'btn btn-danger',
+                                handler:function(){
+
+                                    $('#orderDetail').dialog("close");
+                                }
+                            }
+                        ]
+                    });
+                }else{
+                    $.messager.alert('错误提示','工单创建失败');
+
+                }
+            }
+        });
+
+
+
+
+    }
+
     /**
      * 初始化工单类型下拉框
      */
@@ -432,8 +522,6 @@
             valueField:'proc_code',
             textField:'proc_name',
             onSelect:function(record){
-                //回填流程名称
-                $("#proc_name").val(record.proc_name);
                 //回填版本号
                $("#proc_ver").val(record.proc_latest_ver) ;
                 $.ajax({
@@ -470,61 +558,72 @@
      */
     function saveNewOrder(){
         // 验证表单
+
         var validate = $('#orderDetailForm').form('validate');
         if(!validate) {
             return false;
         }
+
         var nextNodeUser= $('#nextJobHandler').combobox('getValue');
         if(!nextNodeUser){
             $.messager.alert('提示','请选择下一节点处理人');
             return false;
 
         }
-       $.ajax({
-            url: '{{projcfg.appurl}}/api/order_manage/order_list/createAndAcceptAssign',
+        var formData=$('#orderDetailForm').serializeJson();
+        formData.proc_inst_task_title=$("#proc_title").textbox('getValue');
+
+        $.ajax({
+            url: '{{projcfg.appurl}}/api/order_manage/order_list/assignTask',
             type: 'post',
             dataType:'json',
-            data: $('#orderDetailForm').serializeJson(),
+            data: formData,
             success: function (data) {
                 if(data.success){
                     $('#orderDetail').dialog("close");
                     $('#orderTablelist').datagrid('reload');
-                    $.messager.alert('提示','提交成功');
+                    $.messager.alert('提示','处理成功');
                 }else{
                     $.messager.alert('错误提示',data.error);
-
                 }
             }
         });
+
     }
 
     /**
-     * 暂存草稿箱
+     * 获取下一节点处理人
      */
-    function saveDrafts(){
-        // 验证表单
-        var validate = $('#orderDetailForm').form('validate');
-        if(!validate) {
-            return false;
-        }
+    function getNextNodeUser(){
         $.ajax({
-            url: '{{projcfg.appurl}}/api/order_manage/order_drafts/saveDrafts',
+            url: '{{projcfg.appurl}}/api/order_manage/order_list/nextNodeUser',
             type: 'post',
             dataType:'json',
-            data: $('#orderDetailForm').serializeJson(),
+            data: {
+                node_code:$("#node_code").val(),
+                proc_task_id:$("#proc_task_id").val(),
+                proc_inst_id:$("#proc_inst_id").val()
+            },
             success: function (data) {
                 if(data.success){
+                    //初始化加载
+                    $("#nextJobHandler").combobox({
+                        method: 'get',
+                        valueField:'user_no',
+                        textField:'user_name',
+                        onSelect:function(record){
+                            //下一节点处理编码
+                            $("#next_code").val(record.node_code);
 
-                    $('#orderDetail').dialog("close");
-                    $('#orderTablelist').datagrid('reload');
-                    $.messager.alert('提示','保存成功');
-
-
+                        }
+                    });
+                    $("#nextJobHandler").combobox("loadData",data.data);
                 }else{
                     $.messager.alert('错误提示',data.error);
-
                 }
             }
         });
+
+
     }
 </script>

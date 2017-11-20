@@ -121,23 +121,27 @@ router.route("/createAndAcceptAssign").post(function(req,res){
  * 创建工单
  */
 router.route('/createInstance').post(function(req,res){
-    // 分页条件
+    console.log("开始创建工单...");
     var proc_code = req.body.proc_code;
-    // 分页参数
+    var userName=req.session.current_user.user_name;
     var proc_ver = req.body.proc_ver;
-    var proc_title = req.body.title;
-    var user_code = req.body.user_no;
+    var proc_title = req.body.proc_title;
+    var user_code = req.session.current_user.user_no;
     var biz_vars = req.body.biz_vars;
     var proc_vars = req.body.proc_vars;
+    var proc_day=req.body.proc_work_day;//天数
+    var proc_content = req.body.proc_content;
+
+    console.log(proc_code,proc_ver,proc_title,user_code,biz_vars,proc_vars);
     // 调用
-    inst.createInstance(proc_code,proc_ver,proc_title,user_code,"",proc_vars,biz_vars)
+    inst.createInstance(proc_code,proc_ver,proc_title,"",proc_vars,biz_vars,user_code,userName,proc_day,proc_content)
         .then(function(result){
+            console.log("result===========:",result);
             utils.respJsonData(res, result);
         })
         .catch(function(err){
             console.log('err');
-            // console.log(err);
-            logger.error("route-createInstance","创建流程实例异常",err);
+
         });
 });
 
@@ -167,7 +171,8 @@ router.route("/nextNodeUser").post(function(req,res){
  * 指派任务
  */
 router.route("/assignTask").post(function(req,res){
-    var task_id=req.body._id;
+    console.log("开始分配任务...")
+    var task_id=req.body.proc_task_id;
     var node_code=req.body.next_code;
     var user_no=req.session.current_user.user_no;
     var assign_user_no=req.body.assign_user_no;
