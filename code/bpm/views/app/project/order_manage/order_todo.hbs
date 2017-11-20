@@ -105,7 +105,9 @@
                 <input  type="hidden"id="node_code"  name="proc_inst_task_code"/>
                 <input  type="hidden"id="next_code" name="next_code" />
                 <input  type="hidden"id="proc_inst_id"  name="proc_inst_id"/>
-                <input  type="hidden"id="proc_task_id"  name="_id"/>
+                <input  type="hidden"id="proc_task_id"  name="proc_task_id"/>
+
+
 
                 <tr>
                     <td align="right" class="tdLabel">当前节点:</td>
@@ -242,12 +244,16 @@
                     }}
             ]],
             onDblClickRow:function(rowIndex, rowData){
+                //默认选中第一个tab
                 $("#tabs").tabs("select",0);
-                var url='{{projcfg.appurl}}/api/bpm_resource/process/show/progressed?proc_inst_id='+rowData.proc_inst_id;
-                parent.document.getElementById("iframeId").src=url;
+
 
                 $('#orderDetailForm').form('clear');
                 $('#orderDetailForm').form('load', rowData);
+                //为了后台接收任务id，这里做单独赋值
+                $("#proc_task_id").val(rowData._id);
+
+                //开始时间格式化，以及计算结束时间
                 var time=new Date(rowData.proc_start_time);
                 var work_day= parseInt(rowData.proc_task_work_day)  ;
                 $("#proc_start_time").textbox("setValue",time.Format("yyyy-MM-dd hh:mm:ss"));
