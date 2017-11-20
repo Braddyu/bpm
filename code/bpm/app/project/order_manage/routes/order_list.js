@@ -197,7 +197,7 @@ router.route("/assignTask").post(function(req,res){
  */
 router.route('/complete') .post(function(req,res) {
         console.log("开始完成任务...");
-        var id = req.body._id;//任务id
+        var id = req.body.proc_task_id;//任务id
         var memo = req.body.memo;//处理意见
         var user_code = req.session.current_user.user_no;//处理人编码
         var handle = req.body.handle;//操作
@@ -216,6 +216,7 @@ router.route('/complete') .post(function(req,res) {
             return;
         }
         inst.getTaskById(id).then(function(taskresult){
+
             if(taskresult.success){
                 var node_code = taskresult.data._doc.proc_inst_task_code;
                 //流程流转方法
