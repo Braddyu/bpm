@@ -1,0 +1,608 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><title>流程引擎-API 说明文档 v1.0.1</title><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css"><style>@import url('https://fonts.googleapis.com/css?family=Roboto:400,700|Inconsolata|Raleway:200');.hljs-comment,.hljs-title{color:#8e908c}.hljs-variable,.hljs-attribute,.hljs-tag,.hljs-regexp,.ruby .hljs-constant,.xml .hljs-tag .hljs-title,.xml .hljs-pi,.xml .hljs-doctype,.html .hljs-doctype,.css .hljs-id,.css .hljs-class,.css .hljs-pseudo{color:#c82829}.hljs-number,.hljs-preprocessor,.hljs-pragma,.hljs-built_in,.hljs-literal,.hljs-params,.hljs-constant{color:#f5871f}.ruby .hljs-class .hljs-title,.css .hljs-rules .hljs-attribute{color:#eab700}.hljs-string,.hljs-value,.hljs-inheritance,.hljs-header,.ruby .hljs-symbol,.xml .hljs-cdata{color:#718c00}.css .hljs-hexcolor{color:#3e999f}.hljs-function,.python .hljs-decorator,.python .hljs-title,.ruby .hljs-function .hljs-title,.ruby .hljs-title .hljs-keyword,.perl .hljs-sub,.javascript .hljs-title,.coffeescript .hljs-title{color:#4271ae}.hljs-keyword,.javascript .hljs-function{color:#8959a8}.hljs{display:block;background:white;color:#4d4d4c;padding:.5em}.coffeescript .javascript,.javascript .xml,.tex .hljs-formula,.xml .javascript,.xml .vbscript,.xml .css,.xml .hljs-cdata{opacity:.5}.right .hljs-comment{color:#969896}.right .css .hljs-class,.right .css .hljs-id,.right .css .hljs-pseudo,.right .hljs-attribute,.right .hljs-regexp,.right .hljs-tag,.right .hljs-variable,.right .html .hljs-doctype,.right .ruby .hljs-constant,.right .xml .hljs-doctype,.right .xml .hljs-pi,.right .xml .hljs-tag .hljs-title{color:#c66}.right .hljs-built_in,.right .hljs-constant,.right .hljs-literal,.right .hljs-number,.right .hljs-params,.right .hljs-pragma,.right .hljs-preprocessor{color:#de935f}.right .css .hljs-rule .hljs-attribute,.right .ruby .hljs-class .hljs-title{color:#f0c674}.right .hljs-header,.right .hljs-inheritance,.right .hljs-name,.right .hljs-string,.right .hljs-value,.right .ruby .hljs-symbol,.right .xml .hljs-cdata{color:#b5bd68}.right .css .hljs-hexcolor,.right .hljs-title{color:#8abeb7}.right .coffeescript .hljs-title,.right .hljs-function,.right .javascript .hljs-title,.right .perl .hljs-sub,.right .python .hljs-decorator,.right .python .hljs-title,.right .ruby .hljs-function .hljs-title,.right .ruby .hljs-title .hljs-keyword{color:#81a2be}.right .hljs-keyword,.right .javascript .hljs-function{color:#b294bb}.right .hljs{display:block;overflow-x:auto;background:#1d1f21;color:#c5c8c6;padding:.5em;-webkit-text-size-adjust:none}.right .coffeescript .javascript,.right .javascript .xml,.right .tex .hljs-formula,.right .xml .css,.right .xml .hljs-cdata,.right .xml .javascript,.right .xml .vbscript{opacity:.5}body{color:black;background:white;font:400 14px / 1.42 'Roboto',Helvetica,sans-serif}header{border-bottom:1px solid #f2f2f2;margin-bottom:12px}h1,h2,h3,h4,h5{color:black;margin:12px 0}h1 .permalink,h2 .permalink,h3 .permalink,h4 .permalink,h5 .permalink{margin-left:0;opacity:0;transition:opacity .25s ease}h1:hover .permalink,h2:hover .permalink,h3:hover .permalink,h4:hover .permalink,h5:hover .permalink{opacity:1}.triple h1 .permalink,.triple h2 .permalink,.triple h3 .permalink,.triple h4 .permalink,.triple h5 .permalink{opacity:.15}.triple h1:hover .permalink,.triple h2:hover .permalink,.triple h3:hover .permalink,.triple h4:hover .permalink,.triple h5:hover .permalink{opacity:.15}h1{font:200 36px 'Raleway',Helvetica,sans-serif;font-size:36px}h2{font:200 36px 'Raleway',Helvetica,sans-serif;font-size:30px}h3{font-size:100%;text-transform:uppercase}h5{font-size:100%;font-weight:normal}p{margin:0 0 10px}p.choices{line-height:1.6}a{color:#428bca;text-decoration:none}li p{margin:0}hr.split{border:0;height:1px;width:100%;padding-left:6px;margin:12px auto;background-image:linear-gradient(to right, rgba(0,0,0,0) 20%, rgba(0,0,0,0.2) 51.4%, rgba(255,255,255,0.2) 51.4%, rgba(255,255,255,0) 80%)}dl dt{float:left;width:130px;clear:left;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:700}dl dd{margin-left:150px}blockquote{color:rgba(0,0,0,0.5);font-size:15.5px;padding:10px 20px;margin:12px 0;border-left:5px solid #e8e8e8}blockquote p:last-child{margin-bottom:0}pre{background-color:#f5f5f5;padding:12px;border:1px solid #cfcfcf;border-radius:6px;overflow:auto}pre code{color:black;background-color:transparent;padding:0;border:none}code{color:#444;background-color:#f5f5f5;font:'Inconsolata',monospace;padding:1px 4px;border:1px solid #cfcfcf;border-radius:3px}ul,ol{padding-left:2em}table{border-collapse:collapse;border-spacing:0;margin-bottom:12px}table tr:nth-child(2n){background-color:#fafafa}table th,table td{padding:6px 12px;border:1px solid #e6e6e6}.text-muted{opacity:.5}.note,.warning{padding:.3em 1em;margin:1em 0;border-radius:2px;font-size:90%}.note h1,.warning h1,.note h2,.warning h2,.note h3,.warning h3,.note h4,.warning h4,.note h5,.warning h5,.note h6,.warning h6{font-family:200 36px 'Raleway',Helvetica,sans-serif;font-size:135%;font-weight:500}.note p,.warning p{margin:.5em 0}.note{color:black;background-color:#f0f6fb;border-left:4px solid #428bca}.note h1,.note h2,.note h3,.note h4,.note h5,.note h6{color:#428bca}.warning{color:black;background-color:#fbf1f0;border-left:4px solid #c9302c}.warning h1,.warning h2,.warning h3,.warning h4,.warning h5,.warning h6{color:#c9302c}header{margin-top:24px}nav{position:fixed;top:24px;bottom:0;overflow-y:auto}nav .resource-group{padding:0}nav .resource-group .heading{position:relative}nav .resource-group .heading .chevron{position:absolute;top:12px;right:12px;opacity:.5}nav .resource-group .heading a{display:block;color:black;opacity:.7;border-left:2px solid transparent;margin:0}nav .resource-group .heading a:hover{text-decoration:none;background-color:bad-color;border-left:2px solid black}nav ul{list-style-type:none;padding-left:0}nav ul a{display:block;font-size:13px;color:rgba(0,0,0,0.7);padding:8px 12px;border-top:1px solid #d9d9d9;border-left:2px solid transparent;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}nav ul a:hover{text-decoration:none;background-color:bad-color;border-left:2px solid black}nav ul>li{margin:0}nav ul>li:first-child{margin-top:-12px}nav ul>li:last-child{margin-bottom:-12px}nav ul ul a{padding-left:24px}nav ul ul li{margin:0}nav ul ul li:first-child{margin-top:0}nav ul ul li:last-child{margin-bottom:0}nav>div>div>ul>li:first-child>a{border-top:none}.preload *{transition:none !important}.pull-left{float:left}.pull-right{float:right}.badge{display:inline-block;float:right;min-width:10px;min-height:14px;padding:3px 7px;font-size:12px;color:#000;background-color:#f2f2f2;border-radius:10px;margin:-2px 0}.badge.get{color:#70bbe1;background-color:#d9edf7}.badge.head{color:#70bbe1;background-color:#d9edf7}.badge.options{color:#70bbe1;background-color:#d9edf7}.badge.put{color:#f0db70;background-color:#fcf8e3}.badge.patch{color:#f0db70;background-color:#fcf8e3}.badge.post{color:#93cd7c;background-color:#dff0d8}.badge.delete{color:#ce8383;background-color:#f2dede}.collapse-button{float:right}.collapse-button .close{display:none;color:#428bca;cursor:pointer}.collapse-button .open{color:#428bca;cursor:pointer}.collapse-button.show .close{display:inline}.collapse-button.show .open{display:none}.collapse-content{max-height:0;overflow:hidden;transition:max-height .3s ease-in-out}nav{width:220px}.container{max-width:940px;margin-left:auto;margin-right:auto}.container .row .content{margin-left:244px;width:696px}.container .row:after{content:'';display:block;clear:both}.container-fluid nav{width:22%}.container-fluid .row .content{margin-left:24%}.container-fluid.triple nav{width:16.5%;padding-right:1px}.container-fluid.triple .row .content{position:relative;margin-left:16.5%;padding-left:24px}.middle:before,.middle:after{content:'';display:table}.middle:after{clear:both}.middle{box-sizing:border-box;width:51.5%;padding-right:12px}.right{box-sizing:border-box;float:right;width:48.5%;padding-left:12px}.right a{color:#428bca}.right h1,.right h2,.right h3,.right h4,.right h5,.right p,.right div{color:white}.right pre{background-color:#1d1f21;border:1px solid #1d1f21}.right pre code{color:#c5c8c6}.right .description{margin-top:12px}.triple .resource-heading{font-size:125%}.definition{margin-top:12px;margin-bottom:12px}.definition .method{font-weight:bold}.definition .method.get{color:#2e8ab8}.definition .method.head{color:#2e8ab8}.definition .method.options{color:#2e8ab8}.definition .method.post{color:#56b82e}.definition .method.put{color:#b8a22e}.definition .method.patch{color:#b8a22e}.definition .method.delete{color:#b82e2e}.definition .uri{word-break:break-all;word-wrap:break-word}.definition .hostname{opacity:.5}.example-names{background-color:#eee;padding:12px;border-radius:6px}.example-names .tab-button{cursor:pointer;color:black;border:1px solid #ddd;padding:6px;margin-left:12px}.example-names .tab-button.active{background-color:#d5d5d5}.right .example-names{background-color:#444}.right .example-names .tab-button{color:white;border:1px solid #666;border-radius:6px}.right .example-names .tab-button.active{background-color:#5e5e5e}#nav-background{position:fixed;left:0;top:0;bottom:0;width:16.5%;padding-right:14.4px;background-color:#fbfbfb;border-right:1px solid #f0f0f0;z-index:-1}#right-panel-background{position:absolute;right:-12px;top:-12px;bottom:-12px;width:48.6%;background-color:#333;z-index:-1}@media (max-width:1200px){nav{width:198px}.container{max-width:840px}.container .row .content{margin-left:224px;width:606px}}@media (max-width:992px){nav{width:169.4px}.container{max-width:720px}.container .row .content{margin-left:194px;width:526px}}@media (max-width:768px){nav{display:none}.container{width:95%;max-width:none}.container .row .content,.container-fluid .row .content,.container-fluid.triple .row .content{margin-left:auto;margin-right:auto;width:95%}#nav-background{display:none}#right-panel-background{width:48.6%}}.back-to-top{position:fixed;z-index:1;bottom:0;right:24px;padding:4px 8px;color:rgba(0,0,0,0.5);background-color:#f2f2f2;text-decoration:none !important;border-top:1px solid #d9d9d9;border-left:1px solid #d9d9d9;border-right:1px solid #d9d9d9;border-top-left-radius:3px;border-top-right-radius:3px}.resource-group{padding:12px;margin-bottom:12px;background-color:white;border:1px solid #d9d9d9;border-radius:6px}.resource-group h2.group-heading,.resource-group .heading a{padding:12px;margin:-12px -12px 12px -12px;background-color:#f2f2f2;border-bottom:1px solid #d9d9d9;border-top-left-radius:6px;border-top-right-radius:6px;white-space:nowrap;text-overflow:ellipsis;overflow:hidden}.triple .content .resource-group{padding:0;border:none}.triple .content .resource-group h2.group-heading,.triple .content .resource-group .heading a{margin:0 0 12px 0;border:1px solid #d9d9d9}nav .resource-group .heading a{padding:12px;margin-bottom:0}nav .resource-group .collapse-content{padding:0}.action{margin-bottom:12px;padding:12px 12px 0 12px;overflow:hidden;border:1px solid transparent;border-radius:6px}.action h4.action-heading{padding:6px 12px;margin:-12px -12px 12px -12px;border-bottom:1px solid transparent;border-top-left-radius:6px;border-top-right-radius:6px;overflow:hidden}.action h4.action-heading .name{float:right;font-weight:normal;padding:6px 0}.action h4.action-heading .method{padding:6px 12px;margin-right:12px;border-radius:3px;display:inline-block}.action h4.action-heading .method.get{color:#fff;background-color:#337ab7}.action h4.action-heading .method.head{color:#fff;background-color:#337ab7}.action h4.action-heading .method.options{color:#fff;background-color:#337ab7}.action h4.action-heading .method.put{color:#fff;background-color:#ed9c28}.action h4.action-heading .method.patch{color:#fff;background-color:#ed9c28}.action h4.action-heading .method.post{color:#fff;background-color:#5cb85c}.action h4.action-heading .method.delete{color:#fff;background-color:#d9534f}.action h4.action-heading code{color:#444;background-color:#f5f5f5;border-color:#cfcfcf;font-weight:normal;word-break:break-all;display:inline-block;margin-top:2px}.action dl.inner{padding-bottom:2px}.action .title{border-bottom:1px solid white;margin:0 -12px -1px -12px;padding:12px}.action.get{border-color:#bce8f1}.action.get h4.action-heading{color:#337ab7;background:#d9edf7;border-bottom-color:#bce8f1}.action.head{border-color:#bce8f1}.action.head h4.action-heading{color:#337ab7;background:#d9edf7;border-bottom-color:#bce8f1}.action.options{border-color:#bce8f1}.action.options h4.action-heading{color:#337ab7;background:#d9edf7;border-bottom-color:#bce8f1}.action.post{border-color:#d6e9c6}.action.post h4.action-heading{color:#5cb85c;background:#dff0d8;border-bottom-color:#d6e9c6}.action.put{border-color:#faebcc}.action.put h4.action-heading{color:#ed9c28;background:#fcf8e3;border-bottom-color:#faebcc}.action.patch{border-color:#faebcc}.action.patch h4.action-heading{color:#ed9c28;background:#fcf8e3;border-bottom-color:#faebcc}.action.delete{border-color:#ebccd1}.action.delete h4.action-heading{color:#d9534f;background:#f2dede;border-bottom-color:#ebccd1}</style></head><body class="preload"><a href="#top" class="text-muted back-to-top"><i class="fa fa-toggle-up"></i>&nbsp;Back to top</a><div class="container"><div class="row"><nav><div class="resource-group"><div class="heading"><div class="chevron"><i class="open fa fa-angle-down"></i></div><a href="#规范">规范</a></div><div class="collapse-content"><ul><li><a href="#规范-返回结果">返回结果</a><ul></ul></li></ul></div></div><div class="resource-group"><div class="heading"><div class="chevron"><i class="open fa fa-angle-down"></i></div><a href="#流程管理">流程管理</a></div><div class="collapse-content"><ul><li><a href="#流程管理-流程管理">流程管理</a><ul></ul></li><li><a href="#流程管理-流程列表-post"><span class="badge post"><i class="fa fa-plus"></i></span>获取流程列表</a></li></ul></div></div><div class="resource-group"><div class="heading"><div class="chevron"><i class="open fa fa-angle-down"></i></div><a href="#流程实例-修改">流程实例 -修改</a></div><div class="collapse-content"><ul><li><a href="#流程实例-修改-流程实例">流程实例</a><ul></ul></li><li><a href="#流程实例-修改-流程实例启动-post"><span class="badge post"><i class="fa fa-plus"></i></span>流程实例启动</a></li><li><a href="#流程实例-修改-流程实例取消-post"><span class="badge post"><i class="fa fa-plus"></i></span>流程实例取消</a></li><li><a href="#流程实例-修改-流程实例启用-post"><span class="badge post"><i class="fa fa-plus"></i></span>流程实例启用</a></li><li><a href="#流程实例-修改-流程实例当前节点名称编号-post"><span class="badge post"><i class="fa fa-plus"></i></span>流程实例当前节点处理信息</a></li><li><a href="#流程实例-修改-流程实例下一节点名称和处理人信息-post"><span class="badge post"><i class="fa fa-plus"></i></span>流程实例下一节点名称和处理人信息</a></li><li><a href="#流程实例-修改-流程实例列表-post"><span class="badge post"><i class="fa fa-plus"></i></span>流程实例列表信息</a></li><li><a href="#流程实例-修改-创建流程实例直接流转到下一节点-post"><span class="badge post"><i class="fa fa-plus"></i></span>创建流程实例直接流转到下一节点</a></li></ul></div></div><div class="resource-group"><div class="heading"><div class="chevron"><i class="open fa fa-angle-down"></i></div><a href="#流程任务-修改">流程任务-修改</a></div><div class="collapse-content"><ul><li><a href="#流程任务-修改-我的待办任务集合-post"><span class="badge post"><i class="fa fa-plus"></i></span>获取我的待办任务集合</a></li><li><a href="#流程任务-修改-任务管理-获取指定任务-post"><span class="badge post"><i class="fa fa-plus"></i></span>获取指定任务</a></li><li><a href="#流程任务-修改-任务管理-认领-post"><span class="badge post"><i class="fa fa-plus"></i></span>认领任务</a></li><li><a href="#流程任务-修改-任务管理-完成-post"><span class="badge post"><i class="fa fa-plus"></i></span>完成任务</a></li><li><a href="#流程任务-修改-指派任务给人-post"><span class="badge post"><i class="fa fa-plus"></i></span>指派任务给人</a></li><li><a href="#流程任务-修改-处理日志-post"><span class="badge post"><i class="fa fa-plus"></i></span>获取任务处理日志</a></li><li><a href="#流程任务-修改-处理日志-post-1"><span class="badge post"><i class="fa fa-plus"></i></span>获取处理日志集合</a></li><li><a href="#流程任务-修改-获取已完成的节点编号信息-post"><span class="badge post"><i class="fa fa-plus"></i></span>获取已完成的节点编号信息</a></li></ul></div></div><div class="resource-group"><div class="heading"><div class="chevron"><i class="open fa fa-angle-down"></i></div><a href="#流程历史-修改">流程历史-修改</a></div><div class="collapse-content"><ul><li><a href="#流程历史-修改-流程历史-post"><span class="badge post"><i class="fa fa-plus"></i></span>获取我的流程历史列表</a></li></ul></div></div><p style="text-align: center; word-wrap: break-word;"><a href="http://10.201.253.162:30003/v1">http://10.201.253.162:30003/v1</a></p></nav><div class="content"><header><h1 id="top">流程引擎-API 说明文档 v1.0.1</h1></header><p>本文档为流程引擎相关api说明，用于第三方应用进行调用</p>
+<section id="规范" class="resource-group"><h2 class="group-heading">规范 <a href="#规范" class="permalink">&para;</a></h2><p>公共规范定义</p>
+<ul>
+<li>返回结果</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>类别</th>
+<th style="text-align:center">名称</th>
+<th style="text-align:right">状态</th>
+<th style="text-align:right">编码</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>返回状态</td>
+<td style="text-align:center">成功</td>
+<td style="text-align:right">true</td>
+<td style="text-align:right">0000</td>
+</tr>
+<tr>
+<td>返回状态</td>
+<td style="text-align:center">失败</td>
+<td style="text-align:right">false</td>
+<td style="text-align:right">1000</td>
+</tr>
+<tr>
+<td>返回状态</td>
+<td style="text-align:center">异常</td>
+<td style="text-align:right">false</td>
+<td style="text-align:right">1000</td>
+</tr>
+<tr>
+<td>返回状态</td>
+<td style="text-align:center">错误</td>
+<td style="text-align:right">false</td>
+<td style="text-align:right">1001</td>
+</tr>
+<tr>
+<td>返回状态</td>
+<td style="text-align:center">为空</td>
+<td style="text-align:right">false</td>
+<td style="text-align:right">2001</td>
+</tr>
+</tbody>
+</table>
+<div id="规范-返回结果" class="resource"><h3 class="resource-heading">返回结果 <a href="#规范-返回结果" class="permalink">&nbsp;&para;</a></h3><p>定义所有请求的返回结果</p>
+<hr>
+<p>流程管理属性如下：</p>
+<ul>
+<li>
+<p>return_code 返回处理结果</p>
+</li>
+<li>
+<p>return_msg 返回消息</p>
+</li>
+</ul>
+</div></section><section id="流程管理" class="resource-group"><h2 class="group-heading">流程管理 <a href="#流程管理" class="permalink">&para;</a></h2><p>流程管理相关接口</p>
+<div id="流程管理-流程管理" class="resource"><h3 class="resource-heading">流程管理 <a href="#流程管理-流程管理" class="permalink">&nbsp;&para;</a></h3><p>定义流程管理对象操作API</p>
+<hr>
+<p>流程管理属性如下：</p>
+<ul>
+<li>
+<p>_id 编号</p>
+</li>
+<li>
+<p>proc_code 流程编码</p>
+</li>
+<li>
+<p>proc_name 流程名称</p>
+</li>
+<li>
+<p>proc_latest_ver 流程最后版本号</p>
+</li>
+<li>
+<p>catalog 类别</p>
+</li>
+<li>
+<p>engine_version 流程引擎版本</p>
+</li>
+<li>
+<p>memo 流程备注</p>
+</li>
+<li>
+<p>opt_time 创建时间</p>
+</li>
+<li>
+<p>proc_user 流程创建人</p>
+</li>
+<li>
+<p>status 状态</p>
+</li>
+</ul>
+</div><div id="流程管理-流程列表" class="resource"><h3 class="resource-heading">流程列表 <a href="#流程管理-流程列表" class="permalink">&nbsp;&para;</a></h3><div id="流程管理-流程列表-post" class="action post"><h4 class="action-heading"><div class="name">获取流程列表</div><a href="#流程管理-流程列表-post" class="method post">POST</a><code class="uri">/process/list</code></h4><h4>Example URI</h4><div class="definition"><span class="method post">POST</span>&nbsp;<span class="uri"><span class="hostname">http://10.201.253.162:30003/v1</span>/process/list</span></div><div class="title"><strong>Request</strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Body</h5><pre><code>{
+  "<span class="hljs-attribute">page</span>": <span class="hljs-value"><span class="hljs-number">1</span></span>,
+  "<span class="hljs-attribute">rows</span>": <span class="hljs-value"><span class="hljs-number">50</span>
+</span>}</code></pre><div style="height: 1px;"></div></div></div><div class="title"><strong>Response&nbsp;&nbsp;<code>200</code></strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Body</h5><pre><code>{success:<span class="hljs-literal">true</span>, code:<span class="hljs-string">'0000'</span>, msg:<span class="hljs-string">'查询成功。'</span>,rows:[data],total:<span class="hljs-number">2</span>}</code></pre><div style="height: 1px;"></div></div></div></div></div></section><section id="流程实例-修改" class="resource-group"><h2 class="group-heading">流程实例 -修改 <a href="#流程实例-修改" class="permalink">&para;</a></h2><p>流程实例管理相关接口</p>
+<div id="流程实例-修改-流程实例" class="resource"><h3 class="resource-heading">流程实例 <a href="#流程实例-修改-流程实例" class="permalink">&nbsp;&para;</a></h3><p>定义实例管理对象操作API</p>
+<hr>
+<p>流程实例管理属性如下：</p>
+<ul>
+<li>
+<p>_id 实例ID</p>
+</li>
+<li>
+<p>proc_id 流程ID</p>
+</li>
+<li>
+<p>proc_define_id 流程定义ID</p>
+</li>
+<li>
+<p>proc_code 流程编码</p>
+</li>
+<li>
+<p>parent_id 父节点，0为父流程，非0为子流程，数字为父流程节点</p>
+</li>
+<li>
+<p>proc_name 流程名</p>
+</li>
+<li>
+<p>proc_ver 流程版本号</p>
+</li>
+<li>
+<p>catalog 流程类别</p>
+</li>
+<li>
+<p>proce_reject_params  是否驳回</p>
+</li>
+<li>
+<p>proc_instance_code 实例编码</p>
+</li>
+<li>
+<p>proc_title 流程标题</p>
+</li>
+<li>
+<p>proc_cur_task 流程当前节点编码</p>
+</li>
+<li>
+<p>proc_cur_task_name 流程当前节点名称</p>
+</li>
+<li>
+<p>proc_cur_user 当前流程处理人编号</p>
+</li>
+<li>
+<p>proc_cur_user_name 当前流程处理人名</p>
+</li>
+<li>
+<p>proc_cur_arrive_time 当前流程到达时间</p>
+</li>
+<li>
+<p>proc_cur_task_item_conf 当前流程节点配置信息(当前配置阶段编码)</p>
+</li>
+<li>
+<p>proc_start_user 流程发起人(开始用户)</p>
+</li>
+<li>
+<p>proc_start_user_name 流程发起人名(开始用户姓名)</p>
+</li>
+<li>
+<p>proc_start_time 流程发起时间(开始时间)</p>
+</li>
+<li>
+<p>proc_params 流转参数</p>
+</li>
+<li>
+<p>proc_inst_status 流程流转状态 1 已启用  0 已禁用,2 流转中，3 归档</p>
+</li>
+<li>
+<p>proc_attached_type 流程附加类型(1:待办业务联系函;2:待办工单;3:待办考核;4:其他待办)</p>
+</li>
+<li>
+<p>proce_attached_params 流程附加属性</p>
+</li>
+<li>
+<p>proce_reject_params 流程驳回附加参数</p>
+</li>
+<li>
+<p>proc_cur_task_code_num 节点编号</p>
+</li>
+<li>
+<p>proc_task_overtime 超时时间设置</p>
+</li>
+<li>
+<p>proc_cur_task_overtime 当前节点的超时时间</p>
+</li>
+<li>
+<p>proc_cur_task_remark 节点备注</p>
+</li>
+<li>
+<p>proc_city 地市</p>
+</li>
+<li>
+<p>proc_county 区县</p>
+</li>
+<li>
+<p>proc_org 组织</p>
+</li>
+<li>
+<p>proc_cur_task_overtime_sms 流程当前节点超时短信标记(1:待处理，2:已处理，3:不需要处理)</p>
+</li>
+<li>
+<p>proc_cur_task_overtime_sms_count 流程当前节点超时短信发送次数</p>
+</li>
+<li>
+<p>proc_pending_users 当前流程的待处理人信息</p>
+</li>
+<li>
+<p>proc_task_history 处理任务历史记录</p>
+</li>
+<li>
+<p>proc_define 流程描述文件</p>
+</li>
+<li>
+<p>item_config 流程节点配置信息</p>
+</li>
+</ul>
+</div><div id="流程实例-修改-流程实例启动" class="resource"><h3 class="resource-heading">流程实例启动 <a href="#流程实例-修改-流程实例启动" class="permalink">&nbsp;&para;</a></h3><div id="流程实例-修改-流程实例启动-post" class="action post"><h4 class="action-heading"><div class="name">流程实例启动</div><a href="#流程实例-修改-流程实例启动-post" class="method post">POST</a><code class="uri">/instance/createInstance</code></h4><h4>Example URI</h4><div class="definition"><span class="method post">POST</span>&nbsp;<span class="uri"><span class="hostname">http://10.201.253.162:30003/v1</span>/instance/createInstance</span></div><div class="title"><strong>Request</strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Body</h5><pre><code>{
+  <span class="hljs-string">"proc_code"</span>: <span class="hljs-string">"p_101流程编码"</span>,
+  <span class="hljs-string">"proc_ver"</span>: <span class="hljs-number">4</span>,(可选)
+  <span class="hljs-string">"title"</span>: <span class="hljs-string">"流程实例测试"</span>,
+  <span class="hljs-string">"user_no"</span>: <span class="hljs-string">"wenganguo"</span>,
+  <span class="hljs-string">"proc_vars"</span>: <span class="hljs-string">""</span>,(json字符串格式-流程实例从开始到归档都不需要变动的工单参数)
+  <span class="hljs-string">"biz_vars"</span>:<span class="hljs-string">""</span>(json字符串格式-业务工单需要的参数)
+}</code></pre><div style="height: 1px;"></div></div></div><div class="title"><strong>Response&nbsp;&nbsp;<code>200</code></strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Body</h5><pre><code>{success:<span class="hljs-literal">true</span>, code:<span class="hljs-string">'0000'</span>, msg:<span class="hljs-string">'流程实例创建启动成功。'</span>,data:taskEntity}</code></pre><div style="height: 1px;"></div></div></div></div></div><div id="流程实例-修改-流程实例取消" class="resource"><h3 class="resource-heading">流程实例取消 <a href="#流程实例-修改-流程实例取消" class="permalink">&nbsp;&para;</a></h3><div id="流程实例-修改-流程实例取消-post" class="action post"><h4 class="action-heading"><div class="name">流程实例取消</div><a href="#流程实例-修改-流程实例取消-post" class="method post">POST</a><code class="uri">/instance/cancleInstance</code></h4><h4>Example URI</h4><div class="definition"><span class="method post">POST</span>&nbsp;<span class="uri"><span class="hostname">http://10.201.253.162:30003/v1</span>/instance/cancleInstance</span></div><div class="title"><strong>Request</strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Body</h5><pre><code>{
+  "<span class="hljs-attribute">inst_id</span>": <span class="hljs-value"><span class="hljs-string">"597087f043232f228890fdd4"</span>
+</span>}</code></pre><div style="height: 1px;"></div></div></div><div class="title"><strong>Response&nbsp;&nbsp;<code>200</code></strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Body</h5><pre><code>{success:<span class="hljs-literal">true</span>, code:<span class="hljs-string">'0000'</span>, msg:<span class="hljs-string">'取消成功。'</span>}</code></pre><div style="height: 1px;"></div></div></div></div></div><div id="流程实例-修改-流程实例启用" class="resource"><h3 class="resource-heading">流程实例启用 <a href="#流程实例-修改-流程实例启用" class="permalink">&nbsp;&para;</a></h3><div id="流程实例-修改-流程实例启用-post" class="action post"><h4 class="action-heading"><div class="name">流程实例启用</div><a href="#流程实例-修改-流程实例启用-post" class="method post">POST</a><code class="uri">/instance/enableInstance</code></h4><h4>Example URI</h4><div class="definition"><span class="method post">POST</span>&nbsp;<span class="uri"><span class="hostname">http://10.201.253.162:30003/v1</span>/instance/enableInstance</span></div><div class="title"><strong>Request</strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Body</h5><pre><code>{
+  "<span class="hljs-attribute">inst_id</span>": <span class="hljs-value"><span class="hljs-string">"597087f043232f228890fdd4"</span>
+</span>}</code></pre><div style="height: 1px;"></div></div></div><div class="title"><strong>Response&nbsp;&nbsp;<code>200</code></strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Body</h5><pre><code>{success:<span class="hljs-literal">true</span>, code:<span class="hljs-string">'0000'</span>, msg:<span class="hljs-string">'取消成功。'</span>}</code></pre><div style="height: 1px;"></div></div></div></div></div><div id="流程实例-修改-流程实例当前节点名称编号" class="resource"><h3 class="resource-heading">流程实例当前节点名称编号 <a href="#流程实例-修改-流程实例当前节点名称编号" class="permalink">&nbsp;&para;</a></h3><div id="流程实例-修改-流程实例当前节点名称编号-post" class="action post"><h4 class="action-heading"><div class="name">流程实例当前节点处理信息</div><a href="#流程实例-修改-流程实例当前节点名称编号-post" class="method post">POST</a><code class="uri">/instance/get/current_users/info</code></h4><h4>Example URI</h4><div class="definition"><span class="method post">POST</span>&nbsp;<span class="uri"><span class="hostname">http://10.201.253.162:30003/v1</span>/instance/get/current_users/info</span></div><div class="title"><strong>Request</strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Body</h5><pre><code>{
+  "<span class="hljs-attribute">node_code</span>": <span class="hljs-value"><span class="hljs-string">"当前处理节点编号"</span></span>,
+  "<span class="hljs-attribute">proc_task_id</span>": <span class="hljs-value"><span class="hljs-string">"当前任务ID"</span>
+</span>}</code></pre><div style="height: 1px;"></div></div></div><div class="title"><strong>Response&nbsp;&nbsp;<code>200</code></strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Body</h5><pre><code>{success:<span class="hljs-literal">true</span>, code:<span class="hljs-string">'0000'</span>, msg:<span class="hljs-string">'获取下一节点信息成功。'</span>,data:[data]}</code></pre><div style="height: 1px;"></div></div></div></div></div><div id="流程实例-修改-流程实例下一节点名称和处理人信息" class="resource"><h3 class="resource-heading">流程实例下一节点名称和处理人信息 <a href="#流程实例-修改-流程实例下一节点名称和处理人信息" class="permalink">&nbsp;&para;</a></h3><div id="流程实例-修改-流程实例下一节点名称和处理人信息-post" class="action post"><h4 class="action-heading"><div class="name">流程实例下一节点名称和处理人信息</div><a href="#流程实例-修改-流程实例下一节点名称和处理人信息-post" class="method post">POST</a><code class="uri">/instance/next/nodeAnduser</code></h4><h4>Example URI</h4><div class="definition"><span class="method post">POST</span>&nbsp;<span class="uri"><span class="hostname">http://10.201.253.162:30003/v1</span>/instance/next/nodeAnduser</span></div><div class="title"><strong>Request</strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Body</h5><pre><code>{
+  "<span class="hljs-attribute">node_code</span>": <span class="hljs-value"><span class="hljs-string">"当前处理节点编号"</span></span>,
+  "<span class="hljs-attribute">proc_task_id</span>": <span class="hljs-value"><span class="hljs-string">"当前任务ID"</span></span>,
+  "<span class="hljs-attribute">proc_inst_id</span>": <span class="hljs-value"><span class="hljs-string">"当前实例ID"</span></span>,
+  "<span class="hljs-attribute">user_no</span>": <span class="hljs-value"><span class="hljs-string">"当前登录人"</span></span>,
+  "<span class="hljs-attribute">params</span>": <span class="hljs-value"><span class="hljs-string">""</span>(json格式如果有两条流转线路，如：flag=<span class="hljs-literal">true</span>或<span class="hljs-literal">false</span>)
+</span>}</code></pre><div style="height: 1px;"></div></div></div><div class="title"><strong>Response&nbsp;&nbsp;<code>200</code></strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Body</h5><pre><code>{success:<span class="hljs-literal">true</span>, code:<span class="hljs-string">'0000'</span>, msg:<span class="hljs-string">'获取下一节点处理人信息成功。'</span>,data:[data]}</code></pre><div style="height: 1px;"></div></div></div></div></div><div id="流程实例-修改-流程实例列表" class="resource"><h3 class="resource-heading">流程实例列表 <a href="#流程实例-修改-流程实例列表" class="permalink">&nbsp;&para;</a></h3><div id="流程实例-修改-流程实例列表-post" class="action post"><h4 class="action-heading"><div class="name">流程实例列表信息</div><a href="#流程实例-修改-流程实例列表-post" class="method post">POST</a><code class="uri">/instance/list</code></h4><h4>Example URI</h4><div class="definition"><span class="method post">POST</span>&nbsp;<span class="uri"><span class="hostname">http://10.201.253.162:30003/v1</span>/instance/list</span></div><div class="title"><strong>Request</strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Body</h5><pre><code>{
+  "<span class="hljs-attribute">proc_code</span>": <span class="hljs-value"><span class="hljs-string">"流程编号(不能为空)"</span></span>,
+  "<span class="hljs-attribute">user_no</span>": <span class="hljs-value"><span class="hljs-string">"用户编号(可以为空)"</span></span>,
+  "<span class="hljs-attribute">page</span>": <span class="hljs-value"><span class="hljs-number">1</span></span>,
+  "<span class="hljs-attribute">rows</span>": <span class="hljs-value"><span class="hljs-number">10</span>
+</span>}</code></pre><div style="height: 1px;"></div></div></div><div class="title"><strong>Response&nbsp;&nbsp;<code>200</code></strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Body</h5><pre><code>{success:<span class="hljs-literal">true</span>, code:<span class="hljs-string">'0000'</span>, msg:<span class="hljs-string">'查询成功。'</span>,rows:[data],total:<span class="hljs-number">2</span>}</code></pre><div style="height: 1px;"></div></div></div></div></div><div id="流程实例-修改-创建流程实例直接流转到下一节点" class="resource"><h3 class="resource-heading">创建流程实例直接流转到下一节点 <a href="#流程实例-修改-创建流程实例直接流转到下一节点" class="permalink">&nbsp;&para;</a></h3><div id="流程实例-修改-创建流程实例直接流转到下一节点-post" class="action post"><h4 class="action-heading"><div class="name">创建流程实例直接流转到下一节点</div><a href="#流程实例-修改-创建流程实例直接流转到下一节点-post" class="method post">POST</a><code class="uri">/instance/createAndAcceptAssign</code></h4><h4>Example URI</h4><div class="definition"><span class="method post">POST</span>&nbsp;<span class="uri"><span class="hostname">http://10.201.253.162:30003/v1</span>/instance/createAndAcceptAssign</span></div><div class="title"><strong>Request</strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Body</h5><pre><code>{
+  <span class="hljs-string">"proc_code"</span>: <span class="hljs-string">"p_101流程编码"</span>,
+  <span class="hljs-string">"proc_ver"</span>: <span class="hljs-number">4</span>,(可选)
+  <span class="hljs-string">"title"</span>: <span class="hljs-string">"流程实例测试"</span>,
+  <span class="hljs-string">"user_no"</span>: <span class="hljs-string">"wenganguo"</span>,(操作人)
+  <span class="hljs-string">"user_name"</span>: <span class="hljs-string">"文安国"</span>,(操作人)
+  <span class="hljs-string">"node_code"</span>: <span class="hljs-string">"processDefineDiv_node_3"</span>,(发送任务节点编号)
+  <span class="hljs-string">"assign_user_no"</span>: <span class="hljs-string">"lisi"</span>,(处理人编号)
+  <span class="hljs-string">"memo"</span>: <span class="hljs-string">"处理内容"</span>,
+  <span class="hljs-string">"proc_vars"</span>: <span class="hljs-string">""</span>,(json字符串格式-流程实例从开始到归档都不需要变动的工单参数)
+  <span class="hljs-string">"biz_vars"</span>:<span class="hljs-string">""</span>(json字符串格式-业务工单需要的参数)
+}</code></pre><div style="height: 1px;"></div></div></div><div class="title"><strong>Response&nbsp;&nbsp;<code>200</code></strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Body</h5><pre><code>{success:<span class="hljs-literal">true</span>, code:<span class="hljs-string">'0000'</span>, msg:<span class="hljs-string">'流程实例创建启动成功。'</span>,data:taskEntity}</code></pre><div style="height: 1px;"></div></div></div></div></div></section><section id="流程任务-修改" class="resource-group"><h2 class="group-heading">流程任务-修改 <a href="#流程任务-修改" class="permalink">&para;</a></h2><p>任务相关接口</p>
+<hr>
+<p>流程任务属性如下：</p>
+<ul>
+<li>
+<p>_id 任务ID</p>
+</li>
+<li>
+<p>proc_inst_id  流程流转当前信息ID</p>
+</li>
+<li>
+<p>proc_inst_task_code 流程当前节点编码(流程任务编号)</p>
+</li>
+<li>
+<p>proc_inst_task_name 流程当前节点名称(任务名称)</p>
+</li>
+<li>
+<p>proc_inst_task_type 流程当前节点类型(任务类型)</p>
+</li>
+<li>
+<p>proc_inst_task_arrive_time 流程到达时间</p>
+</li>
+<li>
+<p>proc_inst_task_handle_time 流程认领时间</p>
+</li>
+<li>
+<p>proc_inst_task_complete_time 流程完成时间</p>
+</li>
+<li>
+<p>proc_inst_task_status 流程当前状态 0-未处理，1-已完成，2-驳回</p>
+</li>
+<li>
+<p>proc_inst_task_assignee 流程处理人code</p>
+</li>
+<li>
+<p>proc_inst_task_assignee_name 流程处理人名</p>
+</li>
+<li>
+<p>proc_inst_task_user_role 流程处理用户角色ID</p>
+</li>
+<li>
+<p>proc_inst_task_user_role_name 流程处理用户角色名</p>
+</li>
+<li>
+<p>proc_inst_task_params 流程参数(任务参数)</p>
+</li>
+<li>
+<p>proc_inst_task_claim 流程会签</p>
+</li>
+<li>
+<p>proc_inst_task_sign 流程签收(0-未认领，1-已认领)</p>
+</li>
+<li>
+<p>proc_inst_task_sms 流程是否短信提醒</p>
+</li>
+<li>
+<p>proc_inst_task_remark 流程处理意见</p>
+</li>
+<li>
+<p>Model (application/json)</p>
+<ul>
+<li>
+<p>Body</p>
+<pre><code>{
+      <span class="hljs-attribute">__v</span>: <span class="hljs-number">0</span>,
+      <span class="hljs-attribute">proc_inst_task_remark</span>: <span class="hljs-string">''</span>,
+      <span class="hljs-attribute">proc_inst_task_sms</span>: null,
+      <span class="hljs-attribute">proc_inst_task_sign</span>: <span class="hljs-number">0</span>,
+      <span class="hljs-attribute">proc_inst_task_claim</span>: null,
+      <span class="hljs-attribute">proc_inst_task_params</span>: <span class="hljs-string">''</span>,
+      <span class="hljs-attribute">proc_inst_task_user_role_name</span>: <span class="hljs-string">''</span>,
+      <span class="hljs-attribute">proc_inst_task_user_role</span>: <span class="hljs-string">''</span>,
+      <span class="hljs-attribute">proc_inst_task_assignee_name</span>: <span class="hljs-string">'龚利'</span>,
+      <span class="hljs-attribute">proc_inst_task_assignee</span>: <span class="hljs-string">'gongli'</span>,
+      <span class="hljs-attribute">proc_inst_task_status</span>: <span class="hljs-number">0</span>,
+      <span class="hljs-attribute">proc_inst_task_complete_time</span>: null,
+      <span class="hljs-attribute">proc_inst_task_handle_time</span>: null,
+      <span class="hljs-attribute">proc_inst_task_arrive_time</span>: <span class="hljs-attribute">MonJun19201710</span>: <span class="hljs-number">40</span>: <span class="hljs-number">10</span>GMT+<span class="hljs-number">0800</span>(中国标准时间),
+      <span class="hljs-attribute">proc_inst_task_name</span>: <span class="hljs-string">'采购申请'</span>,
+      <span class="hljs-attribute">proc_inst_task_code</span>: <span class="hljs-string">'processDefineDiv_node_2'</span>,
+      <span class="hljs-attribute">proc_inst_id</span>: <span class="hljs-number">5947398</span>aba36650788eaa89a,
+      <span class="hljs-attribute">_id</span>: <span class="hljs-number">5947398</span>aba36650788eaa89b
+  }</code></pre>
+</li>
+</ul>
+</li>
+</ul>
+<p>定义流程任务对象操作API</p>
+<div id="流程任务-修改-我的待办任务集合" class="resource"><h3 class="resource-heading">我的待办任务集合 <a href="#流程任务-修改-我的待办任务集合" class="permalink">&nbsp;&para;</a></h3><div id="流程任务-修改-我的待办任务集合-post" class="action post"><h4 class="action-heading"><div class="name">获取我的待办任务集合</div><a href="#流程任务-修改-我的待办任务集合-post" class="method post">POST</a><code class="uri">/task/todo</code></h4><h4>Example URI</h4><div class="definition"><span class="method post">POST</span>&nbsp;<span class="uri"><span class="hostname">http://10.201.253.162:30003/v1</span>/task/todo</span></div><div class="title"><strong>Request</strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Body</h5><pre><code>{
+  "<span class="hljs-attribute">user_no</span>": <span class="hljs-value"><span class="hljs-string">"gongli"</span></span>,
+  "<span class="hljs-attribute">page</span>": <span class="hljs-value"><span class="hljs-number">1</span></span>,
+  "<span class="hljs-attribute">rows</span>": <span class="hljs-value"><span class="hljs-number">50</span>
+</span>}</code></pre><div style="height: 1px;"></div></div></div><div class="title"><strong>Response&nbsp;&nbsp;<code>200</code></strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Body</h5><pre><code>{success:<span class="hljs-literal">true</span>, code:<span class="hljs-string">'0000'</span>, msg:<span class="hljs-string">'查询成功。'</span>,rows:[data],total:<span class="hljs-number">2</span>}</code></pre><div style="height: 1px;"></div></div></div></div></div><div id="流程任务-修改-任务管理-获取指定任务" class="resource"><h3 class="resource-heading">任务管理-获取指定任务 <a href="#流程任务-修改-任务管理-获取指定任务" class="permalink">&nbsp;&para;</a></h3><div id="流程任务-修改-任务管理-获取指定任务-post" class="action post"><h4 class="action-heading"><div class="name">获取指定任务</div><a href="#流程任务-修改-任务管理-获取指定任务-post" class="method post">POST</a><code class="uri">/task/query</code></h4><h4>Example URI</h4><div class="definition"><span class="method post">POST</span>&nbsp;<span class="uri"><span class="hostname">http://10.201.253.162:30003/v1</span>/task/query</span></div><div class="title"><strong>Request</strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Body</h5><pre><code>{
+  "<span class="hljs-attribute">taskId</span>": <span class="hljs-value"><span class="hljs-string">"5969c7d45526391fe0fc2e8b"</span>
+</span>}</code></pre><div style="height: 1px;"></div></div></div><div class="title"><strong>Response&nbsp;&nbsp;<code>200</code></strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Body</h5><pre><code>{success:<span class="hljs-literal">true</span>, code:<span class="hljs-string">'0000'</span>, msg:<span class="hljs-string">'查询成功。'</span>,data:data}</code></pre><div style="height: 1px;"></div></div></div></div></div><div id="流程任务-修改-任务管理-认领" class="resource"><h3 class="resource-heading">任务管理-认领 <a href="#流程任务-修改-任务管理-认领" class="permalink">&nbsp;&para;</a></h3><div id="流程任务-修改-任务管理-认领-post" class="action post"><h4 class="action-heading"><div class="name">认领任务</div><a href="#流程任务-修改-任务管理-认领-post" class="method post">POST</a><code class="uri">/task/accept</code></h4><h4>Example URI</h4><div class="definition"><span class="method post">POST</span>&nbsp;<span class="uri"><span class="hostname">http://10.201.253.162:30003/v1</span>/task/accept</span></div><div class="title"><strong>Request</strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Body</h5><pre><code>{
+  "<span class="hljs-attribute">id</span>": <span class="hljs-value"><span class="hljs-string">"5947398aba36650788eaa89b"</span></span>,
+  "<span class="hljs-attribute">user_no</span>": <span class="hljs-value"><span class="hljs-string">"gongli"</span>
+</span>}</code></pre><div style="height: 1px;"></div></div></div><div class="title"><strong>Response&nbsp;&nbsp;<code>200</code></strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Body</h5><pre><code>{success:<span class="hljs-literal">true</span>, code:<span class="hljs-string">'0000'</span>, msg:<span class="hljs-string">'认领成功。'</span>}</code></pre><div style="height: 1px;"></div></div></div></div></div><div id="流程任务-修改-任务管理-完成" class="resource"><h3 class="resource-heading">任务管理-完成 <a href="#流程任务-修改-任务管理-完成" class="permalink">&nbsp;&para;</a></h3><div id="流程任务-修改-任务管理-完成-post" class="action post"><h4 class="action-heading"><div class="name">完成任务</div><a href="#流程任务-修改-任务管理-完成-post" class="method post">POST</a><code class="uri">/task/complete</code></h4><h4>Example URI</h4><div class="definition"><span class="method post">POST</span>&nbsp;<span class="uri"><span class="hostname">http://10.201.253.162:30003/v1</span>/task/complete</span></div><div class="title"><strong>Request</strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Body</h5><pre><code>{
+  <span class="hljs-string">"id"</span>: <span class="hljs-string">"5947398aba36650788eaa89b"</span>,
+  <span class="hljs-string">"user_no"</span>: <span class="hljs-string">"gongli"</span>,
+  <span class="hljs-string">"memo"</span>: <span class="hljs-string">"处理意见"</span>,
+  <span class="hljs-string">"params"</span>:<span class="hljs-string">"{money:30,flag:true}"</span>,
+  <span class="hljs-string">"proc_vars"</span>: <span class="hljs-string">""</span>,(可以为空，json字符串格式-不需变动的工单参数)
+  <span class="hljs-string">"biz_vars"</span>:<span class="hljs-string">""</span>(json字符串格式-业务工单需要的参数)
+}</code></pre><div style="height: 1px;"></div></div></div><div class="title"><strong>Response&nbsp;&nbsp;<code>200</code></strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Body</h5><pre><code>{success:<span class="hljs-literal">true</span>, code:<span class="hljs-string">'0000'</span>, msg:<span class="hljs-string">'任务完成成功。'</span>}</code></pre><div style="height: 1px;"></div></div></div></div></div><div id="流程任务-修改-指派任务给人" class="resource"><h3 class="resource-heading">指派任务给人 <a href="#流程任务-修改-指派任务给人" class="permalink">&nbsp;&para;</a></h3><div id="流程任务-修改-指派任务给人-post" class="action post"><h4 class="action-heading"><div class="name">指派任务给人</div><a href="#流程任务-修改-指派任务给人-post" class="method post">POST</a><code class="uri">/task/assign/task</code></h4><h4>Example URI</h4><div class="definition"><span class="method post">POST</span>&nbsp;<span class="uri"><span class="hostname">http://10.201.253.162:30003/v1</span>/task/assign/task</span></div><div class="title"><strong>Request</strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Body</h5><pre><code>{
+  <span class="hljs-string">"task_id"</span>: <span class="hljs-string">"5947398aba36650788eaa89b"</span>,
+  <span class="hljs-string">"user_no"</span>: <span class="hljs-string">"70001"</span>,
+  <span class="hljs-string">"memo"</span>: <span class="hljs-string">"处理意见"</span>,
+  <span class="hljs-string">"assign_user_no"</span>: <span class="hljs-string">"70001"</span>,
+  <span class="hljs-string">"node_code"</span>:<span class="hljs-string">"processDefineDiv_node_3"</span>,
+  <span class="hljs-string">"proc_title"</span>:<span class="hljs-string">"预警工单处理"</span>,
+  <span class="hljs-string">"proc_vars"</span>: <span class="hljs-string">""</span>,(可以为空，json字符串格式-不需变动的工单参数)
+  <span class="hljs-string">"biz_vars"</span>:<span class="hljs-string">""</span>(json字符串格式-业务工单需要的参数)
+}</code></pre><div style="height: 1px;"></div></div></div><div class="title"><strong>Response&nbsp;&nbsp;<code>200</code></strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Body</h5><pre><code>{success:<span class="hljs-literal">true</span>, code:<span class="hljs-string">'0000'</span>, msg:<span class="hljs-string">'任务完成成功。'</span>}</code></pre><div style="height: 1px;"></div></div></div></div></div><div id="流程任务-修改-处理日志" class="resource"><h3 class="resource-heading">处理日志 <a href="#流程任务-修改-处理日志" class="permalink">&nbsp;&para;</a></h3><div id="流程任务-修改-处理日志-post" class="action post"><h4 class="action-heading"><div class="name">获取任务处理日志</div><a href="#流程任务-修改-处理日志-post" class="method post">POST</a><code class="uri">/task/logs</code></h4><h4>Example URI</h4><div class="definition"><span class="method post">POST</span>&nbsp;<span class="uri"><span class="hostname">http://10.201.253.162:30003/v1</span>/task/logs</span></div><div class="title"><strong>Request</strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Body</h5><pre><code>{
+  "<span class="hljs-attribute">inst_id</span>": <span class="hljs-value"><span class="hljs-string">"5987fc84810a7700110fda26"</span></span>,
+  "<span class="hljs-attribute">user_no</span>": <span class="hljs-value"><span class="hljs-string">""</span>(参数可为空)</span>,
+  "<span class="hljs-attribute">page</span>": <span class="hljs-value"><span class="hljs-number">1</span></span>,
+  "<span class="hljs-attribute">rows</span>": <span class="hljs-value"><span class="hljs-number">10</span>
+</span>}</code></pre><div style="height: 1px;"></div></div></div><div class="title"><strong>Response&nbsp;&nbsp;<code>200</code></strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Body</h5><pre><code>{success:<span class="hljs-literal">true</span>, code:<span class="hljs-string">'0000'</span>, msg:<span class="hljs-string">'查询成功。'</span>,rows:[data],total:<span class="hljs-number">2</span>}</code></pre><div style="height: 1px;"></div></div></div></div></div><div id="流程任务-修改-处理日志-1" class="resource"><h3 class="resource-heading">处理日志 <a href="#流程任务-修改-处理日志-1" class="permalink">&nbsp;&para;</a></h3><div id="流程任务-修改-处理日志-post-1" class="action post"><h4 class="action-heading"><div class="name">获取处理日志集合</div><a href="#流程任务-修改-处理日志-post-1" class="method post">POST</a><code class="uri">/task/log/list</code></h4><h4>Example URI</h4><div class="definition"><span class="method post">POST</span>&nbsp;<span class="uri"><span class="hostname">http://10.201.253.162:30003/v1</span>/task/log/list</span></div><div class="title"><strong>Request</strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Body</h5><pre><code>{
+  <span class="hljs-string">"status"</span>: <span class="hljs-string">"0"</span>,(<span class="hljs-number">0</span>-未处理，<span class="hljs-number">1</span>-已处理)
+  <span class="hljs-string">"user_no"</span>: <span class="hljs-string">""</span>(参数可为空),
+  <span class="hljs-string">"begin_date"</span>: <span class="hljs-string">"2017-09-19"</span>(参数可为空),
+  <span class="hljs-string">"end_date"</span>: <span class="hljs-string">"2017-09-20"</span>(参数可为空),
+  <span class="hljs-string">"page"</span>: <span class="hljs-number">1</span>,
+  <span class="hljs-string">"rows"</span>: <span class="hljs-number">10</span>
+}</code></pre><div style="height: 1px;"></div></div></div><div class="title"><strong>Response&nbsp;&nbsp;<code>200</code></strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Body</h5><pre><code>{success:<span class="hljs-literal">true</span>, code:<span class="hljs-string">'0000'</span>, msg:<span class="hljs-string">'查询成功。'</span>,rows:[data],total:<span class="hljs-number">2</span>}</code></pre><div style="height: 1px;"></div></div></div></div></div><div id="流程任务-修改-获取已完成的节点编号信息" class="resource"><h3 class="resource-heading">获取已完成的节点编号信息 <a href="#流程任务-修改-获取已完成的节点编号信息" class="permalink">&nbsp;&para;</a></h3><div id="流程任务-修改-获取已完成的节点编号信息-post" class="action post"><h4 class="action-heading"><div class="name">获取已完成的节点编号信息</div><a href="#流程任务-修改-获取已完成的节点编号信息-post" class="method post">POST</a><code class="uri">/task/complete/node/codes</code></h4><h4>Example URI</h4><div class="definition"><span class="method post">POST</span>&nbsp;<span class="uri"><span class="hostname">http://10.201.253.162:30003/v1</span>/task/complete/node/codes</span></div><div class="title"><strong>Request</strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Body</h5><pre><code>{
+  "<span class="hljs-attribute">proc_inst_id</span>": <span class="hljs-value"><span class="hljs-string">"流程实例ID"</span>
+</span>}</code></pre><div style="height: 1px;"></div></div></div><div class="title"><strong>Response&nbsp;&nbsp;<code>200</code></strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Body</h5><pre><code>{success:<span class="hljs-literal">true</span>, code:<span class="hljs-string">'0000'</span>, msg:<span class="hljs-string">'获取任务数据成功'</span>,data:[data]}</code></pre><div style="height: 1px;"></div></div></div></div></div></section><section id="流程历史-修改" class="resource-group"><h2 class="group-heading">流程历史-修改 <a href="#流程历史-修改" class="permalink">&para;</a></h2><div id="流程历史-修改-流程历史" class="resource"><h3 class="resource-heading">流程历史 <a href="#流程历史-修改-流程历史" class="permalink">&nbsp;&para;</a></h3><div id="流程历史-修改-流程历史-post" class="action post"><h4 class="action-heading"><div class="name">获取我的流程历史列表</div><a href="#流程历史-修改-流程历史-post" class="method post">POST</a><code class="uri">/instance/history</code></h4><h4>Example URI</h4><div class="definition"><span class="method post">POST</span>&nbsp;<span class="uri"><span class="hostname">http://10.201.253.162:30003/v1</span>/instance/history</span></div><div class="title"><strong>Request</strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span></code></pre><div style="height: 1px;"></div><h5>Body</h5><pre><code>{
+  "<span class="hljs-attribute">user_no</span>": <span class="hljs-value"><span class="hljs-string">"gongli"</span></span>,
+  "<span class="hljs-attribute">page</span>": <span class="hljs-value"><span class="hljs-number">1</span></span>,
+  "<span class="hljs-attribute">rows</span>": <span class="hljs-value"><span class="hljs-number">50</span>
+</span>}</code></pre><div style="height: 1px;"></div></div></div><div class="title"><strong>Response&nbsp;&nbsp;<code>200</code></strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Body</h5><pre><code>{success:<span class="hljs-literal">true</span>, code:<span class="hljs-string">'0000'</span>, msg:<span class="hljs-string">'查询成功。'</span>,rows:[data],total:<span class="hljs-number">2</span>}</code></pre><div style="height: 1px;"></div></div></div></div></div></section></div></div></div><p style="text-align: center;" class="text-muted">Generated by&nbsp;<a href="https://github.com/danielgtaylor/aglio" class="aglio">aglio</a>&nbsp;on 25 Oct 2017</p><script>/* eslint-env browser */
+/* eslint quotes: [2, "single"] */
+'use strict';
+
+/*
+  Determine if a string ends with another string.
+*/
+function endsWith(str, suffix) {
+    return str.indexOf(suffix, str.length - suffix.length) !== -1;
+}
+
+/*
+  Get a list of direct child elements by class name.
+*/
+function childrenByClass(element, name) {
+  var filtered = [];
+
+  for (var i = 0; i < element.children.length; i++) {
+    var child = element.children[i];
+    var classNames = child.className.split(' ');
+    if (classNames.indexOf(name) !== -1) {
+      filtered.push(child);
+    }
+  }
+
+  return filtered;
+}
+
+/*
+  Get an array [width, height] of the window.
+*/
+function getWindowDimensions() {
+  var w = window,
+      d = document,
+      e = d.documentElement,
+      g = d.body,
+      x = w.innerWidth || e.clientWidth || g.clientWidth,
+      y = w.innerHeight || e.clientHeight || g.clientHeight;
+
+  return [x, y];
+}
+
+/*
+  Collapse or show a request/response example.
+*/
+function toggleCollapseButton(event) {
+    var button = event.target.parentNode;
+    var content = button.parentNode.nextSibling;
+    var inner = content.children[0];
+
+    if (button.className.indexOf('collapse-button') === -1) {
+      // Clicked without hitting the right element?
+      return;
+    }
+
+    if (content.style.maxHeight && content.style.maxHeight !== '0px') {
+        // Currently showing, so let's hide it
+        button.className = 'collapse-button';
+        content.style.maxHeight = '0px';
+    } else {
+        // Currently hidden, so let's show it
+        button.className = 'collapse-button show';
+        content.style.maxHeight = inner.offsetHeight + 12 + 'px';
+    }
+}
+
+function toggleTabButton(event) {
+    var i, index;
+    var button = event.target;
+
+    // Get index of the current button.
+    var buttons = childrenByClass(button.parentNode, 'tab-button');
+    for (i = 0; i < buttons.length; i++) {
+        if (buttons[i] === button) {
+            index = i;
+            button.className = 'tab-button active';
+        } else {
+            buttons[i].className = 'tab-button';
+        }
+    }
+
+    // Hide other tabs and show this one.
+    var tabs = childrenByClass(button.parentNode.parentNode, 'tab');
+    for (i = 0; i < tabs.length; i++) {
+        if (i === index) {
+            tabs[i].style.display = 'block';
+        } else {
+            tabs[i].style.display = 'none';
+        }
+    }
+}
+
+/*
+  Collapse or show a navigation menu. It will not be hidden unless it
+  is currently selected or `force` has been passed.
+*/
+function toggleCollapseNav(event, force) {
+    var heading = event.target.parentNode;
+    var content = heading.nextSibling;
+    var inner = content.children[0];
+
+    if (heading.className.indexOf('heading') === -1) {
+      // Clicked without hitting the right element?
+      return;
+    }
+
+    if (content.style.maxHeight && content.style.maxHeight !== '0px') {
+      // Currently showing, so let's hide it, but only if this nav item
+      // is already selected. This prevents newly selected items from
+      // collapsing in an annoying fashion.
+      if (force || window.location.hash && endsWith(event.target.href, window.location.hash)) {
+        content.style.maxHeight = '0px';
+      }
+    } else {
+      // Currently hidden, so let's show it
+      content.style.maxHeight = inner.offsetHeight + 12 + 'px';
+    }
+}
+
+/*
+  Refresh the page after a live update from the server. This only
+  works in live preview mode (using the `--server` parameter).
+*/
+function refresh(body) {
+    document.querySelector('body').className = 'preload';
+    document.body.innerHTML = body;
+
+    // Re-initialize the page
+    init();
+    autoCollapse();
+
+    document.querySelector('body').className = '';
+}
+
+/*
+  Determine which navigation items should be auto-collapsed to show as many
+  as possible on the screen, based on the current window height. This also
+  collapses them.
+*/
+function autoCollapse() {
+  var windowHeight = getWindowDimensions()[1];
+  var itemsHeight = 64; /* Account for some padding */
+  var itemsArray = Array.prototype.slice.call(
+    document.querySelectorAll('nav .resource-group .heading'));
+
+  // Get the total height of the navigation items
+  itemsArray.forEach(function (item) {
+    itemsHeight += item.parentNode.offsetHeight;
+  });
+
+  // Should we auto-collapse any nav items? Try to find the smallest item
+  // that can be collapsed to show all items on the screen. If not possible,
+  // then collapse the largest item and do it again. First, sort the items
+  // by height from smallest to largest.
+  var sortedItems = itemsArray.sort(function (a, b) {
+    return a.parentNode.offsetHeight - b.parentNode.offsetHeight;
+  });
+
+  while (sortedItems.length && itemsHeight > windowHeight) {
+    for (var i = 0; i < sortedItems.length; i++) {
+      // Will collapsing this item help?
+      var itemHeight = sortedItems[i].nextSibling.offsetHeight;
+      if ((itemsHeight - itemHeight <= windowHeight) || i === sortedItems.length - 1) {
+        // It will, so let's collapse it, remove its content height from
+        // our total and then remove it from our list of candidates
+        // that can be collapsed.
+        itemsHeight -= itemHeight;
+        toggleCollapseNav({target: sortedItems[i].children[0]}, true);
+        sortedItems.splice(i, 1);
+        break;
+      }
+    }
+  }
+}
+
+/*
+  Initialize the interactive functionality of the page.
+*/
+function init() {
+    var i, j;
+
+    // Make collapse buttons clickable
+    var buttons = document.querySelectorAll('.collapse-button');
+    for (i = 0; i < buttons.length; i++) {
+        buttons[i].onclick = toggleCollapseButton;
+
+        // Show by default? Then toggle now.
+        if (buttons[i].className.indexOf('show') !== -1) {
+            toggleCollapseButton({target: buttons[i].children[0]});
+        }
+    }
+
+    var responseCodes = document.querySelectorAll('.example-names');
+    for (i = 0; i < responseCodes.length; i++) {
+        var tabButtons = childrenByClass(responseCodes[i], 'tab-button');
+        for (j = 0; j < tabButtons.length; j++) {
+            tabButtons[j].onclick = toggleTabButton;
+
+            // Show by default?
+            if (j === 0) {
+                toggleTabButton({target: tabButtons[j]});
+            }
+        }
+    }
+
+    // Make nav items clickable to collapse/expand their content.
+    var navItems = document.querySelectorAll('nav .resource-group .heading');
+    for (i = 0; i < navItems.length; i++) {
+        navItems[i].onclick = toggleCollapseNav;
+
+        // Show all by default
+        toggleCollapseNav({target: navItems[i].children[0]});
+    }
+}
+
+// Initial call to set up buttons
+init();
+
+window.onload = function () {
+    autoCollapse();
+    // Remove the `preload` class to enable animations
+    document.querySelector('body').className = '';
+};
+</script></body></html>
