@@ -726,6 +726,11 @@
             }
         });
 
+
+        //自定义表单设计
+        function formDesign(){
+           window.open('{{projcfg.appurl}}/api/workflow/process/form_design');
+        }
     </script>
 </head>
 <body id="layout" class="easyui-layout" data-options="fit:true">
@@ -840,6 +845,11 @@
                         <option value="1">到达节点触发</option>
                         <option value="2">节点完成触发</option>
                     </select>
+                </div>
+                <div style="margin-bottom:10px">
+                    <p style="margin-bottom:5px;color:#00a0e9">表单设计: <a href="#" class="easyui-linkbutton" onclick="formDesign()">表单设计</a></p>
+                    <!--<p style="margin-bottom:5px;color:#00a0e9">文件路径:</p>-->
+
                 </div>
                 <div style="margin-bottom:10px">
                     <p style="margin-bottom:5px;color:#00a0e9">触发地址:</p>
