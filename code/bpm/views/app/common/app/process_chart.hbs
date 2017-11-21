@@ -122,7 +122,7 @@
                         $('#p1_item_code').textbox('setValue', id);
                         $('#p1_item_type').textbox('setValue', obj.type);
                         $.each(lineNodeDatas,function(i,n){
-                            if(n.item_code && n.item_code.indexOf(id) != -1){
+                            if(n.item_code && n.item_code==id){
                                 $('#item_el').textbox('setValue', n.item_el);
                                 $('#p1_textArea').textbox('setValue', n.item_remark);
                                 $('#p1_item_id').val(n._id);
@@ -137,7 +137,7 @@
                         $('#p2_item_type').textbox('setValue', obj.type);
                         $("input[type=radio][name='smsType'][value='0']").attr("checked",true);
                         $.each(taskNodeDatas,function(i,n){
-                            if(n.item_code && n.item_code.indexOf(id) != -1){
+                            if(n.item_code && n.item_code==id){
                                 var selectType = n.selectType;
                                 $("input[type=radio][name='checkType'][value='"+selectType+"']").attr("checked",true);
                                 $("input[type=radio][name='smsType'][value='"+n.item_sms_warn+"']").attr("checked",true);
@@ -202,6 +202,7 @@
         }
 
         function doChoose(flag,id){
+
             if(flag == 1){
                 var datas = $('#'+id).datagrid('getSelections');
                 if(datas.length > 0){
@@ -333,7 +334,7 @@
                 lineNode._id = $('#p1_item_id').val();
                 var tag = true;
                 $.each(lineNodeDatas,function(i,n){
-                    if(n.item_code && n.item_code.indexOf(id) != -1){
+                    if(n.item_code && n.item_code==id){
                         tag = false;
                         lineNodeDatas.splice(i,1,lineNode);
                     }
@@ -428,15 +429,18 @@
                     taskNode.item_remark = itemTextarea;
                     taskNode._id = $('#p2_item_id').val();
                     var tag = true;
+                    console.log("1========",taskNodeDatas);
                     $.each(taskNodeDatas,function(i,n){
-                        if(n.item_code && n.item_code.indexOf(id) != -1){
+                        if(n.item_code && n.item_code==id){
                             tag = false;
                             taskNodeDatas.splice(i,1,taskNode);
+
                         }
                     });
                     if(tag){
                         taskNodeDatas.push(taskNode);
                     }
+                    console.log("2========",taskNodeDatas);
                 }
             }
             $.messager.show({
@@ -448,6 +452,7 @@
         }
 
         function openWindow(flag){
+
             if(flag == 1){//选择参与人
                 $('#win1').window('open');
             }else if(flag == 2){//选择参与角色
@@ -847,11 +852,11 @@
                         <option value="2">节点完成触发</option>
                     </select>
                 </div>
-                <div style="margin-bottom:10px">
-                    <p style="margin-bottom:5px;color:#00a0e9">表单设计: <a href="#" class="easyui-linkbutton" onclick="formDesign()">表单设计</a></p>
-                    <!--<p style="margin-bottom:5px;color:#00a0e9">文件路径:</p>-->
+                <!--<div style="margin-bottom:10px">-->
+                    <!--<p style="margin-bottom:5px;color:#00a0e9">表单设计: <a href="#" class="easyui-linkbutton" onclick="formDesign()">表单设计</a></p>-->
+                    <!--&lt;!&ndash;<p style="margin-bottom:5px;color:#00a0e9">文件路径:</p>&ndash;&gt;-->
 
-                </div>
+                <!--</div>-->
                 <div style="margin-bottom:10px">
                     <p style="margin-bottom:5px;color:#00a0e9">触发地址:</p>
                     <!--<p style="margin-bottom:5px;color:#00a0e9">文件路径:</p>-->
