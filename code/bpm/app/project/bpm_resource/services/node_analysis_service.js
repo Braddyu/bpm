@@ -2161,3 +2161,180 @@ function findSecondNode(proc_define,node_code){
     }
     return node;
 }
+
+
+
+/**
+ * 获取第三节点处理人
+ * @param proc_code
+ * @returns {bluebird}
+ */
+
+exports.getNodeAndHandlerInfo=function(proc_code,user_no){
+    console.log("getNodeAndHandlerInfo...");
+    var p=new Promise(function(resolve,reject) {
+        //获取流程最大版本号信息
+        var query = model.$ProcessDefine.find({});
+        query.where('proc_code', proc_code);
+        query.sort({ 'version': 'desc'});
+        query.limit(1);
+        query.exec(function (err, rs) {
+            console.log("rs=====",rs);
+            if (err) {
+                resolve(utils.returnMsg(false, '1000', '查询流程', null, err))
+            } else {
+                if (rs.length > 0) {
+                    //获取流程id
+                    var proc_define_id=rs[0]._id;
+                    var node_code;
+
+                    var proc_define=JSON.parse(rs[0].proc_define);
+
+                    //获取节点详细信息
+                    var nodes=proc_define.nodes;
+                    //获取节点之间关系
+                    var lines=proc_define.lines;
+                    //开始节点
+                    var nodePar;
+                    var beginNode;
+                    //获取节点开始节点
+                    for(var item in nodes){
+                        var node=nodes[item];
+                        if(node.type=='start  round'){
+                            nodePar=item;
+                            beginNode=item;
+                        }
+                    }
+                    console.log("beginNode======",beginNode);
+                    //获取第三节点以及实际派单节点
+                    var index=1;
+                    for(var item in lines){
+                        var line=lines[item];
+                        if(line.from==nodePar){
+                            nodePar=line.to;
+                            //第三节点
+                            if(index==3){
+                                node_code=line.from;
+                            }
+                        }
+                        index++;
+                    }
+                    console.log("node_code======",node_code);
+                    console.log("proc_define_id======",proc_define_id);
+                    var params;
+                    //获取开始节点的下一节点，即实际派单节点的处理人
+                    getNode(proc_define_id,beginNode,params,true).then(function(rs){
+                        var data=rs.data;
+                        var next_node=data.next_node;
+                        findNodeInfo(next_node, data.next_detail).then(function(rs){
+
+                            console.log("rs===============",rs);
+                            if(rs.success){
+                                var flag=false;
+                                var data=rs.data;
+                                for(var index in data){
+                                    var d=data[index];
+                                    console.log("@@@@@@@@@@@@@@@@@@@@@@",d.user_no,user_no);
+                                    //如果参数用户和实际派单用户是否相等
+                                    if(d.user_no==user_no){
+                                        flag=true;
+                                    }
+                                }
+                                if(!flag)
+                                    resolve(utils.returnMsg(false, '1002', '不存在的派单发起人', null, null));
+                                else{
+                                    //获取第三节点所有处理人
+                                    getNode(proc_define_id,node_code,params,true).then(function(rs){
+                                        var data=rs.data;
+                                        var next_node=data.next_node;
+                                        findNodeInfo(next_node, data.next_detail).then(function(rs){
+                                            resolve(rs);
+                                            console.log("######################",rs);
+
+
+                                        });
+
+                                    });
+                                }
+
+                            }else{
+                                resolve(utils.returnMsg(false, '1001', '派单发起人信息查找失败', null, null));
+
+                            }
+                        });
+                    })
+
+
+
+                }else{
+                    resolve(utils.returnMsg(false, '1000', '查询用户信息错误', null, null));
+                }
+
+            }
+
+        });
+    })
+    console.log("ppppppppppppppppppp",p);
+    return  p;
+}
+
+/**
+ * 获取节点详细信息
+ * @param next_node
+ * @param resolve
+ * @param next_detail
+ */
+function findNodeInfo(next_node, next_detail) {
+    var promise=new Promise(function(resolve,reject) {
+        if (next_node.type == "end  round") {
+            var array = []
+            var map = {};
+            var node_name = next_node.name
+            map.node_name = node_name;
+            array.push(map)
+            resolve(utils.returnMsg(true, '0000', '查询用户org', array, null))
+
+        } else {
+            var item_assignee_ref_task = next_detail.item_assignee_ref_task;
+
+
+            var item_assignee_ref_cur_org = next_detail.item_assignee_ref_cur_org//: '1',
+            var item_assignee_ref_type = next_detail.item_assignee_ref_type;//// 参照人类别 1-当前人，2-当前机构
+            console.log("next_detail   ;", next_detail)
+            var item_assignee_user = next_detail.item_assignee_user;
+            var item_assignee_user_code = next_detail.item_assignee_user_code;
+            var item_assignee_role = next_detail.item_assignee_role;
+            var item_assignee_org_ids = next_detail.item_assignee_org_ids;
+            var node_code = next_detail.item_code
+            var node_name = next_node.name
+
+            var type = next_detail.item_assignee_type
+            if (type == 1) {
+                //单人
+                console.log("resultsresultsresultsresultsresultsresultsresultsresultsresultsresults \n", 1)
+
+                var array = []
+                var map = {};
+                map.user_name = next_detail.item_show_text;
+                map.user_no = item_assignee_user_code;
+                map.node_name = node_name;
+                map.node_code = node_code;
+                array.push(map)
+                resolve(utils.returnMsg(true, '0000', '查询用户org', array, null))
+            } else if (type == 2) {
+                var item_assignee_org_ids = next_detail.item_assignee_org_ids;
+                var orgs = item_assignee_org_ids.split(",")
+
+                console.log("ccccccccccccccccccccccccccccccccccccccccccccc")
+                console.log(orgs)
+                var i = 0;
+                var array = [];
+                findUserByOrg(orgs, i, item_assignee_role, resolve, array, node_name, node_code);
+
+            } else if (type == 3) {
+                resolve(utils.returnMsg(false, '1000', '第三节点不可配置参照人', null))
+            }
+        }
+    })
+    return promise;
+}

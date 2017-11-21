@@ -3,6 +3,7 @@ var router = express.Router();
 var utils = require('../../../utils/app_utils');
 var proc = require('../services/process_service');
 var config = require('../../../../config');
+var nodeAnalysisService=require("../services/node_analysis_service");
 //process
 /**
  *  -------------------------------获取流程定义集合接口-------------------------------
@@ -77,6 +78,19 @@ router.route("/handler/logs").get(function(req,res){
         utils.respJsonData(res,rs);
     });
 });
+/**
+ *未生成实例，获取第三节点处理人
+ */
+router.route("/getNodeUser").post(function(req,res){
+    //流程编码
+    var proc_code=req.body.proc_code;
+    //派单人
+    var user_no=req.body.user_no;
 
+    nodeAnalysisService.getNodeAndHandlerInfo(proc_code,user_no).then(function(rs){
+        console.log("下一节点处理人:",rs);
+        utils.respJsonData(res,rs);
+    });
+});
 
 module.exports = router;

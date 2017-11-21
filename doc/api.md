@@ -64,7 +64,33 @@ HOST: http://192.168.9.66:30002/gdgl/api
 + Response 200
     {success:true, code:'0000', msg:'查询成功。',rows:[data],total:2}
 
+## 未创建实例，获取下一节点处理人 [/process/getNodeUser]
 
+
+### 未创建实例，获取下一节点处理人 [POST]
+
++ Request
+    + Body
+
+            {
+                proc_code:'p_33',
+                user_no:'zhangyi001'
+            }
+
++ Response 200
+   {
+    "success": true,
+    "code": "0000",
+    "msg": "查询用户org",
+    "data": [
+        {
+            "user_no": "zhangwu001",
+            "user_name": "张五",
+            "node_name": "县经理",
+            "node_code": "processDefineDiv_node_4"
+        }
+    ]
+}
 
 
 
