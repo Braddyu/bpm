@@ -107,20 +107,22 @@ function getNode(process_define_id,node_id,params,flag){
                 if(flag){
                     //查找下一节点信息
                     console.log("查找下一节点信息");
+                    console.log("node_id",node_id);
                     for (var node in nodes){
                         if(node==node_id){
                             // console.log(node_id);
                             var node_array=getValidNode(process_define,node_id,flag);
                             var  type=nodes[node].type;
+                            console.log("type",type);
                             //判断是不是分支节点
                             if(type=="chat"){
                                 //分支节点专用的方法区
                                 console.log("进入选择分支节点方法区");
                                 node_array=deleteInvalidNode(process_define,item_config,node_array,node_id,params,reject);
                                 console.log("after delete the invalid data")
-                                // console.log(node_array);
+                                 console.log(node_array.length);
                                 if(node_array.length!=1){
-                                    reject(utils.returnMsg(false, '1000', '有效节点删除不完全，或者错误', null, null));
+                                    resolve(utils.returnMsg(false, '1000', '有效节点删除不完全，或者错误', null, null));
 
                                 }else{
                                     var result=choiceNode(item_config,process_define,node_id,node_array[0]);
@@ -140,7 +142,7 @@ function getNode(process_define_id,node_id,params,flag){
                                 console.log("进入单一节点方法区");
                                 if(node_array.length!=1){
                                     console.error("节点信息错误");
-                                    reject(utils.returnMsg(false, '1000', '有效节点删除不完全，或者错误', null, null));
+                                    resolve(utils.returnMsg(false, '1000', '有效节点删除不完全，或者错误', null, null));
 
                                 }else{
                                     var result=choiceNode(item_config,process_define,node_id,node_array[0]);
@@ -2170,9 +2172,27 @@ function findSecondNode(proc_define,node_code){
  * @returns {bluebird}
  */
 
-exports.getNodeAndHandlerInfo=function(proc_code,user_no){
+exports.getNodeAndHandlerInfo=function(proc_code,user_no,param_json_str){
     console.log("getNodeAndHandlerInfo...");
+    console.info("proc_code",proc_code,"user_no",user_no,"param_json_str",param_json_str)
     var p=new Promise(function(resolve,reject) {
+        var params=param_json_str;
+        //解析参数
+        if(!(!param_json_str||param_json_str=="undefined"||param_json_str=="{}")){
+
+            var params_json=JSON.parse(param_json_str);
+            var flag=true;
+            for(var items_ in params_json){
+                flag=false;
+            }
+            if(flag){
+                resolve(utils.returnMsg(false, '1001', '参数解析不正确。', null, null));
+            }else{
+                params=params_json;
+            }
+        }else{
+            params={};
+        }
         //获取流程最大版本号信息
         var query = model.$ProcessDefine.find({});
         query.where('proc_code', proc_code);
@@ -2187,7 +2207,7 @@ exports.getNodeAndHandlerInfo=function(proc_code,user_no){
                     //获取流程id
                     var proc_define_id=rs[0]._id;
                     var node_code;
-
+                    console.log(rs[0].proc_define);
                     var proc_define=JSON.parse(rs[0].proc_define);
 
                     //获取节点详细信息
@@ -2206,75 +2226,63 @@ exports.getNodeAndHandlerInfo=function(proc_code,user_no){
                         }
                     }
                     console.log("beginNode======",beginNode);
-                    //获取第三节点以及实际派单节点
-                    var index=1;
-                    for(var item in lines){
-                        var line=lines[item];
-                        if(line.from==nodePar){
-                            nodePar=line.to;
-                            //第三节点
-                            if(index==3){
-                                node_code=line.from;
-                            }
-                        }
-                        index++;
-                    }
-                    console.log("node_code======",node_code);
                     console.log("proc_define_id======",proc_define_id);
-                    var params;
+                    var params1;
                     //获取开始节点的下一节点，即实际派单节点的处理人
-                    getNode(proc_define_id,beginNode,params,true).then(function(rs){
-                        var data=rs.data;
-                        var next_node=data.next_node;
-                        findNodeInfo(next_node, data.next_detail).then(function(rs){
-
-                            console.log("rs===============",rs);
-                            if(rs.success){
-                                var flag=false;
-                                var data=rs.data;
-                                for(var index in data){
-                                    var d=data[index];
-                                    console.log("@@@@@@@@@@@@@@@@@@@@@@",d.user_no,user_no);
-                                    //如果参数用户和实际派单用户是否相等
-                                    if(d.user_no==user_no){
-                                        flag=true;
+                    getNode(proc_define_id,beginNode,params1,true).then(function(rs){
+                        if(!rs.success)
+                            resolve(utils.returnMsg(false, '1003', '流程图第二节点错误', null, null));
+                        else{
+                            var data=rs.data;
+                            var next_node=data.next_node;
+                            node_code=data.next_detail.item_code;
+                            findNodeInfo(next_node, data.next_detail).then(function(rs){
+                                if(rs.success){
+                                    var flag=false;
+                                    var data=rs.data;
+                                    for(var index in data){
+                                        var d=data[index];
+                                        console.log("@@@@@@@@@@@@@@@@@@@@@@",d.user_no,user_no);
+                                        //如果参数用户和实际派单用户是否相等
+                                        if(d.user_no==user_no){
+                                            flag=true;
+                                        }
                                     }
-                                }
-                                if(!flag)
-                                    resolve(utils.returnMsg(false, '1002', '不存在的派单发起人', null, null));
-                                else{
-                                    //获取第三节点所有处理人
-                                    getNode(proc_define_id,node_code,params,true).then(function(rs){
-                                        var data=rs.data;
-                                        var next_node=data.next_node;
-                                        findNodeInfo(next_node, data.next_detail).then(function(rs){
-                                            resolve(rs);
-                                            console.log("######################",rs);
+                                    if(!flag)
+                                        resolve(utils.returnMsg(false, '1002', '不存在的派单发起人', null, null));
+                                    else{
+                                        console.log("node_code======",node_code);
+                                        //获取第三节点所有处理人
+                                        getNode(proc_define_id,node_code,params,true).then(function(rs){
+                                            if(!rs.success)
+                                                resolve(utils.returnMsg(false, '1004', '流程图第三节点错误', null, null));
+                                            else{
+                                                var data=rs.data;
+                                                var next_node=data.next_node;
+                                                findNodeInfo(next_node, data.next_detail).then(function(rs){
+                                                    resolve(rs);
+                                                });
+                                            }
 
 
                                         });
+                                    }
 
-                                    });
+                                }else{
+                                    resolve(utils.returnMsg(false, '1001', '派单发起人信息查找失败', null, null));
+
                                 }
+                            });
+                        }
 
-                            }else{
-                                resolve(utils.returnMsg(false, '1001', '派单发起人信息查找失败', null, null));
-
-                            }
-                        });
                     })
-
-
 
                 }else{
                     resolve(utils.returnMsg(false, '1000', '查询用户信息错误', null, null));
                 }
-
             }
-
         });
     })
-    console.log("ppppppppppppppppppp",p);
     return  p;
 }
 
@@ -2295,6 +2303,8 @@ function findNodeInfo(next_node, next_detail) {
             resolve(utils.returnMsg(true, '0000', '查询用户org', array, null))
 
         } else {
+            console.log("@@@@@@@@@@@@@@@@@@@@@@@",next_detail);
+
             var item_assignee_ref_task = next_detail.item_assignee_ref_task;
 
 

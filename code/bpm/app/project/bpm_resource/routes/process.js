@@ -86,8 +86,9 @@ router.route("/getNodeUser").post(function(req,res){
     var proc_code=req.body.proc_code;
     //派单人
     var user_no=req.body.user_no;
-
-    nodeAnalysisService.getNodeAndHandlerInfo(proc_code,user_no).then(function(rs){
+    //参数
+    var params=req.body.params;
+    nodeAnalysisService.getNodeAndHandlerInfo(proc_code,user_no,params).then(function(rs){
         console.log("下一节点处理人:",rs);
         utils.respJsonData(res,rs);
     });

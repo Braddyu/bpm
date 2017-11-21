@@ -74,7 +74,8 @@ HOST: http://192.168.9.66:30002/gdgl/api
 
             {
                 proc_code:'p_33',
-                user_no:'zhangyi001'
+                user_no:'zhangyi001',
+				params:{money:101}
             }
 
 + Response 200
