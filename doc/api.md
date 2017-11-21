@@ -1,7 +1,7 @@
 FORMAT: 1A
 HOST: http://192.168.9.66:30002/gdgl/api
 
-# 流程引擎-API 说明文档 v1.0.1
+# 流程引擎-API 说明文档 v1.0.2
 本文档为流程引擎相关api说明，用于第三方应用进行调用
 
 
@@ -36,7 +36,7 @@ HOST: http://192.168.9.66:30002/gdgl/api
     + Body
 
             {
-                "return_code": "100",
+                "return_code": "0000",
                 "return_msg": "操作完成",
             }
 
@@ -45,44 +45,7 @@ HOST: http://192.168.9.66:30002/gdgl/api
 流程管理相关接口
 
 
-## 流程管理 [/process/{id}]
 
-定义流程管理对象操作API
-
-***
-
-流程管理属性如下：
-
-+ _id 编号
-+ proc_code 流程编码
-+ proc_name 流程名称
-+ proc_latest_ver 流程最后版本号
-+ catalog 类别
-+ engine_version 流程引擎版本
-+ memo 流程备注
-+ opt_time 创建时间
-+ proc_user 流程创建人
-+ status 状态
-
-
-
-+ Model (application/json)
-
-    + Body
-
-            { 
-                "_id" : "59393f698f62b703ac8b1777", 
-                "proc_code" : "p_101", 
-                "proc_name" : "采购测试流程", 
-                "proc_user" : "", 
-                "opt_time" : "2017-06-11", 
-                "memo" : "采购测试流程", 
-                "catalog" : "1", 
-                "engine_version" : "v1.0", 
-                "status" : "1", 
-                "__v" : 0, 
-                "proc_latest_ver" : 4
-            }
 
 
 ## 流程列表 [/process/list]
@@ -108,7 +71,7 @@ HOST: http://192.168.9.66:30002/gdgl/api
 # Group 流程实例 -修改
 流程实例管理相关接口
 
-## 流程实例 [/instance]
+## 流程实例 [/process_instance]
 
 定义实例管理对象操作API
 
@@ -332,7 +295,7 @@ HOST: http://192.168.9.66:30002/gdgl/api
 
 
 
-## 流程实例启动 [/instance/createInstance]
+## 流程实例启动 [/process_instance/createInstance]
 ### 流程实例启动 [POST]
 
 + Request
@@ -351,7 +314,7 @@ HOST: http://192.168.9.66:30002/gdgl/api
 
     {success:true, code:'0000', msg:'流程实例创建启动成功。',data:taskEntity}
 
-## 流程实例取消 [/instance/cancleInstance]
+## 流程实例取消 [/process_instance/cancleInstance]
 ### 流程实例取消 [POST]
 
 + Request
@@ -366,7 +329,7 @@ HOST: http://192.168.9.66:30002/gdgl/api
     {success:true, code:'0000', msg:'取消成功。'} 
 	
 	
-## 流程实例启用 [/instance/enableInstance]
+## 流程实例启用 [/process_instance/enableInstance]
 ### 流程实例启用 [POST]
 
 + Request
@@ -380,7 +343,7 @@ HOST: http://192.168.9.66:30002/gdgl/api
 
     {success:true, code:'0000', msg:'取消成功。'} 
 
-## 流程实例当前节点名称编号 [/instance/get/current_users/info]
+## 流程实例当前节点名称编号 [/process_instance/get/current_users/info]
 ### 流程实例当前节点处理信息 [POST]
 
 + Request
@@ -396,7 +359,7 @@ HOST: http://192.168.9.66:30002/gdgl/api
     {success:true, code:'0000', msg:'获取下一节点信息成功。',data:[data]} 
 
 
-## 流程实例下一节点名称和处理人信息 [/instance/next/nodeAnduser]
+## 流程实例下一节点名称和处理人信息 [/process_instance/next/nodeAnduser]
 ### 流程实例下一节点名称和处理人信息 [POST]
 
 + Request
@@ -415,7 +378,7 @@ HOST: http://192.168.9.66:30002/gdgl/api
     {success:true, code:'0000', msg:'获取下一节点处理人信息成功。',data:[data]} 
 	
 
-## 流程实例列表 [/instance/list]
+## 流程实例列表 [/process_instance/list]
 ### 流程实例列表信息 [POST]
 
 + Request
@@ -432,7 +395,7 @@ HOST: http://192.168.9.66:30002/gdgl/api
 
     {success:true, code:'0000', msg:'查询成功。',rows:[data],total:2}   
 
-## 创建流程实例直接流转到下一节点 [/instance/createAndAcceptAssign]
+## 创建流程实例直接流转到下一节点 [/process_instance/createAndAcceptAssign]
 ### 创建流程实例直接流转到下一节点 [POST]
 
 + Request
@@ -656,7 +619,7 @@ HOST: http://192.168.9.66:30002/gdgl/api
 
 # Group 流程历史-修改
 
-## 流程历史 [/instance/history]
+## 流程历史 [/process_instance/history]
 
 ### 获取我的流程历史列表 [POST]
 
