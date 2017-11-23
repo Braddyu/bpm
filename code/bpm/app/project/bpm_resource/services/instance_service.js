@@ -352,7 +352,9 @@ exports.createInstance=function(proc_code,proc_ver,proc_title,param_json_str,pro
                 data_define=data;
                 if(success){
                     //找到开始节点
+
                     var firstNode=nodeAnalysisService.findFirstNode(JSON.parse(data.proc_define));
+
                     //获取节点信息
                     nodeAnalysisService.getNode(data._id,firstNode,params,true)
                         .then(function(rss){

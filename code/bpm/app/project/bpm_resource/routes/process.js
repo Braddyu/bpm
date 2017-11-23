@@ -94,4 +94,17 @@ router.route("/getNodeUser").post(function(req,res){
     });
 });
 
+/**
+ * 节点详细信息，是否存在归档，拒绝节点
+ */
+router.route("/nodeDetail").post(function(req,res){
+    //流程编码
+    var proc_code=req.body.proc_code;
+    //节点信息
+    var node_code=req.body.node_code;
+    nodeAnalysisService.getNodeDetail(proc_code,node_code).then(function(rs){
+        console.log("下一节点处理人:",rs);
+        utils.respJsonData(res,rs);
+    });
+});
 module.exports = router;

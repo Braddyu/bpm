@@ -276,25 +276,25 @@ function touchNode(detail,user_no,task_id,flag){
 exports.transfer=function(proc_inst_task_id,node_code,user_code,opts,memo,param_json_str,biz_vars,proc_vars){
 
     var p=new Promise(function(resolve,reject){
-        var params;
+        var params = eval('(' + param_json_str + ')');
         var org={};
         //解析参数
-        if(!(!param_json_str||param_json_str=="undefined"||param_json_str=="{}")){
-
-            var params_json=JSON.parse(param_json_str);
-            // console.log(params_json)
-            var flag=true;
-            for(var items_ in params_json){
-                flag=false;
-            }
-            if(flag){
-                resolve(utils.returnMsg(false, '1001', '参数解析不正确。', null, null));
-            }else{
-                params=params_json;
-            }
-        }else{
-            params={};
-        }
+        // if(!(!param_json_str||param_json_str=="undefined"||param_json_str=="{}")){
+        //
+        //     var params_json=JSON.parse(param_json_str);
+        //     // console.log(params_json)
+        //     var flag=true;
+        //     for(var items_ in params_json){
+        //         flag=false;
+        //     }
+        //     if(flag){
+        //         resolve(utils.returnMsg(false, '1001', '参数解析不正确。', null, null));
+        //     }else{
+        //         params=params_json;
+        //     }
+        // }else{
+        //     params={};
+        // }
         if(opts){
             console.log('进来了吗');
             //同意流转
@@ -1302,6 +1302,8 @@ exports.assign_transfer=function(proc_task_id,node_code,user_code,assign_user_co
     console.log(proc_task_id,node_code,user_code,assign_user_code,proc_title,biz_vars,proc_vars,memo);
     //next_detail, next_node, proc_inst_id, resolve,reject,proc_define_id,proc_inst_task_id,user_code,current_node,params
     var p = new  Promise(function(resolve,reject){
+
+
         model.$ProcessInstTask.find({"_id":proc_task_id},function(err,rs){
             if(err){
                 console.log(err);
@@ -1324,6 +1326,7 @@ exports.assign_transfer=function(proc_task_id,node_code,user_code,assign_user_co
                                var next_node = nodes[node_code];
                                var current_node=nodes[prev_node];
                                var next_detail, current_detail;
+
                                for (var item in  item_config) {
                                    // console.log(item_config)
                                    // console.log(item_config[item].item_code);
@@ -1331,6 +1334,7 @@ exports.assign_transfer=function(proc_task_id,node_code,user_code,assign_user_co
                                        current_detail = item_config[item];
                                    }
                                    if(item_config[item].item_code == node_code){
+
                                        next_detail=item_config[item];
                                    }
                                }
@@ -1342,6 +1346,10 @@ exports.assign_transfer=function(proc_task_id,node_code,user_code,assign_user_co
                                console.log("next_detail       ",next_detail,node_code,"\n",next_node);
                                // var proc_cur_task = current_detail.item_code;
                                // var proc_cur_task_name = current_node.name;
+                               if(!next_detail||!current_detail){
+                                   resolve(utils.returnMsg(false, '1010', '节点信息异常', null));
+                                   return;
+                               }
                                var proc_inst_node_vars = next_detail.item_node_var;
                                // var proc_inst_node_vars = current_detail.item_node_var;
                                var proc_cur_user;

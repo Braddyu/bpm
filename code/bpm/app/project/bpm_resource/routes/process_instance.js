@@ -192,10 +192,13 @@ router.route("/next/nodeAnduser").post(function(req,res){
     var proc_inst_id=req.body.proc_inst_id;
     var user_no=req.body.user_no;
     var params_str=req.body.params;
-    var params={};
-    if(params_str){
-        params=JSON.parse(params_str);
-    }
+    var params = eval('(' + params_str + ')');
+
+    // var params={};
+    // if(params_str){
+    //     params=JSON.parse(params_str);
+    // }
+
     nodeAnalysisService.getNextNodeAndHandlerInfo(node_code,proc_task_id,proc_inst_id,params,user_no).then(function(rs){
         utils.respJsonData(res,rs);
     });
