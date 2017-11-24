@@ -98,9 +98,8 @@ var config = {
             '/project/manual/routes/': project_url_prefix + '/api/manual/',//人工抽查路由匹配路径
             '/project/bpm/routes/': project_url_prefix + '/bpm/manual/',//人工抽查路由匹配路径
             '/project/statecos/routes/': project_url_prefix + '/api/statecos/',//人工抽查路由匹配路径
-            '/project/bpm_resource/routes/': project_url_prefix + '/api/bpm_resource/',//给外部用户 不要需要权限的 用户 调用的  URL
             '/project/workflow/routes/':project_url_prefix+'/api/workflow/',//用于平台页面接口的访问
-            '/project/order_manage/routes/':project_url_prefix+'/api/order_manage/'
+            '/project/order_manage/routes/':project_url_prefix+'/api/order_manage/',
 
         },
         welcome_path:project_url_prefix + '/home',
@@ -110,8 +109,7 @@ var config = {
             project_url_prefix + '/captcha',
             project_url_prefix + '/test/*',
             project_url_prefix +'/static/*',
-            project_url_prefix + '/api/bpm_resource/*',
-            project_url_prefix + '/project/workflow/*',
+            project_url_prefix + '/api/*',
         ],
         // 登陆后就能访问的url（无需授权）（支持通配符*，尽量少用）,如：修改个人信息、注销等操作
         logged_can_access_urls:[project_url_prefix + '/public/*',
@@ -193,7 +191,7 @@ var config = {
         password_daily_err_count:5
     },
     mqtt:{
-        is_use:true,// 是否使用mqtt
+        is_use:false,// 是否使用mqtt
         server:{// mqtt服务器端配置
             is_load:true,// 是否需要加载mqtt服务器模块，若为false，则不启用mqtt服务器
             host:'127.0.0.1',// mqtt服务器地址
