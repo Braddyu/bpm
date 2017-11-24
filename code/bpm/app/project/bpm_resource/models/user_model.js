@@ -25,14 +25,14 @@ var userSchema = new Schema(
             user_tel : String,// 用户联系电话
             user_email : String,// 用户邮箱
             login_password : String,// 登录密码
-            user_org : {type: Schema.Types.ObjectId, ref: 'CommonCoreOrg'},// 所在部门
+            user_org : [] ,//{type: Schema.Types.ObjectId},// 所在部门
             user_sys : String,// 所属系统
             user_org_desc:String,//所属系统的 描述
             theme_name : String,// 使用主题
             theme_skin : String,// 使用皮肤
             user_photo : String,// 用户头像/照片
-            user_roles : [{type: Schema.Types.ObjectId}],// 菜单访问权限使用角色
-            sys_roles:[{type:Schema.Types.ObjectId}],//流程使用的角色
+            user_roles : [],// 菜单访问权限使用角色
+            sys_roles:[],//流程使用的角色
             boss_id:String,//对接外部系统专用的 Boss_id
             smart_visual_sys_user_id:String,//慧眼系统的 User_id
             athena_sys_user_id:String,//Athena系统的user_id
@@ -53,6 +53,36 @@ Promise.promisifyAll(User);
 Promise.promisifyAll(User.prototype);
 
 exports.$User = User;
+
+
+
+//声明User Schema结构
+var user_bak_Schema = new Schema(
+    {
+        id: String,
+        salesperson_tel:String,// ' 13908511021',
+        salesperson_name:String,// '呆坏账处理-吴莲',
+        salesperson_id:String,// 10001755,
+        channel_id: String,//10000002,
+        channel_name:String,// '省业务支撑系统部',
+        grid_coding:String,// null,
+        grid_name: String,//null,
+        district_code: String,// ' 8801',
+        district_name: String,//'省计费',
+        city_code: String,//851,
+        city_name: String,//'贵阳'
+        abnormal_type:String,
+    },
+    {collection: "common_bpm_user_info_bak_athena_app"}// mongodb集合名
+);
+//将User类给予接口
+var User_bak = mongoose.model('User_bak', user_bak_Schema);
+
+//promise化user类及其方法
+Promise.promisifyAll(User_bak);
+Promise.promisifyAll(User_bak.prototype);
+
+exports.$User_bak = User_bak;
 
 
 //声明User Schema结构

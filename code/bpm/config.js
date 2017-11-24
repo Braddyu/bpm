@@ -112,8 +112,6 @@ var config = {
             project_url_prefix +'/static/*',
             project_url_prefix + '/api/bpm_resource/*',
             project_url_prefix + '/project/workflow/*',
-
-
         ],
         // 登陆后就能访问的url（无需授权）（支持通配符*，尽量少用）,如：修改个人信息、注销等操作
         logged_can_access_urls:[project_url_prefix + '/public/*',
@@ -148,6 +146,26 @@ var config = {
         user: 'root',
         password: 'repLcmc0613',//repLcmc0613
         database: 'channel2',
+        insecureAuth:true
+    },
+    mysql_athena:{
+        host: '135.10.59.62',
+        // host: '10.201.253.111',
+        port:3306,
+        // port:3307,
+        user: 'root',
+        password: 'GzzyYfs-2016',//repLcmc0613
+        database: 'channel2',
+        insecureAuth:true
+    },
+    mysql_48:{
+        host: '192.168.9.48',
+        // host: '10.201.253.111',
+        port:3306,
+        // port:3307,
+        user: 'root',
+        password: 'root',//repLcmc0613
+        database: 'yadianna',
         insecureAuth:true
     },
     ydn_mysql:{
