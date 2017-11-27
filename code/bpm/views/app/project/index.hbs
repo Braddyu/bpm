@@ -35,6 +35,7 @@
     </div>
 </div>
 
+<<<<<<< HEAD
 <div id="orderDetail"  class="mydialog" style="overflow :auto ">
     <!--<fieldset>-->
     <div class="easyui-tabs" id="tabs" >
@@ -46,6 +47,17 @@
                         <td align="right" class="tdLabel">工单标题:</td>
                         <td colspan="3"><input disabled style="width: 665px" class="easyui-textbox" id="proc_inst_task_title"  name="proc_inst_task_title" ></input></td>
 
+=======
+
+<div id="orderDetail"  class="mydialog"  >
+    <fieldset>
+        <legend ><b>任务基本信息</b></legend>
+        <form id="orderDetailForm" method="post" enctype="multipart/form-data">
+            <table cellpadding="5" align="center" style="border-collapse:separate; border-spacing:0px 5px;">
+                <tr>
+                    <td align="right" class="tdLabel">工单标题:</td>
+                    <td colspan="3"><input disabled style="width: 665px" class="easyui-textbox"  name="proc_inst_task_title" ></input></td>
+>>>>>>> 18801b03dd2cd73eff1967b11098a6ffd6e19f13
 
                     </tr>
                     <tr>
@@ -107,6 +119,7 @@
 
                 <legend><b id="b">节点处理</b></legend>
 
+<<<<<<< HEAD
                 <table cellpadding="5" align="center" style="border-collapse:separate; border-spacing:0px 5px;" id="table">
                     <input  type="hidden"id="node_code"  name="proc_inst_task_code"/>
                     <input  type="hidden"id="next_code" name="next_code" />
@@ -115,9 +128,62 @@
                     <tr>
                         <td align="right" class="tdLabel">当前节点:</td>
                         <td colspan="3"><input disabled style="width: 670px" class="easyui-textbox" name="proc_inst_task_name" id="proc_inst_task_name" ></input></td>
+=======
+    <legend><b id="b">节点处理</b></legend>
+
+    <table cellpadding="5" align="center" style="border-collapse:separate; border-spacing:0px 5px;" id="table">
+        <input  type="hidden"id="proc_code"  name="proc_code"/>
+        <tr>
+            <td align="right" class="tdLabel">当前节点:</td>
+            <td colspan="3"><input disabled style="width: 670px" class="easyui-textbox" name="proc_inst_task_name" id="proc_inst_task_name" ></input></td>
 
 
 
+        </tr>
+        <tr id="tr_4">
+            <td align="right" class="tdLabel">操作:</td>
+            <td colspan="3" class="tdLabel">
+                <select class="easyui-combobox"
+                        style="width: 80px;"   panelHeight="auto">
+                    <option value="1">通过</option>
+                    <option value="0">拒绝</option>
+
+                </select>
+
+
+            </td>
+        </tr>
+        <tr id="tr_5">
+            <td align="right" class="tdLabel">下一节点处理人:</td>
+            <td colspan="3"><select class="easyui-combobox"
+                                    id="nextJobHandler" name="nextJobHandler" style="width: 180px;">
+
+            </select> </td>
+
+
+        </tr>
+
+
+        <tr>
+            <td align="right" class="tdLabel">处理意见:</td>
+            <td colspan="2"><input name="proc_inst_task_remark" class="easyui-textbox"  labelPosition="top" multiline="true" style="width: 670px; height: 54px; resize: none;"/>
+>>>>>>> 18801b03dd2cd73eff1967b11098a6ffd6e19f13
+
+            </td>
+
+        </tr>
+        <tr>
+            <td align="right" class="tdLabel">附件上传:</td>
+            <td>  <input class="easyui-filebox"labelPosition="top" data-options="prompt:'选择文件...',buttonText:'选择'" style="width:250px"/>
+            </td>
+        </tr>
+
+
+    </table>
+    </fieldset>
+
+
+<<<<<<< HEAD
                     </tr>
                     <tr id="tr_4">
                         <td align="right" class="tdLabel">操作:</td>
@@ -164,11 +230,11 @@
             </form>
         </div>
         <div title="流程图" style="padding:10px">
-
-            <iframe id="iframeId" frameborder=0 width=850 height=430 marginheight=0 marginwidth=0 scrolling=no src=></iframe>
-        </div>
-    </div>
+=======
+    </form>
 </div>
+>>>>>>> 18801b03dd2cd73eff1967b11098a6ffd6e19f13
+
 
 
 <div id="orderDetai3"  class="mydialog" style="overflow :auto ">
@@ -260,6 +326,7 @@
         //待办加载
         loadOrderTodaoListDatagrid();
         getAllProBase();
+<<<<<<< HEAD
         $("#assign_user_no") .combobox('setValue','') ;
         $('#tabs1').tabs({
             border:false,
@@ -301,6 +368,8 @@
             }
         });
 
+=======
+>>>>>>> 18801b03dd2cd73eff1967b11098a6ffd6e19f13
     });
     //填写工作天数，给完成时间赋值
     $('#proc_work_day').textbox({
@@ -358,9 +427,13 @@
                     }}
             ]],
             onDblClickRow:function(rowIndex, rowData){
+<<<<<<< HEAD
                 $("#tabs").tabs("select",0);
                 //$('#orderDetailForm')[0].reset();
                 $('#orderDetailForm').form('clear');
+=======
+                $('#orderDetailForm')[0].reset();
+>>>>>>> 18801b03dd2cd73eff1967b11098a6ffd6e19f13
                 $('#orderDetailForm').form('load', rowData);
                 var time=new Date(rowData.proc_start_time);
                 var work_day= parseInt(rowData.proc_task_work_day)  ;
@@ -634,7 +707,10 @@
 
             ]],
             onDblClickRow:function(rowIndex, rowData){
+<<<<<<< HEAD
                 $("#tabs").tabs("select",0);
+=======
+>>>>>>> 18801b03dd2cd73eff1967b11098a6ffd6e19f13
                 $('#orderDetailForm')[0].reset();
                 $('#orderDetailForm').form('load', rowData);
                 var time=new Date(rowData.proc_start_time);
