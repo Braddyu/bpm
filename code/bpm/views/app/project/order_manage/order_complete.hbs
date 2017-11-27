@@ -135,7 +135,7 @@
             onSelect:function(title,index){
                 if(title=='流程图'){
 
-                    var url='{{projcfg.appurl}}/api/bpm_resource/process/show/progressed?proc_inst_id='+$("#proc_inst_id").val();
+                    var url='{{projcfg.appurl}}/api/process/show/progressed?proc_inst_id='+$("#proc_inst_id").val();
                     parent.document.getElementById("iframeId").src=url;
                 }
 
