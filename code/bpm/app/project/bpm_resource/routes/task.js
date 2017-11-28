@@ -20,27 +20,35 @@ router.route('/todo').post(function(req,res){
         if(!userNo) {
             utils.respMsg(res, false, '2001', '用户编号不能为空。', null, null);
             return;
+        }else{
+            //判断用户是否存在
+            inst.userInfo(userNo).then(function(rs){
+               if(rs.success && rs.data.length==1){
+                   console.log('rs',rs);
+                   userService.getUsreRolesByUserNo(userNo).then(function(result){
+                       console.log(result);
+                       if(result){
+                           inst.getMyTaskQuery4Eui(page,length,userNo,result).then(function(taskresult){
+                               utils.respJsonData(res, taskresult);
+                           }).catch(function(err_inst){
+                               // console.log(err_inst);
+                               logger.error("route-getMyTaskList","获取我的待办数据异常",err_inst);
+                               utils.respMsg(res, false, '1000', '获取数据异常', null, err_inst);
+
+                           });
+                       }else{
+                           utils.respMsg(res, false, '1000', '无用户数据', null, null);
+                       }
+                   }).catch(function(err_inst){
+                       // console.log(err_inst);
+                       logger.error("route-getUsreRolesByUserNo","根据用户编号获取用户角色异常",err_inst);
+                       utils.respMsg(res, false, '1000', '获取数据异常', null, err_inst);
+                   });
+               }else{
+                   utils.respMsg(res, false, '1000', '用户不存在', null, null);
+               }
+            });
         }
-
-        userService.getUsreRolesByUserNo(userNo).then(function(result){
-            console.log(result);
-            if(result){
-                inst.getMyTaskQuery4Eui(page,length,userNo,result).then(function(taskresult){
-                    utils.respJsonData(res, taskresult);
-                }).catch(function(err_inst){
-                    // console.log(err_inst);
-                    logger.error("route-getMyTaskList","获取我的待办数据异常",err_inst);
-                    utils.respMsg(res, false, '1000', '获取数据异常', null, err_inst);
-
-                });
-            }else{
-                utils.respMsg(res, false, '1000', '无用户数据', null, null);
-            }
-        }).catch(function(err_inst){
-            // console.log(err_inst);
-            logger.error("route-getUsreRolesByUserNo","根据用户编号获取用户角色异常",err_inst);
-            utils.respMsg(res, false, '1000', '获取数据异常', null, err_inst);
-        });
     });
 	
     // -------------------------------查询我的已办数据接口-------------------------------
@@ -55,27 +63,35 @@ router.route('/havetodo').post(function(req,res){
 	if(!userNo) {
 		utils.respMsg(res, false, '2001', '用户编号不能为空。', null, null);
 		return;
-	}
+	}else{
+        inst.userInfo(userNo).then(function(rs){
+            if(rs.success && rs.data.length==1){
+                userService.getUsreRolesByUserNo(userNo).then(function(result){
+                    console.log(result);
+                    if(result){
+                        inst.getMyCompleteTaskQuery4Eui(page,length,userNo,result).then(function(taskresult){
+                            utils.respJsonData(res, taskresult);
+                        }).catch(function(err_inst){
+                            // console.log(err_inst);
+                            logger.error("route-getMyTaskList","获取我的已办数据异常",err_inst);
+                            utils.respMsg(res, false, '1000', '获取数据异常', null, err_inst);
 
-	userService.getUsreRolesByUserNo(userNo).then(function(result){
-		console.log(result);
-		if(result){
-			inst.getMyCompleteTaskQuery4Eui(page,length,userNo,result).then(function(taskresult){
-				utils.respJsonData(res, taskresult);
-			}).catch(function(err_inst){
-				// console.log(err_inst);
-				logger.error("route-getMyTaskList","获取我的已办数据异常",err_inst);
-				utils.respMsg(res, false, '1000', '获取数据异常', null, err_inst);
+                        });
+                    }else{
+                        utils.respMsg(res, false, '1000', '无用户数据', null, null);
+                    }
+                }).catch(function(err_inst){
+                    // console.log(err_inst);
+                    logger.error("route-getUsreRolesByUserNo","根据用户编号获取用户角色异常",err_inst);
+                    utils.respMsg(res, false, '1000', '获取数据异常', null, err_inst);
+                });
+            }else{
+                utils.respMsg(res, false, '1000', '用户不存在', null, null);
+            }
+        });
+    }
 
-			});
-		}else{
-			utils.respMsg(res, false, '1000', '无用户数据', null, null);
-		}
-	}).catch(function(err_inst){
-		// console.log(err_inst);
-		logger.error("route-getUsreRolesByUserNo","根据用户编号获取用户角色异常",err_inst);
-		utils.respMsg(res, false, '1000', '获取数据异常', null, err_inst);
-	});
+
 });
 
 router.route('/accept')
@@ -89,36 +105,50 @@ router.route('/accept')
             utils.respMsg(res, false, '2001', 'id不能为空。', null, null);
             return;
         }
-        //防止同时操作情况，先查询该任务是否已经被认领
-        inst.getTaskById(id).then(function(resulttask){
-            if(resulttask.success){
-                //如果未认领就调用认领操作方法
-                if(resulttask.data._doc.proc_inst_task_sign == 0){
-                    //根据用户编号，查询用户名
-                    userService.getUsreNameByUserNo(userNo).then(function(nameresult){
-                        //调用任务认领方式
-                        inst.acceptTask(id,userNo,nameresult)
-                            .then(function(result){
-                                utils.respJsonData(res, result);
-                            })
-                            .catch(function(err_inst){
-                                // console.log(err_inst);
-                                logger.error("route-acceptTask","任务认领异常",err_inst);
-                                utils.respMsg(res, false, '1000', '认领任务异常', null, err_inst);
-                            });
+        if(!userNo){
+            utils.respMsg(res, false, '2001', '用户编号不能为空。', null, null);
+            return;
+        }else{
+            inst.userInfo(userNo).then(function(rs){
+                if(rs.success && rs.data.length == 1){
+                    //防止同时操作情况，先查询该任务是否已经被认领
+                    inst.getTaskById(id).then(function(resulttask){
+                        if(resulttask.success){
+                            //如果未认领就调用认领操作方法
+                            if(resulttask.data._doc.proc_inst_task_sign == 0){
+                                //根据用户编号，查询用户名
+                                userService.getUsreNameByUserNo(userNo).then(function(nameresult){
+                                    //调用任务认领方式
+                                    inst.acceptTask(id,userNo,nameresult)
+                                        .then(function(result){
+                                            utils.respJsonData(res, result);
+                                        })
+                                        .catch(function(err_inst){
+                                            // console.log(err_inst);
+                                            logger.error("route-acceptTask","任务认领异常",err_inst);
+                                            utils.respMsg(res, false, '1000', '认领任务异常', null, err_inst);
+                                        });
+                                });
+                            }else{
+                                utils.respMsg(res, false, '1002', '任务已被其他人员认领。', null, null);
+                            }
+                        }else{
+                            utils.respJsonData(res, resulttask);
+                        }
+                    }).catch(function(err_inst){
+                        // console.log(err_inst);
+                        logger.error("route-getTaskById","获取任务异常",err_inst);
+                        utils.respMsg(res, false, '1000', '获取任务异常', null, err_inst);
                     });
                 }else{
-                    utils.respMsg(res, false, '1002', '任务已被其他人员认领。', null, null);
+                    utils.respMsg(res, false, '1000', '用户不存在', null, null);
                 }
-            }else{
-                utils.respJsonData(res, resulttask);
-            }
-        }).catch(function(err_inst){
-            // console.log(err_inst);
-            logger.error("route-getTaskById","获取任务异常",err_inst);
-            utils.respMsg(res, false, '1000', '获取任务异常', null, err_inst);
-        });
-
+            }).catch(function(err_inst){
+                // console.log(err_inst);
+                logger.error("route-getTaskById","获取用户信息异常",err_inst);
+                utils.respMsg(res, false, '1000', '获取用户信息异常', null, err_inst);
+            });
+        }
 
     });
 
@@ -135,6 +165,10 @@ router.route('/complete')
         // 任务是否为空
         if(!id) {
             utils.respMsg(res, false, '2001', '任务ID不能为空。', null, null);
+            return;
+        }
+        if(!user_code){
+            utils.respMsg(res, false, '2001', '处理人编码不能为空。', null, null);
             return;
         }
         inst.getTaskById(id).then(function(taskresult){
@@ -183,6 +217,18 @@ router.route("/assign/task").post(function(req,res){
     var biz_vars=req.body.biz_vars;//业务变量
     var proc_vars=req.body.proc_vars;//流程变量
     var memo=req.body.memo;//流程变量
+    if(!assign_user_no){
+        utils.respMsg(res, false, '1000', '下一节点处理人编号为空', null, null);
+        return;
+    }
+    if(!node_code){
+        utils.respMsg(res, false, '1000', '下一节点编号为空', null, null);
+        return;
+    }
+    if(!user_no){
+        utils.respMsg(res, false, '1000', '当前处理人编号为空', null, null);
+        return;
+    }
     if(task_id){
         nodeTransferService.assign_transfer(task_id,node_code,user_no,assign_user_no,proc_title,biz_vars,proc_vars,memo).then(function(rs){
             utils.respJsonData(res,rs);
@@ -203,9 +249,24 @@ router.route("/logs").post(function(req,res){
     if(!inst_id){
         utils.respMsg(res, false, '1000', '流程实例inst_id不能为空', null, null);
     }
-    nodeTransferService.find_log(inst_id,user_no,page,rows).then(function(rs){
-        utils.respJsonData(res,rs);
-    });
+    if(!user_no){
+        utils.respMsg(res, false, '1000', '处理人编号不能为空', null, null);
+    }else{
+        inst.userInfo(user_no).then(function(rs){
+            if(rs.success && rs.data.length==1){
+                console.log('rs',rs);
+                nodeTransferService.find_log(inst_id,user_no,page,rows).then(function(rs){
+                    utils.respJsonData(res,rs);
+                });
+            }else{
+                utils.respMsg(res, false, '1000', '用户不存在', null, null);
+            }
+        }).catch(function(err_inst){
+            // console.log(err_inst);
+            logger.error("route-logs","获取用户信息异常",err_inst);
+            utils.respMsg(res, false, '1000', '获取用户信息异常', null, err_inst);
+        });
+    }
 });
 /**
  * 查询日志集合
@@ -217,10 +278,23 @@ router.route("/log/list").post(function(req,res){
     var end_date=req.body.end_date;
     var page=req.body.page;
     var rows=req.body.rows;
-    
-    nodeTransferService.log_list(status,user_no,begin_date,end_date,page,rows).then(function(rs){
-        utils.respJsonData(res,rs);
-    });
+    if(!user_no){
+        utils.respMsg(res, false, '1000', '处理人编号不能为空', null, null);
+    }else{
+        inst.userInfo(user_no).then(function(rs){
+            if(rs.success && rs.data.length==1){
+                nodeTransferService.log_list(status,user_no,begin_date,end_date,page,rows).then(function(rs){
+                    utils.respJsonData(res,rs);
+                });
+            }else{
+                utils.respMsg(res, false, '1000', '用户不存在', null, null);
+            }
+        }).catch(function(err_inst){
+            // console.log(err_inst);
+            logger.error("route-/log/list","获取用户信息异常",err_inst);
+            utils.respMsg(res, false, '1000', '获取用户信息异常', null, err_inst);
+        });
+    }
 });
 
 /**
@@ -228,6 +302,10 @@ router.route("/log/list").post(function(req,res){
  */
 router.route('/complete/node/codes').post(function(req,res){
     var inst_id = req.body.proc_inst_id;
+    if(!inst_id){
+        utils.respMsg(res, false, '1000', '实例id为空', null, null);
+        return;
+    }
     inst.queryCompTask(inst_id).then(function(rs){
         utils.respJsonData(res,rs);
     });
@@ -241,9 +319,28 @@ router.route("/batch").post(function(req,res){
     var user_name=req.body.user_name;//当前处理人姓名
     var proc_inst_id=req.body.proc_inst_id;//当前实例id
 
-    inst.do_batch(user_no,user_name,proc_inst_id).then(function(rs){
-        utils.respJsonData(res,rs);
-    });
+    if(!proc_inst_id){
+        utils.respMsg(res, false, '1000', '实例id为空', null, null);
+        return;
+    }
+    if(!user_no){
+        utils.respMsg(res, false, '1000', '用户编号为空。', null, null);
+    }else{
+        inst.userInfo(user_no).then(function(rs){
+            if(rs.success && rs.data.length == 1){
+                inst.do_batch(user_no,user_name,proc_inst_id).then(function(rs){
+                    utils.respJsonData(res,rs);
+                });
+            }else{
+                utils.respMsg(res, false, '1000', '用户不存在', null, null);
+            }
+        }).catch(function(err_inst){
+            // console.log(err_inst);
+            logger.error("route-/log/list","获取用户信息异常",err_inst);
+            utils.respMsg(res, false, '1000', '获取用户信息异常', null, err_inst);
+        });
+    }
+
 });
 
 //批量派发
@@ -256,6 +353,10 @@ router.route("/payout").post(function(req,res){
     var biz_vars=req.body.biz_vars;//业务变量
     var proc_vars=req.body.proc_vars;//流程变量
     var memo=req.body.memo;//流程变量
+    if(!user_no){
+        utils.respMsg(res, false, '1000', '用户编号为空。', null, null);
+        return;
+    }
 
     if(task_id){
         nodeTransferService.do_payout(task_id,node_code,user_no,assign_user_no,proc_title,biz_vars,proc_vars,memo).then(function(rs){

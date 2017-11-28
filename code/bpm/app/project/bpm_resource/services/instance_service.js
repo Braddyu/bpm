@@ -1839,3 +1839,24 @@ exports.getInterimTaskById= function(inst_id,node_code) {
     });
     return p;
 };
+/*
+查询用户是否存在
+ */
+exports.userInfo = function(userNo){
+    console.log('userNo',userNo);
+    var p = new Promise(function(resolve,reject){
+          model_user.$User.find({user_no:userNo},function(err,data){
+              if(err){
+                  resolve(utils.returnMsg(false, '1000', '查询用户信息出错', null, err));
+              }else{
+                  if(data.length>0){
+                      resolve(utils.returnMsg(true, '0000', '查询用户成功', data, null));
+                  }else{
+                      resolve(utils.returnMsg(false, '0000', '用户不存在', null, null));
+                  }
+
+              }
+          });
+    });
+    return p;
+}
