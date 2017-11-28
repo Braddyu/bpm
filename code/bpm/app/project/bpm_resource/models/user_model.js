@@ -55,7 +55,7 @@ Promise.promisifyAll(User.prototype);
 exports.$User = User;
 
 
-//声明User Schema结构
+//声明 role Schema结构
 var roleSchema = new Schema(
     {
         role_code: String,//角色编码
@@ -73,7 +73,7 @@ var roleSchema = new Schema(
     },
     {collection: "common_bpm_role_info"}// mongodb集合名
 );
-//将User类给予接口
+//将 Role 类给予接口
 var Role = mongoose.model('Role', roleSchema);
 
 //promise化Role类及其方法
@@ -83,7 +83,7 @@ Promise.promisifyAll(Role.prototype);
 exports.$Role = Role;
 
 
-//声明User Schema结构
+//声明 userRole Schema结构
 var userRoleSchema = new Schema(
     {
         user_id : {type: Schema.Types.ObjectId, ref: 'User'}, // 用户ID
@@ -92,7 +92,7 @@ var userRoleSchema = new Schema(
     },
     {collection: "common_bpm_user_role"}// mongodb集合名
 );
-//将User类给予接口
+//将 userRole 类给予接口
 var UserRole = mongoose.model('UserRole', userRoleSchema);
 
 //promise化Role类及其方法
@@ -101,6 +101,7 @@ Promise.promisifyAll(UserRole.prototype);
 
 exports.$UserRole = UserRole;
 
+//声明 commonOrg Schema结构
 var commonOrgSchema = new Schema(
     {
         org_code_desc : String,// 机构编号

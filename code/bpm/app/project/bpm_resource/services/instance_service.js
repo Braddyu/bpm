@@ -373,6 +373,7 @@ exports.createInstance=function(proc_code,proc_ver,proc_title,param_json_str,pro
                                             console.log(err);
                                             resolve({'success':false, 'code':'2001', 'msg':'发起人id错误。'});
                                         }else{
+                                            //查询用户拥有的角色
                                             find(resu[0].user_roles.toString()).then(function(role){
                                                 if(role.success){
                                                     condition.proc_start_user_role_names = role.data.toString().split(',');
@@ -469,7 +470,9 @@ exports.createInstance=function(proc_code,proc_ver,proc_title,param_json_str,pro
     });
     return promise;
 }
-
+/*
+查询用户所拥有的角色
+ */
 function find(role_code){
     var p = new Promise(function(resolve,reject){
         if(role_code){
@@ -501,7 +504,7 @@ function find(role_code){
  */
 function insertTask(result,condition){
     var proc_inst_task_assignee,proc_inst_task_assignee_name,proc_inst_task_sign;
-    var proc_inst_task_user_role,proc_inst_task_user_role_name
+    var proc_inst_task_user_role,proc_inst_task_user_role_name;
     if(nodeDetail.next_detail.item_assignee_type==1){
         proc_inst_task_assignee=nodeDetail.next_detail.item_assignee_user_code;
         proc_inst_task_assignee_name=nodeDetail.next_detail.item_show_text;
