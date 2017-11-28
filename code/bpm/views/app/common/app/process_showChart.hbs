@@ -55,7 +55,7 @@
                 var proc_inst_id = params.data.proc_inst_id;
                 data = {proc_inst_id:proc_inst_id};
                 $.ajax({
-                    url: '{{projcfg.appurl}}/api/bpm_resource/process/show/process',
+                    url: '{{projcfg.appurl}}/api/process/show/process',
                     type: 'get',
                     async:false,
                     data:data,
@@ -107,7 +107,7 @@
         function handlerLogs(data){
             // 加载流程基本属性列表
             $('#handlerLogsDataTable').datagrid({
-                url:'/api/bpm_resource/process/handler/logs',
+                url:'/api/process/handler/logs',
                 method:'get',
                 queryParams:data,
                 rownumbers:true,
