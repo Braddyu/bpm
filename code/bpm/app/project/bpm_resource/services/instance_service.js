@@ -373,6 +373,7 @@ exports.createInstance=function(proc_code,proc_ver,proc_title,param_json_str,pro
                                             console.log(err);
                                             resolve({'success':false, 'code':'2001', 'msg':'发起人id错误。'});
                                         }else{
+                                            //查询用户所拥有的角色
                                             find(resu[0].user_roles.toString()).then(function(role){
                                                 if(role.success){
                                                     condition.proc_start_user_role_names = role.data.toString().split(',');
@@ -470,6 +471,9 @@ exports.createInstance=function(proc_code,proc_ver,proc_title,param_json_str,pro
     return promise;
 }
 
+/*
+查询用户所拥有的角色
+ */
 function find(role_code){
     var p = new Promise(function(resolve,reject){
         if(role_code){
@@ -716,6 +720,7 @@ exports.cancleInstance= function(inst_id) {
         var update = {$set: data};
 
         var options = {};
+        //更改流程实例状态
         model.$ProcessInst.update(conditions, update, options, function (error) {
             if(error) {
                 console.log(error);
@@ -1840,8 +1845,8 @@ exports.getInterimTaskById= function(inst_id,node_code) {
 查询用户是否存在
  */
 exports.userInfo = function(userNo){
-    console.log('userNo',userNo);
     var p = new Promise(function(resolve,reject){
+        //根据用户编码查询用户
           model_user.$User.find({user_no:userNo},function(err,data){
               if(err){
                   resolve(utils.returnMsg(false, '1000', '查询用户信息出错', null, err));

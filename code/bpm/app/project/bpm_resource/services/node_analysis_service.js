@@ -1851,7 +1851,9 @@ function findInfo(next_node, resolve, next_detail, proc_inst_id) {
 }
 
 
-
+/*
+获取下一节点
+ */
 function findNextHandler(user_code,proc_define_id,node_code,params,proc_inst_id) {
     var user_org_id, type;
     var returnMap = {};
@@ -1897,7 +1899,9 @@ function findNextHandler(user_code,proc_define_id,node_code,params,proc_inst_id)
     return p;
 }
 
-
+/*
+获取下一步节点或者操作人
+ */
 exports.getNextNodeAndHandlerInfo=function(node_code,proc_task_id,proc_inst_id,params,user_code){
     console.log(typeof params);
     console.info(node_code,proc_task_id,proc_inst_id,params);
@@ -1909,6 +1913,7 @@ exports.getNextNodeAndHandlerInfo=function(node_code,proc_task_id,proc_inst_id,p
                 if(rs.length>0) {
                     // var item_config = JSON.parse(rs[0].item_config);
                     // var proc_define = JSON.parse(rs[0].proc_define);
+                    //获取流程定义id
                     var proc_define_id = rs[0].proc_define_id;
                     console.log("ooooooooooooooooooooooooooooooooooooooooooooooooooooooo")
                     //50001 595cb1d03beda10924cb0f0d processDefineDiv_node_2 {} 596c8b9ba9d83525541b43d7
@@ -1924,7 +1929,9 @@ exports.getNextNodeAndHandlerInfo=function(node_code,proc_task_id,proc_inst_id,p
 }
 
 
-
+/*
+查询所有的下一节点处理人
+ */
 exports.getAllNextNodeAndInfo=function(proc_inst_task_id,node_code){
     var p = new  Promise(function(resolve,reject){
         var maps={};
@@ -1945,6 +1952,7 @@ exports.getAllNextNodeAndInfo=function(proc_inst_task_id,node_code){
                                 var item_config=JSON.parse(res[0].item_config);
                                 var lines=proc_define.lines;
                                 var allNextNode=[];
+
                                 for (var line in lines){
                                     var to =lines[line].to;
                                     var from =lines[line].from;
