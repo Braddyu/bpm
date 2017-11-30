@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var utils = require('../../../utils/app_utils');
+var logger = require('../../../../lib/logHelper').helper
 var proc = require('../services/process_service');
 var config = require('../../../../config');
 var nodeAnalysisService = require("../services/node_analysis_service");
