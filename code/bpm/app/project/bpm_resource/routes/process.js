@@ -160,4 +160,30 @@ router.route("/nodeDetail").post(function(req,res){
       utils.respMsg(res, false, '1000', '获取数据异常', null, err_inst);
     });
 });
+
+
+/**
+ * 用户用雅典娜系统的营业员数据同步的借口
+ * 参数1 sys_name="athena" 同步雅典娜拉取营业员数据
+ */
+router.route("/sales/info").post(function(req,res){
+    var sys_name=req.body.sys_name;
+    // console.log(req.params);
+    // console.log(req.query);
+    // console.log(req.body);
+    if(sys_name=='athena'){
+        proc.sendSalesDataToAthena().then(function(rs){
+            utils.respJsonData(res,rs);
+        }).catch(function(err){
+            logger.error("route-sendSalesDataToAthena","获取数据异常",err);
+            utils.respMsg(res, false, '1000', '获取数据异常', null, err);
+
+        });
+    }else{
+        utils.respMsg(res, false, '1000', '系统参数不匹配，请重新核对', null, null);
+    }
+
+
+});
+
 module.exports = router;

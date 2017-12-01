@@ -16,9 +16,11 @@
  */
 
 var model = require('../models/process_model');
+var model_user=require("../models/user_model");
 
 var utils = require('../../../utils/app_utils');
 var logger = require('../../../../lib/logHelper').helper;
+
 
 /**
  *
@@ -680,6 +682,25 @@ exports.getProcHandlerLogsList=function(page,size,condition){
         });
     });
     return p;
+};
+
+
+/**
+ * 用于给雅典娜系统反向（拉取）营业员数据的借口的服务层
+ *
+ * @returns {Promise}
+ */
+exports.sendSalesDataToAthena=function(){
+    return  new Promise(function(resolve,reject){
+        model_user.$User.find({"user_roles":["5a1e9c4189acd414b4143092"]},function(err,res){
+            if(err){
+                console.log(err);
+                resolve({'success':false, 'code':1001, 'msg':"没有查询到数据 请检查参数是否正确" ,"data":null,"error":err});
+            }else{
+                resolve(utils.returnMsg(true, '0000', '查询到流程实例数据正常。', res, null));
+            }
+        })
+    })
 };
 
 
