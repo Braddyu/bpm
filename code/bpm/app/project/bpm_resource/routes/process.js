@@ -166,24 +166,33 @@ router.route("/nodeDetail").post(function(req,res){
  * 用户用雅典娜系统的营业员数据同步的借口
  * 参数1 sys_name="athena" 同步雅典娜拉取营业员数据
  */
-router.route("/sales/info").post(function(req,res){
-    var sys_name=req.body.sys_name;
-    // console.log(req.params);
-    // console.log(req.query);
-    // console.log(req.body);
+router.route("/data/info").post(function(req,res){
+    var sys_name=req.body.sys_name;//系统名称参数
+    var role_type=req.body.role_type;//查询的角色类型
+    var condition={};
+    if(role_type){
+        if(role_type=="sales"){
+            condition.user_roles="5a1e9c4189acd414b4143092";//查询营业员
+        }else if(role_type=="hall_manager"){
+            condition.user_roles="5a1fc8879df6491f0836ae74";//查询厅经理
+        }else if(role_type=="grid_manager"){
+            condition.user_roles="5a1fee4d9df6491f0836aeba";//查询网格jinli
+        }else{
+            utils.respMsg(res, false, '1000', '系统参数不匹配，请重新核对', null, null);
+        }
+    }else{
+        utils.respMsg(res, false, '1000', '系统参数不匹配，请重新核对', null, null);
+    }
     if(sys_name=='athena'){
-        proc.sendSalesDataToAthena().then(function(rs){
+        proc.sendSalesDataToAthena(condition).then(function(rs){
             utils.respJsonData(res,rs);
         }).catch(function(err){
             logger.error("route-sendSalesDataToAthena","获取数据异常",err);
             utils.respMsg(res, false, '1000', '获取数据异常', null, err);
-
         });
     }else{
         utils.respMsg(res, false, '1000', '系统参数不匹配，请重新核对', null, null);
     }
-
-
 });
 
 module.exports = router;
