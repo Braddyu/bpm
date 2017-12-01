@@ -692,7 +692,7 @@ exports.getProcHandlerLogsList=function(page,size,condition){
  */
 exports.sendSalesDataToAthena=function(){
     return  new Promise(function(resolve,reject){
-        model_user.$User.find({"user_roles":["5a1e9c4189acd414b4143092"]},function(err,res){
+        model_user.$User.find({"user_roles":"5a1e9c4189acd414b4143092"},function(err,res){
             if(err){
                 console.log(err);
                 resolve({'success':false, 'code':1001, 'msg':"没有查询到数据 请检查参数是否正确" ,"data":null,"error":err});
