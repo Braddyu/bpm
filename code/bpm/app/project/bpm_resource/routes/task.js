@@ -490,4 +490,21 @@ router.route("/process_info").post(function(req,res){
 
 });
 
+
+/*
+区县公司调账(营业员--非销户)归档接口
+ */
+router.route("/pigeonhole").post(function(req,res){
+    var proc_inst_id=req.body.proc_inst_id;//流程实例id
+    if(proc_inst_id){
+        inst.goPigeonhole(proc_inst_id).then(function(rs){
+            utils.respJsonData(res,rs);
+        }).catch(function(err_inst){
+            logger.error("route-goPigeonhole","流程归档异常",err_inst);
+            utils.respMsg(res, false, '1000', '流程归档异常', null, err_inst);
+        });
+    }else{
+        utils.respMsg(res, false, '2001', '实例编号不能为空', null, null);
+    }
+});
 module.exports = router;

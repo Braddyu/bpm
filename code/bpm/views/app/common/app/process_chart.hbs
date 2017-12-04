@@ -458,7 +458,7 @@
             }else if(flag == 2){//选择参与角色
                 $('#orgId').combotree({
                     method: 'get',
-                    url: '{{projcfg.appurl}}/api/workflow/process/orgTreeDataAsyn?org_pid=5968d315e4b099ef68fd3772',
+                    url: '{{projcfg.appurl}}/api/workflow/process/orgTreeDataAsyn?org_pid=5a1e5d1b1a51b71d543d6a62',
                     //url: '{{projcfg.appurl}}/process/orgTreeData',
                     onBeforeExpand:function(node,param){
                        $('#orgId').combotree("tree").tree("options").url =  '{{projcfg.appurl}}/api/workflow/process/orgTreeDataAsyn?org_pid=' + node.id;
