@@ -93,7 +93,29 @@ HOST: http://192.168.9.66:30002/gdgl/api
     ]
 }
 
+## 获取当前节点信息 [/process/nodeDetail]
 
+
+### 获取当前节点是否存在拒绝，归档节点 [POST]
+
++ Request
+    + Body
+
+            {
+                proc_code:'p_33',
+                node_code:'processDefineDiv_node_7'
+            }
+
++ Response 200
+  {
+    "success": true,
+    "code": "1000",
+    "msg": "查询节点成功",
+    "data": {
+        "haveRefuse": true,（是否存在拒绝节点）
+        "isEnd": true（是否存在归档节点）
+    }
+}
 
 # Group 流程实例 -修改
 流程实例管理相关接口

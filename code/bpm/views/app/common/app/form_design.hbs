@@ -1,0 +1,1425 @@
+<link href="{{projcfg.appurl}}/static/css/process_management/form.css" rel="stylesheet" />
+<script type="text/javascript" src="{{projcfg.appurl}}/static/js/template/template-debug.js"></script>
+<script type="text/javascript" src="{{projcfg.appurl}}/static/js/project/form-design.js"></script>
+<div class="com" style="width: 100%;overflow: hidden;height: 40px;">
+    <div class="com-wan-back">
+        <ul><li onclick='form_reset()' class="btn btn-default"><i class="fa fa-mail-reply"></i>&nbsp;&nbsp;返回</li></ul>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-xs-12 col-md-12">
+        <div class="widget">
+            <div class="widget-body">
+                <div class="layout" style="width: 100%;">
+                    <form id="form" role="form">
+                        <div style="border:1px solid #ccc;">
+                            <div class="info-box">
+                                <div class="sub-title">表单字段设计</div>
+                                <div id="form_design">
+                                    <div id="form_preview">
+                                        <div class="entry">
+                                            <div class="fields" id="fields">
+
+                                            </div>
+                                        </div>
+                                        <div id="add_field" class="add-field guide-box">
+                                            <div style="display: block;" id="add_field_toggle" class="toggle"><i class="fa fa-plus"></i> 添加新字段</div>
+                                            <div style="display: none;" class="available-fields">
+                                                <ul class="field-list">
+                                                    <li>
+                                                        <div id="textField" class="new-field" data-field-type="TextField">
+                                                            <div class="with-tooltip-help">
+                                                                <i class="icon text-field field-icon"></i>单行文字
+                                                            </div>
+                                                        </div>
+                                                    </li>
+                                                    <li>
+                                                        <div id="textArea" class="new-field" data-field-type="TextArea">
+                                                            <div class="with-tooltip-help">
+                                                                <i class="fa fa-paragraph field-icon"></i>多行文字
+                                                            </div>
+                                                        </div>
+                                                    </li>
+                                                    <li>
+                                                        <div id="radioButton" class="new-field" data-field-type="RadioButton">
+                                                            <div class="with-tooltip-help">
+                                                                <i class="fa fa-dot-circle-o field-icon"></i>单项选择
+                                                            </div>
+                                                        </div>
+                                                    </li>
+                                                    <li>
+                                                        <div id="checkBox" class="new-field" data-field-type="CheckBox">
+                                                            <div class="with-tooltip-help">
+                                                                <i class="fa fa-check-square-o field-icon"></i>多项选择
+                                                            </div>
+                                                        </div>
+                                                    </li>
+                                                    <li>
+                                                        <div id="dropDown" class="new-field" data-field-type="DropDown">
+                                                            <div class="with-tooltip-help">
+                                                                <i class="fa fa-caret-square-o-down field-icon"></i>下拉框
+                                                            </div>
+                                                        </div>
+                                                    </li>
+                                                    <li>
+                                                        <div id="numberField" class="new-field" data-field-type="NumberField">
+                                                            <div class="with-tooltip-help">
+                                                                <i class="icon number-field field-icon"></i>数字
+                                                            </div>
+                                                        </div>
+                                                    </li>
+                                                    <li>
+                                                        <div id="dateField" class="new-field" data-field-type="DateField">
+                                                            <div class="with-tooltip-help">
+                                                                <i class="fa fa-calendar-o field-icon"></i>日期
+                                                            </div>
+                                                        </div>
+                                                    </li>
+                                                    <li>
+                                                        <div id="telephoneField" class="new-field" data-field-type="telephoneField">
+                                                            <div class="with-tooltip-help">
+                                                                <i class="fa fa-phone field-icon"></i>电话
+                                                            </div>
+                                                        </div>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="sidebar" style="display: none;">
+                                        <div class="accordion" id="fields_editing" style="border-right:0px solid #ccc;">
+                                            <div class="accordion-group">
+                                                <div class="accordion-heading no-field">
+                                                    <a href="#" class="accordion-toggle">
+                                                        <i class="fa fa-cog"></i>
+                                                        <span class="default-text">参数设置</span>
+                                                        <span id="_field_type"></span>
+                                                    </a>
+                                                    <div class="dropdown">
+                                                        <a class="dropdown-toggle pull-right" style="color: rgb(255, 255, 255);margin-right: 5px;margin-top: -32px;cursor:pointer;font-size: 20px;">
+                                                            <i class='fa fa-chevron-circle-down'></i>
+                                                        </a>
+                                                        <ul class="dropdown-menu" style="left:65%;">
+                                                            <li>
+                                                                <a class="prevent-default" data-field-type="TextField" href="javascript:void(0)">
+                                                                    <i class="icon text-field field-icon"></i>单行文字
+                                                                </a>
+                                                            </li>
+                                                            <li>
+                                                                <a class="prevent-default" data-field-type="TextArea" href="javascript:void(0)">
+                                                                    <i class="fa fa-paragraph field-icon"></i>多行文字
+                                                                </a>
+                                                            </li>
+                                                            <li>
+                                                                <a class="prevent-default" data-field-type="RadioButton" href="javascript:void(0)">
+                                                                    <i class="fa fa-dot-circle-o field-icon"></i>单项选择
+                                                                </a>
+                                                            </li>
+                                                            <li>
+                                                                <a class="prevent-default" data-field-type="CheckBox" href="javascript:void(0)">
+                                                                    <i class="fa fa-check-square-o field-icon"></i>多项选择
+                                                                </a>
+                                                            </li>
+                                                            <li>
+                                                                <a class="prevent-default" data-field-type="DropDown" href="javascript:void(0)">
+                                                                    <i class="fa fa-caret-square-o-down field-icon"></i>下拉框</a>
+                                                            </li>
+
+                                                            <li>
+                                                                <a class="prevent-default" data-field-type="NumberField" href="javascript:void(0)">
+                                                                    <i class="icon number-field field-icon"></i>数字
+                                                                </a>
+                                                            </li>
+                                                            <li>
+                                                                <a class="prevent-default" data-field-type="DateField" href="javascript:void(0)">
+                                                                    <i class="fa fa-calendar-o field-icon"></i>日期
+                                                                </a>
+                                                            </li>
+                                                            <li>
+                                                                <a class="prevent-default" data-field-type="TelephoneField" href="javascript:void(0)">
+                                                                    <i class="fa fa-phone field-icon"></i>电话
+                                                                </a>
+                                                            </li>
+                                                            <li>
+                                                                <a class="prevent-default" data-field-type="MobileField" href="javascript:void(0)">
+                                                                    <i class="fa fa-mobile field-icon"></i>手机
+                                                                </a>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <div class="accordion-inner">
+                                                        <div id="field_settings">
+                                                            <!--
+                                                            <div class="field_setting">
+                                                                <label class="col-xs-12">标题</label>
+                                                                <div class="col-xs-12">
+                                                                    <input class="full-width" type="text" name="" value="单行文字" maxlength="30" placeholder="未命名" id="">
+                                                                </div>
+                                                            </div>
+                                                            <div class="field_setting">
+                                                                <label class="col-xs-12">默认值</label>
+                                                                <div class="col-xs-12">
+                                                                    <input class="full-width" type="text" name="" value="" id="">
+                                                                </div>
+                                                            </div>
+                                                            <div class="field_setting">
+                                                                <label class="col-xs-12">提示</label>
+                                                                <div class="col-xs-12">
+                                                                    <input class="full-width" type="text" name="" value="" id="">
+                                                                </div>
+                                                            </div>
+                                                            <div class="field_setting">
+                                                                <label class="col-xs-12">能否为空</label>
+                                                                <div class="col-xs-12">
+                                                                    <input class="full-width" type="text"  name="" value="" id="">
+                                                                </div>
+                                                            </div>
+                                                            <div class="field_setting">
+                                                                <label class="col-xs-12">是否只读</label>
+                                                                <div class="col-xs-12">
+                                                                    <input class="full-width" type="text" name="" value="" id="">
+                                                                </div>
+                                                            </div>
+                                                            <div class="field_setting">
+                                                                <label class="col-xs-12">最少填写字符</label>
+                                                                <div class="col-xs-12">
+                                                                    <input class="input-mini" type="number"  name="" value=""  id="">
+                                                                </div>
+                                                            </div>
+                                                            <div class="field_setting">
+                                                                <label class="col-xs-12">最多填写字符</label>
+                                                                <div class="col-xs-12">
+                                                                    <input class="input-mini" type="number"  name="" value=""  id="">
+                                                                </div>
+                                                            </div>
+                                                            <div class="field_setting">
+                                                                <label class="col-xs-12">是否验证</label>
+                                                                <div class="col-xs-12">
+                                                                    <input class="full-width" type="text" name="" value="" id="">
+                                                                </div>
+                                                            </div>
+                                                            <div class="field_setting">
+                                                                <label class="col-xs-12">验证公式</label>
+                                                                <div class="col-xs-12">
+                                                                    <input class="full-width" type="text" name="" value="" id="">
+                                                                </div>
+                                                            </div>
+                                                            -->
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="arrow-left-inner" id="arrow-left-inner"><i class="fa fa-caret-left"></i></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="text-align:center; margin-top:10px; margin-bottom:10px;">
+                            <div class="form-group">
+                                <div>
+                                    <button type="button" class="btn btn-ts" onclick="saveForm()">保存</button>
+                                    &nbsp;
+                                    <button type="button" class="btn btn-ts" id="submitBtn"  onclick="form_reset()">取消</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 返回（取消）按钮点击事件
+    function form_reset() {
+        window.location.href ='{{projcfg.appurl}}/stepsetting?base_id='+base_id;
+    }
+    // 鼠标离开字段标题事件
+    function titleBlurEvent(obj, index){
+        var value =  $(obj).val();
+        if(value==null || value ==""){
+            $("#titleTip").text("标题不能为空");
+            $(obj).attr("style","border:1px solid #ffa8a8;");
+            $(obj).focus();
+            return false;
+        }
+        $("#titleTip").text("必输项");
+        $(obj).attr("style","");
+        $("#title_label_"+index).text(value);
+        $("#field_title_"+index).val(value);
+        return true;
+    }
+    // 鼠标离开字段名称事件
+    function nameBlurEvent(obj, index){
+        var value =  $(obj).val();
+        if(value==null || value ==""){
+            $("#nameTip").text("字段名称不能为空");
+            $(obj).attr("style","border:1px solid #ffa8a8;");
+            $(obj).focus();
+            return false;
+        }
+        if(!/^[a-zA-Z][a-zA-Z_]*$/.test(value)){
+            $("#nameTip").text("由字母和下划线组成，且以字母开头");
+            $(obj).attr("style","border:1px solid #ffa8a8;");
+            $(obj).focus();
+            return false;
+        }
+        $("#nameTip").text("格式正确");
+        $(obj).attr("style","");
+        $("#field_name_"+index).val(value);
+        return true;
+    }
+    // 鼠标离开默认值事件
+    function defaultValBlurEvent(obj, index){
+        var value =  $(obj).val();
+        $("#field_default_value_"+index).val(value);
+    }
+    // 鼠标离开表达式事件
+    function expBluerEvent(obj, index){
+        var value =  $(obj).val();
+        $("#field_reg_exp_"+index).val(value);
+    }
+    // 鼠标离开备注事件
+    function remarkBlurEvent(obj, index){
+        var value =  $(obj).val();
+        $("#field_remark_"+index).val(value);
+    }
+    // 生成参数设置HTL函数
+    function createSetting(index, mould){
+        $("#field_settings").empty();
+        var data = {index: index};
+        var render = template.compile(mould);
+        var html = render({index:index});
+        $("#field_settings").append(html);
+        $.parser.parse($("#field_settings"));
+
+        // 是否必填改变事件
+        $("#required_"+index).combobox({
+            editable:false,
+            panelHeight:75,
+            textField:'label',
+            valueField:'value',
+            data: [{label: '是',value: '1'},{label: '否',value: '0'}],
+            onChange: function (newValue, oldValue) {
+                if (newValue != null) {
+                    $("#field_is_required_"+index).val(newValue);
+                }
+            }
+        });
+        // 字段序号改变事件
+        $("#sort_"+index).numberspinner({
+            onChange: function (newValue, oldValue) {
+                if (newValue != null) {
+                    $("#field_sort_"+index).val(newValue);
+                }
+            }
+        });
+        // 是否只读改变事件
+        $("#read_"+index).combobox({
+            editable:false,
+            panelHeight:75,
+            textField:'label',
+            valueField:'value',
+            data: [{label: '是',value: '1'},{label: '否',value: '0'}],
+            onChange: function (newValue, oldValue) {
+                if (newValue != null) {
+                    $("#field_is_read_"+index).val(newValue);
+                }
+            }
+        });
+        // 最少填写字符改变事件
+        $("#least_char_"+index).numberspinner({
+            onChange: function (newValue, oldValue) {
+                if (newValue != null) {
+                    $("#field_least_character_"+index).val(newValue);
+                }
+            }
+        });
+        // 最多填写字符改变事件
+        $("#more_char_"+index).numberspinner({
+            onChange: function (newValue, oldValue) {
+                if (newValue != null) {
+                    $("#field_more_character_"+index).val(newValue);
+                }
+            }
+        });
+        // 是否验证改变事件
+        $("#check_"+index).combobox({
+            editable:false,
+            panelHeight:75,
+            textField:'label',
+            valueField:'value',
+            data: [{label: '是',value: '1'},{label: '否',value: '0'}],
+            onChange: function (newValue, oldValue) {
+                if (newValue != null) {
+                    $("#field_is_check_"+index).val(newValue);
+                }
+            }
+        });
+        // 初始值设定
+        $("#label_set_"+index).val($("#field_title_"+index).val());
+        $("#name_set_"+index).val($("#field_name_"+index).val());
+        var $fieldName = $("#name_set_"+index);
+        if($fieldName.val()!=null && $fieldName.val()!=""){
+            $fieldName.attr("style","");
+        }
+        $("#value_set_"+index).val($("#field_default_value_"+index).val());
+        $("#required_"+index).combobox("select", $("#field_is_required_"+index).val());
+        $("#read_"+index).combobox("select", $("#field_is_read_"+index).val());
+        $("#check_"+index).combobox("select", $("#field_is_check_"+index).val());
+        $("#sort_"+index).numberspinner("setValue", $("#field_sort_"+index).val());
+        $("#least_char_"+index).numberspinner("setValue", $("#field_least_character_"+index).val());
+        $("#more_char_"+index).numberspinner("setValue", $("#field_more_character_"+index).val());
+        // 2017-04-22
+        $("#check_exp_"+index).val($("#field_reg_exp_"+index).val());
+        $("#remark_"+index).val($("#field_remark_"+index).val());
+
+        //扣分的回显
+        var second_type = $("#field_second_type_"+index).val();
+        $("input[name='option_second']").each(function(){
+            if($(this).val()==second_type){
+                $(this).attr("checked", "checked");
+            }
+        });
+        if(second_type==0){
+            var second_value = $("#field_second_value_"+index).val();
+            $("#second_set_"+index).val(second_value);
+          $("#second_set_"+index).parents(".field_setting").show();
+        }
+        var option_type = $("#field_option_type_"+index).val()
+        $("input[name='option_value']").each(function(){
+            if($(this).val()==option_type){
+                $(this).attr("checked", "checked");
+            }
+        });
+        if(option_type ==0){
+            // 自定义
+            $("#dictSelBox").hide();
+            $("#dictOptions").hide();
+            var optionContent = $("#field_option_"+index).val().split(',');
+            var optionValue = $("#field_option_value_"+index).val().split(',');
+            var html ="";
+            for(var j in optionContent){
+                if(mould == radioBtnSetting) {
+                    html += '<li class="choice-row" id="choice_row_' + j + '">' +
+                            '<div class="col-sm-15 choice-value">' +
+                            '<div class="col-sm-1"><input class="choice-radio" type="radio" name="choice" value="' + optionValue[j] + '" onclick="choiceRadioClickEvent(this, ' + j + ', ' + index + ')"></div>' +
+                            '<div class="col-sm-5"><input class="choice-text" style="width:85px" type="text" value="' + optionContent[j] + '" placeholder="选项名" onblur="choiceTextBlurEvent(this, ' + j + ', ' + index + ')"></div>' +
+                            '<div class="col-sm-5"><input class="choice-text" type="text" style="width:85px" value="' + optionValue[j] + '" placeholder="选项值" onblur="choiceValueBlurEvent(this, ' + j + ', ' + index + ')"></div>' +
+                            '</div>' +
+                            '<div class="choice-action">' +
+                            '<a class="add_choice" href="javascript:addChoice(' + index + ');"><i class="fa fa-plus-circle"></i></a>' +
+                            '<a class="del_choice" href="javascript:delChoice(' + j + ', ' + index + ');"><i class="fa fa-minus-circle"></i></a>' +
+                            '</div>' +
+                            '</li>';
+                }
+                if(mould == checkBoxSetting) {
+                    html +='<li class="choice-row" id="check_row_' + j + '">'+
+                            '<div class=" col-sm-15 choice-value">'+
+                            '<div class="col-sm-1"><input class="choice-radio" type="checkbox" name="choice" value="' + optionValue[j] + '" onclick="choiceCheckClickEvent(this, ' + j + ', ' + index + ')"></div>' +
+                            '<div class="col-sm-5"><input class="choice-text" type="text" style="width:85px" value="' + optionContent[j] + '" placeholder="选项名" onblur="choiceCheckBlurEvent(this, ' + j + ', ' + index + ')"></div>' +
+                            '<div class="col-sm-5"><input class="choice-text" type="text" style="width:85px;" value="' + optionValue[j] + '" placeholder="选项值" onblur="choiceCheckValueBlurEvent(this, ' + j + ', ' + index + ')"></div>' +
+                            '</div>'+
+                            '<div class="choice-action">'+
+                            '<a class="add_choice" href="javascript:addCheckChoice(' + index + ');"><i class="fa fa-plus-circle"></i></a>'+
+                            '<a class="del_choice" href="javascript:delCheckChoice(' + j + ', ' + index + ');"><i class="fa fa-minus-circle"></i></a>'+
+                            '</div>'+
+                            '</li>';
+                }
+                if(mould == dropDownSetting) {
+                    html += '<li class="choice-row" id="select_row_' + j + '">' +
+                            '<div class="col-xs-15 choice-value">' +
+                            '<div class="col-xs-1"><input class="choice-radio" type="radio" name="choice" value="' + optionValue[j] + '" onclick="selRadioClickEvent(this, ' + j + ', ' + index + ')"></div>' +
+                            '<div class="col-xs-5"><input class="choice-text" style="width:85px" type="text" value="' + optionContent[j] + '" placeholder="选项名" onblur="selTextBlurEvent(this, ' + j + ', ' + index + ')"></div>' +
+                            '<div class="col-xs-5"><input class="choice-text" style="width:85px" type="text" value="' + optionValue[j] + '" placeholder="选项值" onblur="selValueBlurEvent(this, ' + j + ', ' + index + ')"></div>' +
+                            '</div>' +
+                            '<div class="choice-action">' +
+                            '<a class="add_choice" href="javascript:addSelChoice(' + index + ');"><i class="fa fa-plus-circle"></i></a>' +
+                            '<a class="del_choice" href="javascript:delSelChoice(' + j + ', ' + index + ');"><i class="fa fa-minus-circle"></i></a>' +
+                            '</div>' +
+                            '</li>';
+                }
+            }
+            if(mould == radioBtnSetting) {
+                $("#choices_list_"+ index).html(html);
+            }
+            if(mould == checkBoxSetting) {
+                $("#checks_list_"+ index).html(html);
+            }
+            if(mould == dropDownSetting) {
+                $("#select_list_"+ index).html(html);
+            }
+            $("#customOptions").show();
+        }
+        /*if(option_type ==1){
+            // 数据字典取
+            $("#dictSelect").combobox("setValue", $("#field_default_value_"+index).val());
+            $("#dictSelBox").show();
+            $("#dictOptions").show();
+            $("#customOptions").hide();
+        }*/
+
+        if($("#dictSelect").length>0){
+            $("#dictSelect").combobox({
+                method: 'get',
+                url: '{{projcfg.appurl}}/api/process/form_design/queryDict',
+                editable:false,
+                valueField:'dict_code',
+                textField:'dict_name',
+                multiple:false,
+                required:true,
+                prompt:'请选择',
+                onLoadSuccess:function(){
+                    if(option_type ==1){
+                        // 数据字典取
+                        $("#dictSelect").combobox("setValue", $("#field_default_value_"+index).val());
+                        $("#dictSelBox").show();
+                        $("#dictOptions").show();
+                        $("#customOptions").hide();
+                    }
+                },
+                onChange:function(){
+                    var dict_code = $('#dictSelect').combobox("getValue");
+                    $("#field_default_value_"+index).val(dict_code);
+                    $.ajax({
+                        url:'{{projcfg.appurl}}/api/process/form_design/queryDictAttr?dict_code='+ dict_code,
+                        type: 'get',
+                        success: function (result) {
+                            if (result) {
+                                // 右侧的设置选项
+                                var html ="";
+                                // 左侧单选按钮显示效果
+                                var leftHtml ="";
+                                var optionContent="";
+                                var optionValue ="";
+                                for(var i in result){
+                                    var data = result[i];
+                                    optionContent += data.field_name+",";
+                                    optionValue += data.field_value +",";
+                                    if(mould == radioBtnSetting){
+                                        html += '<li class="choice-row">'+
+                                                '<div class="choice-value">'+
+                                                '<input class="choice-radio" type="radio" value="'+data.field_value+ '" disabled="disabled">' +
+                                                '<input class="choice-text" type="text" value="'+data.field_name+'" disabled="disabled">' +
+                                                '</div>'+
+                                                '</li>';
+                                        leftHtml +='<label class="radio" id="choice_label_'+index+'_'+i+ '">' +
+                                                '<input type="radio" value="'+data.field_value+'" disabled="disabled" id="radio_'+index+'_'+ i + '">' +
+                                                '<span id="option_name_'+index+'_'+ i + '">'+data.field_name+ '</span>' +
+                                                '</label>';
+                                    }
+                                    if(mould == checkBoxSetting){
+                                        html += '<li class="choice-row">'+
+                                                '<div class="choice-value">'+
+                                                '<input class="choice-radio" type="checkbox" value="'+data.field_value+ '" disabled="disabled">' +
+                                                '<input class="choice-text" type="text" value="'+data.field_name+'" disabled="disabled">' +
+                                                '</div>'+
+                                                '</li>';
+                                        leftHtml +='<label class="checkbox" id="check_label_'+index+'_'+i+ '">' +
+                                                '<input type="checkbox" value="'+data.field_value+'" disabled="disabled" id="check_'+index+'_'+ i + '">' +
+                                                '<span id="check_name_'+index+'_'+ i + '">'+data.field_name+ '</span>' +
+                                                '</label>';
+                                    }
+                                    if(mould == dropDownSetting){
+                                        html += '<li class="choice-row">'+
+                                                '<div class="choice-value">'+
+                                                '<input class="choice-radio" type="radio" value="'+data.field_value+ '" disabled="disabled">' +
+                                                '<input class="choice-text" type="text" value="'+data.field_name+'" disabled="disabled">' +
+                                                '</div>'+
+                                                '</li>';
+                                        leftHtml += '<option value="'+ data.field_value+'">'+data.field_name+'</option>';
+                                    }
+                                }
+                                $("#dict_potions_list").html(html);
+                                $("#dictOptions").show();
+                                if(mould == radioBtnSetting) {
+                                    $("#choices_" + index).html(leftHtml);
+                                    setRadioOption(index, optionContent, optionValue);
+                                }
+                                if(mould == checkBoxSetting) {
+                                    $("#checks_" + index).html(leftHtml);
+                                    setCheckOption(index, optionContent, optionValue);
+                                }
+                                if(mould == dropDownSetting){
+                                    var option = '<option value="">请选择</option>';
+                                    option += leftHtml;
+                                    $("#select_" + index).html(option);
+                                    setSelOption(index, optionContent, optionValue);
+                                }
+                            }
+                        }
+                    });
+                }
+            });
+        }
+
+    }
+    // 左侧表单元素点击事件
+    function fieldClickEvent(obj, index){
+        if(!check()){
+            return;
+        }
+        var height =0;
+        $(".field").each(function(indexTemp, element){
+            $(this).removeClass("editing");
+            var $actions =  $(this).find('.field-actions');
+            var classStr = $actions.attr("class");
+            if(classStr.indexOf("hide") == -1){
+                $actions.addClass("hide");
+            };
+            if(indexTemp < index){
+                height += $(this).outerHeight();
+            }
+        });
+        $(obj).addClass("editing");
+        $(obj).find('.field-actions').removeClass('hide');
+        var checkHeight = $(obj).outerHeight();
+        console.info("height = " + height +",checkHeight = "+checkHeight);
+        if(index == 0){
+            $("#fields_editing").css("margin-top",0);
+        } else {
+            $("#fields_editing").css("margin-top", height-50);
+        }
+        $("#arrow-left-inner").css("margin-top",height + checkHeight/2+15);
+
+        var fieldType = $("#field_type_"+index).val();
+        var template;
+        if(fieldType=="TextField"){
+            template=textSetting;
+        } else if(fieldType=="TextArea"){
+            template=textAreaSetting;
+        }else if(fieldType=="RadioButton"){
+            template=radioBtnSetting;
+        }else if(fieldType=="CheckBox"){
+            template=checkBoxSetting;
+        }else if(fieldType=="DropDown"){
+            template=dropDownSetting;
+        }else if(fieldType=="NumberField"){
+            template=numberSetting;
+        }else if(fieldType=="DateField"){
+            template=dateSetting;
+        }else if(fieldType=="TelephoneField"){
+            template=telSetting;
+        }
+        // 生成参数设置模板
+        createSetting(index, template);
+        $(".sidebar").show();
+    }
+    // 删除表单元素
+    function delField(index){
+        $(".sidebar").hide();
+        $("#field_settings").empty();
+        $("#field_"+index).remove();
+        $(".field").each(function(indexTemp, element){
+            var $field = $(this);
+            $field.attr("id", "field_" +indexTemp);
+            $field.attr("onclick", "fieldClickEvent(this,"+ indexTemp +")");
+            $field.find("i:first").attr("onclick", "copy_"+ indexTemp);
+            $field.find("i:last").attr("id", "delete_"+ indexTemp);
+            $field.find("span[id^='title_label_']").attr("id", "title_label_"+ indexTemp);
+            $field.find("input[name^='field_title']").attr("id", "field_title_"+ indexTemp);
+            $field.find("input[name^='field_default_value']").attr("id", "field_default_value_"+ indexTemp);
+            $field.find("input[name^='field_name']").attr("id", "field_name_"+ indexTemp);
+            $field.find("input[name^='field_option_content']").attr("id", "field_option_"+ indexTemp);
+            $field.find("input[name^='field_type']").attr("id", "field_type_"+ indexTemp);
+            $field.find("input[name^='field_sort']").attr("id", "field_sort_"+ indexTemp);
+            $field.find("input[name^='field_is_required']").attr("id", "field_is_required_"+ indexTemp);
+            $field.find("input[name^='field_is_read']").attr("id", "field_is_read_"+ indexTemp);
+            $field.find("input[name^='field_reg_exp']").attr("id", "field_reg_exp_"+ indexTemp);
+            $field.find("input[name^='field_least_character']").attr("id", "field_least_character_"+ indexTemp);
+            $field.find("input[name^='field_more_character']").attr("id", "field_more_character_"+ indexTemp);
+            $field.find("input[name^='field_option_type']").attr("id", "field_option_type_"+ indexTemp);
+
+            var $radioOption = $field.find(".choices[id^='choices_']");
+            $radioOption.attr("id", "choices_"+ indexTemp);
+            $radioOption.find("label").each(function(radioIndex, el){
+                var $label =  $(this);
+                $label.attr("id", "choice_label_"+indexTemp+"_"+ radioIndex);
+                $label.find("input[type='radio']").attr("id", "radio_"+indexTemp+"_"+ radioIndex);
+                $label.find("spn[id^='option_name_']").attr("id", "option_name_"+indexTemp+"_"+ radioIndex);
+            });
+
+            var $checkOption = $field.find(".choices[id^='checks_']");
+            $checkOption.attr("id", "checks_"+ indexTemp);
+            $checkOption.find("label").each(function(radioIndex, el){
+                var $label =  $(this);
+                $label.attr("id", "check_label_"+indexTemp+"_"+ radioIndex);
+                $label.find("input[type='checkbox']").attr("id", "check_"+indexTemp+"_"+ radioIndex);
+                $label.find("spn[id^='check_name_']").attr("id", "check_name_"+indexTemp+"_"+ radioIndex);
+            });
+        });
+    }
+    // 复制表单元素
+    function copyField(index){
+        var fieldType =  $("#field_type_"+index).val();
+        if(fieldType=="TextField"){
+            $("#textField").click();
+        } else if(fieldType=="TextArea"){
+            $("#textArea").click();
+        }else if(fieldType=="RadioButton"){
+            $("#radioButton").click();
+        }else if(fieldType=="CheckBox"){
+            $("#checkBox").click()
+        }else if(fieldType=="DropDown"){
+            $("#dropDown").click();
+        }else if(fieldType=="NumberField"){
+            $("#numberField").click();
+        }else if(fieldType=="DateField"){
+            $("#dateField").click();
+        }else if(fieldType=="TelephoneField"){
+            $("#telephoneField").click();
+        }
+    }
+    /*********************************** 单项选择相关js ************************************/
+    // 设置单项选择的选项内容和默认值
+    function setRadioOption(index, optionContent, optionValue){
+        var option_content ="";
+        var option_value = "";
+        if(optionContent){
+            option_content = optionContent;
+        } else {
+            $("span[id^='option_name_"+index+"']").each(function(indexTemp, element){
+                option_content += $(this).text()+",";
+            });
+        }
+        if(optionValue){
+            option_value = optionValue;
+        } else {
+            var $option = $("input[id^='radio_"+index+"']");
+            /*if(option_content.indexOf("否") != -1){
+                $option.each(function(indexTemp, element){
+                    // 有否这个选项
+                    var optionName = $("#option_name_"+index+"_"+indexTemp).text();
+                    if(optionName=="否"){
+                        $option.each(function(tempIndex){
+                            var $obj = $(this);
+                            if($obj.val()==0){
+                                $obj.val(indexTemp);
+                            }
+                        });
+                        $(this).val("0");
+                    }
+                    if(optionName=="是"){
+                        $option.each(function(tempIndex){
+                            var $obj = $(this);
+                            if($obj.val()==1){
+                                $obj.val(indexTemp);
+                            }
+                        });
+                        $(this).val("1");
+                    }
+
+
+                });
+            }*/
+            $option.each(function(indexTemp, element){
+                option_value += $(this).val()+",";
+            });
+        }
+        $("#field_option_"+index).val(option_content.substring(0, option_content.length-1));
+        $("#field_option_value_"+index).val(option_value.substring(0, option_value.length-1));
+    }
+    // 单项选择的选项添加按钮点击事件
+    function addChoice(index){
+        var $choicesList = $("#choices_list_"+index);
+        var counts = $choicesList.find(".choice-row").length;
+        var radioIndex = counts;
+        $choicesList.append(
+                '<li class="choice-row" id="choice_row_'+radioIndex+'">'+
+                '<div class="col-xs-15 choice-value">'+
+                '<div class="col-xs-1"><input class="choice-radio" type="radio" name="choice" value="'+radioIndex+'" onclick="choiceRadioClickEvent(this, '+radioIndex+', '+index+')" ></div>' +
+                '<div class="col-xs-5"><input class="choice-text" type="text" style="width:85px;" name="name" value="选项名" placeholder="选项名" onblur="choiceTextBlurEvent(this, '+radioIndex+', '+index+')"></div>' +
+                '<div class="col-xs-5"><input class="choice-text" type="text" style="width:85px;" name="value" value="选项值" placeholder="选项值" onblur="choiceValueBlurEvent(this, '+radioIndex+', '+index+')"></div>' +
+                '</div>'+
+                '<div class="choice-action">'+
+                '<a class="add_choice" href="javascript:addChoice('+index+');"><i class="fa fa-plus-circle"></i></a>'+
+                '<a class="del_choice" href="javascript:delChoice('+radioIndex+', '+index+');"><i class="fa fa-minus-circle"></i></a>'+
+                '</div>'+
+                '</li>'
+        );
+        var $choices=$("#choices_"+index);
+        var childrenCounts = $choices.find("label").length;
+        $choices.append(
+                '<label class="radio" id="choice_label_'+index+'_'+childrenCounts+'">' +
+                '<input type="radio" disabled="disabled" value="选项值" id="radio_'+index+'_'+childrenCounts+'">' +
+                '<span id="option_name_'+index+'_'+childrenCounts+'">选项名</span>'+
+                '</label>'
+        );
+        setRadioOption(index, null, null);
+    }
+    // 单项选择的选项删除按钮点击事件
+    function delChoice(radioIndex, index){
+        $("#choice_row_"+radioIndex).remove();
+        $("#choice_label_"+index+"_"+radioIndex).remove();
+        // 重置ID
+        var $choiceRows =  $("#choices_list_"+index).find(".choice-row");
+        $choiceRows.each(function(indexTemp, element){
+            $(this).attr("id","choice_row_"+indexTemp);
+            var $choiceRadio = $(this).find("input[type='radio']");
+            $choiceRadio.attr("onclick", "choiceRadioClickEvent(this, "+index+", "+indexTemp+")");
+            $choiceRadio.val(indexTemp);
+            var $choiceRadio = $(this).find("input[type='text']");
+            $choiceRadio.attr("onclick", "choiceRadioClickEvent(this, "+index+", "+indexTemp+")");
+        });
+        var $choices =$("#choices_"+index).find(".radio");
+        $choices.each(function(indexTemp, element){
+            $(this).attr("id","choice_label_"+index+"_"+indexTemp);
+            var $choiceRadio = $(this).find("input[type='radio']");
+            $choiceRadio.attr("id", "radio_"+index+"_"+indexTemp);
+            var $choiceRadio = $(this).find("span");
+            $choiceRadio.attr("id", "option_name_"+index+"_"+indexTemp);
+        });
+        setRadioOption(index,null,null);
+    }
+    // 选项单选按钮点击事件
+    function choiceRadioClickEvent(obj, radioIndex, index){
+        var check = $(obj).val();
+        $("input[id^='radio_']").removeAttr("checked");
+        $("#radio_"+index+"_"+radioIndex).attr("checked","checked");
+    }
+    // 选项输入框鼠标离开事件事件
+    function choiceTextBlurEvent(obj, radioIndex, index){
+        var value = $(obj).val();
+        if(value==null || value ==""){
+            msgError("选项名称不能为空");
+            return;
+        }
+        $("#option_name_"+index+"_"+radioIndex).text(value);
+        setRadioOption(index, null, null);
+    }
+    function choiceValueBlurEvent(obj, radioIndex, index){
+        var value = $(obj).val();
+        if(value==null || value ==""){
+            msgError("选项值不能为空");
+            return;
+        }
+        $("#radio_"+index+"_"+radioIndex).val(value);
+        setRadioOption(index, null, null);
+    }
+    // 单项选择的选项值设定
+    function radioValClickEvent(obj, index){
+        var value =  $(obj).val();
+        $("#field_option_type_"+index).val(value);
+        if(value == 0){
+            // 自定义的场合
+            $("#dictSelBox").hide();
+            $("#dictOptions").hide();
+            $("#customOptions").show();
+            var $choiceRows = $("#choices_list_"+index).find(".choice-row");
+            var html ="";
+            $choiceRows.each(function(indexTemp, element){
+                var radioValue = $(this).find("input[type='radio']").val();
+                var textValue =  $(this).find("input[type='text']").val();
+                html +='<label class="radio" id="choice_label_'+index+'_'+indexTemp+'">' +
+                        '<input disabled="disabled" type="radio" value ="'+radioValue+'" id="radio_'+index+'_'+indexTemp+'">' +
+                        '<span id="option_name_'+index+'_'+indexTemp+'">'+textValue+'</span>'+
+                        '</label>';
+            });
+            var $choices=$("#choices_"+index);
+            $choices.html(html);
+        } else {
+            // 数据字典取的场合
+            $('#dictSelect').combobox("setValue", '');
+            $("#dictSelBox").show();
+            $("#customOptions").hide();
+        }
+    }
+
+    //扣分项的选择
+    function secondClickEvent(obj,index){
+        var value = $(obj).val();
+        $("#field_second_type_"+index).val(value);
+        if(value==0){
+           $(obj).parents(".field_setting").next().show();
+        }else{
+            $(obj).parents(".field_setting").next().hide();
+        }
+    }
+
+    //扣分栏的验证
+    function secondBlurEvent(obj,index){
+        var second = $(obj).val();
+        if(second==null || second ==""){
+            $("#secondTip").text("字段名称不能为空");
+            $(obj).attr("style","border:1px solid #ffa8a8;");
+            $(obj).focus();
+            return false;
+        }
+        if(!/^([1-9]\d?|100)$/.test(second)){
+            $("#secondTip").text("由数字组成为整数，范围在1-100之间");
+            $(obj).attr("style","border:1px solid #ffa8a8;");
+            $(obj).focus();
+            return false;
+        }
+        $("#secondTip").text("由数字组成为整数，范围在1-100之间");
+        $(obj).attr("style","");
+        $("#field_second_value_"+index).val(second);
+        return true;
+    }
+    /*********************************** 多选项选择相关js Start ************************************/
+    function setCheckOption(index, optionContent, optionValue){
+        var option_content ="";
+        var option_value = "";
+        if(optionContent){
+            option_content  = optionContent;
+        } else {
+            $("span[id^='check_name_"+index+"']").each(function(indexTemp, element){
+                option_content += $(this).text()+",";
+            });
+        }
+        if(optionValue){
+            option_value = optionValue;
+        } else{
+            $("input[id^='check_"+index+"']").each(function(indexTemp, element){
+                option_value += $(this).val()+",";
+            });
+        }
+
+        $("#field_option_"+index).val(option_content.substring(0, option_content.length-1));
+        $("#field_option_value_"+index).val(option_value.substring(0, option_value.length-1));
+    }
+    // 单项选择的选项添加按钮点击事件
+    function addCheckChoice(index){
+        var $checksList = $("#checks_list_"+index);
+        var counts = $checksList.find(".choice-row").length;
+        var radioIndex = counts;
+        $checksList.append(
+                '<li class="choice-row" id="choice_row_'+radioIndex+'">'+
+                '<div class="col-xs-15 choice-value">'+
+                '<div class="col-xs-1"><input class="choice-radio" type="checkbox" value="'+radioIndex+'" onclick="choiceCheckClickEvent(this, '+radioIndex+', '+index+')" ></div>' +
+                '<div class="col-xs-5"><input class="choice-text" type="text" style="width:85px;" value="选项名" placeholder="选项名" onblur="choiceCheckBlurEvent(this, '+radioIndex+', '+index+')"></div>' +
+                '<div class="col-xs-5"><input class="choice-text" type="text" style="width:85px;" value="选项值" placeholder="选项值" onblur="choiceCheckValueBlurEvent(this, '+radioIndex+', '+index+')"></div>' +
+                '</div>'+
+                '<div class="choice-action">'+
+                '<a class="add_choice" href="javascript:addCheckChoice('+index+');"><i class="fa fa-plus-circle"></i></a>'+
+                '<a class="del_choice" href="javascript:delCheckChoice('+radioIndex+', '+index+');"><i class="fa fa-minus-circle"></i></a>'+
+                '</div>'+
+                '</li>'
+        );
+        var $checks=$("#checks_"+index);
+        var childrenCounts = $checks.find("label").length;
+        $checks.append(
+                '<label class="checkbox" id="check_label_'+index+'_'+childrenCounts+'">' +
+                '<input disabled="disabled" value="选项值" type="checkbox" id="check_'+index+'_'+childrenCounts+'">' +
+                '<span id="check_name_'+index+'_'+childrenCounts+'">选项名</span>'+
+                '</label>'
+        );
+        setCheckOption(index, null, null);
+    }
+    // 单项选择的选项删除按钮点击事件
+    function delCheckChoice(radioIndex, index){
+        $("#check_row_"+radioIndex).remove();
+        $("#check_label_"+index+"_"+radioIndex).remove();
+        // 重置设置选项ID和事件
+        var $checkRows =  $("#checks_list_"+index).find(".choice-row");
+        $checkRows.each(function(indexTemp, element){
+            $(this).attr("id","check_row_"+indexTemp);
+            var $choiceCheck = $(this).find("input[type='checkbox']");
+            $choiceCheck.attr("onclick", "choiceCheckClickEvent(this, "+index+", "+indexTemp+")");
+            $choiceCheck.val(indexTemp);
+
+            var $choiceText = $(this).find("input[type='text']");
+            $choiceText.attr("onclick", "choiceCheckBlurEvent(this, "+index+", "+indexTemp+")");
+        });
+        // 重置左侧多项选择ID和标签
+        var $checks =$("#checks_"+index).find(".checkbox");
+        $checks.each(function(indexTemp, element){
+            $(this).attr("id","check_label_"+index+"_"+indexTemp);
+            var $choiceCheck = $(this).find("input[type='checkbox']");
+            $choiceCheck.attr("id", "check_"+index+"_"+indexTemp);
+            var $choiceSpan = $(this).find("span");
+            $choiceSpan.attr("id", "check_name_"+index+"_"+indexTemp);
+        });
+        setCheckOption(index, null,null);
+    }
+    // 选项单选按钮点击事件
+    function choiceCheckClickEvent(obj, radioIndex, index){
+        var $check = $("#check_"+index+"_"+radioIndex);
+        if($check.attr("checked")){
+            $check.removeAttr("checked");
+        } else {
+            $check.attr("checked","checked");
+        }
+    }
+    // 选项输入框鼠标离开事件事件
+    function choiceCheckBlurEvent(obj, radioIndex, index){
+        var value = $(obj).val();
+        if(value==null || value ==""){
+            alert("选项名称不能为空");
+            return;
+        }
+        $("#check_name_"+index+"_"+radioIndex).text(value);
+        setCheckOption(index, null, null);
+    }
+
+    function choiceCheckValueBlurEvent(obj,radioIndex,index){
+        var value = $(obj).val();
+        if(value==null||value==""){
+            msgError("选项值不能为空");
+            return;
+        }
+        $("#check_"+index+"_"+radioIndex).val(value);
+        setCheckOption(index, null, null);
+
+    }
+    // 多项选择的选项值设定
+    function checkValClickEvent(obj, index){
+        var value =  $(obj).val();
+        $("#field_option_type_"+index).val(value);
+        if(value == 0){
+            // 自定义的场合
+            $("#dictSelBox").hide();
+            $("#dictOptions").hide();
+            $("#customOptions").show();
+            var $checkRows = $("#checks_list_"+index).find(".choice-row");
+            var html ="";
+            $checkRows.each(function(indexTemp, element){
+                var checkboxValue = $(this).find("input[type='checkbox']").val();
+                var textValue =  $(this).find("input[type='text']").val();
+                html +='<label class="checkbox" id="check_label_'+index+'_'+indexTemp+'">' +
+                        '<input type="checkbox" value ="'+checkboxValue+'" disabled="disabled" id="radio_'+index+'_'+indexTemp+'">' +
+                        '<span id="option_name_'+index+'_'+indexTemp+'">'+textValue+'</span>'+
+                        '</label>';
+            });
+            var $checks=$("#checks_"+index);
+            $checks.html(html);
+        } else {
+            // 数据字典取的场合
+            $('#dictSelect').combobox("setValue", '');
+            $("#dictSelBox").show();
+            $("#customOptions").hide();
+        }
+    }
+
+    /*********************************** 下拉框相关js Start ************************************/
+    // 设置下拉框的选项
+    function setSelOption(index, optionContent, optionValue){
+        var option_content ="";
+        var option_value = "";
+        var $option = $("#select_"+index).find("option");
+        if(optionContent){
+            option_content = optionContent;
+        } else {
+            $option.each(function(indexTemp, element){
+                if(indexTemp !=0){
+                    option_content += $(this).text()+",";
+                }
+
+            });
+        }
+        if(optionValue){
+            option_value = optionValue;
+        } else {
+            $option.each(function(indexTemp, element){
+                if(indexTemp !=0) {
+                    option_value += $(this).val() + ",";
+                }
+            });
+        }
+        $("#field_option_"+index).val(option_content.substring(0, option_content.length-1));
+        $("#field_option_value_"+index).val(option_value.substring(0, option_value.length-1));
+    }
+    // 下拉框的选项添加按钮点击事件
+    function addSelChoice(index){
+        var $choicesList = $("#select_list_"+index);
+        var counts = $choicesList.find(".choice-row").length;
+        var radioIndex = counts;
+        $choicesList.append(
+                '<li class="choice-row" id="select_row_'+radioIndex+'">'+
+                '<div class="col-xs-15 choice-value">'+
+                '<div class="col-xs-1"><input class="choice-radio" type="radio" value="'+radioIndex+'" onclick="selRadioClickEvent(this, '+radioIndex+', '+index+')" ></div>' +
+                '<div class="col-xs-5"><input class="choice-text" type="text" style="width:85px;" value="选项名" placeholder="选项名" onblur="selTextBlurEvent(this, '+radioIndex+', '+index+')"></div>' +
+                '<div class="col-xs-5"><input class="choice-text" type="text" style="width:85px;" value="选项值" placeholder="选项值" onblur="selValueBlurEvent(this, '+radioIndex+', '+index+')"></div>' +
+                '</div>'+
+                '<div class="choice-action">'+
+                '<a class="add_choice" href="javascript:addSelChoice('+index+');"><i class="fa fa-plus-circle"></i></a>'+
+                '<a class="del_choice" href="javascript:delSelChoice('+radioIndex+', '+index+');"><i class="fa fa-minus-circle"></i></a>'+
+                '</div>'+
+                '</li>'
+        );
+        var $select=$("#select_"+index);
+        var childrenCounts = $select.find("option").length;
+        var option = '<option value="选项值" id="sel_option_'+index+'_'+(childrenCounts-1)+ '">选项名</option>';
+        $select.append(option);
+        setSelOption(index, null, null);
+    }
+    // 下拉框的选项删除按钮点击事件
+    function delSelChoice(radioIndex, index){
+        $("#select_row_"+radioIndex).remove();
+        $("#sel_option_"+index+"_"+radioIndex).remove();
+        // 重置ID
+        var $choiceRows =  $("#select_list_"+index).find(".choice-row");
+        $choiceRows.each(function(indexTemp, element){
+            $(this).attr("id","select_row_"+indexTemp);
+            var $choiceRadio = $(this).find("input[type='radio']");
+            $choiceRadio.attr("onclick", "selRadioClickEvent(this, "+index+", "+indexTemp+")");
+            $choiceRadio.val(indexTemp);
+            var $choiceRadio = $(this).find("input[type='text']");
+            $choiceRadio.attr("onclick", "selRadioClickEvent(this, "+index+", "+indexTemp+")");
+        });
+        var $choices =$("#select_"+index).find("option");
+        $choices.each(function(indexTemp, element){
+            if(indexTemp !=0){}
+        });
+        setSelOption(index,null,null);
+    }
+
+    // 选项单选按钮点击事件
+    function selRadioClickEvent(obj, radioIndex, index){
+        var check = $(obj).val();
+    }
+    // 选项输入框鼠标离开事件事件
+    function selTextBlurEvent(obj, radioIndex, index){
+        var value = $(obj).val();
+        if(value==null || value ==""){
+            alert("选项名称不能为空");
+            return;
+        }
+        $("#sel_option_"+index+"_"+radioIndex).text(value);
+        setSelOption(index, null, null);
+    }
+    function selValueBlurEvent(obj, radioIndex, index){
+        var value = $(obj).val();
+        if(value==null||value==""){
+            msgError("选项值不能为空");
+            return;
+        }
+        $("#sel_option_"+index+"_"+radioIndex).val(value);
+        setSelOption(index, null, null);
+    }
+
+    function selValClickEvent(obj, index){
+        var value =  $(obj).val();
+        $("#field_option_type_"+index).val(value);
+        if(value == 0){
+            // 自定义的场合
+            $("#dictSelBox").hide();
+            $("#dictOptions").hide();
+            $("#customOptions").show();
+            var $selectRows = $("#select_list_"+index).find(".choice-row");
+            var html ='<option value="">请选择</option>';
+            $selectRows.each(function(indexTemp, element){
+                var checkboxValue = $(this).find("input[type='checkbox']").val();
+                var textValue =  $(this).find("input[type='text']").val();
+                html +='<option value="'+ checkboxValue +'" id="sel_option_'+index+'_'+indexTemp+ '">'+textValue+'</option>';
+            });
+            var $select=$("#select_"+index);
+            $select.html(html);
+        } else {
+            // 数据字典取的场合
+            $('#dictSelect').combobox("setValue", '');
+            $("#dictSelBox").show();
+            $("#customOptions").hide();
+        }
+    }
+    /*********************************** 下拉框相关js End ************************************/
+    function createField(index, mould){
+        var render = template.compile(mould);
+        var html = render({index:index});
+        $("#fields").append(html);
+        $("#delete_"+index).click(function(event){
+            delField(index);
+            event.stopPropagation();
+        });
+        $("#copy_"+index).click(function(event){
+            copyField(index)
+            event.stopPropagation();
+        });
+    }
+    function showAddBtn(){
+        $(".add-field .available-fields").hide();
+        $(".add-field .toggle").show();
+    }
+    function addCheckClass(){
+        $("#fields").find(".field-actions").addClass("hide");
+        $("#fields").find(".field-actions:last").removeClass("hide");
+        $("#fields").find(".field").removeClass("editing");
+        $("#fields").find(".field:last").addClass("editing");
+    }
+    function setHeight(){
+        var totalHeight = $("#fields").outerHeight();
+        var checkHeight = $(".editing").outerHeight();
+        if($("#fields").children().length > 1){
+            $("#fields_editing").css("margin-top", (totalHeight - checkHeight-50));
+        }
+        $("#arrow-left-inner").css("margin-top",totalHeight - checkHeight/2 +15);
+    }
+    // 验证
+    function check(){
+        var $a = $("input[id^='label_set_']");
+        if($a.attr("style")=="border:1px solid #ffa8a8;"){
+            $a.focus();
+            return false;
+        }
+        var $b = $("input[id^='name_set_']");
+        if($b.attr("style")=="border:1px solid #ffa8a8;"){
+            $b.focus();
+            return false;
+        }
+        return true;
+    }
+    $(function() {
+        $("#add_field_toggle").click(function(){
+            if(!check()){
+                return;
+            }
+            $(".add-field .toggle").hide();
+            $(".add-field .available-fields").show();
+        });
+        // 单行文字点击事件
+        $("#textField").click(function(){
+            var index = $(".field").length;
+            // 生产单行文字html
+            createField(index, textTemplate);
+            // 添加新字段按钮显示
+            showAddBtn();
+            // 新添元素添加选中样式
+            addCheckClass();
+            // 设定“参数设置模块”位置
+            setHeight();
+            // 生成“参数设置模块”HTML
+            createSetting(index, textSetting);
+
+            // 显示“参数设置模块”
+            $(".sidebar").show();
+        });
+        // 多行文字点击事件
+        $("#textArea").click(function(){
+            var index = $(".field").length;
+            // 生产多行文字 html
+            createField(index, textAreaTemplate);
+            // 添加新字段按钮显示
+            showAddBtn();
+            // 新添元素添加选中样式
+            addCheckClass();
+            // 设定“参数设置模块”位置
+            setHeight();
+            // 生成“参数设置模块”HTML
+            createSetting(index, textAreaSetting);
+            // 显示“参数设置模块”
+            $(".sidebar").show();
+        });
+        // 单项选择点击事件
+        $("#radioButton").click(function(){
+            var index = $(".field").length;
+            // 生产多行文字 html
+            createField(index, radioBtnTemplate);
+            // 添加新字段按钮显示
+            showAddBtn();
+            // 新添元素添加选中样式
+            addCheckClass();
+            // 设定“参数设置模块”位置
+            setHeight();
+            // 生成“参数设置模块”HTML
+            createSetting(index, radioBtnSetting);
+            // 显示“参数设置模块”
+            $(".sidebar").show();
+        });
+        // 多项选择点击事件
+        $("#checkBox").click(function(){
+            var index = $(".field").length;
+            // 生产多行文字 html
+            createField(index, checkBoxTemplate);
+            // 添加新字段按钮显示
+            showAddBtn();
+            // 新添元素添加选中样式
+            addCheckClass();
+            // 设定“参数设置模块”位置
+            setHeight();
+            // 生成“参数设置模块”HTML
+            createSetting(index, checkBoxSetting);
+            // 显示“参数设置模块”
+            $(".sidebar").show();
+        });
+        // 下拉框点击事件
+        $("#dropDown").click(function(){
+            var index = $(".field").length;
+            // 生产多行文字 html
+            createField(index, dropDownTemplate);
+            // 添加新字段按钮显示
+            showAddBtn();
+            // 新添元素添加选中样式
+            addCheckClass();
+            // 设定“参数设置模块”位置
+            setHeight();
+            // 生成“参数设置模块”HTML
+            createSetting(index, dropDownSetting);
+            // 显示“参数设置模块”
+            $(".sidebar").show();
+        });
+        // 数字点击事件
+        $("#numberField").click(function(){
+            var index = $(".field").length;
+            // 生产多行文字 html
+            createField(index, numberTemplate);
+            // 添加新字段按钮显示
+            showAddBtn();
+            // 新添元素添加选中样式
+            addCheckClass();
+            // 设定“参数设置模块”位置
+            setHeight();
+            // 生成“参数设置模块”HTML
+            createSetting(index, numberSetting);
+            // 显示“参数设置模块”
+            $(".sidebar").show();
+
+        });
+        // 日期点击事件
+        $("#dateField").click(function(){
+            var index = $(".field").length;
+            // 生产多行文字 html
+            createField(index, dateTemplate);
+            // 添加新字段按钮显示
+            showAddBtn();
+            // 新添元素添加选中样式
+            addCheckClass();
+            // 设定“参数设置模块”位置
+            setHeight();
+            // 生成“参数设置模块”HTML
+            createSetting(index, dateSetting);
+            // 显示“参数设置模块”
+            $(".sidebar").show();
+        });
+        // 电话点击事件
+        $("#telephoneField").click(function(){
+            var index = $(".field").length;
+            // 生产多行文字 html
+            createField(index, telTemplate);
+            // 添加新字段按钮显示
+            showAddBtn();
+            // 新添元素添加选中样式
+            addCheckClass();
+            // 设定“参数设置模块”位置
+            setHeight();
+            // 生成“参数设置模块”HTML
+            createSetting(index, telSetting);
+            // 显示“参数设置模块”
+            $(".sidebar").show();
+        });
+        if (step_id != 'undefined' && step_id != null && step_id != "") {
+            loadFormData();
+        }
+    });
+    function loadFormData(){
+        $.ajax({
+            url:'{{projcfg.appurl}}/api/process/form_design/queryFormInfo?step_id='+step_id,
+            type: 'get',
+            success: function (result) {
+                if (result.code == 200) {
+                    $.each(result.data, function (i, r) {
+                        var fieldType = r.field_type;
+                        if(fieldType=="TextField"){
+                            // 生产单行文字html
+                            createField(i, textTemplate);
+                        } else if(fieldType=="TextArea"){
+                            createField(i, textAreaTemplate);
+                        }else if(fieldType=="RadioButton"){
+                            createField(i, radioBtnTemplate);
+                            var optionContent = r.field_option_content.split(',');
+                            var optionValue = r.field_option_value.split(',');
+                            var html = "";
+                            for(var j in optionContent){
+                                html +='<label class="radio" id="choice_label_'+ i +'_'+ j + '">' +
+                                        '<input type="radio" value="'+optionValue[j]+'" disabled="disabled" id="radio_'+i+'_'+ j + '">' +
+                                        '<span id="option_name_'+ i +'_'+ j + '">'+optionContent[j]+ '</span>' +
+                                        '</label>';
+                            }
+                            $("#choices_"+ i).html(html);
+                        }else if(fieldType=="CheckBox"){
+                            createField(i, checkBoxTemplate);
+                            var optionContent = r.field_option_content.split(',');
+                            var optionValue = r.field_option_value.split(',');
+                            var html = "";
+                            for(var j in optionContent){
+                                html +='<label class="checkbox" id="check_label_'+ i +'_'+ j + '">' +
+                                        '<input type="checkbox" value="'+optionValue[j]+'" disabled="disabled" id="check_'+i+'_'+ j + '">' +
+                                        '<span id="check_name_'+ i +'_'+ j + '">'+optionContent[j]+ '</span>' +
+                                        '</label>';
+                            }
+                            $("#checks_"+ i).html(html);
+                        }else if(fieldType=="DropDown"){
+                            createField(i, dropDownTemplate);
+                        }else if(fieldType=="NumberField"){
+                            createField(i, numberTemplate);
+                        }else if(fieldType=="DateField"){
+                            createField(i, dateTemplate);
+                        }else if(fieldType=="TelephoneField"){
+                            createField(i, telTemplate);
+                        }
+                        $("#title_label_"+i).text(r.field_title);
+                        $("#field_title_"+i).val(r.field_title);
+                        $("#field_default_value_"+i).val(r.field_default_value);
+                        $("#field_type_"+i).val(r.field_type);
+                        $("#field_name_"+i).val(r.field_name);
+                        $("#field_option_"+i).val(r.field_option_content);
+                        $("#field_sort_"+i).val(r.field_sort);
+                        $("#field_is_required_"+i).val(r.field_is_required);
+                        $("#field_is_read_"+i).val(r.field_is_read);
+                        $("#field_is_check_"+i).val(r.field_is_check);
+                        $("#field_reg_exp_"+i).val(r.field_reg_exp);
+                        $("#field_least_character_"+i).val(r.field_least_character);
+                        $("#field_more_character_"+i).val(r.field_more_character);
+                        // 单选框（复选框，下拉框选项来源） zhaoqingna 2011-12-22
+                        $("#field_option_type_"+i).val(r.field_option_type);
+                        $("#field_option_value_"+i).val(r.field_option_value);
+                        $("#field_second_type_"+i).val(r.field_second_type);
+                        $("#field_second_value_"+i).val(r.field_second_value);
+                        // 备注 zhaoqingna 2011-12-22
+                        $("#field_remark_"+i).val(r.field_remark);
+                        $("#fields").find(".field-actions").addClass("hide");
+                    });
+                } else {
+                    msgError(result.msg+',错误代码:'+result.code);
+                }
+            }
+        })
+    }
+    function saveForm(){
+        if(!check()){
+            return;
+        }
+        var data= new Array();
+        $(".field").each(function(index, element){
+            var obj ={};
+            obj.step_id = $(this).find("input[name='step_id']").val();
+            obj.field_title = $(this).find("input[name='field_title']").val();
+            obj.field_name = $(this).find("input[name='field_name']").val();
+            obj.field_option_content = $(this).find("input[name='field_option_content']").val();
+            obj.field_default_value = $(this).find("input[name='field_default_value']").val();
+            obj.field_type = $(this).find("input[name='field_type']").val();
+            obj.field_sort = $(this).find("input[name='field_sort']").val();
+            obj.field_is_required = $(this).find("input[name='field_is_required']").val();
+            obj.field_is_read = $(this).find("input[name='field_is_read']").val();
+            obj.field_is_check = $(this).find("input[name='field_is_check']").val();
+            obj.field_reg_exp = $(this).find("input[name='field_reg_exp']").val();
+            obj.field_least_character = $(this).find("input[name='field_least_character']").val();
+            obj.field_more_character = $(this).find("input[name='field_more_character']").val();
+            obj.field_option_type = $(this).find("input[name='field_option_type']").val();
+            obj.field_option_value = $(this).find("input[name='field_option_value']").val();
+            obj.field_second_type = $(this).find("input[name='field_second_type']").val();
+            obj.field_second_value = $(this).find("input[name='field_second_value']").val();
+            // 备注 zhaoqingna 2011-12-22
+            obj.field_remark = $(this).find("input[name='field_remark']").val();
+            data.push(obj);
+        });
+        console.info(JSON.stringify(data));
+    /*    $.ajax({
+            url:'{{projcfg.appurl}}/api/process/form_design/saveForm',
+            type: 'post',
+            data: {tab:JSON.stringify(data)},
+            success: function (data) {
+                if (data.code == 200) {
+                    msgSuccess(data.msg);
+                    form_reset();
+                } else {
+                    msgError(data.msg+',错误代码:'+data.code);
+                }
+            }
+        });*/
+    }
+</script>
