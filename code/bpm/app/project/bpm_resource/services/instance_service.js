@@ -477,21 +477,40 @@ exports.createInstance=function(proc_code,proc_ver,proc_title,param_json_str,pro
 function find(role_code){
     var p = new Promise(function(resolve,reject){
         if(role_code){
-            model_user.$Role.find({'_id':{$in:role_code.split(",")}},function(err,rs){
-                if(err){
-                    console.log(err);
-                }else{
-                    var roleNames = '';
-                    if(rs.length>0){
-                        for(var i=0;i<rs.length;i++){
-                            var roleName = rs[i].role_name;
-                            roleNames +=roleName+',';
+            if(role_code.length>1){
+                model_user.$Role.find({'_id':{$in:role_code.split(",")}},function(err,rs){
+                    if(err){
+                        console.log(err);
+                    }else{
+                        var roleNames = '';
+                        if(rs.length>0){
+                            for(var i=0;i<rs.length;i++){
+                                var roleName = rs[i].role_name;
+                                roleNames +=roleName+',';
+                            }
+                            roleNames = roleNames.substring(0,roleNames.length-1);
+                            resolve(utils.returnMsg(true, '0000', '查询成功。', roleNames, null));
                         }
-                        roleNames = roleNames.substring(0,roleNames.length-1);
-                        resolve(utils.returnMsg(true, '0000', '查询成功。', roleNames, null));
                     }
-                }
-            });
+                });
+            }
+            else{
+                model_user.$Role.find({'_id':role_code},function(err,rs){
+                    if(err){
+                        console.log(err);
+                    }else{
+                        var roleNames = '';
+                        if(rs.length>0){
+                            for(var i=0;i<rs.length;i++){
+                                var roleName = rs[i].role_name;
+                                roleNames +=roleName+',';
+                            }
+                            roleNames = roleNames.substring(0,roleNames.length-1);
+                            resolve(utils.returnMsg(true, '0000', '查询成功。', roleNames, null));
+                        }
+                    }
+                });
+            }
         }else{
             resolve(utils.returnMsg(false, '1000', '没有这个角色。',null,null));
         }

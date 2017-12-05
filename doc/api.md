@@ -614,6 +614,8 @@ HOST: http://192.168.9.66:30002/gdgl/api
 + Response 200
 
     {success:true, code:'0000', msg:'任务完成成功。'} 
+	
+
 
 
 ## 处理日志 [/task/logs]
@@ -633,7 +635,7 @@ HOST: http://192.168.9.66:30002/gdgl/api
 
     {success:true, code:'0000', msg:'查询成功。',rows:[data],total:2}  
 	
-## 处理日志 [/task/log/list]
+## 处理日志集合 [/task/log/list]
 ### 获取处理日志集合 [POST]
 
 + Request
@@ -665,6 +667,24 @@ HOST: http://192.168.9.66:30002/gdgl/api
 + Response 200
 
     {success:true, code:'0000', msg:'获取任务数据成功',data:[data]}
+	
+	
+
+## 区县公司调账营业员非销户归档 [/task/pigeonhole]
+### 区县公司调账营业员非销户归档 [POST]
+
++ Request
+    + Body
+
+            {
+              "proc_inst_id": "流程实例ID"
+            }
+    
++ Response 200
+
+    {success:true, code:'0000', msg:'归档成功',data:[data]}
+	
+
 
 # Group 流程历史-修改
 
