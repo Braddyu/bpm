@@ -1862,3 +1862,40 @@ exports.userInfo = function(userNo){
     });
     return p;
 }
+
+/*
+区县公司调账(营业员--非销户)归档接口
+ */
+exports.goPigeonhole = function(proc_inst_id){
+    var p = new Promise(function(resolve,reject){
+       model.$ProcessInst.find({_id:proc_inst_id},function(err,data){
+           if(err){
+               resolve(utils.returnMsg(false, '1000', '查询实例信息出错', null, err));
+           }else{
+               if(data.length>0){
+                   if(data[0].proc_inst_status==4){
+                       resolve(utils.returnMsg(true, '0000', '流程已经归档', data, null));
+                   }else{
+                       var advance_status = {
+                           proc_inst_status : 4
+                       };
+                       var update = {$set:advance_status};
+                       var options = {};
+                       model.$ProcessInst.update({'_id':proc_inst_id},update,options,function(err,resultt){
+                           if(err){
+                               console.log(err);
+                               resolve(utils.returnMsg(false, '1000', '改变状态失败', null, err));
+                           }else{
+                               console.log(resultt);
+                               resolve(utils.returnMsg(true, '0000', '归档成功', resultt, null));
+                           }
+                       });
+                   }
+               }else{
+                   resolve(utils.returnMsg(false, '0000', '流程信息不存在', null, null));
+               }
+           }
+        })
+    });
+    return p;
+}
