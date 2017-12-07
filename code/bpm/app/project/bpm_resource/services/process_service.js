@@ -556,7 +556,7 @@ exports.getProcessDefineByConditionMap = function(conditionMap) {
     return p;
 }
 
-
+//流程图展示
 exports.getShowProcess=function(condition){
     var results={};
     var p = new Promise(function(resolve,reject){
@@ -569,7 +569,9 @@ exports.getShowProcess=function(condition){
 
                     var proc_define=rs[0].proc_define;
                     var item_config=JSON.parse(rs[0].item_config);
+                    results.proc_inst_status = rs[0].proc_inst_status;
                     results.proc_define=proc_define;
+                    console.log('proc_define',proc_define);
                     results.flag=1;
                     results.last_node=rs[0].proc_cur_task;
 
@@ -579,29 +581,28 @@ exports.getShowProcess=function(condition){
                             resolve(utils.returnMsg(false, '1000', '查询到流程任务数据错误。', null, err));
                         }else{
                             if(res.length>0){
-                               var node_array=[];
-                               var line_array=[];
-                               for(var k =0;k<res.length;k++){
-                                   node_array.push(res[k].proc_inst_task_code);
-                               }
-                               results.node_array=node_array
-                                var process_define= JSON.parse(proc_define);
-                                var lines=process_define.lines;
-                                for(var line in lines ){
-                                    var from=lines[line].from;
-                                    var to = lines[line].to;
-                                    for(var i =0;i<node_array.length;i++){
-                                        var node_=node_array[i];
-                                        if(from==node_){
-                                            for(var j =0;j<node_array.length;j++){
-                                                var node_s=node_array[j];
-                                                if(to==node_s){
-                                                    line_array.push(line);
-                                                }
-                                            }
-                                        }
+                                var node_array=[];
+                                var line_array=[];
+                                for(var k =0;k<res.length;k++){
+                                    var task_code =  res[k].proc_inst_task_code;
+                                    var prve_code = res[k].proc_inst_prev_node_code;
+                                    if(!prve_code){
+                                        prve_code="processDefineDiv_node_1";
                                     }
+                                    var process_define= JSON.parse(proc_define);
+                                    var lines=process_define.lines;
+                                    for(var line in lines){
+                                        var from=lines[line].from;
+                                        var to = lines[line].to;
+                                        if(line.type=="start  round"||prve_code==from&&task_code==to){
+                                            line_array.push(line);
+                                            node_array.push(task_code);
+                                        }
+
+                                    }
+
                                 }
+                                results.node_array=node_array;
                                 results.line_array=line_array;
                                 resolve(utils.returnMsg(true, '0000', '获取流程复原数据成功。', results, null));
 
@@ -612,29 +613,43 @@ exports.getShowProcess=function(condition){
                                         resolve(utils.returnMsg(false, '1000', '查询到流程任务数据错误。', null, err));
                                     }else{
                                         if(rs.length>0) {
+
                                             var node_array = [];
                                             var line_array = [];
+                                            // for(var line in lines){
+                                            //        if(line.type=="start  round"|| line.type=="end  round"){
+                                            //            line_array.push(line);
+                                            //        }
+                                            // }
                                             for (var k = 0; k < rs.length; k++) {
-                                                node_array.push(rs[k].proc_inst_task_code);
-                                            }
-                                            results.node_array = node_array
-                                            var process_define = JSON.parse(proc_define);
-                                            var lines = process_define.lines;
-                                            for (var line in lines) {
-                                                var from = lines[line].from;
-                                                var to = lines[line].to;
-                                                for (var i = 0; i < node_array.length; i++) {
-                                                    var node_ = node_array[i];
-                                                    if (from == node_) {
-                                                        for (var j = 0; j < node_array.length; j++) {
-                                                            var node_s = node_array[j];
-                                                            if (to == node_s) {
-                                                                line_array.push(line);
-                                                            }
-                                                        }
+                                                //node_array.push(rs[k].proc_inst_task_code);
+                                                var code = rs[k].proc_inst_task_code;
+                                                var prve_code = rs[k].proc_inst_prev_node_code;
+                                                if(!prve_code){
+                                                    prve_code="processDefineDiv_node_1";
+                                                }
+                                                var process_define = JSON.parse(proc_define);
+                                                var nodes = process_define.nodes;
+                                                for(var node in nodes){
+                                                    var end = nodes[node].type;
+                                                    if(end=="end  round"){
+                                                        var node_code = node;
+                                                        console.log('node_code',node_code);
+                                                    }
+                                                }
+                                                var lines = process_define.lines;
+                                                console.log('lines',lines)
+                                                for (var line in lines) {
+                                                    var from = lines[line].from;
+                                                    var to = lines[line].to;
+                                                   // if((prve_code==from && code==to)||(prve_code==from&&node==to)){
+                                                        if((prve_code==from && code==to)){
+                                                        line_array.push(line);
+                                                        node_array.push(code);
                                                     }
                                                 }
                                             }
+                                            results.node_array = node_array;
                                             results.line_array = line_array;
                                             resolve(utils.returnMsg(true, '0000', '获取流程复原数据成功。', results, null));
 

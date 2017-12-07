@@ -64,6 +64,11 @@
                         if(data.success) {
                             var results=data.data;
 
+                            var status = results.proc_inst_status;
+                            console.log(status);
+
+
+
                             var processChart = results.proc_define;
                             processDefineDiv.loadData(JSON.parse(processChart));
                             processDefineDiv.$editable = false;
@@ -71,15 +76,16 @@
                             var taskLines=processDefineDiv.$lineData;
                             var node_array=results.node_array;
                             var line_array=results.line_array;
+                            console.log(line_array);
                             var last_node=results.last_node;
                             for(var k in taskNodes){
                                 for(var i in node_array){
                                     if(k ==node_array[i]){
                                         if(node_array[i]==last_node){
-                                            processDefineDiv.markItem(node_array[i],"node",true,true);
-                                        }else{
+                                            processDefineDiv.markItem(node_array[i],"node",true,true,status);
+                                        } else {
 
-                                            processDefineDiv.markItem(node_array[i],"node",true,false);
+                                            processDefineDiv.markItem(node_array[i],"node",true,false,status);
                                         }
 
                                     }
@@ -90,7 +96,7 @@
                                 for(var  l in line_array){
                                     if(j==line_array[l]){
                                         console.log(j);
-                                     processDefineDiv.markItem(j.toString(),'line',true,false);
+                                        processDefineDiv.markItem(j.toString(),'line',true,false,status);
                                     }
                                 }
                             }
