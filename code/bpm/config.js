@@ -22,7 +22,7 @@ var config = {
         uum_duty_mapping_key:'personnel_responsibilities',// 人员职责对应字典的key
         org_belong_mapping_key:'org_belong_class',// 机构归属对应字典的key
         common_major_resource_sqls_key:'common_major_resource_sqls',//维护对象（专业资源）
-		    common_major_resource_sqls_opt_key:'common_major_resource_sqls_opt',//维护对象模板（专业资源）
+        common_major_resource_sqls_opt_key:'common_major_resource_sqls_opt',//维护对象模板（专业资源）
         org_expire_notice_key:'org_expire_notice_params',
         real_obj_distance_param_key:'real_obj_distance_param',
         common_major_abridge_mapping_key:'common_major_abridge_mapping' , //专业简称系统参数名称映射
@@ -59,7 +59,8 @@ var config = {
         resave: false,
         saveUninitialized: false,
         rolling:true,
-        mongodb_url:'mongodb://192.168.9.48:27017/process',
+       mongodb_url:'mongodb://192.168.9.48:27017/process',
+        // mongodb_url:'mongodb://10.201.253.162:27017/process1',
         //mongodb_url:'mongodb://127.0.0.1:27017/ywcj',  //内网
         mongodb_collection:'common_user_session'
     },
@@ -128,15 +129,16 @@ var config = {
         ]
     },
     mongdb:{
-        url: 'mongodb://192.168.9.48:27017/process',
+       url: 'mongodb://192.168.9.48:27017/process',
+        // url:'mongodb://10.201.253.162:27017/process1',
         // url: 'mongodb://10.201.253.111:27017/Examine',
         //url: 'mongodb://127.0.0.1:27017/ywcj',   //内网
         poolsize:20
     },
     memcached:{
-       //server_locations:['117.135.196.139:11211'],  //外网
+      // server_locations:['117.135.196.139:11211'],  //外网
         server_locations:['192.168.9.48:11211'],//内网
-        //server_locations:['127.0.0.1:11211'],//本地
+        // server_locations:['127.0.0.1:11211'],//本地
 
         options:{debug: true}
     },
@@ -279,6 +281,34 @@ var config = {
         charset:'utf-8',
         temDir:'../public/files/'
     },
+    SMS:{
+        http:'http://135.10.51.8:41500/CRMService',
+        postContent:{
+            PubInfo:{
+                ClientIP:'135.10.53.110',
+                InterfaceType:'98',
+                InterfaceId:'6000',
+                CountyCode:'0',
+                OpId:'88000355',
+                OrgId:'0',
+                RegionCode:'0',
+                TransactionId:'AX20120911160824'
+            },
+            Request: {
+                BusiCode: "OI_SendShortMessage",
+                BusiParams: {
+                    Content: "content",
+                    DestNum: "phonenum",
+                    OptCode: "111",
+                    Port: "10086"
+                }
+
+            },
+
+        }
+
+    },
+    SMS_TEMPLET:"渠道工单系统有一张需要您处理的工单，《proc》，工单号：order，请及时登陆认真处理。",
 
 }
 module.exports = config;
