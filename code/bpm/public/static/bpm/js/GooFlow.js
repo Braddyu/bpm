@@ -1744,44 +1744,80 @@ GooFlow.prototype = {
 	},
 	//用颜色标注/取消标注一个结点或转换线，常用于显示重点或流程的进度。
 	//这是一个在编辑模式中无用,但是在纯浏览模式中非常有用的方法，实际运用中可用于跟踪流程的进度。
-	markItem:function(id,type,mark,amd_flag){
-		if(type == "node"){
-			if(!this.$nodeData[id]) return;
-			if(this.onItemMark != null&&!this.onItemMark(id,"node",mark)) return;
-			this.$nodeData[id].marked = mark||false;
-			if(mark){
-				if(amd_flag){
-                    this.$nodeDom[id].addClass("item_marks");
-				}else{
-                    this.$nodeDom[id].addClass("item_mark");
-				}
-			}else{
-                this.$nodeDom[id].removeClass("item_mark");
-			}
+    markItem:function(id,type,mark,amd_flag,status){
+        if(status=='4'){
+            if(type == "node"){
+                if(!this.$nodeData[id]) return;
+                if(this.onItemMark != null&&!this.onItemMark(id,"node",mark)) return;
+                this.$nodeData[id].marked = mark||false;
+                if(mark){
+                    if(amd_flag){
+                        console.log('11111');
+                        this.$nodeDom[id].addClass("item_mark");
+                    }else{
+                        this.$nodeDom[id].addClass("item_mark");
+                    }
+                }else{
+                    this.$nodeDom[id].removeClass("item_mark");
+                }
 
-		}else if(type == "line"){
-			if(!this.$lineData[id]) return;
-			if(this.onItemMark != null&&!this.onItemMark(id,"line",mark)) return;
-			this.$lineData[id].marked = mark||false;
-			if(GooFlow.prototype.useSVG != ""){
-				if(mark){
-					console.log(this);
-					this.$lineDom[id].childNodes[1].setAttribute("stroke","#21d447");
-					this.$lineDom[id].childNodes[1].setAttribute("marker-end","url(#arrow2)");
-				}else{
-					this.$lineDom[id].childNodes[1].setAttribute("stroke","#5068AE");
-					this.$lineDom[id].childNodes[1].setAttribute("marker-end","url(#arrow1)");
-				}
-			}else{
-				if(mark)    this.$lineDom[id].strokeColor = "#D3D3D3";
-				else    this.$lineDom[id].strokeColor = "#5068AE"
-			}
-		}
-		if(this.$undoStatck){
-			var paras = [id,type,!mark];
-			this.pushOper("markItem",paras);
-		}
-	},
+            }else if(type == "line"){
+                if(!this.$lineData[id]) return;
+                if(this.onItemMark != null&&!this.onItemMark(id,"line",mark)) return;
+                this.$lineData[id].marked = mark||false;
+                if(GooFlow.prototype.useSVG != ""){
+                    if(mark){
+                        console.log(this);
+                        this.$lineDom[id].childNodes[1].setAttribute("stroke","#21d447");
+                        this.$lineDom[id].childNodes[1].setAttribute("marker-end","url(#arrow2)");
+                    }else{
+                        this.$lineDom[id].childNodes[1].setAttribute("stroke","#5068AE");
+                        this.$lineDom[id].childNodes[1].setAttribute("marker-end","url(#arrow1)");
+                    }
+                }else{
+                    if(mark)    this.$lineDom[id].strokeColor = "#D3D3D3";
+                    else    this.$lineDom[id].strokeColor = "#5068AE"
+                }
+            }
+        }else{
+            if(type == "node"){
+                if(!this.$nodeData[id]) return;
+                if(this.onItemMark != null&&!this.onItemMark(id,"node",mark)) return;
+                this.$nodeData[id].marked = mark||false;
+                if(mark){
+                    if(amd_flag){
+                        this.$nodeDom[id].addClass("item_marks");
+                    }else{
+                        this.$nodeDom[id].addClass("item_mark");
+                    }
+                }else{
+                    this.$nodeDom[id].removeClass("item_mark");
+                }
+
+            }else if(type == "line"){
+                if(!this.$lineData[id]) return;
+                if(this.onItemMark != null&&!this.onItemMark(id,"line",mark)) return;
+                this.$lineData[id].marked = mark||false;
+                if(GooFlow.prototype.useSVG != ""){
+                    if(mark){
+                        console.log(this);
+                        this.$lineDom[id].childNodes[1].setAttribute("stroke","#21d447");
+                        this.$lineDom[id].childNodes[1].setAttribute("marker-end","url(#arrow2)");
+                    }else{
+                        this.$lineDom[id].childNodes[1].setAttribute("stroke","#5068AE");
+                        this.$lineDom[id].childNodes[1].setAttribute("marker-end","url(#arrow1)");
+                    }
+                }else{
+                    if(mark)    this.$lineDom[id].strokeColor = "#D3D3D3";
+                    else    this.$lineDom[id].strokeColor = "#5068AE"
+                }
+            }
+        }
+        if(this.$undoStatck){
+            var paras = [id,type,!mark];
+            this.pushOper("markItem",paras);
+        }
+    },
 	////////////////////////以下为区域分组块操作
 	moveArea:function(id,left,top){
 		if(!this.$areaData[id]) return;
