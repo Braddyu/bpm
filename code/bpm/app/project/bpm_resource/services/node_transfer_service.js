@@ -1317,10 +1317,13 @@ exports.assign_transfer=function(proc_task_id,node_code,user_code,assign_user_co
                        }else{
                            if(res.length>0) {
                                var prev_node = res[0].proc_cur_task;
+                               var proc_name=res[0].proc_name;
+                               var inst_id=res[0]._id;
                                console.log("cuurent     ______",res);
                                var prev_user = res[0].proc_cur_user;
                                var proc_define = JSON.parse(res[0].proc_define);
                                var item_config = JSON.parse(res[0].item_config);
+                               console.log("item_config",item_config);
                                var nodes = proc_define.nodes
                                var next_node = nodes[node_code];
                                var current_node=nodes[prev_node];
@@ -1345,6 +1348,8 @@ exports.assign_transfer=function(proc_task_id,node_code,user_code,assign_user_co
                                console.log("next_detail       ",next_detail,node_code,"\n",next_node);
                                // var proc_cur_task = current_detail.item_code;
                                // var proc_cur_task_name = current_node.name;
+                               //是否短信通知
+                               var item_sm_warn=next_detail.item_sms_warn;
                                if(!next_detail||!current_detail){
                                    resolve(utils.returnMsg(false, '1010', '节点信息异常', null));
                                    return;
@@ -1364,6 +1369,7 @@ exports.assign_transfer=function(proc_task_id,node_code,user_code,assign_user_co
                                var data = {};
                                data.proc_cur_task_name = next_node.name;
                                data.proc_cur_task = next_detail.item_code;
+
                                data.proc_cur_user = proc_cur_user;
                                data.proc_cur_user_name = proc_cur_user_name;
                                data.proc_inst_status = 2;
@@ -1468,7 +1474,7 @@ exports.assign_transfer=function(proc_task_id,node_code,user_code,assign_user_co
                                                                                        condition_task.proc_inst_task_params = proc_inst_task_params;// : String,// 流程参数(任务参数)
                                                                                        condition_task.proc_inst_task_claim = "";//: Number,// 流程会签
                                                                                        condition_task.proc_inst_task_sign = 1;// : Number,// 流程签收(0-未认领，1-已认领)
-                                                                                       condition_task.proc_inst_task_sms = "";// Number,// 流程是否短信提醒
+                                                                                       condition_task.proc_inst_task_sms =item_sm_warn;// Number,// 流程是否短信提醒
                                                                                        condition_task.proc_inst_task_remark = "";// : String// 流程处理意见
                                                                                        condition_task.proc_inst_task_assignee = assign_user_code;
                                                                                        var arr = [];
@@ -1479,6 +1485,21 @@ exports.assign_transfer=function(proc_task_id,node_code,user_code,assign_user_co
                                                                                                // resolve('新增流程实例信息时出现异常。'+error);
                                                                                                resolve(utils.returnMsg(false, '1000', '流程流转新增任务信息时出现异常7。', null, error));
                                                                                            } else {
+
+                                                                                               //如果是发短信
+                                                                                               if(rs && item_sm_warn=='1' && resultss[0].user_phone){
+                                                                                                   var process_utils = require('../../../utils/process_util');
+                                                                                                   var mobile=resultss[0].user_phone;
+                                                                                                   var params= {
+                                                                                                       "procName":proc_name,
+                                                                                                       "orderNo":inst_id
+                                                                                                   }
+                                                                                                   process_utils.sendSMS(mobile,params).then(function(rs){
+                                                                                                       console.log("短信发送成功");
+                                                                                                   }).catch(function(err){
+                                                                                                       console.log("短信发送失败",err);
+                                                                                                   });
+                                                                                               }
                                                                                                touchNode(next_detail,user_code,rs[0]._id,true).then(function(res){
                                                                                                    if(res.success){
                                                                                                        resolve(utils.returnMsg(true, '1000', '流程流转新增任务信息正常8。', rs, null))
@@ -1657,10 +1678,14 @@ exports.do_payout=function(proc_task_id,node_code,user_code,assign_user_code,pro
                             console.log(res,'这个res是什么呢这是条实例信息');
                             if(res.length>0) {
                                 var prev_node = res[0].proc_cur_task;
+                                var proc_name=res[0].proc_name;
+                                var inst_id=res[0]._id;
                                 console.log("cuurent     ______",res);
                                 var prev_user = res[0].proc_cur_user;
                                 var proc_define = JSON.parse(res[0].proc_define);
+
                                 var item_config = JSON.parse(res[0].item_config);
+
                                 var nodes = proc_define.nodes
                                 var next_node = nodes[node_code];
                                 var current_node=nodes[prev_node];
@@ -1684,6 +1709,8 @@ exports.do_payout=function(proc_task_id,node_code,user_code,assign_user_code,pro
                                 // var proc_cur_task = current_detail.item_code;
                                 // var proc_cur_task_name = current_node.name;
                                 var proc_inst_node_vars = next_detail.item_node_var;
+                                //是否短信通知
+                                var item_sm_warn=next_detail.item_sms_warn;
                                 // var proc_inst_node_vars = current_detail.item_node_var;
                                 var proc_cur_user;
                                 if (current_detail.item_assignee_type == 1) {
@@ -1762,7 +1789,7 @@ exports.do_payout=function(proc_task_id,node_code,user_code,assign_user_code,pro
                                                                                 let resultss = await  model_user.$User.find({"user_no": user_no});
 
                                                                                 if (resultss.length>0) {
-
+                                                                                    console.log("resultss[0]",resultss[0]);
                                                                                     var user_org = resultss[0].user_org;
                                                                                     var user_name = resultss[0].user_name;
                                                                                     var user_roles = resultss[0].user_roles.toString();
@@ -1816,7 +1843,7 @@ exports.do_payout=function(proc_task_id,node_code,user_code,assign_user_code,pro
                                                                                     condition_task.proc_inst_task_params = proc_inst_task_params;// : String,// 流程参数(任务参数)
                                                                                     condition_task.proc_inst_task_claim = "";//: Number,// 流程会签
                                                                                     condition_task.proc_inst_task_sign = 1;// : Number,// 流程签收(0-未认领，1-已认领)
-                                                                                    condition_task.proc_inst_task_sms = "";// Number,// 流程是否短信提醒
+                                                                                    condition_task.proc_inst_task_sms = item_sm_warn;// Number,// 流程是否短信提醒
                                                                                     condition_task.proc_inst_task_remark = "";// : String// 流程处理意见
                                                                                     condition_task.proc_inst_task_assignee = user_no;
                                                                                     //console.log(r[0].proc_start_user_role_names,'sghdssdshg');
@@ -1829,7 +1856,22 @@ exports.do_payout=function(proc_task_id,node_code,user_code,assign_user_code,pro
                                                                                     //创建新流转任务
                                                                                     console.log(condition_task,'55555555555555555555555555');
                                                                                     let rs = await model.$ProcessInstTask.create(condition_task);
-                                                                                    console.log(rs,'这个是一条任务吗？');
+                                                                                    console.log("任务:",rs,'这个是一条任务吗？');
+                                                                                    //如果是发短信
+                                                                                    if(rs && item_sm_warn=='1' &&resultss[0].user_phone){
+                                                                                        var process_utils = require('../../../utils/process_util');
+                                                                                        var mobile=resultss[0].user_phone;
+
+                                                                                        var params= {
+                                                                                            "procName":proc_name,
+                                                                                            "orderNo":inst_id
+                                                                                        }
+                                                                                        process_utils.sendSMS(mobile,params).then(function(rs){
+                                                                                           console.log("短信发送成功");
+                                                                                        }).catch(function(err){
+                                                                                            console.log("短信发送失败",err);
+                                                                                        });
+                                                                                    }
                                                                                     let res = await touchNode(next_detail, user_code, rs._id, true);
                                                                                     console.log(i);
                                                                                 }else{

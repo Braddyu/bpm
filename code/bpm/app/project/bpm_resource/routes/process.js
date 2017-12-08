@@ -172,11 +172,11 @@ router.route("/data/info").post(function(req,res){
     var condition={};
     if(role_type){
         if(role_type=="sales"){
-            condition.user_roles="5a1e9c4189acd414b4143092";//查询营业员
+            condition.user_roles="5a26418c5eb3fe1068448753";//查询营业员
         }else if(role_type=="hall_manager"){
-            condition.user_roles="5a1fc8879df6491f0836ae74";//查询厅经理
+            condition.user_roles="5a266868bfb42d1e9cdd5c6e";//查询厅经理
         }else if(role_type=="grid_manager"){
-            condition.user_roles="5a1fee4d9df6491f0836aeba";//查询网格jinli
+            condition.user_roles="5a264057c819ed211853907a";//查询网格jinli
         }else{
             utils.respMsg(res, false, '1000', '系统参数不匹配，请重新核对', null, null);
         }
@@ -194,5 +194,6 @@ router.route("/data/info").post(function(req,res){
         utils.respMsg(res, false, '1000', '系统参数不匹配，请重新核对', null, null);
     }
 });
+
 
 module.exports = router;
