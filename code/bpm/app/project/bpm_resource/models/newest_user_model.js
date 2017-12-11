@@ -88,9 +88,32 @@ exports.$Role = Role;
 //声明User Schema结构
 var userRoleSchema = new Schema(
     {
-        user_id : {type: Schema.Types.ObjectId, ref: 'User'}, // 用户ID
-        role_id : {type: Schema.Types.ObjectId, ref: 'Role'},// 角色ID
-        createTime:Date//创建时间
+        login_account : String,// 登录账号
+        user_status : Number,// 用户状态
+        user_id:String,//用户ID
+        user_no : String,// 用户工号
+        user_name : String,// 用户姓名
+        user_gender : String,// 用户性别
+        user_phone : String,// 用户手机
+        user_tel : String,// 用户联系电话
+        user_email : String,// 用户邮箱
+        login_password : String,// 登录密码
+        user_org : [],// 所在部门
+        user_sys : String,// 所属系统
+        user_org_desc:String,//所属系统的 描述
+        theme_name : String,// 使用主题
+        theme_skin : String,// 使用皮肤
+        user_photo : String,// 用户头像/照片
+        user_roles : [],// 菜单访问权限使用角色
+        sys_roles:[],//流程使用的角色
+        boss_id:String,//对接外部系统专用的 Boss_id
+        smart_visual_sys_user_id:String,//慧眼系统的 User_id
+        athena_sys_user_id:String,//Athena系统的user_id
+        athena_app_sys_user_id:String,//Athena_app系统的user_id
+        inspect_sys_user_id:String,//稽查系统的user_id
+        token:String,//不知道是什么东西，留着吧
+        special_sign:String,//也不知道是什么东西 留着把
+        // user_sys : {type: Schema.Types.ObjectId, ref: 'CommonCoreSys'},// 所属系统
     },
     {collection: "newest_common_user_role"}// mongodb集合名
 );

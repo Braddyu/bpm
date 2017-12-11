@@ -180,10 +180,6 @@ router.route("/data/info").post(function(req,res){
         }else{
             utils.respMsg(res, false, '1000', '系统参数不匹配，请重新核对', null, null);
         }
-    }else{
-        utils.respMsg(res, false, '1000', '系统参数不匹配，请重新核对', null, null);
-    }
-    if(sys_name=='athena'){
         proc.sendSalesDataToAthena(condition).then(function(rs){
             utils.respJsonData(res,rs);
         }).catch(function(err){
@@ -193,6 +189,9 @@ router.route("/data/info").post(function(req,res){
     }else{
         utils.respMsg(res, false, '1000', '系统参数不匹配，请重新核对', null, null);
     }
+
+
+
 });
 
 
