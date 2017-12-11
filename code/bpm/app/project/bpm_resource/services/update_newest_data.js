@@ -4,7 +4,7 @@ var utils = require('../../../../lib/utils/app_utils');
 var new_model=require("../models/newest_user_model");
 var mysql_pool=require("../../../../lib/mysql_pool");
 var mysql_pool_bpm=require("../../../../lib/mysql_pool_athena")
-var Excel = require('exceljs');
+
 var fs = require('fs');
 
 // function removeDup(arr){
