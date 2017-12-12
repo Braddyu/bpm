@@ -705,14 +705,36 @@ exports.getProcHandlerLogsList=function(page,size,condition){
  *
  * @returns {Promise}
  */
-exports.sendSalesDataToAthena=function(condition){
+exports.sendSalesDataToAthena=function(){
     return  new Promise(function(resolve,reject){
-        model_user.$User.find({"user_roles":condition.user_roles},function(err,res){
+        model_user.$User.find({},function(err,res){
             if(err){
                 console.log(err);
                 resolve({'success':false, 'code':1001, 'msg':"没有查询到数据 请检查参数是否正确" ,"data":null,"error":err});
             }else{
-                resolve(utils.returnMsg(true, '0000', '查询到流程实例数据正常。', res, null));
+                model_user.$CommonCoreOrg.find({},function(errs,ress){
+                    if(errss){
+                        resolve({'success':false, 'code':1001, 'msg':"没有查询到数据 请检查参数是否正确" ,"data":null,"error":errs});
+
+                    }else{
+                        model_user.$Role.find({},function(error,result){
+                            if(error){
+                                resolve({'success':false, 'code':1001, 'msg':"没有查询到数据 请检查参数是否正确" ,"data":null,"error":error});
+                            }else{
+                                var return_data={};
+                                return_data.users=res;
+                                return_data.orgs=ress;
+                                return_data.roles=result;
+                                resolve(utils.returnMsg(true, '0000', '查询到流程实例数据正常。', return_data, null));
+
+                            }
+
+                        })
+
+                    }
+
+                })
+
             }
         })
     })

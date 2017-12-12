@@ -167,28 +167,13 @@ router.route("/nodeDetail").post(function(req,res){
  * 参数1 sys_name="athena" 同步雅典娜拉取营业员数据
  */
 router.route("/data/info").post(function(req,res){
-    var sys_name=req.body.sys_name;//系统名称参数
-    var role_type=req.body.role_type;//查询的角色类型
-    var condition={};
-    if(role_type){
-        if(role_type=="sales"){
-            condition.user_roles="5a26418c5eb3fe1068448753";//查询营业员
-        }else if(role_type=="hall_manager"){
-            condition.user_roles="5a266868bfb42d1e9cdd5c6e";//查询厅经理
-        }else if(role_type=="grid_manager"){
-            condition.user_roles="5a264057c819ed211853907a";//查询网格jinli
-        }else{
-            utils.respMsg(res, false, '1000', '系统参数不匹配，请重新核对', null, null);
-        }
-        proc.sendSalesDataToAthena(condition).then(function(rs){
+        proc.sendSalesDataToAthena().then(function(rs){
             utils.respJsonData(res,rs);
         }).catch(function(err){
             logger.error("route-sendSalesDataToAthena","获取数据异常",err);
             utils.respMsg(res, false, '1000', '获取数据异常', null, err);
         });
-    }else{
-        utils.respMsg(res, false, '1000', '系统参数不匹配，请重新核对', null, null);
-    }
+
 
 
 
