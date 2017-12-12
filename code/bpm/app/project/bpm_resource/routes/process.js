@@ -167,15 +167,12 @@ router.route("/nodeDetail").post(function(req,res){
  * 参数1 sys_name="athena" 同步雅典娜拉取营业员数据
  */
 router.route("/data/info").post(function(req,res){
-        proc.sendSalesDataToAthena().then(function(rs){
-            utils.respJsonData(res,rs);
-        }).catch(function(err){
-            logger.error("route-sendSalesDataToAthena","获取数据异常",err);
-            utils.respMsg(res, false, '1000', '获取数据异常', null, err);
-        });
-
-
-
+    proc.sendSalesDataToAthena().then(function(rs){
+        utils.respJsonData(res,rs);
+    }).catch(function(err){
+        logger.error("route-sendSalesDataToAthena","获取数据异常",err);
+        utils.respMsg(res, false, '1000', '获取数据异常', null, err);
+    });
 
 });
 
