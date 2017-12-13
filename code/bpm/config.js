@@ -1,4 +1,4 @@
-﻿﻿ /**
+﻿/**
  * Created by ShiHukui on 2016/2/22.
  */
 var project_url_prefix = "/gdgl";
@@ -59,7 +59,8 @@ var config = {
         resave: false,
         saveUninitialized: false,
         rolling:true,
-        mongodb_url:'mongodb://192.168.9.48:27017/process',
+         mongodb_url:'mongodb://192.168.9.48:27017/process',
+        // mongodb_url:'mongodb://10.201.253.162:27017/process1',
         //mongodb_url:'mongodb://127.0.0.1:27017/ywcj',  //内网
         mongodb_collection:'common_user_session'
     },
@@ -86,7 +87,6 @@ var config = {
             '/project/moneyback/routes/': project_url_prefix + '/api/moneyback/',//新版退费路由匹配路径
             '/project/fundaudit/routes/': project_url_prefix + '/api/fundaudit/',//资金稽核路由匹配路径
             '/project/spsettlement/routes/': project_url_prefix + '/api/spsettlement/',//新版sp路由匹配路径
-
             '/project/desk/routes/':project_url_prefix + '/api/desk/*',//分公司工作台路由匹配路径
             '/project/attachment/routes/': project_url_prefix + '/api/attachment/',//附件管理路由匹配路径
             '/project/workbench/routes/': project_url_prefix + '/api/workbench/',//省公司工作台路由匹配路径
@@ -98,9 +98,10 @@ var config = {
             '/project/manual/routes/': project_url_prefix + '/api/manual/',//人工抽查路由匹配路径
             '/project/bpm/routes/': project_url_prefix + '/bpm/manual/',//人工抽查路由匹配路径
             '/project/statecos/routes/': project_url_prefix + '/api/statecos/',//人工抽查路由匹配路径
-            '/project/bpm_resource/routes/': project_url_prefix + '/api/bpm_resource/',//给外部用户 不要需要权限的 用户 调用的  URL
+            '/project/bpm_resource/routes/': project_url_prefix + '/api/',//给外部用户 不要需要权限的 用户 调用的  URL
+            // '/project/bpm_resource/routes/': project_url_prefix + '/api/bpm_resource/',//给外部用户 不要需要权限的 用户 调用的  URL
             '/project/workflow/routes/':project_url_prefix+'/api/workflow/',//用于平台页面接口的访问
-            '/project/order_manage/routes/':project_url_prefix+'/api/order_manage/'
+            '/project/order_manage/routes/':project_url_prefix+'/api/order_manage/',
 
         },
         welcome_path:project_url_prefix + '/home',
@@ -110,8 +111,9 @@ var config = {
             project_url_prefix + '/captcha',
             project_url_prefix + '/test/*',
             project_url_prefix +'/static/*',
-            project_url_prefix + '/api/bpm_resource/*',
-            project_url_prefix + '/project/workflow/*',
+            project_url_prefix + '/api/*',
+
+
         ],
         // 登陆后就能访问的url（无需授权）（支持通配符*，尽量少用）,如：修改个人信息、注销等操作
         logged_can_access_urls:[project_url_prefix + '/public/*',
@@ -126,15 +128,16 @@ var config = {
         ]
     },
     mongdb:{
-        url: 'mongodb://192.168.9.48:27017/process',
+         url: 'mongodb://192.168.9.48:27017/process',
+        // url:'mongodb://10.201.253.162:27017/process1',
         // url: 'mongodb://10.201.253.111:27017/Examine',
         //url: 'mongodb://127.0.0.1:27017/ywcj',   //内网
         poolsize:20
     },
     memcached:{
-        //server_locations:['117.135.196.139:11211'],  //外网
-        server_locations:['192.168.9.48:11211'],//内网
-        //server_locations:['127.0.0.1:11211'],//本地
+        // server_locations:['117.135.196.139:11211'],  //外网
+       server_locations:['192.168.9.48:11211'],//内网
+        // server_locations:['127.0.0.1:11211'],//本地
 
         options:{debug: true}
     },
@@ -193,7 +196,7 @@ var config = {
         password_daily_err_count:5
     },
     mqtt:{
-        is_use:true,// 是否使用mqtt
+        is_use:false,// 是否使用mqtt
         server:{// mqtt服务器端配置
             is_load:true,// 是否需要加载mqtt服务器模块，若为false，则不启用mqtt服务器
             host:'127.0.0.1',// mqtt服务器地址
@@ -322,9 +325,9 @@ var config = {
             },
 
         }
+
     },
     SMS_TEMPLET:"渠道工单系统有一张需要您处理的工单，《proc》，工单号：order，请及时登陆认真处理。",
-    OPEN_SMS:false
 
 }
 module.exports = config;
