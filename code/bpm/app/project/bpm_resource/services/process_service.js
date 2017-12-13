@@ -701,11 +701,29 @@ exports.getProcHandlerLogsList=function(page,size,condition){
 
 
 /**
- * 用于给雅典娜系统反向（拉取）营业员数据的借口的服务层
+ * 用于给雅典娜系统反向（拉取）用户数据的接口的服务层
  *
  * @returns {Promise}
  */
-exports.sendSalesDataToAthena=function(){
+exports.sendSalesDataToAthena=function(condition){
+    return  new Promise(function(resolve,reject){
+        model_user.$User.find({"user_roles":condition.user_roles},function(err,res){
+            if(err){
+                console.log(err);
+                resolve({'success':false, 'code':1001, 'msg':"没有查询到数据 请检查参数是否正确" ,"data":null,"error":err});
+            }else{
+                resolve(utils.returnMsg(true, '0000', '查询到流程实例数据正常。', res, null));
+            }
+        });
+    });
+}
+
+/**
+ * 用户给其他用户（拉取）用户数据的接口的服务层
+ *
+ * @returns {Promise}
+ */
+exports.sendSalesDataToAthena_other=function(condition){
     return  new Promise(function(resolve,reject){
         model_user.$User.find({},function(err,res){
             if(err){
@@ -726,19 +744,16 @@ exports.sendSalesDataToAthena=function(){
                                 return_data.orgs=ress;
                                 return_data.roles=result;
                                 resolve(utils.returnMsg(true, '0000', '查询到流程实例数据正常。', return_data, null));
-
                             }
-
-                        })
-
+                        });
                     }
-
-                })
-
+                });
             }
-        })
-    })
-};
+        });
+    });
+}
+
+
 
 
 
