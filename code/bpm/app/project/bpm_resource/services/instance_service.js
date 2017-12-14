@@ -385,8 +385,7 @@ exports.createInstance=function(proc_code,proc_ver,proc_title,param_json_str,pro
                                                     var orgs=rsss.data;
                                                     nodeDetail=node_detail;
                                                     console.log(nodeDetail,'nodeDetailnodeDetail');
-                                                    var next_detail=node_detail.next_detail;
-                                                    var next_node=node_detail.next_node;
+
                                                     var current_detail = node_detail.current_detail;//当前节点信息
                                                     var current_node = node_detail.current_node;//当前节点code
 
@@ -398,7 +397,7 @@ exports.createInstance=function(proc_code,proc_ver,proc_title,param_json_str,pro
                                                     var current_opt=[];
                                                     if(item_assignee_type==1){
                                                         //单个人的操作
-                                                        current_opt.push(next_detail.item_assignee_user);
+                                                        current_opt.push(current_detail.item_assignee_user);
                                                         condition.current_opt=current_opt;
                                                         condition.proc_inst_task_complete_time = new Date();
                                                         condition.proc_inst_task_sign = 1;// : Number,// 流程签收(0-未认领，1-已认领)
@@ -406,7 +405,7 @@ exports.createInstance=function(proc_code,proc_ver,proc_title,param_json_str,pro
 
                                                     if(item_assignee_type==2||item_assignee_type==3){
                                                         //多人操作
-                                                        var item_assignee_role_code= next_detail.item_assignee_role_code;
+                                                        var item_assignee_role_code= current_detail.item_assignee_role_code;
 
                                                     }
 
