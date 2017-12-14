@@ -22,6 +22,12 @@ async function sync_data_from_OA () {
     return ;
 }
 
+
+/**
+ *
+ * 把用户和对应的角色连接起来主程序
+ * @returns {Promise}
+ */
 function link_user_and_role_main(){
     return new Promise(function(resolve,reject){
         model_user.$User.find({},function(error,result){
@@ -36,7 +42,7 @@ function link_user_and_role_main(){
     });
 }
 //
-
+//把用户和对应的角色连接起来实际执行程序
 function link_user_and_role_sub(k,array,resolve){
     if(array&&array.length>k){
         var user=array[k];
@@ -102,6 +108,11 @@ function link_user_and_role_sub(k,array,resolve){
     }
 }
 
+/**
+ *
+ * 把用户和对应的组织连接起来主程序
+ *
+ */
 
 
 function link_user_and_org_main(){
@@ -118,6 +129,13 @@ function link_user_and_org_main(){
     });
 }
 
+/**
+ *
+ * 把用户和对应的组织连接起来实际执行程序
+ * @param k
+ * @param array
+ * @param resolve
+ */
 function link_user_and_org_sub(k,array,resolve){
     if(array&&array.length>k){
         var user=array[k];
@@ -168,6 +186,10 @@ function link_user_and_org_sub(k,array,resolve){
 }
 
 
+/**
+ * 更新用户数据的主程序
+ * @returns {Promise}
+ */
 function update_user_main(){
     return new Promise(function(resolve,reject){
         new_model.$User.find({},function(error,result){
@@ -180,6 +202,12 @@ function update_user_main(){
     });
 }
 
+/**
+ * 更新用户的实际执行程序
+ * @param k
+ * @param array
+ * @param resolve
+ */
 function update_user_sub(k,array,resolve){
     if(array&&array.length>k){
         var user=array[k];
@@ -248,7 +276,10 @@ function update_user_sub(k,array,resolve){
 
 }
 
-
+/**
+ * 更新角色的主程序
+ * @returns {Promise}
+ */
 function update_role_main(){
     return new Promise(function(resolve,reject){
         new_model.$Role.find({},function(error,result){
@@ -265,6 +296,12 @@ function update_role_main(){
     });
 }
 
+/**
+ * 更新角色的实际执行代码方法
+ * @param k
+ * @param array
+ * @param resolve
+ */
 function update_role_sub(k,array,resolve){
     if(array&&array.length>k){
         var role=array[k];
