@@ -221,11 +221,11 @@ router.route('/query').post(function(req,res){
 
 // -------------------------------指派任务的方法的接口-------------------------------
 router.route("/assign/task").post(function(req,res){
-    var task_id=req.body.task_id;
-    var node_code=req.body.node_code;
-    var user_no=req.body.user_no;
-    var assign_user_no=req.body.assign_user_no;
-    var proc_title=req.body.proc_title;
+    var task_id=req.body.task_id;//当前任务id
+    var node_code=req.body.node_code;//当前节点编号
+    var user_no=req.body.user_no;//当前用户编号
+    var assign_user_no=req.body.assign_user_no;//下一节点处理人编号
+    var proc_title=req.body.proc_title;//标题
     var biz_vars=req.body.biz_vars;//业务变量
     var proc_vars=req.body.proc_vars;//流程变量
     var memo=req.body.memo;//流程变量
@@ -262,40 +262,28 @@ router.route("/assign/task").post(function(req,res){
 
 // -------------------------------获取任务处理日志的接口-------------------------------
 router.route("/logs").post(function(req,res){
-    var inst_id=req.body.inst_id;
-    var user_no=req.body.user_no;
+    var inst_id=req.body.inst_id;//实例id
+    var user_no=req.body.user_no;//当前用户编号
     var page=req.body.page;
     var rows=req.body.rows;
     if(!inst_id){
         utils.respMsg(res, false, '2001', '流程实例inst_id不能为空', null, null);
         return;
     }
-    if(!user_no){
-        utils.respMsg(res, false, '2001', '处理人编号不能为空', null, null);
-    }else{
-        //判断用户是否存在
-        inst.userInfo(user_no).then(function(rs){
-            if(rs.success && rs.data.length==1){
-                console.log('rs',rs);
-                //查询日志
-                nodeTransferService.find_log(inst_id,user_no,page,rows).then(function(rs){
-                    utils.respJsonData(res,rs);
-                }).catch(function(err_inst){
-                    // console.log(err_inst);
-                    logger.error("route-find_log","获取日志信息异常",err_inst);
-                    utils.respMsg(res, false, '1000', '获取日志信息异常', null, err_inst);
-                });
-            }else{
-                utils.respMsg(res, false, '1000', '用户不存在', null, null);
-            }
-        });
-    }
+    //查询日志
+    nodeTransferService.find_log(inst_id,user_no,page,rows).then(function(rs){
+        utils.respJsonData(res,rs);
+    }).catch(function(err_inst){
+        // console.log(err_inst);
+        logger.error("route-find_log","获取日志信息异常",err_inst);
+        utils.respMsg(res, false, '1000', '获取日志信息异常', null, err_inst);
+    });
 });
 
 // -------------------------------查询日志集合的接口-------------------------------
 router.route("/log/list").post(function(req,res){
-    var status=req.body.status;
-    var user_no=req.body.user_no;
+    var status=req.body.status;//流程流转状态
+    var user_no=req.body.user_no;//当前用户id
     var begin_date=req.body.begin_date;
     var end_date=req.body.end_date;
     var page=req.body.page;
@@ -323,7 +311,7 @@ router.route("/log/list").post(function(req,res){
 
 // -------------------------------已完成任务节点编号集合-------------------------------
 router.route('/complete/node/codes').post(function(req,res){
-    var inst_id = req.body.proc_inst_id;
+    var inst_id = req.body.proc_inst_id;//流程实例id
     if(!inst_id){
         utils.respMsg(res, false, '2001', '实例id为空', null, null);
         return;
@@ -369,10 +357,10 @@ router.route("/batch").post(function(req,res){
 
 // -------------------------------批量派发接口-------------------------------
 router.route("/payout").post(function(req,res){
-    var task_id=req.body.task_id;
-    var node_code=req.body.node_code;
-    var user_no=req.body.user_no;
-    var assign_user_no=req.body.assign_user_no;//以逗号隔开
+    var task_id=req.body.task_id;//任务id
+    var node_code=req.body.node_code;//当前节点编号
+    var user_no=req.body.user_no;//当前用户编号
+    var assign_user_no=req.body.assign_user_no;//下一节点处理人(多个人)以逗号隔开
     var proc_title=req.body.proc_title;
     var biz_vars=req.body.biz_vars;//业务变量
     var proc_vars=req.body.proc_vars;//流程变量

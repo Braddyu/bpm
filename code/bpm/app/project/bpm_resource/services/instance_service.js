@@ -384,17 +384,20 @@ exports.createInstance=function(proc_code,proc_ver,proc_title,param_json_str,pro
                                                     var node_detail=rss.data;
                                                     var orgs=rsss.data;
                                                     nodeDetail=node_detail;
-                                                    var next_detail=node_detail.next_detail;
-                                                    var next_node=node_detail.next_node;
-                                                    condition.proc_cur_task_name=next_node.name;//节点中文名称
-                                                    condition.proc_cur_task=next_detail.item_code;//节点code
-                                                    condition.proc_inst_node_vars=next_detail.item_node_var;//节点变量
-                                                    var item_assignee_type=next_detail.item_assignee_type;
+                                                    console.log(nodeDetail,'nodeDetailnodeDetail');
+
+                                                    var current_detail = node_detail.current_detail;//当前节点信息
+                                                    var current_node = node_detail.current_node;//当前节点code
+
+                                                    condition.proc_cur_task_name=current_node.name;//节点中文名称
+                                                    condition.proc_cur_task=current_detail.item_code;//节点code
+                                                    condition.proc_inst_node_vars=current_detail.item_node_var;//节点变量
+                                                    var item_assignee_type=current_detail.item_assignee_type;
 
                                                     var current_opt=[];
                                                     if(item_assignee_type==1){
                                                         //单个人的操作
-                                                        current_opt.push(next_detail.item_assignee_user);
+                                                        current_opt.push(current_detail.item_assignee_user);
                                                         condition.current_opt=current_opt;
                                                         condition.proc_inst_task_complete_time = new Date();
                                                         condition.proc_inst_task_sign = 1;// : Number,// 流程签收(0-未认领，1-已认领)
@@ -402,7 +405,7 @@ exports.createInstance=function(proc_code,proc_ver,proc_title,param_json_str,pro
 
                                                     if(item_assignee_type==2||item_assignee_type==3){
                                                         //多人操作
-                                                        var item_assignee_role_code= next_detail.item_assignee_role_code;
+                                                        var item_assignee_role_code= current_detail.item_assignee_role_code;
 
                                                     }
 
@@ -432,7 +435,8 @@ exports.createInstance=function(proc_code,proc_ver,proc_title,param_json_str,pro
 
                                                                     condition.proc_inst_task_title = proc_title;
                                                                     condition.proc_inst_biz_vars = biz_vars_json;
-                                                                    condition.proc_vars = proc_vars_json; condition.proc_inst_task_title = proc_title;
+                                                                    condition.proc_vars = proc_vars_json;
+                                                                    condition.proc_inst_task_title = proc_title;
                                                                     condition.proc_inst_biz_vars = biz_vars_json;
                                                                     condition.proc_vars = proc_vars_json;
 

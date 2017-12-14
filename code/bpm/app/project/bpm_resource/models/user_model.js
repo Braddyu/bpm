@@ -114,7 +114,7 @@ var roleSchema = new Schema(
         inspect_sys_role_id:String,//稽查系统的role_id
 
     },
-    {collection: "common_bpm_role_info_20171205"}// mongodb集合名
+    {collection: "common_bpm_role_info"}// mongodb集合名
 );
 //将 Role 类给予接口
 var Role = mongoose.model('Role', roleSchema);
@@ -133,7 +133,7 @@ var userRoleSchema = new Schema(
         role_id : {type: Schema.Types.ObjectId, ref: 'Role'},// 角色ID
         createTime:Date//创建时间
     },
-    {collection: "common_bpm_user_role_20171205"}// mongodb集合名
+    {collection: "common_bpm_user_role"}// mongodb集合名
 );
 //将 userRole 类给予接口
 var UserRole = mongoose.model('UserRole', userRoleSchema);
