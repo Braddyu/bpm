@@ -731,7 +731,7 @@ exports.sendSalesDataToAthena_other=function(condition){
                 resolve({'success':false, 'code':1001, 'msg':"没有查询到数据 请检查参数是否正确" ,"data":null,"error":err});
             }else{
                 model_user.$CommonCoreOrg.find({},function(errs,ress){
-                    if(errss){
+                    if(errs){
                         resolve({'success':false, 'code':1001, 'msg':"没有查询到数据 请检查参数是否正确" ,"data":null,"error":errs});
 
                     }else{

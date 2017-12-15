@@ -117,6 +117,28 @@ HOST: http://192.168.9.66:30002/gdgl/api
     }
 }
 
+## 获取当前节点信息 [/process/data/info]
+
+### 各系统通用的用户数据同步接口 [POST]
+
++ Request
+    + Body
+
+            {
+                role_type:sales
+            }
+
++ Response 200
+  {
+    "success": true,
+    "code": "1000",
+    "msg": "查询到流程实例数据正常",
+    "data": {
+        (返回的数据格式为JSON)
+    }
+}
+
+
 # Group 流程实例 -修改
 流程实例管理相关接口
 
