@@ -382,6 +382,7 @@ exports.createInstance=function(proc_code,proc_ver,proc_title,param_json_str,pro
                                                     condition.proc_start_user_name =user_name;
 
                                                     var node_detail=rss.data;
+                                                    console.log(rss,'node_detailnode_detail')
                                                     var orgs=rsss.data;
                                                     nodeDetail=node_detail;
                                                     console.log(nodeDetail,'nodeDetailnodeDetail');
@@ -439,12 +440,15 @@ exports.createInstance=function(proc_code,proc_ver,proc_title,param_json_str,pro
                                                                     condition.proc_inst_task_title = proc_title;
                                                                     condition.proc_inst_biz_vars = biz_vars_json;
                                                                     condition.proc_vars = proc_vars_json;
+                                                                     if(nodeDetail.next_detail)      {
+                                                                         //创建流程任务
+                                                                         insertTask(insresult,condition).then(function(taskresult){
+                                                                             resolve(taskresult);
+                                                                         });
+                                                                     }  else{
+                                                                         resolve(utils.returnMsg(false, '1000', '创建失败，无法找到下一节点',null));
 
-
-                                                                    //创建流程任务
-                                                                    insertTask(insresult,condition).then(function(taskresult){
-                                                                        resolve(taskresult);
-                                                                    });
+                                                                     }
                                                                 }
                                                             });
                                                         }else{
@@ -529,14 +533,15 @@ function find(role_code){
 function insertTask(result,condition){
     var proc_inst_task_assignee,proc_inst_task_assignee_name,proc_inst_task_sign;
     var proc_inst_task_user_role,proc_inst_task_user_role_name
-    if(nodeDetail.next_detail.item_assignee_type==1){
+
+    if(  nodeDetail.next_detail.item_assignee_type==1){
         proc_inst_task_assignee=nodeDetail.next_detail.item_assignee_user_code;
         proc_inst_task_assignee_name=nodeDetail.next_detail.item_show_text;
         proc_inst_task_user_role ="";
         proc_inst_task_user_role_name="";
         proc_inst_task_sign=1;// : Number,// 流程签收(0-未认领，1-已认领)
     }
-    if(nodeDetail.next_detail.item_assignee_type==2||nodeDetail.next_detail.item_assignee_type==3){
+    if( nodeDetail.next_detail.item_assignee_type==2||nodeDetail.next_detail.item_assignee_type==3){
         proc_inst_task_assignee="";
         proc_inst_task_assignee_name="";
         proc_inst_task_user_role =nodeDetail.next_detail.item_assignee_role;

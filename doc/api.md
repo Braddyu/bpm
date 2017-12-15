@@ -461,6 +461,7 @@ HOST: http://192.168.9.66:30002/gdgl/api
 			  "memo": "处理内容",
 			  "proc_vars": "",(json字符串格式-流程实例从开始到归档都不需要变动的工单参数)
 			  "biz_vars":""(json字符串格式-业务工单需要的参数)
+			  "params":{"flag":false}(flag为线上的参数，线上有就必须传没有可以传"")
             }
     
 + Response 200

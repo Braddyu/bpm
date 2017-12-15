@@ -121,8 +121,11 @@ function getNode(process_define_id,node_id,params,flag){
                                 node_array=deleteInvalidNode(process_define,item_config,node_array,node_id,params,reject);
                                 console.log("after delete the invalid data")
                                 console.log(node_array)
-                                if(node_array.length!=1){
+                                if(node_array.length>1){
                                     resolve(utils.returnMsg(false, '1000', '有效节点删除不完全，或者错误', null, null));
+
+                                }else if(node_array.length==0){
+                                    resolve(utils.returnMsg(false, '1000', '不存在有效节点', null, null));
 
                                 }else{
                                     var result=choiceNode(item_config,process_define,node_id,node_array[0]);
@@ -403,7 +406,7 @@ function determinChoice(str, condition,reject) {
                     }
                 }
                 result+=str;
-
+                console.log("result",result);
                 if(eval(result)){
                     return true;
                 }else{
@@ -971,8 +974,12 @@ exports.findNextHandler=function(user_code,proc_define_id,node_code,params,proc_
 
                     getNode(proc_define_id,node_code,params,true).then(function(rs){
 
-                        // console.log("kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk",)
-                        // console.log(rs)
+                        console.log("kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk",)
+                        console.log(rs)
+                        if(!rs.success){
+                            resolve(utils.returnMsg(false, '1001', '节点获取失败', null, rs));
+                            return;
+                        }
                         var data=rs.data;
                         var current_detail=data.current_detail;
                         var current_node=data.current_node;
