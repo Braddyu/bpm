@@ -163,7 +163,7 @@ router.route("/nodeDetail").post(function(req,res){
 
 
 /**
- * 用户用雅典娜系统的营业员数据同步的借口
+ * 用户用雅典娜系统的营业员数据同步的接口
  * 参数1 sys_name="athena" 同步雅典娜拉取营业员数据
  */
 router.route("/data/info").post(function(req,res){
@@ -172,9 +172,9 @@ router.route("/data/info").post(function(req,res){
     var condition={};
     if(role_type){
         if(role_type=="sales"){
-            condition.user_roles="5a1e9c4189acd414b4143092";//查询营业员
+            condition.user_roles="5a26418c5eb3fe1068448753";//查询营业员
         }else if(role_type=="hall_manager"){
-            condition.user_roles="5a1fc8879df6491f0836ae74";//查询厅经理
+            condition.user_roles="5a266868bfb42d1e9cdd5c6e";//查询厅经理
         }else if(role_type=="grid_manager"){
             condition.user_roles="5a264057c819ed211853907a";//查询网格jinli
         }else{
