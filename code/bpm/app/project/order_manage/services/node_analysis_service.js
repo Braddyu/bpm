@@ -1878,23 +1878,15 @@ function findNextHandler(user_code,proc_define_id,node_code,params,proc_inst_id)
                 console.log(errs)
                 reject(utils.returnMsg(false, '1000', '查询用户信息错误', null, errs))
             } else {
-                // console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
                 if (result.length > 0) {
-                    // console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-                    // console.log(result);
                     var proc_define = JSON.parse(result[0].proc_define);
                     var item_config = JSON.parse(result[0].item_config);
 
                     // var proc_define_id=result[0].proc_define_id;
 
                     getNode(proc_define_id,node_code,params,true).then(function(rs){
-                        // console.log(rs)
                         var data=rs.data;
-                        // console.log("current_detail  ",current_detail)
                         var next_node=data.next_node;
-                        // console.log("next______________________________________node",data);
-                        // console.log(proc_define_id,node_code,params)
-                        //next_node, resolve, next_detail, proc_inst_id
                         findInfo(next_node, resolve, data.next_detail, proc_inst_id);
                     })
                 }else{
@@ -1918,12 +1910,8 @@ exports.getNextNodeAndHandlerInfo=function(node_code,proc_task_id,proc_inst_id,p
                 resolve(utils.returnMsg(false, '1000', '查询实例化表失败 for getNextNodeAndHandlerInfo', null,err))
             }else{
                 if(rs.length>0) {
-                    // var item_config = JSON.parse(rs[0].item_config);
-                    // var proc_define = JSON.parse(rs[0].proc_define);
                     var proc_define_id = rs[0].proc_define_id;
                     console.log("ooooooooooooooooooooooooooooooooooooooooooooooooooooooo")
-                    //50001 595cb1d03beda10924cb0f0d processDefineDiv_node_2 {} 596c8b9ba9d83525541b43d7
-                    // console.log(user_code,proc_define_id,node_code,params,proc_inst_id);
                     findNextHandler(user_code,proc_define_id,node_code,params,proc_inst_id).then(function(r){
                         resolve(r)
                     });
@@ -2160,4 +2148,90 @@ function findSecondNode(proc_define,node_code){
         }
     }
     return node;
+}
+/**
+ * 获取节点详细信息
+ * @param proc_code
+ * @param node_node
+ * @returns {bluebird}
+ */
+exports.getNodeDetail=function(proc_code,node_code){
+    var process_define,item_config;
+    var promise=new Promise(function(resolve,reject){
+        //获取流程最大版本号信息
+        var query = model.$ProcessDefine.find({});
+        query.where('proc_code', proc_code);
+        query.sort({ 'version': 'desc'});
+        query.limit(1);
+        query.exec(function (err, rs) {
+            console.log("rs=====",rs);
+            if (err) {
+                resolve(utils.returnMsg(false, '1000', '查询流程失败', null, err))
+            } else {
+                if (rs.length > 0) {
+                    console.log(rs[0]);
+                    var proc_define=JSON.parse(rs[0].proc_define);
+                    var item_config=JSON.parse(rs[0].item_config);
+                    //归档节点
+                    var end_node;
+                    //获取节点详细信息
+                    var nodes=proc_define.nodes;
+                    //获取节点之间关系
+                    var lines=proc_define.lines;
+                    //获取归档节点
+                    for(var item in nodes){
+                        var node=nodes[item];
+                        if(node.type=='end  round'){
+                            end_node=item;
+                        }
+                    }
+                    //获取所有下一节点的连接线
+                    var nextLines=new Array();
+
+                    var isEnd=false;
+                    var haveRefuse=false;
+                    for(var item in lines){
+                        var node=lines[item];
+                        //获取所有对下一节点的连接线
+                        if(node.from==node_code){
+                            nextLines.push(item);
+                            //判断下一节点是否存在归档节点
+                            if(node.to==end_node){
+                                isEnd=true;
+                            }
+                        }
+
+                    }
+                    if(nextLines.length!=0){
+                        //判断是否存在拒绝线
+                        for(var index in item_config){
+                            var item=item_config[index];
+                            for(var line in nextLines){
+                                //如果是对下一节点的连接线
+                                if(item.item_code==nextLines[line]){
+                                    var item_el=item.item_el;
+                                    console.log(item_el)
+                                    //是否是拒绝线
+                                    if(item_el.indexOf("flag==false")!=-1){
+                                        haveRefuse=true;
+                                    }
+                                }
+                            }
+                        }
+                        var rs={};
+                        rs.haveRefuse=haveRefuse;
+                        rs.isEnd=isEnd;
+                        resolve(utils.returnMsg(true, '1000', '查询节点成功', rs, null));
+                    }else{
+                        resolve(utils.returnMsg(false, '1002', '不存在的节点', null, null));
+
+                    }
+
+                }else{
+                    resolve(utils.returnMsg(false, '1001', '不存在的流程', null, null));
+                }
+            }
+        });
+    });
+    return promise;
 }

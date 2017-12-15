@@ -1018,6 +1018,11 @@ function normal_process(current_detail,next_detail, next_node, proc_inst_id, res
                                     delete obj._id;
                                     var arr_c=[];
                                     arr_c.push(obj)
+                                    var role_code = r[0].proc_task_start_user_role_code;//发起人角色id
+                                    var role_name = r[0].proc_task_start_user_role_names;//发起人角色名
+                                    var name = r[0].proc_task_start_name;//流程发起人
+                                    var proc_code = r[0].proc_code;//流程编码
+                                    var proc_name = r[0].proc_name;//流程名称
                                     // console.log(arr_c);2
                                     model.$ProcessTaskHistroy.create(arr_c, function (es,results){
                                         if(es){
@@ -1087,7 +1092,7 @@ function normal_process(current_detail,next_detail, next_node, proc_inst_id, res
                                                             condition_task.proc_inst_prev_node_handler_user = prev_user;// : String,// 上一节点处理人编号
                                                             condition_task.proc_vars =r[0].proc_vars;// 流程变量
                                                             condition_task.proc_inst_task_claim = "";//: Number,// 流程会签
-                                                            condition_task.proc_inst_task_sms = "";// Number,// 流程是否短信提醒
+                                                            condition_task.proc_inst_task_sms = next_detail.item_sms_warn;// Number,// 流程是否短信提醒
                                                             condition_task.proc_inst_task_remark = "";
                                                             //condition_task.proc_inst_task_remark = r[0].proc_inst_task_remark;// : String// 流程处理意见
                                                         }
@@ -1101,13 +1106,19 @@ function normal_process(current_detail,next_detail, next_node, proc_inst_id, res
                                                             condition_task.proc_inst_prev_node_handler_user = r[0].proc_inst_task_assignee_name;// : String,// 上一节点处理人编号
                                                             condition_task.proc_vars = r[0].proc_vars;// 流程变量
                                                             condition_task.proc_inst_task_claim = "";//: Number,// 流程会签
-                                                            condition_task.proc_inst_task_sms = "";// Number,// 流程是否短信提醒
+                                                            condition_task.proc_inst_task_sms = next_detail.item_sms_warn;// Number,// 流程是否短信提醒
                                                             condition_task.proc_inst_task_remark = "";// : String// 流程处理意见
                                                         }
                                                        
                                                     }
+
                                                         xunhuan().then(function(res){ 
                                                             var arr = [];
+                                                            condition_task.proc_code=proc_code;//流程编码
+                                                            condition_task.proc_name=proc_name;//流程名称
+                                                            condition_task.proc_task_start_user_role_names = role_name;//流程发起人角色
+                                                            condition_task.proc_task_start_user_role_code = role_code;//流程发起人id
+                                                            condition_task.proc_task_start_name = name;//流程发起人角色
                                                             arr.push(condition_task);
                                                             //创建新流转任务
                                                             model.$ProcessInstTask.create(arr, function (error, rs) {
@@ -1115,7 +1126,22 @@ function normal_process(current_detail,next_detail, next_node, proc_inst_id, res
                                                                     // resolve('新增流程实例信息时出现异常。'+error);
                                                                     resolve(utils.returnMsg(false, '1000', '流程流转新增任务信息时出现异常。', null, error));
                                                                 }else {
-                                                                   
+                                                                    //如果是发短信,目前库的user_no即电话号码，所以直接使用user_no
+                                                                    if(condition_task.proc_inst_task_assignee && condition_task.proc_inst_task_sms=='1' ){
+                                                                        var process_utils = require('../../../utils/process_util');
+                                                                        var mobile=condition_task.proc_inst_task_assignee;
+
+                                                                        var params= {
+                                                                            "procName":proc_name,
+                                                                            "orderNo":condition_task.proc_inst_id
+                                                                        }
+                                                                        process_utils.sendSMS(mobile,params).then(function(rs){
+                                                                            console.log("短信发送成功");
+                                                                        }).catch(function(err){
+                                                                            console.log("短信发送失败",err);
+                                                                        });
+                                                                    }
+
                                                                     resolve(utils.returnMsg(true, '1000', '流程流转新增任务信息正常。', rs, null))
                                                                 }
                                                             });
@@ -1317,6 +1343,7 @@ exports.assign_transfer=function(proc_task_id,node_code,user_code,assign_user_co
                        }else{
                            if(res.length>0) {
                                var prev_node = res[0].proc_cur_task;
+                               var proc_code=res[0].proc_code;
                                var proc_name=res[0].proc_name;
                                var inst_id=res[0]._id;
                                console.log("cuurent     ______",res);
@@ -1467,6 +1494,8 @@ exports.assign_transfer=function(proc_task_id,node_code,user_code,assign_user_co
                                                                                        condition_task.proc_inst_prev_node_code = prev_node;
                                                                                        condition_task.proc_inst_prev_node_handler_user = prev_user;
                                                                                        condition_task.proc_inst_node_vars = proc_inst_node_vars;
+                                                                                       condition_task .proc_code=proc_code;
+                                                                                       condition_task .proc_name=proc_name;
                                                                                        if(proc_vars){
                                                                                            condition_task.proc_vars=proc_vars;
                                                                                        }
@@ -1768,6 +1797,8 @@ exports.do_payout=function(proc_task_id,node_code,user_code,assign_user_code,pro
                                                         var role_code = r[0].proc_task_start_user_role_code;//流程发起人角色编码
                                                         var role_name = r[0].proc_task_start_user_role_names;//流程发起人角色
                                                         var name = r[0].proc_task_start_name;//流程发起人名
+                                                        var proc_name = r[0].proc_name;
+                                                        var proc_code = r[0].proc_code;
                                                         // console.log(r);3
                                                         model.$ProcessTaskHistroy.create(arr_c,function (es,ress){
                                                             if(es){
@@ -1850,7 +1881,8 @@ exports.do_payout=function(proc_task_id,node_code,user_code,assign_user_code,pro
                                                                                    condition_task.proc_task_start_user_role_names = role_name;//流程发起人角色
                                                                                     condition_task.proc_task_start_user_role_code = role_code;//流程发起人id
                                                                                     condition_task.proc_task_start_name = name;//流程发起人姓名
-
+                                                                                    condition_task.proc_name=proc_name;
+                                                                                    condition_task.proc_code=proc_code;
                                                                                     // var arr = [];
                                                                                     // arr.push(condition_task);
                                                                                     //创建新流转任务

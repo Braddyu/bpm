@@ -176,7 +176,7 @@ router.route("/data/info").post(function(req,res){
         }else if(role_type=="hall_manager"){
             condition.user_roles="5a1fc8879df6491f0836ae74";//查询厅经理
         }else if(role_type=="grid_manager"){
-            condition.user_roles="5a1fee4d9df6491f0836aeba";//查询网格jinli
+            condition.user_roles="5a264057c819ed211853907a";//查询网格jinli
         }else{
             utils.respMsg(res, false, '1000', '系统参数不匹配，请重新核对', null, null);
         }

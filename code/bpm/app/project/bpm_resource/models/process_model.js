@@ -176,6 +176,8 @@ var commonProcessInstTaskSchema = new Schema(
         proc_inst_task_name : String,// 流程当前节点名称(任务名称)
         proc_inst_task_type : String,// 流程当前节点类型(任务类型)
         proc_inst_task_title : String,// 任务标题
+        proc_name:String,//所属流程
+        proc_code: String, //所属流程编码
         proc_inst_task_arrive_time : Date,// 流程到达时间
         proc_inst_task_handle_time : Date,// 流程认领时间
         proc_inst_task_complete_time : Date,// 流程完成时间
@@ -240,16 +242,18 @@ var commonProcessTaskHistroySchema = new Schema(
         proc_inst_task_remark : String,// 流程处理意见
         proc_inst_biz_vars : String,// 流程业务实例变量
         proc_inst_node_vars : String,// 流程实例节点变量
+        proc_name : String,//所属流程
+        proc_code: String, //所属流程编码
         proc_inst_prev_node_code : String,// 流程实例上一处理节点编号
         proc_inst_prev_node_handler_user : String,// 流程实例上一节点处理人编号
         proc_task_start_user_role_names:String,//流程发起人角色
         proc_task_start_user_role_code:[], //流程发起人id
         proc_task_start_name:String,//流程发起人姓名
-        proc_task_name:{ type: String,  required: false ,index: true },//流程名
-        proc_task_work_day:Number,//天数
+        // proc_task_name:{ type: String,  required: false ,index: true },//流程名
+      //  proc_task_work_day:Number,//天数
         proc_task_ver :Number,//版本号
         proc_task_content : String,// 流程派单内容
-        proc_task_code : String,// 流程编码
+        // proc_task_code : String,// 流程编码
         proc_start_time : Date,// 流程发起时间(开始时间)
         proc_vars : String,// 流程变量
     },

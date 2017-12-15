@@ -35,135 +35,7 @@
     </div>
 </div>
 
-<div id="orderDetail"  class="mydialog" style="overflow:auto"  >
-    <div class="easyui-tabs" id="tabs" >
-        <div title="工单信息" style="padding:10px">
-        <legend ><b>任务基本信息</b></legend>
-        <form id="orderDetailForm" method="post" enctype="multipart/form-data">
-            <table cellpadding="5" align="center" style="border-collapse:separate; border-spacing:0px 5px;">
-                <input id="proc_inst_id"  name="proc_inst_id"hidden="true"/>
-
-                <tr>
-                    <td align="right" class="tdLabel">工单标题:</td>
-                    <td colspan="3"><input disabled style="width: 665px" class="easyui-textbox"data-options="required:true, missingMessage:'请输入工单标题'" id="proc_inst_task_title" name="proc_inst_task_title" ></input></td>
-                </tr>
-                <tr>
-                    <td align="right" class="tdLabel">工单类型:</td>
-                    <td> <input disabled class="easyui-combobox" name="proc_task_code" id="proc_task_code"  style="width: 280px"></td>
-
-                    <td align="right" class="tdLabel">工作天数:</td>
-                    <td><input disabled style="width: 280px"class="easyui-numberbox"data-options="precision:0"  name="proc_task_work_day"
-                    ></input></td>
-                </tr>
-                <tr>
-                    <td align="right" class="tdLabel">开始时间:</td>
-                    <td><input disabled style="width: 280px"class="easyui-textbox"
-                               id="proc_start_time" name="proc_start_time"></input></td>
-                    <td align="right" class="tdLabel">完成时间:</td>
-                    <td><input disabled style="width: 280px"  class="easyui-textbox"
-                               id="end_time" ></input></td>
-                    <td colspan="2"></td>
-
-
-                </tr>
-                <tr>
-                    <td align="right" class="tdLabel">发起人角色:</td>
-                    <td><input disabled style="width: 280px"class="easyui-textbox"
-                               name="proc_task_start_user_role_names" ></input></td>
-
-                    <td align="right" class="tdLabel">发起人:</td>
-                    <td><input disabled style="width: 280px" class="easyui-textbox"
-                               name="proc_task_start_name" ></input></td>
-
-                </tr>
-
-
-                <tr>
-                    <td align="right" class="tdLabel">派单内容:</td>
-                    <td colspan="3"><input disabled
-                                           style="width: 670px; height: 50px; resize: none;" cols="30"
-                                           name="proc_task_content" rows="4"  class="easyui-textbox"  labelPosition="top" multiline="true"/>
-
-                    </td>
-                </tr>
-            </table>
-
-            <legend><b>流程日志</b></legend>
-            <table cellpadding="5" align="center">
-                <tr>
-                    <td colspan="4">
-                        <table id="dg"></table>
-                    </td>
-                </tr>
-
-            </table>
-
-
-            <legend><b>节点处理</b></legend>
-
-            <table cellpadding="5" align="center" style="border-collapse:separate; border-spacing:0px 5px;">
-                <input  type="hidden"id="node_code"  name="proc_inst_task_code"/>
-                <input  type="hidden"id="next_code" name="next_code" />
-                <input  type="hidden"id="proc_inst_id"  name="proc_inst_id"/>
-                <input  type="hidden"id="proc_task_id"  name="proc_task_id"/>
-
-
-
-                <tr>
-                    <td align="right" class="tdLabel">当前节点:</td>
-                    <td colspan="3"><input disabled style="width: 670px" class="easyui-textbox" name="proc_inst_task_name" id="proc_inst_task_name" ></input></td>
-
-
-
-                </tr>
-                <tr id="tr_4">
-                    <td align="right" class="tdLabel">操作:</td>
-                    <td colspan="3" class="tdLabel">
-                        <select class="easyui-combobox" name="handle"
-                                style="width: 80px;" id="handle"   panelHeight="auto">
-
-                        </select>
-
-
-                    </td>
-                </tr>
-                <tr id="tr_5">
-                    <td align="right" class="tdLabel">下一节点处理人:</td>
-                    <td colspan="3"><select class="easyui-combobox"
-                                            id="nextJobHandler" name="assign_user_no"  style="width: 180px;">
-
-                    </select> </td>
-
-
-                </tr>
-
-
-                <tr>
-                    <td align="right" class="tdLabel">处理意见:</td>
-                    <td colspan="2"><input name="memo" class="easyui-textbox"  labelPosition="top" multiline="true" style="width: 670px; height: 54px; resize: none;"/>
-
-                    </td>
-
-                </tr>
-                <tr>
-                    <td align="right" class="tdLabel">附件上传:</td>
-                    <td>  <input class="easyui-filebox"labelPosition="top" data-options="prompt:'选择文件...',buttonText:'选择'" style="width:250px"/>
-                    </td>
-                </tr>
-
-
-            </table>
-
-
-        </form>
-</div>
-        <div title="流程图" style="padding:10px">
-
-            <iframe id="iframeId" frameborder=0 width=850 height=430 marginheight=0 marginwidth=0 scrolling=no src=></iframe>
-        </div>
-    </div>
-</div>
-
+<div id="dd"></div>
 
 
 
@@ -171,28 +43,11 @@
 
 <script type="text/javascript">
 
-    //是否为归档节点
-    var endFlag=false;
-    $(document).ready(function () {
 
+    $(document).ready(function () {
         //加载我的待办列表
         loadOrderTodaoListDatagrid();
-        //初始化工单类型下拉框
-        getAllProBase();
 
-        //这里combobox默认会赋一个的选项的值
-        $("#assign_user_no") .combobox('setValue','') ;
-        //重新加载流程图
-        $('#tabs').tabs({
-            border:false,
-            onSelect:function(title,index){
-                if(title=='流程图'){
-                    var url='{{projcfg.appurl}}/api/process/show/progressed?proc_inst_id='+$("#proc_inst_id").val();
-                    parent.document.getElementById("iframeId").src=url;
-                }
-
-            }
-        });
 
     });
 
@@ -234,8 +89,8 @@
                         return "<span title='" + value + "'>" + value + "</span>";
 
                 }},
-                {"field": "proc_task_name","title":"所属流程","width":50},
-                {"field": "proc_task_ver","title":"版本","width":20},
+                {"field": "proc_name","title":"工单类型","width":50},
+
                 {"field": "proc_inst_task_name","title":"当前处理节点","width":50},
                 {"field": "proc_task_start_name","title":"申请人","width":50},
                 {"field": "proc_inst_task_arrive_time","title":"创建时间","width":80,
@@ -244,82 +99,21 @@
                     }}
             ]],
             onDblClickRow:function(rowIndex, rowData){
-                //默认选中第一个tab
-                $("#tabs").tabs("select",0);
+                //待办传状态为2
+                var url='{{projcfg.appurl}}/api/order_manage/order_list/showDetailView?proc_code=p-109&change_id='+rowData._id+'&status=2';
+                var content = '<iframe src="'+url+'" width="100%" height="99%" frameborder="0" scrolling="yes"></iframe>';
 
 
-                $('#orderDetailForm').form('clear');
-                $('#orderDetailForm').form('load', rowData);
-                //为了后台接收任务id，这里做单独赋值
-                $("#proc_task_id").val(rowData._id);
-
-                //开始时间格式化，以及计算结束时间
-                var time=new Date(rowData.proc_start_time);
-                var work_day= parseInt(rowData.proc_task_work_day)  ;
-                $("#proc_start_time").textbox("setValue",time.Format("yyyy-MM-dd hh:mm:ss"));
-                time.setDate(time.getDate()+work_day)
-                $("#end_time").textbox("setValue",time.Format("yyyy-MM-dd hh:mm:ss"));
-
-                //判断当前节点是否是结束节点
-                isEndNode();
-
-                $('#orderDetail').show();
-                $('#orderDetail').mydialog({
-                    title:"查看工单",
-                    width: 900,
-                    height: 550,
-                    top:150,
-                    modal: true,
-                    myButtons:[
-                        {
-                            text: '提交',
-                            btnCls: 'btn btn-blue',
-                            handler: function () {
-                                submitTask();
-                            }
-                        },
-                        {
-                            text:'关闭',
-                            btnCls:'btn btn-danger',
-                            handler:function(){
-                                $('#orderDetail').dialog("close");
-                            }
-                        }
-                    ]
+                $('#dd').dialog({
+                    title : '工单详情',
+                    width : 950,
+                    height : 550,
+                    closed : false,
+                    cache : false,
+                    content :content ,
+                    modal : true
                 });
-                //流程日志
-                $('#dg').datagrid({
-                    url:'{{projcfg.appurl}}/api/order_manage/order_complete/logs',
-                    width:800,
-                    queryParams: {
-                        inst_id: rowData.proc_inst_id
-                    },
-                    method:'post',
-                    columns:[[
-                        {field:'proc_inst_task_name',title:'节点名称',width:130, halign:'center',
-                            formatter:function(value,row,index){
-                                return "<span title='" + value + "'>" + value + "</span>";
 
-                            }},
-                        {field:'proc_inst_task_assignee_name',title:'处理人',width:100, halign:'center'},
-                        {field:'proc_inst_task_complete_time',title:'处理时间',width:145, halign:'center',
-                            formatter:function(value,row,index){
-                                if(value!=null){
-                                    var isoDateStr = value;
-                                    var d2 = new Date(isoDateStr);
-                                    return new Date(d2).Format("yyyy-MM-dd hh:mm:ss");
-                                }else{
-                                    return '';
-                                }
-
-                            }},
-                        {field:'proc_inst_task_remark',title:'处理意见',width:350,
-                            halign:'center',
-                            formatter: function (value) {
-                                return "<span title='" + value + "'>" + value + "</span>";
-                            }}
-                    ]]
-                });
             },
             onLoadSuccess:function(json) {
                 if(!json.success) {
@@ -347,137 +141,5 @@
         });
 
     }
-    //判断当前节点是否是归档节点
-    function isEndNode(){
-        //判断是否是归档节点
-        $.ajax({
-            url: '{{projcfg.appurl}}/api/order_manage/order_list/procDefineDetail',
-            type: 'post',
-            dataType:'json',
-            data: {
-                proc_code:$("#proc_task_code").combobox('getValue'),
-                proc_inst_task_code:$("#node_code").val()
-            },
-            success: function (data) {
-                if(data.success){
-                    //归档节点
-                    if(data.data.flag=='3'){
-                        //是归档节点不需要下一节点处理人
-                        $("#tr_5").hide();
 
-                        endFlag=true;
-                        var data=[{ value: '1', text: '归档' },
-                            { value: '0', text: '拒绝'}];
-                        $("#handle") .combobox('loadData',data) ;
-                        $("#handle") .combobox('setValue','1') ;
-                    }else{
-                        //中间节点获取下一节点处理人
-                        getNextNodeUser();
-                        $("#tr_5").show();
-                        endFlag=false;
-                        var data=[{ value: '1', text: '通过' },   { value: '0', text: '拒绝'}];
-                        $("#handle") .combobox('loadData',data) ;
-                        $("#handle") .combobox('setValue','1') ;
-                    }
-                }else{
-                    $.messager.alert('错误提示',data.error);
-                }
-            }
-        });
-    }
-
-    /**
-     * 获取下一节点处理人
-     */
-    function getNextNodeUser(){
-        $.ajax({
-            url: '{{projcfg.appurl}}/api/order_manage/order_list/nextNodeUser',
-            type: 'post',
-            dataType:'json',
-            data: {
-                node_code:$("#node_code").val(),
-                proc_task_id:$("#proc_task_id").val(),
-                proc_inst_id:$("#proc_inst_id").val()
-            },
-            success: function (data) {
-                if(data.success){
-                    //初始化加载
-                    $("#nextJobHandler").combobox({
-                        method: 'get',
-                        valueField:'user_no',
-                        textField:'user_name',
-                        onSelect:function(record){
-                            //下一节点处理编码
-                            $("#next_code").val(record.node_code);
-
-                        }
-                    });
-                    $("#nextJobHandler").combobox("loadData",data.data);
-                }else{
-                    $.messager.alert('错误提示',data.error);
-                }
-            }
-        });
-
-
-    }
-
-
-    //提交任务
-    function submitTask(){
-
-        // 验证表单
-        var validate = $('#orderDetailForm').form('validate');
-        if(!validate) {
-            return false;
-        }
-        var nextNodeUser= $('#nextJobHandler').combobox('getValue');
-        if(!nextNodeUser && !endFlag){
-            $.messager.alert('提示','请选择下一节点处理人');
-            return false;
-
-        }
-
-        var formData=$('#orderDetailForm').serializeJson();
-        //归档
-        if(endFlag){
-            $.ajax({
-                url: '{{projcfg.appurl}}/api/order_manage/order_list/complete',
-                type: 'post',
-                dataType:'json',
-                data: formData,
-                success: function (data) {
-                    if(data.success){
-                        $('#orderDetail').dialog("close");
-                        $('#orderTablelist').datagrid('reload');
-                        $.messager.alert('提示','处理成功');
-                    }else{
-                        $.messager.alert('错误提示',data.error);
-                    }
-                }
-            });
-        }else{
-            //中间节点处理
-
-            //easyui textbox 设置为禁用 serializeJson 不能获取json
-            formData.proc_inst_task_title=$("#proc_inst_task_title").textbox('getValue');
-
-            $.ajax({
-                url: '{{projcfg.appurl}}/api/order_manage/order_list/assignTask',
-                type: 'post',
-                dataType:'json',
-                data: formData,
-                success: function (data) {
-                    if(data.success){
-                        $('#orderDetail').dialog("close");
-                        $('#orderTablelist').datagrid('reload');
-                        $.messager.alert('提示','处理成功');
-                    }else{
-                        $.messager.alert('错误提示',data.error);
-                    }
-                }
-            });
-        }
-
-    }
 </script>

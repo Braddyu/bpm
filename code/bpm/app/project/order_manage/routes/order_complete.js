@@ -57,6 +57,7 @@ router.route("/logs").post(function(req,res){
         utils.respMsg(res, false, '1000', '流程实例inst_id不能为空', null, null);
     }
     nodeTransferService.find_log(inst_id,user_no,page,rows).then(function(rs){
+
         utils.respJsonData(res,rs);
     });
 });

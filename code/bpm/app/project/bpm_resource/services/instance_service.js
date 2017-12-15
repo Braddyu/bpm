@@ -433,13 +433,14 @@ exports.createInstance=function(proc_code,proc_ver,proc_title,param_json_str,pro
                                                                     condition.proc_task_start_user_role_code = rs[0].proc_start_user_role_code;
                                                                     condition.proc_task_start_user_role_names = rs[0].proc_start_user_role_names;
                                                                     condition.proc_task_start_name = user_name;
-
                                                                     condition.proc_inst_task_title = proc_title;
                                                                     condition.proc_inst_biz_vars = biz_vars_json;
                                                                     condition.proc_vars = proc_vars_json;
                                                                     condition.proc_inst_task_title = proc_title;
                                                                     condition.proc_inst_biz_vars = biz_vars_json;
                                                                     condition.proc_vars = proc_vars_json;
+                                                                    condition.proc_code = rs[0].proc_code;
+                                                                    condition.proc_name = rs[0].proc_name;
                                                                      if(nodeDetail.next_detail)      {
                                                                          //创建流程任务
                                                                          insertTask(insresult,condition).then(function(taskresult){
@@ -587,6 +588,9 @@ function insertTask(result,condition){
             task.proc_task_start_name = condition.proc_start_user_name;//流程发起人姓名
             task.proc_task_start_user_role_names = condition.proc_start_user_role_names;//流程发起人角色
             task.proc_task_start_user_role_code = condition.proc_start_user_role_code;//流程发起人id
+            task.proc_code=condition.proc_code;
+            task.proc_name=condition.proc_name;
+            console.log("&&&&&&&&&&&&&&&&&&&&&&&&&&",condition);
 
             var arr=[];
             arr.push(task);

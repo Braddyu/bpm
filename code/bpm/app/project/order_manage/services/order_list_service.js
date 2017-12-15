@@ -1,5 +1,7 @@
 
 var model = require('../../bpm_resource/models/process_model');
+var dict_model = require('../../workflow/models/dict_model');
+
 var utils = require('../../../../lib/utils/app_utils');
 var logger = require('../../../../lib/logHelper').helper;
 /**
@@ -130,6 +132,109 @@ exports.getProcDefineDetail= function(proc_code,proc_inst_task_code) {
 
             }
         });
+
+    });
+
+    return p;
+};
+
+/**
+ * 获取流程的详细处理界面
+ * @param proc_code
+ * @returns {Promise}
+ */
+exports.getViewUrl= function(proc_code) {
+
+    var p = new Promise(function(resolve,reject){
+        //获取对应的字典
+        dict_model.$.find({"dict_code":"order_detail_view"},function(err,result){
+            if(err){
+                console.log('获取字典失败',err);
+                reject({'success':false,'code':'1000','msg':'获取字典失败',"error":err});
+            }else{
+                //只能是一个
+                 if(result.length==1){
+                     var res=result[0];
+                     var dictId=res._id;
+                     //查找对应的界面配置
+                     dict_model.$DictAttr.find({"dict_id":dictId},function(err,result){
+                         if(err){
+                             console.log('获取字典失败',err);
+                             reject({'success':false,'code':'1001','msg':'获取字典失败',"error":err});
+                         }else{
+                             //获取所以对应流程的详细处理界面的配置信息
+                             if(result.length>0){
+                                for(var i=0;i<result.length;i++){
+                                    var res=result[i];
+                                    if(res.field_name=proc_code){
+                                        resolve({'success':true,'code':'0000','msg':'获取流程详细信息成功',"data":res.field_value,"error":null});
+                                        break;
+                                    }
+                                }
+
+                             }else{
+                                 reject({'success':false,'code':'1002','msg':'获取字典失败'});
+
+                             }
+                         }
+                     })
+                 }else{
+                     reject({'success':false,'code':'1000','msg':'获取字典失败'});
+
+                 }
+            }
+        })
+
+
+
+    });
+
+    return p;
+};
+/**
+ * 获取订单的详细信息
+ * @param inst_id
+ * @returns {Promise}
+ */
+exports.orderDetail= function(change_id,status) {
+
+    var p = new Promise(function(resolve,reject){
+        //待办查询任务表，其它的查询实例表
+        if(status==2){
+            //获取对应的任务详情
+            model.$ProcessInstTask.find({"_id":change_id},function(err,result){
+                if(err){
+                    console.log('获取任务信息失败',err);
+                    reject({'success':false,'code':'1000','msg':'获取任务信息失败',"error":err});
+                }else{
+                    if(result.length==1){
+                        resolve({'success':true,'code':'0000','msg':'获取任务信息成功',"data":result[0],"error":null});
+                    }else{
+                        reject({'success':false,'code':'1000','msg':'获取任务信息失败'});
+
+                    }
+                }
+            })
+        }else{
+            //获取对应的工单详情
+            model.$ProcessInst.find({"_id":change_id},function(err,result){
+                if(err){
+                    console.log('获取工单信息失败',err);
+                    reject({'success':false,'code':'1000','msg':'获取工单信息失败',"error":err});
+                }else{
+                    if(result.length==1){
+                        resolve({'success':true,'code':'0000','msg':'获取工单信息成功',"data":result[0],"error":null});
+                    }else{
+                        reject({'success':false,'code':'1000','msg':'获取工单信息失败'});
+
+                    }
+                }
+            })
+        }
+
+
+
+
 
     });
 
