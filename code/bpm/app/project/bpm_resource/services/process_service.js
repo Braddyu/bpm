@@ -712,7 +712,7 @@ exports.sendSalesDataToAthena=function(condition){
                 console.log(err);
                 resolve({'success':false, 'code':1001, 'msg':"没有查询到数据 请检查参数是否正确" ,"data":null,"error":err});
             }else{
-                resolve(utils.returnMsg(true, '0000', '查询到流程实例数据正常。', res, null));
+                resolve(utils.returnMsg(true, '0000', '(传入参数)查询用户数据正常。', res, null));
             }
         });
     });
@@ -743,7 +743,7 @@ exports.sendSalesDataToAthena_other=function(condition){
                                 return_data.users=res;
                                 return_data.orgs=ress;
                                 return_data.roles=result;
-                                resolve(utils.returnMsg(true, '0000', '查询到流程实例数据正常。', return_data, null));
+                                resolve(utils.returnMsg(true, '0000', '(没传参数)查询所有的用户数据正常。', return_data, null));
                             }
                         });
                     }

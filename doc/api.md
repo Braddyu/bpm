@@ -125,14 +125,14 @@ HOST: http://192.168.9.66:30002/gdgl/api
     + Body
 
             {
-                role_type:sales(限定为 sales(营业员),hall_manager(厅经理) ,grid_manager(网格经理)),如果不传任何参数则分别返回用户 机构 角色 所有信息)
+                role_type:sales(限定为 sales(营业员),hall_manager(厅经理) ,grid_manager(网格经理)),如果不传任何参数则分别返回用户 机构 角色 所有信息,格式为json)
             }
 
-+ Response 200
++ Response 200  
   {
     "success": true,
-    "code": "1000",
-    "msg": "查询到流程实例数据正常",
+    "code": "0000",
+    "msg": "(传入参数)查询用户数据正常",
     "data": {[
             {
       "_id": "5a264379a66ed11cf4553c86",
@@ -171,7 +171,56 @@ HOST: http://192.168.9.66:30002/gdgl/api
 	]
     }
 }
-
++ Response 200 
+{
+  "success": true,
+  "code": "0000",
+  "msg": "(没传参数)查询所有的用户数据正常。",
+  "data": {
+    "users": [
+      {
+        "_id": "5a263f76afa2c122149b813f",
+        "login_account": "gongguimin@gz.cmcc",
+        "user_status": 1,
+        "user_id": "CN=龚贵民/OU=市场经营部/OU=黔东南分公司/O=gzcmcc",
+        "user_no": "13908559010",
+        "user_name": "龚贵民",
+        "user_gender": "1",
+        "user_phone": "13908559010",
+        "user_tel": "13908559010",
+        "user_email": "gongguimin@gz.cmcc.com",
+        "login_password": "8d1adbce017a77bb297f1c4bf54732e9",
+        "user_sys": "56f20ec0c2b4db9c2a7dfe7a",
+        "user_org_desc": "CN=经理室/O=天柱公司",
+        "theme_name": "themes/beyond/",
+        "theme_skin": "deepblue",
+        "user_photo": "1",
+        "boss_id": "",
+        "smart_visual_sys_user_id": "",
+        "athena_sys_user_id": "",
+        "athena_app_sys_user_id": "",
+        "inspect_sys_user_id": "",
+        "token": "",
+        "special_sign": "",
+        "__v": 0,
+        "user_duties": [
+          null
+        ],
+        "sys_roles": [
+          [
+            "591e5f1b583f4615c4271570",
+            "595857482170d500108236f9"
+          ]
+        ],
+        "user_roles": [
+          null
+        ],
+        "user_org": [
+          "5a275c0377ec2e1e844878db"
+        ]
+      }
+    }
+}
 
 # Group 流程实例 -修改
 流程实例管理相关接口
