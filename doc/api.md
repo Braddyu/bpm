@@ -125,7 +125,7 @@ HOST: http://192.168.9.66:30002/gdgl/api
     + Body
 
             {
-                role_type:sales
+                role_type:sales(限定为 sales(营业员),hall_manager(厅经理) ,grid_manager(网格经理)),如果不传任何参数则分别返回用户 机构 角色 所有信息)
             }
 
 + Response 200
@@ -133,8 +133,42 @@ HOST: http://192.168.9.66:30002/gdgl/api
     "success": true,
     "code": "1000",
     "msg": "查询到流程实例数据正常",
-    "data": {
-        (返回的数据格式为JSON)
+    "data": {[
+            {
+      "_id": "5a264379a66ed11cf4553c86",
+      "login_account": "13984126789",
+      "user_status": 1,
+      "user_id": "1",
+      "user_no": "13984126789",
+      "user_name": "梁峻珲",
+      "user_gender": "",
+      "user_phone": "13984126789",
+      "user_tel": " 13984126789",
+      "user_email": "",
+      "login_password": "e10adc3949ba59abbe56e057f20f883e",
+      "user_sys": "56f20ec0c2b4db9c2a7dfe7a",
+      "user_org_desc": "10000000",
+      "theme_name": "themes/beyond/",
+      "theme_skin": "deepblue",
+      "user_photo": "",
+      "boss_id": "",
+      "smart_visual_sys_user_id": "",
+      "athena_sys_user_id": "",
+      "athena_app_sys_user_id": "",
+      "inspect_sys_user_id": "",
+      "token": "",
+      "special_sign": "",
+      "__v": 0,
+      "sys_roles": [],
+      "user_roles": [
+        "5a26418c5eb3fe1068448753",
+        "5a26418c5eb3fe1068448753"
+      ],
+      "user_org": [
+        "5a2760eaa93224084c86e209"
+      ]
+    }
+	]
     }
 }
 

@@ -88,13 +88,47 @@
     <span class="hljs-string">"isEnd"</span>: <span class="hljs-literal">true</span>（是否存在归档节点）
 }
 }</code></pre><div style="height: 1px;"></div></div></div></div></div><div id="流程管理-获取当前节点信息-1" class="resource"><h3 class="resource-heading">获取当前节点信息 <a href="#流程管理-获取当前节点信息-1" class="permalink">&nbsp;&para;</a></h3><div id="流程管理-获取当前节点信息-post-1" class="action post"><h4 class="action-heading"><div class="name">各系统通用的用户数据同步接口</div><a href="#流程管理-获取当前节点信息-post-1" class="method post">POST</a><code class="uri">/process/data/info</code></h4><h4>Example URI</h4><div class="definition"><span class="method post">POST</span>&nbsp;<span class="uri"><span class="hostname">http://192.168.9.66:30002/gdgl/api</span>/process/data/info</span></div><div class="title"><strong>Request</strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Body</h5><pre><code>{
-    role_type:sales
+    role_type:sales(限定为 sales(营业员),hall_manager(厅经理) ,grid_manager(网格经理)),如果不传任何参数则分别返回用户 机构 角色 所有信息)
 }</code></pre><div style="height: 1px;"></div></div></div><div class="title"><strong>Response&nbsp;&nbsp;<code>200</code></strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Body</h5><pre><code>{
 <span class="hljs-string">"success"</span>: <span class="hljs-literal">true</span>,
 <span class="hljs-string">"code"</span>: <span class="hljs-string">"1000"</span>,
 <span class="hljs-string">"msg"</span>: <span class="hljs-string">"查询到流程实例数据正常"</span>,
-<span class="hljs-string">"data"</span>: {
-    (返回的数据格式为<span class="hljs-built_in">JSON</span>)
+<span class="hljs-string">"data"</span>: {[
+        {
+  <span class="hljs-string">"_id"</span>: <span class="hljs-string">"5a264379a66ed11cf4553c86"</span>,
+  <span class="hljs-string">"login_account"</span>: <span class="hljs-string">"13984126789"</span>,
+  <span class="hljs-string">"user_status"</span>: <span class="hljs-number">1</span>,
+  <span class="hljs-string">"user_id"</span>: <span class="hljs-string">"1"</span>,
+  <span class="hljs-string">"user_no"</span>: <span class="hljs-string">"13984126789"</span>,
+  <span class="hljs-string">"user_name"</span>: <span class="hljs-string">"梁峻珲"</span>,
+  <span class="hljs-string">"user_gender"</span>: <span class="hljs-string">""</span>,
+  <span class="hljs-string">"user_phone"</span>: <span class="hljs-string">"13984126789"</span>,
+  <span class="hljs-string">"user_tel"</span>: <span class="hljs-string">" 13984126789"</span>,
+  <span class="hljs-string">"user_email"</span>: <span class="hljs-string">""</span>,
+  <span class="hljs-string">"login_password"</span>: <span class="hljs-string">"e10adc3949ba59abbe56e057f20f883e"</span>,
+  <span class="hljs-string">"user_sys"</span>: <span class="hljs-string">"56f20ec0c2b4db9c2a7dfe7a"</span>,
+  <span class="hljs-string">"user_org_desc"</span>: <span class="hljs-string">"10000000"</span>,
+  <span class="hljs-string">"theme_name"</span>: <span class="hljs-string">"themes/beyond/"</span>,
+  <span class="hljs-string">"theme_skin"</span>: <span class="hljs-string">"deepblue"</span>,
+  <span class="hljs-string">"user_photo"</span>: <span class="hljs-string">""</span>,
+  <span class="hljs-string">"boss_id"</span>: <span class="hljs-string">""</span>,
+  <span class="hljs-string">"smart_visual_sys_user_id"</span>: <span class="hljs-string">""</span>,
+  <span class="hljs-string">"athena_sys_user_id"</span>: <span class="hljs-string">""</span>,
+  <span class="hljs-string">"athena_app_sys_user_id"</span>: <span class="hljs-string">""</span>,
+  <span class="hljs-string">"inspect_sys_user_id"</span>: <span class="hljs-string">""</span>,
+  <span class="hljs-string">"token"</span>: <span class="hljs-string">""</span>,
+  <span class="hljs-string">"special_sign"</span>: <span class="hljs-string">""</span>,
+  <span class="hljs-string">"__v"</span>: <span class="hljs-number">0</span>,
+  <span class="hljs-string">"sys_roles"</span>: [],
+  <span class="hljs-string">"user_roles"</span>: [
+    <span class="hljs-string">"5a26418c5eb3fe1068448753"</span>,
+    <span class="hljs-string">"5a26418c5eb3fe1068448753"</span>
+  ],
+  <span class="hljs-string">"user_org"</span>: [
+    <span class="hljs-string">"5a2760eaa93224084c86e209"</span>
+  ]
+}
+]
 }
 }</code></pre><div style="height: 1px;"></div></div></div></div></div></section><section id="流程实例-修改" class="resource-group"><h2 class="group-heading">流程实例 -修改 <a href="#流程实例-修改" class="permalink">&para;</a></h2><p>流程实例管理相关接口</p>
 <div id="流程实例-修改-流程实例" class="resource"><h3 class="resource-heading">流程实例 <a href="#流程实例-修改-流程实例" class="permalink">&nbsp;&para;</a></h3><p>定义实例管理对象操作API</p>
