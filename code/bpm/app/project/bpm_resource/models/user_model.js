@@ -25,13 +25,13 @@ var userSchema = new Schema(
             user_tel : String,// 用户联系电话
             user_email : String,// 用户邮箱
             login_password : String,// 登录密码
-            user_org : [],// 所在部门
+            user_org :  [{type: Schema.Types.ObjectId}],// 所在部门
             user_sys : String,// 所属系统
             user_org_desc:String,//所属系统的 描述
             theme_name : String,// 使用主题
             theme_skin : String,// 使用皮肤
             user_photo : String,// 用户头像/照片
-            user_roles : [],// 菜单访问权限使用角色
+            user_roles :  [{type: Schema.Types.ObjectId}],// 菜单访问权限使用角色
             sys_roles:[],//流程使用的角色
             boss_id:String,//对接外部系统专用的 Boss_id
             smart_visual_sys_user_id:String,//慧眼系统的 User_id
