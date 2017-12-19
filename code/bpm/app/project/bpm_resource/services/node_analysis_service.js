@@ -1471,11 +1471,11 @@ function findInfo(next_node, resolve, next_detail, proc_inst_id) {
         console.log("next_detail   ;", next_detail)
         var item_assignee_user = next_detail.item_assignee_user;
         var item_assignee_user_code = next_detail.item_assignee_user_code;
-       // var item_assignee_role = next_detail.item_assignee_role;
-        var item_assignee_roles = next_detail.item_assignee_role;
-        var role = model_user.$Role({_id: item_assignee_roles});
-        var item_assignee_role =[];
-        item_assignee_role.push(role._id);
+        var item_assignee_role = next_detail.item_assignee_role;
+       //  var item_assignee_roles = next_detail.item_assignee_role;
+       //  var role = model_user.$Role({_id: item_assignee_roles});
+       //  var item_assignee_role =[];
+       //  item_assignee_role.push(role._id);
         var item_assignee_org_ids = next_detail.item_assignee_org_ids;
         var node_code = next_detail.item_code
         var node_name = next_node.name
@@ -2336,10 +2336,7 @@ function findNodeInfo(next_node, next_detail,user_no) {
             console.log("next_detail   ;", next_detail)
             var item_assignee_user = next_detail.item_assignee_user;
             var item_assignee_user_code = next_detail.item_assignee_user_code;
-            var item_assignee_roles = next_detail.item_assignee_role;
-            var role = model_user.$Role({_id: item_assignee_roles});
-            var item_assignee_role =[];
-            item_assignee_role.push(role._id);
+            var item_assignee_role = next_detail.item_assignee_role;
             var item_assignee_org_ids = next_detail.item_assignee_org_ids;
             var node_code = next_detail.item_code
             var node_name = next_node.name
