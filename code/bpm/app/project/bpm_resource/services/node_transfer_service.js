@@ -1350,7 +1350,7 @@ exports.assign_transfer=function(proc_task_id,node_code,user_code,assign_user_co
                                var prev_user = res[0].proc_cur_user;
                                var proc_define = JSON.parse(res[0].proc_define);
                                var item_config = JSON.parse(res[0].item_config);
-                               console.log("item_config",item_config);
+                               console.log("item_config111",item_config);
                                var nodes = proc_define.nodes
                                var next_node = nodes[node_code];
                                var current_node=nodes[prev_node];
@@ -1381,8 +1381,16 @@ exports.assign_transfer=function(proc_task_id,node_code,user_code,assign_user_co
                                    resolve(utils.returnMsg(false, '1010', '节点信息异常', null));
                                    return;
                                }
-                               var proc_inst_node_vars = next_detail.item_node_var;
-                               // var proc_inst_node_vars = current_detail.item_node_var;
+                               console.log(next_detail,'next_detailnext_detailaaaa');
+                               //var proc_inst_node_vars = next_detail.item_node_var;
+                               if(res[0].proc_code=='p-108'){
+                                   //针对稽核系统
+                                   var proc_inst_node_vars = item_config[2].item_node_var;
+                               }else{
+                                   var proc_inst_node_vars = next_detail.item_node_var;
+                               }
+                                //var proc_inst_node_vars = current_detail.item_node_var;
+                                console.log(proc_inst_node_vars,'proc_inst_node_varsproc_inst_node_vars11');
                                var proc_cur_user;
                                if (current_detail.item_assignee_type == 1) {
                                    proc_cur_user = current_detail.item_assignee_user;
@@ -1737,6 +1745,7 @@ exports.do_payout=function(proc_task_id,node_code,user_code,assign_user_code,pro
                                 console.log("next_detail       ",next_detail,node_code,"\n",next_node);
                                 // var proc_cur_task = current_detail.item_code;
                                 // var proc_cur_task_name = current_node.name;
+                                console.log(next_detail,'next_detailnext_detailssss');
                                 var proc_inst_node_vars = next_detail.item_node_var;
                                 //是否短信通知
                                 var item_sm_warn=next_detail.item_sms_warn;
