@@ -122,6 +122,7 @@ var commonProcessInstSchema = new Schema(
         proc_name : { type: String,  required: true ,index: true },// 流程名
         proc_ver : Number,// 流程版本号
         catalog:Number,//流程类别
+        work_order_number:String,//工单编号
         proce_reject_params : String,//是否驳回
         proc_instance_code:String,//实例编码
         proc_title :  { type: String,  required: true ,index: true },//流程标题

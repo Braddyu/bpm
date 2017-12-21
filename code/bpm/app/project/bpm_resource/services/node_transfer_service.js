@@ -1076,14 +1076,14 @@ function normal_process(current_detail,next_detail, next_node, proc_inst_id, res
                                                         if (params && 'undefined' != params.flag && !params.flag) {
                                                             let step_first = await  model.$ProcessInstTask.find({
                                                                 'proc_inst_id': r[0].proc_inst_id,
-                                                                'proc_inst_task_code': r[0].proc_inst_prev_node_code
+                                                                'proc_inst_task_code': proc_cur_task
 
                                                             });
                                                             condition_task.proc_inst_id = step_first[0].proc_inst_id;
                                                             condition_task.proc_inst_task_assignee = step_first[0].proc_inst_task_assignee;
                                                             condition_task.proc_inst_task_assignee_name = step_first[0].proc_inst_task_assignee_name;
-                                                            condition_task.proc_inst_task_user_role = step_first[0].proc_inst_task_user_role;
-                                                            condition_task.proc_inst_task_user_role_name = step_first[0].proc_inst_task_user_role_name;
+                                                            condition_task.proc_inst_task_user_role = next_detail.item_assignee_role;
+                                                            condition_task.proc_inst_task_user_role_name = next_detail.item_assignee_role_name;
                                                             condition_task.proc_inst_task_params = proc_inst_task_params;// : String,// 流程参数(任务参数)
                                                             condition_task.proc_inst_node_vars = proc_inst_node_vars;// 流程节点变量
                                                             condition_task.proc_inst_biz_vars = biz_vars;// : String,// 业务实例变量
