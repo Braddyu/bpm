@@ -109,7 +109,7 @@ function outDate(){
                             //超时的方法
 
                         }else{
-                            console.log("我操 未超时");
+                           //正常执行
                         }
                     }
                 }

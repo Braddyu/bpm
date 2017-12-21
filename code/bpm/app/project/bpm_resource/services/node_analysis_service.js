@@ -1095,6 +1095,7 @@ exports.findNextHandler=function(user_code,proc_define_id,node_code,params,proc_
 
 
                                     } else if (item_assignee_ref_cur_org == 2) {
+                                        var item_assignee_role;
                                         //上级
                                         var query = model_user.$User.find({});
                                         query.where("user_no", user_code);
@@ -1105,6 +1106,7 @@ exports.findNextHandler=function(user_code,proc_define_id,node_code,params,proc_
                                             } else {
 
                                                     user_org_id = rs[0].user_org;
+                                                    item_assignee_role=rs[0].user_roles;
 
                                             }
                                         }).then(function () {
