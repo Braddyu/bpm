@@ -1514,6 +1514,7 @@ exports.assign_transfer=function(proc_task_id,node_code,user_code,assign_user_co
                                                                                        condition_task.proc_inst_prev_node_code = prev_node;
                                                                                        condition_task.proc_inst_prev_node_handler_user = prev_user;
                                                                                        condition_task.proc_inst_node_vars = proc_inst_node_vars;
+                                                                                       console.log(proc_vars);
                                                                                        if(proc_vars){
                                                                                            condition_task.proc_vars=proc_vars;
                                                                                        }
@@ -1544,7 +1545,8 @@ exports.assign_transfer=function(proc_task_id,node_code,user_code,assign_user_co
                                                                                                // resolve('新增流程实例信息时出现异常。'+error);
                                                                                                resolve(utils.returnMsg(false, '1000', '流程流转新增任务信息时出现异常7。', null, error));
                                                                                            } else {
-                                                                                               //如果是发短信,目前库的user_no即电话号码，所以直接使用user_no
+                                                                                               //如果是
+                                                                                               // 发短信,目前库的user_no即电话号码，所以直接使用user_no
                                                                                                if(condition_task.proc_inst_task_assignee && condition_task.proc_inst_task_sms=='1' ){
                                                                                                    var process_utils = require('../../../utils/process_util');
                                                                                                    var mobile=condition_task.proc_inst_task_assignee;
@@ -1909,10 +1911,12 @@ exports.do_payout=function(proc_task_id,node_code,user_code,assign_user_code,pro
                                                                                     condition_task.proc_task_start_user_role_code = role_code;//流程发起人id
                                                                                     condition_task.proc_task_start_name = name;//流程发起人角色
                                                                                     condition_task.proc_task_work_day = days;//天数
-                                                                                    condition_task.proc_task_name = proc_name;//流程名
+                                                                                 //   condition_task.proc_task_name = proc_name;//流程名
+                                                                                    condition_task.proc_name=proc_name;
                                                                                     condition_task.proc_task_ver = ver;//版本号
                                                                                     condition_task.proc_task_content = content;//工单内容
-                                                                                    condition_task.proc_task_code = proc_task_code;//流程编码
+                                                                                    //condition_task.proc_task_code = proc_task_code;//流程编码
+                                                                                    condition_task.proc_code=proc_task_code;
                                                                                     condition_task.proc_start_time = start_time;//流程开始时间
 
                                                                                     // var arr = [];
