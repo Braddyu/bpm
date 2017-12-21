@@ -117,6 +117,111 @@ HOST: http://192.168.9.66:30002/gdgl/api
     }
 }
 
+## 获取当前节点信息 [/process/data/info]
+
+### 各系统通用的用户数据同步接口 [POST]
+
++ Request
+    + Body
+
+            {
+                role_type:sales(限定为 sales(营业员),hall_manager(厅经理) ,grid_manager(网格经理)),如果不传任何参数则分别返回用户 机构 角色 所有信息,格式为json)
+            }
+
++ Response 200  
+  {
+    "success": true,
+    "code": "0000",
+    "msg": "(传入参数)查询用户数据正常",
+    "data": {[
+            {
+      "_id": "5a264379a66ed11cf4553c86",
+      "login_account": "13984126789",
+      "user_status": 1,
+      "user_id": "1",
+      "user_no": "13984126789",
+      "user_name": "梁峻珲",
+      "user_gender": "",
+      "user_phone": "13984126789",
+      "user_tel": " 13984126789",
+      "user_email": "",
+      "login_password": "e10adc3949ba59abbe56e057f20f883e",
+      "user_sys": "56f20ec0c2b4db9c2a7dfe7a",
+      "user_org_desc": "10000000",
+      "theme_name": "themes/beyond/",
+      "theme_skin": "deepblue",
+      "user_photo": "",
+      "boss_id": "",
+      "smart_visual_sys_user_id": "",
+      "athena_sys_user_id": "",
+      "athena_app_sys_user_id": "",
+      "inspect_sys_user_id": "",
+      "token": "",
+      "special_sign": "",
+      "__v": 0,
+      "sys_roles": [],
+      "user_roles": [
+        "5a26418c5eb3fe1068448753",
+        "5a26418c5eb3fe1068448753"
+      ],
+      "user_org": [
+        "5a2760eaa93224084c86e209"
+      ]
+    }
+	]
+    }
+}
++ Response 200 
+{
+  "success": true,
+  "code": "0000",
+  "msg": "(没传参数)查询所有的用户数据正常。",
+  "data": {
+    "users": [
+      {
+        "_id": "5a263f76afa2c122149b813f",
+        "login_account": "gongguimin@gz.cmcc",
+        "user_status": 1,
+        "user_id": "CN=龚贵民/OU=市场经营部/OU=黔东南分公司/O=gzcmcc",
+        "user_no": "13908559010",
+        "user_name": "龚贵民",
+        "user_gender": "1",
+        "user_phone": "13908559010",
+        "user_tel": "13908559010",
+        "user_email": "gongguimin@gz.cmcc.com",
+        "login_password": "8d1adbce017a77bb297f1c4bf54732e9",
+        "user_sys": "56f20ec0c2b4db9c2a7dfe7a",
+        "user_org_desc": "CN=经理室/O=天柱公司",
+        "theme_name": "themes/beyond/",
+        "theme_skin": "deepblue",
+        "user_photo": "1",
+        "boss_id": "",
+        "smart_visual_sys_user_id": "",
+        "athena_sys_user_id": "",
+        "athena_app_sys_user_id": "",
+        "inspect_sys_user_id": "",
+        "token": "",
+        "special_sign": "",
+        "__v": 0,
+        "user_duties": [
+          null
+        ],
+        "sys_roles": [
+          [
+            "591e5f1b583f4615c4271570",
+            "595857482170d500108236f9"
+          ]
+        ],
+        "user_roles": [
+          null
+        ],
+        "user_org": [
+          "5a275c0377ec2e1e844878db"
+        ]
+      }
+    }
+}
+
 # Group 流程实例 -修改
 流程实例管理相关接口
 
@@ -461,6 +566,7 @@ HOST: http://192.168.9.66:30002/gdgl/api
 			  "memo": "处理内容",
 			  "proc_vars": "",(json字符串格式-流程实例从开始到归档都不需要变动的工单参数)
 			  "biz_vars":""(json字符串格式-业务工单需要的参数)
+			  "params":{"flag":false}(flag为线上的参数，线上有就必须传没有可以传"")
             }
     
 + Response 200

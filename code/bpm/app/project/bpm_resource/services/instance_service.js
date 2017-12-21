@@ -177,6 +177,7 @@ function insertSubTask(result,condition,node_detail){
         nodeAnalysisService.findParams(result.data,condition.proc_cur_task).then(function(result_t){
             var proc_inst_task_params=result_t.data
             var task={};
+            task.work_order_number = condition.work_order_number;//工单编号
             task.proc_inst_id=result.data;// : {type: Schema.Types.ObjectId, ref: 'CommonCoreProcessInst'}, // 流程流转当前信息ID
             task.proc_inst_task_code=condition.proc_cur_task;// : String,// 流程当前节点编码(流程任务编号)
             task.proc_inst_task_name=condition.proc_cur_task_name;// : String,// 流程当前节点名称(任务名称)
@@ -243,7 +244,12 @@ function saveSubIns(dataMap,data,user_code,parent_proc_inst_id){
             inst.proce_reject_params="";//是否驳回
             inst.proc_instance_code="";//实例编码
             inst.proc_title=data.proc_title;//流程标题
-
+            var myDate = new Date();
+            var year = myDate.getFullYear();
+            var month = myDate.getMonth()+1;
+            var day = myDate.getDate();
+            var randomNumber = parseInt(((Math.random()*9+1)*100000));
+            inst.work_order_number="GDBH"+year+month+day+randomNumber;//工单编码
             inst.proc_cur_task=dataMap.proc_cur_task;// 流程当前节点编码
 
             inst.proc_cur_task_name=dataMap.proc_cur_task_name;// 流程当前节点名称
@@ -312,24 +318,24 @@ function saveSubIns(dataMap,data,user_code,parent_proc_inst_id){
 
 
 exports.createInstance=function(proc_code,proc_ver,proc_title,param_json_str,proc_vars_json,biz_vars_json,user_code,user_name){
-    var params;
-    //解析参数
-    if(!(!param_json_str || param_json_str=="undefined"||param_json_str=="{}")){
-        var params_json=JSON.parse(param_json_str);
-        // console.log(params_json)
-        var flag=true;
-        for(var items_ in params_json){
-            flag=false;
-        }
-        if(flag){
-            reject(utils.returnMsg(false, '1001', '参数解析不正确。', null, null));
-        }else{
-            params=params_json;
-        }
-    }else{
-        params={};
-    }
     var promise = new Promise(function(resolve,reject){
+        var params;
+        //解析参数
+        if(!(!param_json_str || param_json_str=="undefined"||param_json_str=="{}")){
+            var params_json=JSON.parse(param_json_str);
+            // console.log(params_json)
+            var flag=true;
+            for(var items_ in params_json){
+                flag=false;
+            }
+            if(flag){
+                reject(utils.returnMsg(false, '1001', '参数解析不正确。', null, null));
+            }else{
+                params=params_json;
+            }
+        }else{
+            params={};
+        }
        //user_org_name   user_org
         var conditionMap = {};
         if(proc_code){
@@ -382,6 +388,7 @@ exports.createInstance=function(proc_code,proc_ver,proc_title,param_json_str,pro
                                                     condition.proc_start_user_name =user_name;
 
                                                     var node_detail=rss.data;
+                                                    console.log(rss,'node_detailnode_detail')
                                                     var orgs=rsss.data;
                                                     nodeDetail=node_detail;
                                                     console.log(nodeDetail,'nodeDetailnodeDetail');
@@ -429,22 +436,27 @@ exports.createInstance=function(proc_code,proc_ver,proc_title,param_json_str,pro
                                                                     console.log(err);
                                                                 }else{
                                                                     console.log(rs);
+                                                                    condition.work_order_number = rs[0].work_order_number;
                                                                     condition.proc_task_start_user_role_code = rs[0].proc_start_user_role_code;
                                                                     condition.proc_task_start_user_role_names = rs[0].proc_start_user_role_names;
                                                                     condition.proc_task_start_name = user_name;
-
                                                                     condition.proc_inst_task_title = proc_title;
                                                                     condition.proc_inst_biz_vars = biz_vars_json;
                                                                     condition.proc_vars = proc_vars_json;
                                                                     condition.proc_inst_task_title = proc_title;
                                                                     condition.proc_inst_biz_vars = biz_vars_json;
                                                                     condition.proc_vars = proc_vars_json;
+                                                                    condition.proc_code = rs[0].proc_code;
+                                                                    condition.proc_name = rs[0].proc_name;
+                                                                     if(nodeDetail.next_detail)      {
+                                                                         //创建流程任务
+                                                                         insertTask(insresult,condition).then(function(taskresult){
+                                                                             resolve(taskresult);
+                                                                         });
+                                                                     }  else{
+                                                                         resolve(utils.returnMsg(false, '1000', '创建失败，无法找到下一节点',null));
 
-
-                                                                    //创建流程任务
-                                                                    insertTask(insresult,condition).then(function(taskresult){
-                                                                        resolve(taskresult);
-                                                                    });
+                                                                     }
                                                                 }
                                                             });
                                                         }else{
@@ -529,14 +541,15 @@ function find(role_code){
 function insertTask(result,condition){
     var proc_inst_task_assignee,proc_inst_task_assignee_name,proc_inst_task_sign;
     var proc_inst_task_user_role,proc_inst_task_user_role_name
-    if(nodeDetail.next_detail.item_assignee_type==1){
+
+    if(  nodeDetail.next_detail.item_assignee_type==1){
         proc_inst_task_assignee=nodeDetail.next_detail.item_assignee_user_code;
         proc_inst_task_assignee_name=nodeDetail.next_detail.item_show_text;
         proc_inst_task_user_role ="";
         proc_inst_task_user_role_name="";
         proc_inst_task_sign=1;// : Number,// 流程签收(0-未认领，1-已认领)
     }
-    if(nodeDetail.next_detail.item_assignee_type==2||nodeDetail.next_detail.item_assignee_type==3){
+    if( nodeDetail.next_detail.item_assignee_type==2||nodeDetail.next_detail.item_assignee_type==3){
         proc_inst_task_assignee="";
         proc_inst_task_assignee_name="";
         proc_inst_task_user_role =nodeDetail.next_detail.item_assignee_role;
@@ -556,6 +569,7 @@ function insertTask(result,condition){
         var task={};
         nodeAnalysisService.findParams(result.data,condition.proc_cur_task).then(function(result_t){
             var proc_inst_task_params=result_t.data;
+            task.work_order_number=condition.work_order_number//工单编号
             task.proc_inst_id=result.data;// : {type: Schema.Types.ObjectId, ref: 'CommonCoreProcessInst'}, // 流程流转当前信息ID
             task.proc_inst_task_code=condition.proc_cur_task;// : String,// 流程当前节点编码(流程任务编号)
             task.proc_inst_task_name=condition.proc_cur_task_name;// : String,// 流程当前节点名称(任务名称)
@@ -582,6 +596,9 @@ function insertTask(result,condition){
             task.proc_task_start_name = condition.proc_start_user_name;//流程发起人姓名
             task.proc_task_start_user_role_names = condition.proc_start_user_role_names;//流程发起人角色
             task.proc_task_start_user_role_code = condition.proc_start_user_role_code;//流程发起人id
+            task.proc_code=condition.proc_code;
+            task.proc_name=condition.proc_name;
+            console.log("&&&&&&&&&&&&&&&&&&&&&&&&&&",condition);
 
             var arr=[];
             arr.push(task);
@@ -637,7 +654,12 @@ function saveIns(dataMap,proc_code,proc_title,user_code){
             inst.proce_reject_params="";//是否驳回
             inst.proc_instance_code="";//实例编码
             inst.proc_title=proc_title;//流程标题
-
+            var myDate = new Date();
+            var year = myDate.getFullYear();
+            var month = myDate.getMonth()+1;
+            var day = myDate.getDate();
+            var randomNumber = parseInt(((Math.random()*9+1)*100000));
+            inst.work_order_number="GDBH"+year+month+day+randomNumber;//工单编号
             inst.proc_cur_task=dataMap.proc_cur_task;// 流程当前节点编码
 
             inst.proc_cur_task_name=dataMap.proc_cur_task_name;// 流程当前节点名称
@@ -1393,6 +1415,7 @@ function setInstStatus(task,cb){
 //回退时创建上一节点处理人的任务数据
 function createTask(prevtask,cb,curtask){
     var task = {};
+    task.work_order_number=prevtask.work_order_number;//工单编号
     task.proc_inst_id=prevtask.proc_inst_id;// : {type: Schema.Types.ObjectId, ref: 'CommonCoreProcessInst'}, // 流程流转当前信息ID
     task.proc_inst_task_code=prevtask.proc_inst_task_code;// : String,// 流程当前节点编码(流程任务编号)
     task.proc_inst_task_name=prevtask.proc_inst_task_name;// : String,// 流程当前节点名称(任务名称)

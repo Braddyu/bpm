@@ -229,13 +229,12 @@
 
                 var g = $('#roleId').combogrid('grid');	// get datagrid object
                 var r = g.datagrid('getChecked');
-                console.log("======",r);
-                if(n.length == 0){
-                    $.messager.alert('提示','请至少选择一个组织机构','error');
-                    return false;
-                }
-                if(!r || r.length == 0){
-                    $.messager.alert('提示','请至少选择一个参与职务','error');
+//                if(n.length == 0){
+//                    $.messager.alert('提示','请至少选择一个组织机构','error');
+//                    return false;
+//                }
+                if(n.length == 0 && (!r || r.length == 0)){
+                    $.messager.alert('提示','请至少选择一个组织机构或者参与职务','error');
                     return false;
                 }
                 var ids = [];
@@ -256,8 +255,16 @@
                     tags.push(n.role_tag);
                     levels.push(n.role_level);
                 });
+                var areavalue = '';
+                if(n.length == 0){
+                    areavalue = "职务："+names.join(",")+";";
+                }else if(!r || r.length == 0){
+                    areavalue = "组织："+orgnames.join(",")+";";
+                }else{
+                    areavalue = "组织："+orgnames.join(",")+";\n\n职务："+names.join(",")+";";
+                }
                 $('#p2_task_val').val(ids.join(","));
-                $('#p2_textArea').textbox('setValue',"组织："+orgnames.join(",")+";\n\n职务："+names.join(",")+";");
+                $('#p2_textArea').textbox('setValue',areavalue);
                 $('#p2_task_code').val(codes.join(","));
                 $('#p2_task_tag').val(tags.join(","));
                 $('#p2_task_level').val(levels.join(","));
@@ -464,7 +471,7 @@
                        $('#orgId').combotree("tree").tree("options").url =  '{{projcfg.appurl}}/api/workflow/process/orgTreeDataAsyn?org_pid=' + node.id;
                     },
                     editable:false,
-                    required:true,
+//                    required:true,
                     multiple : true,
                     cascadeCheck : false
                 });
@@ -480,8 +487,8 @@
                         {field:'role_tag',title:'角色标志',width:100,formatter:function(value,row,index){if(value==1){return '内部'}else{return '外部'}}},
                         {field:'role_level',title:'角色级别',width:100,formatter:function(value,row,index){if(value==1){return '省级'}else if(value==2){return '市级'}else{return '县级'}}}
                     ]],
-                    editable:false,
-                    required:true
+                    editable:false
+//                    required:true
 //                    multiple : true
                 });
 

@@ -25,7 +25,7 @@ router.route('/list').post(function(req,res){
         console.log(result);
         if(result){
             todoService.getMyTaskQuery4Eui(page,length,userNo,result).then(function(taskresult){
-                console.log(taskresult)
+               // console.log(taskresult)
                 utils.respJsonData(res, taskresult);
             }).catch(function(err_inst){
                 // console.log(err_inst);

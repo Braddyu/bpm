@@ -26,6 +26,7 @@ router.route("/createAndAcceptAssign").post(function(req,res){
     var biz_vars=req.body.biz_vars;
     var proc_vars=req.body.proc_vars;
     var memo=req.body.memo;
+    var params = req.body.params;
     if(!assign_user_no){
         utils.respMsg(res, false, '2001', '下一节点处理人编号为空', null, null);
         return;
@@ -37,7 +38,7 @@ router.route("/createAndAcceptAssign").post(function(req,res){
             inst.userInfo(user_code).then(function(rs){
                 if(rs.success && rs.data.length==1){
                     //创建实例,并生成任务
-                    inst.createInstance(proc_code,proc_ver,proc_title,"",proc_vars,biz_vars,user_code,userName)
+                    inst.createInstance(proc_code,proc_ver,proc_title,params,proc_vars,biz_vars,user_code,userName)
                         .then(function(result){
                             if(result.success){
                                 var task_id=result.data[0]._id;

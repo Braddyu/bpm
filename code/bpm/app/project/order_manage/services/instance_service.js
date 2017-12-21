@@ -311,26 +311,27 @@ function saveSubIns(dataMap,data,user_code,parent_proc_inst_id){
  */
 
 
-exports.createInstance=function(proc_code,proc_ver,proc_title,param_json_str,proc_vars_json,biz_vars_json,user_code,user_name,proc_day,proc_content){
-    var params;
-    //解析参数
-    if(!(!param_json_str || param_json_str=="undefined"||param_json_str=="{}")){
-        var params_json=JSON.parse(param_json_str);
-        // console.log(params_json)
-        var flag=true;
-        for(var items_ in params_json){
-            flag=false;
-        }
-        if(flag){
-            reject(utils.returnMsg(false, '1001', '参数解析不正确。', null, null));
-        }else{
-            params=params_json;
-        }
-    }else{
-        params={};
-    }
+exports.createInstance=function(proc_code,proc_ver,proc_title,param_json_str,proc_vars_json,biz_vars_json,user_code,user_name){
+
     var promise = new Promise(function(resolve,reject){
-       //user_org_name   user_org
+        var params;
+        //解析参数
+        if(!(!param_json_str || param_json_str=="undefined"||param_json_str=="{}")){
+            var params_json=JSON.parse(param_json_str);
+            // console.log(params_json)
+            var flag=true;
+            for(var items_ in params_json){
+                flag=false;
+            }
+            if(flag){
+                reject(utils.returnMsg(false, '1001', '参数解析不正确。', null, null));
+                return;
+            }else{
+                params=params_json;
+            }
+        }else{
+            params={};
+        }
         var conditionMap = {};
         if(proc_code){
             conditionMap.proc_code = proc_code;
@@ -413,8 +414,8 @@ exports.createInstance=function(proc_code,proc_ver,proc_title,param_json_str,pro
                                                     if(orgs.proc_inst_task_assignee_name){
                                                         condition.proc_inst_task_assignee_name=orgs.proc_inst_task_assignee_name;
                                                     }
-                                                    condition.proc_content = proc_content;
-                                                    condition.proc_work_day = proc_day;
+                                                    // condition.proc_content = proc_content;
+                                                    // condition.proc_work_day = proc_day;
                                                     condition.proc_vars = proc_vars_json;
 
                                                     console.log(condition);
@@ -430,11 +431,13 @@ exports.createInstance=function(proc_code,proc_ver,proc_title,param_json_str,pro
                                                                     condition.proc_task_start_user_role_code = rs[0].proc_start_user_role_code;
                                                                     condition.proc_task_start_user_role_names = rs[0].proc_start_user_role_names;
                                                                     condition.proc_task_start_name = user_name;
-                                                                    condition.proc_task_work_day = rs[0].proc_work_day;
+                                                                    // condition.proc_task_work_day = rs[0].proc_work_day;
                                                                     condition.proc_task_ver = rs[0].proc_ver;
-                                                                    condition.proc_task_name = rs[0].proc_name;
-                                                                    condition.proc_task_content = rs[0].proc_content;
-                                                                    condition.proc_task_code = rs[0].proc_code;
+                                                                 //   condition.proc_task_name = rs[0].proc_name;
+                                                                    condition.proc_name=rs[0].proc_name;
+                                                                    condition.proc_code=rs[0].proc_code;
+                                                                   // condition.proc_task_content = rs[0].proc_content;
+                                                                 //   condition.proc_task_code = rs[0].proc_code;
                                                                     condition.proc_start_time = rs[0].proc_start_time;
 
 

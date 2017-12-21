@@ -1,0 +1,141 @@
+<link rel="stylesheet" type="text/css" href="{{projcfg.appurl}}/static/order/css/order_detail.css">
+<div id="processDiv" class="row">
+    <div class="col-xs-12 col-md-12">
+        <div class="widget">
+            <div class="widget-body">
+                <div id="processLayout" class="easyui-layout" data-options="fit:true" style="width:600px;height:666px;">
+
+                        <div id="toolbar1" class="row tbRow">
+                            <div class="col-xs-8 col-md-8">
+                                <div class="btn-group" role="group" aria-label="...">
+                                    <button type="button" class="btn btn-default" onclick="dispatch()"><i class="fa fa-plus"></i>派单</button>
+
+                                </div>
+                            </div>
+                            <div class="col-xs-4 col-md-4 text-right">
+                                <form class="form-inline">
+                                    <div class="form-group">
+                                        <div class="input-group">
+                                            <input id="queryDate" class="easyui-datebox" label="Start Date:" labelPosition="top" style="width:130px;height:35px">
+
+                                            <span class="input-group-btn">
+                                                <button class="btn btn-default" type="button" onclick="doSearch()"><i class="fa fa-search"></i>查询</button>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        <table id="mistakeTablelist">
+
+                        </table>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="dd"></div>
+
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        //加载列表
+        loadMistakeListDatagrid();
+
+    });
+
+    function loadMistakeListDatagrid(){
+        // 加载工单基本属性列表
+        $('#mistakeTablelist').datagrid({
+            url:'{{projcfg.appurl}}/api/order_manage/mistake_list/list',
+            method:'post',
+            rownumbers:true,
+            striped:true,
+            fitColumns:true,
+            border:false,
+            fit:true,
+            singleSelect:true,
+            selectOnCheck:true,
+            checkOnSelect:true,
+            toolbar: '#toolbar1',
+            columns:[[
+                {"field":"_id",checkbox:true},
+                {"field": "mistake_time","title":"日期","width":50},
+                {"field": "city_code","title":"地市编码","width":40},
+                {"field": "BOSS_NUM","title":"BOSS订单编码","width":50},
+                {"field": "staff_num","title":"营业员工号","width":40},
+                {"field": "channel_type","title":"渠道类型","width":30},
+                {"field": "channel_org","title":"渠道组织","width":30},
+                {"field": "business_num","title":"业务编码","width":50},
+                {"field": "business_name","title":"业务名称","width":50},
+                {"field": "check_status","title":"稽核状态","width":50},
+                {"field": "check_remark","title":"稽核说明","width":50}
+            ]],
+            onDblClickRow:function(rowIndex, rowData){
+
+                var url='{{projcfg.appurl}}/api/order_manage/order_list/showDetailView?proc_code=p-109&change_id='+rowData._id+'&status=1';
+                var content = '<iframe src="'+url+'" width="100%" height="99%" frameborder="0" scrolling="yes"></iframe>';
+
+
+                $('#dd').dialog({
+                    title : '工单详情',
+                    width : 950,
+                    height : 550,
+                    closed : false,
+                    cache : false,
+                    content :content ,
+                    modal : true
+                });
+
+            },
+            onLoadSuccess:function(json) {
+                if(!json.success) {
+                    msgError(json.msg + ',错误代码:' + json.code);
+                }
+            },
+            onLoadError:function() {
+                msgError('加载数据出现时发生错误,请稍候重试...');
+            },
+            pagination:true,
+            loadMsg:'正在加载...'
+        });
+    }
+
+    //搜索
+    function doSearch(){
+
+     $('#mistakeTablelist').datagrid(
+             {   url:'{{projcfg.appurl}}/api/order_manage/mistake_list/list',
+                 queryParams:{
+                     queryDate:$('#queryDate').datebox('getValue')
+
+                 }
+             }
+     );
+ }
+ //派单
+ function dispatch(){
+     $.ajax({
+         url: '{{projcfg.appurl}}/api/order_manage/mistake_list/dispatch',
+         type: 'post',
+         dataType:'json',
+         data: {
+             queryDate:$('#queryDate').datebox('getValue')
+         },
+         success: function (data) {
+             if(data.success){
+                 $("#mistakeTablelist").datagrid('reload')
+                 $.messager.alert('提示',data.msg);
+             }else{
+                 $.messager.alert('错误提示',data.msg);
+             }
+         }
+     });
+ }
+
+
+</script>
