@@ -234,7 +234,7 @@
 //                    return false;
 //                }
                 if(n.length == 0 && (!r || r.length == 0)){
-                    $.messager.alert('提示','请至少选择一个组织机构或者参与职务','error');
+                    $.messager.alert('提示','请至少选择一个组织机构或者参与角色','error');
                     return false;
                 }
                 var ids = [];
@@ -257,11 +257,11 @@
                 });
                 var areavalue = '';
                 if(n.length == 0){
-                    areavalue = "职务："+names.join(",")+";";
+                    areavalue = "角色："+names.join(",")+";";
                 }else if(!r || r.length == 0){
                     areavalue = "组织："+orgnames.join(",")+";";
                 }else{
-                    areavalue = "组织："+orgnames.join(",")+";\n\n职务："+names.join(",")+";";
+                    areavalue = "组织："+orgnames.join(",")+";\n\n角色："+names.join(",")+";";
                 }
                 $('#p2_task_val').val(ids.join(","));
                 $('#p2_textArea').textbox('setValue',areavalue);
@@ -294,7 +294,7 @@
                     return false;
                 }
                 if(typevalue == "2" && (!r || r.length == 0)){
-                    $.messager.alert('提示','请选择职务信息','error');
+                    $.messager.alert('提示','请选择角色信息','error');
                     return false;
                 }
 
@@ -312,7 +312,7 @@
                         levels.push(n.role_level);
                     });
                     $('#p2_task_role_id').val(ids.join(","));
-                    $('#p2_textArea').textbox('setValue',"参照节点："+$('#'+id).combobox('getText')+";\n\n参照类型：当前机构;\n\n当前机构："+$('#win3_cur_org').combobox('getText')+";\n\n职务："+names.join(",")+";");
+                    $('#p2_textArea').textbox('setValue',"参照节点："+$('#'+id).combobox('getText')+";\n\n参照类型：当前机构;\n\n当前机构："+$('#win3_cur_org').combobox('getText')+";\n\n角色："+names.join(",")+";");
                     $('#p2_task_code').val(codes.join(","));
                     $('#p2_task_tag').val(tags.join(","));
                     $('#p2_task_level').val(levels.join(","));
@@ -927,9 +927,9 @@
                     <tr>
                         <td><select id="orgId"  style="width: 80%;height:40px;"></select></td>
                     </tr>
-                    <tr style="height: 1.8rem;"><td><b>选择职务：</b></td></tr>
+                    <tr style="height: 1.8rem;"><td><b>选择角色：</b></td></tr>
                     <tr>
-                        <td><select id="roleId"  style="width: 80%;height:40px;"></select></td>
+                        <td><select id="roleId"  style="width: 80%;height:40px;" multiple=”multiple”></select></td>
                     </tr>
                 </table>
             </div>
@@ -953,12 +953,13 @@
                         <option value=""></option>
                         <option value="1">同级</option>
                         <option value="2">上级</option>
+                        <option value="4">上上级</option>
                         <option value="3">下级</option>
                     </select>
                 </td></tr>
-                <tr style="height:0.7rem;"><td><b>选择职务：</b></td></tr>
+                <tr style="height:0.7rem;"><td><b>选择角色：</b></td></tr>
                 <tr style="height:2rem;"><td>
-                    <select id="win3_roleId"  style="width: 80%;height:40px;"></select>
+                    <select id="win3_roleId"  style="width: 80%;height:40px;" multiple=”multiple”></select>
                 </td></tr>
             </table>
         </div>
