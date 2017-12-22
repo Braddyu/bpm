@@ -2215,7 +2215,7 @@ exports.getNextNodeAndHandlerInfo=function(node_code,proc_task_id,proc_inst_id,p
                     // var proc_define = JSON.parse(rs[0].proc_define);
                     //获取流程定义id
                     var proc_define_id = rs[0].proc_define_id;
-                    console.log("ooooooooooooooooooooooooooooooooooooooooooooooooooooooo")
+                    console.log("ooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
                     //50001 595cb1d03beda10924cb0f0d processDefineDiv_node_2 {} 596c8b9ba9d83525541b43d7
                     // console.log(user_code,proc_define_id,node_code,params,proc_inst_id);
                     // user_code,proc_define_id,node_code,params,proc_inst_id
@@ -2231,7 +2231,7 @@ exports.getNextNodeAndHandlerInfo=function(node_code,proc_task_id,proc_inst_id,p
 
 
 /*
-查询所有的下一节点处理人
+查询所有的下一节点
  */
 exports.getAllNextNodeAndInfo=function(proc_inst_task_id,node_code){
     var p = new  Promise(function(resolve,reject){
@@ -2272,10 +2272,7 @@ exports.getAllNextNodeAndInfo=function(proc_inst_task_id,node_code){
                                             maps[temp_node.toString()]=line;
                                         }
                                     }
-
                                 }
-
-
 
                                 var array=[];
                                 for(var item in item_config){

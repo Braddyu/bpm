@@ -164,7 +164,7 @@ var commonProcessInstSchema = new Schema(
 
 
     },
-    {collection: "common_bpm_proc_inst_217"}// mongodb集合名
+    {collection: "common_bpm_proc_inst"}// mongodb集合名
 );
 
 // 流程流转当前信息model
@@ -210,7 +210,7 @@ var commonProcessInstTaskSchema = new Schema(
         proc_start_time : Date,// 流程发起时间(开始时间)
         proc_vars : String// 流程变量
     },
-    {collection: "common_bpm_proc_inst_task_217"}// mongodb集合名
+    {collection: "common_bpm_proc_inst_task"}// mongodb集合名
 );
 
 // 流程流转信息model
@@ -258,7 +258,7 @@ var commonProcessTaskHistroySchema = new Schema(
         proc_start_time : Date,// 流程发起时间(开始时间)
         proc_vars : String,// 流程变量
     },
-    {collection: "common_bpm_proc_task_histroy_217"}// mongodb集合名
+    {collection: "common_bpm_proc_task_histroy"}// mongodb集合名
 );
 
 // 流程流转历史信息model
