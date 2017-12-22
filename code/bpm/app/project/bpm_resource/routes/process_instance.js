@@ -244,6 +244,9 @@ router.route('/history')
             });
         }
     });
+
+
+
 //getNextNodeAndUser 获取下一步节点或者操作人
 router.route("/next/nodeAnduser").post(function(req,res){
     var node_code=req.body.node_code;
@@ -272,6 +275,7 @@ router.route("/next/nodeAnduser").post(function(req,res){
             inst.userInfo(user_no).then(function(rs){
                 if(rs.success && rs.data.length == 1){
                     nodeAnalysisService.getNextNodeAndHandlerInfo(node_code,proc_task_id,proc_inst_id,params,user_no).then(function(rs){
+                        // console.log(rs);
                         utils.respJsonData(res,rs);
                     }).catch(function(err_inst){
                         logger.error("route-getNextNodeAndHandlerInfo","获取下一节点数据异常",err_inst);
