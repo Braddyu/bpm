@@ -669,13 +669,13 @@ function forkTaskCreate(item_config, proc_define, node_Array, k, user_code, proc
                     condition_task.proc_inst_task_complete_time = new Date();
                     condition_task.proc_inst_task_sign = 1;// : Number,// 流程签收(0-未认领，1-已认领)
                 }
-                if (current_detail.item_assignee_type == 2 || current_detail.item_assignee_type == 3) {
+                if (current_detail.item_assignee_type == 2 || current_detail.item_assignee_type == 3|| current_detail.item_assignee_type == 4) {
                     condition_task.proc_inst_task_user_role = current_detail.item_assignee_role;// : String,// 流程处理用户角色ID
                     condition_task.proc_inst_task_user_role_name = current_detail.item_show_text;// : String,// 流程处理用户角色名
 
                 }
                 // condition_task.proc_inst_task_user_org_name=org.user_org_name;
-                condition_task.proc_inst_task_user_org = org.user_org_id.toString();
+                condition_task.proc_inst_task_user_org = org.user_org_id;
 
                 if (org.proc_inst_task_assignee) {
                     condition_task.proc_inst_task_assignee = org.proc_inst_task_assignee;
@@ -780,7 +780,7 @@ function rejectFunction(proc_inst_task_id, node_code, params, reject, resolve, m
                                        condition_task.proc_inst_task_sign = 1;// : Number,// 流程签收(0-未认领，1-已认领)
 
                                    }
-                                   if (last_detail.item_assignee_type == 2||last_detail.item_assignee_type==3) {
+                                   if (last_detail.item_assignee_type == 2||last_detail.item_assignee_type==3||last_detail.item_assignee_type==4) {
                                        condition_task.proc_inst_task_user_role = last_detail.item_assignee_role;// : String,// 流程处理用户角色ID
                                        condition_task.proc_inst_task_user_role_name = last_detail.item_show_text;// : String,// 流程处理用户角色名
                                    }

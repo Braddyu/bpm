@@ -99,7 +99,7 @@ function createSubInst(data,node,user_code,parent_proc_inst_id,params){
                         condition.current_opt=current_opt;
                     }
                     //
-                    if(item_assignee_type==2||item_assignee_type==3){
+                    if(item_assignee_type==2||item_assignee_type==3||item_assignee_type==4){
                         //多人操作
                         var item_assignee_role_code= next_detail.item_assignee_role_code;
                         var role_id=item_assignee_role_code;
@@ -164,7 +164,7 @@ function insertSubTask(result,condition,node_detail){
         proc_inst_task_sign=1;// : Number,// 流程签收(0-未认领，1-已认领)
     }
     //多人操作
-    if(node_detail.current_detail.item_assignee_type==2||node_detail.current_detail.item_assignee_type==3){
+    if(node_detail.current_detail.item_assignee_type==2||node_detail.current_detail.item_assignee_type==3node_detail.current_detail.item_assignee_type==4){
         proc_inst_task_assignee="";
         proc_inst_task_assignee_name="";
         proc_inst_task_user_role =node_detail.current_detail.item_assignee_role;
@@ -410,7 +410,7 @@ exports.createInstance=function(proc_code,proc_ver,proc_title,param_json_str,pro
                                                         condition.proc_inst_task_sign = 1;// : Number,// 流程签收(0-未认领，1-已认领)
                                                     }
 
-                                                    if(item_assignee_type==2||item_assignee_type==3){
+                                                    if(item_assignee_type==2||item_assignee_type==3||item_assignee_type==4){
                                                         //多人操作
                                                         var item_assignee_role_code= current_detail.item_assignee_role_code;
 
@@ -549,7 +549,7 @@ function insertTask(result,condition){
         proc_inst_task_user_role_name="";
         proc_inst_task_sign=1;// : Number,// 流程签收(0-未认领，1-已认领)
     }
-    if( nodeDetail.next_detail.item_assignee_type==2||nodeDetail.next_detail.item_assignee_type==3){
+    if( nodeDetail.next_detail.item_assignee_type==2||nodeDetail.next_detail.item_assignee_type==3||nodeDetail.next_detail.item_assignee_type==4){
         proc_inst_task_assignee="";
         proc_inst_task_assignee_name="";
         proc_inst_task_user_role =nodeDetail.next_detail.item_assignee_role;

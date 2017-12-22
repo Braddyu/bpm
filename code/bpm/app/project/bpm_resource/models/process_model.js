@@ -231,10 +231,10 @@ var commonProcessTaskHistroySchema = new Schema(
         proc_inst_task_status : Number,// 流程当前状态 0-未处理，1-已完成
         proc_inst_task_assignee : String,// 流程处理人code
         proc_inst_task_assignee_name : String,// 流程处理人名
-        proc_inst_task_user_role : String,// 流程处理用户角色ID
+        proc_inst_task_user_role :  [{type: Schema.Types.ObjectId}],// 流程处理用户角色ID
         // proc_inst_task_handler_code:String,//实际处理人
         proc_inst_task_user_role_name : String,// 流程处理用户角色名
-        proc_inst_task_user_org : String,// 流程处理用户组织ID
+        proc_inst_task_user_org :  [{type: Schema.Types.ObjectId}],// 流程处理用户组织ID
         proc_inst_task_user_org_name : String,// 流程处理用户组织名
         proc_inst_task_params : String,// 流程参数(任务参数)
         proc_inst_task_claim : Number,// 流程会签
