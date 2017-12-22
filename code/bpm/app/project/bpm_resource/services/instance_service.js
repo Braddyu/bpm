@@ -164,7 +164,7 @@ function insertSubTask(result,condition,node_detail){
         proc_inst_task_sign=1;// : Number,// 流程签收(0-未认领，1-已认领)
     }
     //多人操作
-    if(node_detail.current_detail.item_assignee_type==2||node_detail.current_detail.item_assignee_type==3node_detail.current_detail.item_assignee_type==4){
+    if(node_detail.current_detail.item_assignee_type==2||node_detail.current_detail.item_assignee_type==3||node_detail.current_detail.item_assignee_type==4){
         proc_inst_task_assignee="";
         proc_inst_task_assignee_name="";
         proc_inst_task_user_role =node_detail.current_detail.item_assignee_role;
