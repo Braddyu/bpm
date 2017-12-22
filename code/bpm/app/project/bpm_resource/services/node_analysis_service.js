@@ -2731,7 +2731,7 @@ function findNodeInfo(next_node, next_detail,user_no) {
                             if(rs.success){
                                 model_user.$User.find({
                                     "user_roles": item_assignee_role,
-                                    "user_org": returnMap.user_org_id
+                                    "user_org": {$in:rs.data.user_org_id}
                                 }, function (e, r) {
                                     if (e) {
                                         resolve(utils.returnMsg(false, '10001', '查询用户信息错误', null, e));
