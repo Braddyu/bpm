@@ -13,12 +13,12 @@ var node_analy=require("./node_analysis_service");
 //proc_code,proc_ver,proc_title,param_json_str,proc_vars_json,biz_vars_json,user_code,user_name
 
 //"p-333","1","测试上上级","","","","wufaying","吴发英"
-// test();
-// function test (){
-//     inst_service.createInstance("p-333","1","测试上上级","","","","wufaying","吴发英").then(function(rs){
-//         console.log(rs)
-//     });
-// }
+test();
+function test (){
+    inst_service.createInstance("p-333","1","测试上上级","","","","wufaying","吴发英").then(function(rs){
+        console.log(rs)
+    });
+}
 
 
 

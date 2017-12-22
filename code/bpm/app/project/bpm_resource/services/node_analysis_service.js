@@ -964,7 +964,7 @@ function find_up(user_code, reject, user_org_id, returnMap, resolve) {
                      } else {
                          user_org_id = result[0].org_pid;
                          org_array.push(user_org_id);
-                         model_user.$CommonCoreOrg.find({"org_pid": org_pid}, function (est, rst) {
+                         model_user.$CommonCoreOrg.find({"org_pid": user_org_id}, function (est, rst) {
                              if (est) {
                                  console.log(est);
                                  reject(utils.returnMsg(false, '1000', '查询用户jigou 信息错误', null, rst))
