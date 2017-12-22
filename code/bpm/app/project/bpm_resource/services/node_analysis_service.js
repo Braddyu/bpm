@@ -957,9 +957,8 @@ function find_up(user_code, reject, user_org_id, returnMap, resolve) {
         } else {
 
             user_org_id = rs[0].user_org;
-            org_array.push(rs[0].user_org);
-            // item_assignee_role = rs[0].user_roles;
 
+            // item_assignee_role = rs[0].user_roles
         }
 
     }).then(function () {
@@ -970,6 +969,7 @@ function find_up(user_code, reject, user_org_id, returnMap, resolve) {
 
             } else {
                 user_org_id = result[0].org_pid;
+                org_array.push(user_org_id);
                 model_user.$CommonCoreOrg.find({"org_pid":org_pid},function(est,rst){
                     if(est){
                         console.log(est);
@@ -994,6 +994,69 @@ function find_up(user_code, reject, user_org_id, returnMap, resolve) {
             resolve(utils.returnMsg(true, '10000', '查询用户org', returnMap, null));
         })
     })
+}
+
+function find_up_bak(user_code, user_org_id, returnMap) {
+    return new Promise(function (resolve,reject){
+        console.log("amd********************************************",user_code, user_org_id, returnMap);
+        var item_assignee_role;
+        var org_array=[];
+        //上级
+
+        model_user.$User.find({})
+        var query = model_user.$User.find({"user_no": user_code},function(err,rs){
+            if (err) {
+                console.log(err);
+                reject(utils.returnMsg(false, '1000', '查询用户信息错误', null, err))
+            } else {
+                if(rs.length>0){
+                    user_org_id = rs[0].user_org;
+                }else{
+                    reject(utils.returnMsg(false, '1000', '查询用户信息错误3333333333333', null, null))
+                    return;
+
+                }
+
+
+                // item_assignee_role = rs[0].user_roles
+            }
+
+        }).then(function () {
+            model_user.$CommonCoreOrg.find({"_id": user_org_id}, function (error, result) {
+                if (error) {
+                    console.log(error)
+                    reject(utils.returnMsg(false, '1000', '查询用户信息错误', null, error))
+
+                } else {
+                    user_org_id = result[0].org_pid;
+                    org_array.push(user_org_id);
+                    model_user.$CommonCoreOrg.find({"org_pid":user_org_id},function(est,rst){
+                        if(est){
+                            console.log(est);
+                            reject(utils.returnMsg(false, '1000', '查询用户jigou 信息错误', null, rst))
+                        }else{
+                            if(rst.length>0){
+                                for(var i =0;rst.length>i;i++){
+                                    org_array.push(rst[i]._id);
+                                }
+                            }else{
+                                reject(utils.returnMsg(false, '1000', '查询用户jigou 信息错误', null, null))
+                            }
+                        }
+                    });
+                }
+
+            }).then(function () {
+                // returnMap.item_assignee_role = item_assignee_role;
+                returnMap.user_org_id =org_array;
+                returnMap.proc_inst_task_assignee = "";
+                returnMap.proc_inst_task_assignee_name = "";
+                resolve(utils.returnMsg(true, '10000', '查询用户org', returnMap, null));
+            })
+        })
+
+    })
+
 }
 
 /**
@@ -1226,6 +1289,7 @@ function find_up_up(user_code, reject, user_org_id, returnMap, resolve){
                                     console.log(err);
                                     reject(utils.returnMsg(false, '10001', '查询用户信息错误', null, err))
                                 }else{
+                                    org_array.push(res[0]._id);
                                     model_user.$CommonCoreOrg.find({"org_pid":res[0]._id},function(error,result){
                                         if(error){
                                             console.log(error);
@@ -2545,44 +2609,7 @@ exports.getNodeAndHandlerInfo=function(proc_code,user_no,param_json_str){
 
 
                             });
-                            // findNodeInfo(next_node, data.next_detail).then(function(rs){
-                            //         if(rs.success){
-                            //         var flag=false;
-                            //         var data=rs.data;
-                            //         for(var index in data){
-                            //             var d=data[index];
-                            //             console.log("@@@@@@@@@@@@@@@@@@@@@@",d.user_no,user_no);
-                            //             //如果参数用户和实际派单用户是否相等
-                            //             if(d.user_no==user_no){
-                            //                 flag=true;
-                            //             }
-                            //         }
-                            //
-                            //         if(!flag)
-                            //             resolve(utils.returnMsg(false, '1002', '不存在的派单发起人', null, null));
-                            //         else{
-                            //             console.log("node_code======",node_code);
-                            //             //获取第三节点所有处理人
-                            //             getNode(proc_define_id,node_code,params,true).then(function(rs){
-                            //                 if(!rs.success)
-                            //                     resolve(utils.returnMsg(false, '1004', '流程图第三节点错误', null, null));
-                            //                 else{
-                            //                     var data=rs.data;
-                            //                     var next_node=data.next_node;
-                            //                     findNodeInfo(next_node, data.next_detail).then(function(rs){
-                            //                         resolve(rs);
-                            //                     });
-                            //                 }
-                            //
-                            //
-                            //             });
-                            //         }
-                            //
-                            //     }else{
-                            //         resolve(utils.returnMsg(false, '1001', '派单发起人信息查找失败', null, null));
-                            //
-                            //     }
-                            // });
+
                         }
 
                     })
@@ -2720,71 +2747,41 @@ function findNodeInfo(next_node, next_detail,user_no) {
 
                     } else if (item_assignee_ref_cur_org == 2) {
                         console.log("resultsresultsresultsresultsresultsresultsresultsresultsresultsresults \n", 7)
-                        model_user.$User.find({"user_no": user_no}, function (errs, res) {
-                            if (errs) {
-                                resolve(utils.returnMsg(false, '10001', '查询用户信息错误', null, errs));
-                            } else {
-                                if (res.length > 0) {
-                                    var org = res[0].user_org;
-                                    model_user.$CommonCoreOrg.find({"_id": org}, function (error, result) {
-                                        if (error) {
-                                            resolve(utils.returnMsg(false, '10001', '查询用户机构信息错误', null, error));
-                                        } else {
-                                            if (result.length > 0) {
-                                                var org_pid = result[0].org_pid;
-                                                console.log("org_pid",org_pid);
-                                                model_user.$CommonCoreOrg.find({"_id": org_pid}, function (errors, resul) {
-                                                    if (errors) {
-                                                        resolve(utils.returnMsg(false, '10001', '查询用户父机构信息错误', null, errors));
-
-                                                    } else {
-                                                        if (resul.length > 0) {
-                                                            var org_id = resul[0]._id;
-                                                            model_user.$User.find({
-                                                                "user_roles": item_assignee_role,
-                                                                "user_org": org_id
-                                                            }, function (e, r) {
-                                                                if (e) {
-                                                                    resolve(utils.returnMsg(false, '10001', '查询用户信息错误', null, e));
-                                                                } else {
-                                                                    if (r.length > 0) {
-                                                                        var array = [];
-                                                                        for (var user in r) {
-                                                                            var map = {};
-                                                                            map.user_no = r[user].user_no;
-                                                                            map.user_name = r[user].user_name;
-                                                                            map.node_name = node_name;
-                                                                            map.node_code = node_code;
-                                                                            array.push(map);
-                                                                        }
-                                                                        resolve(utils.returnMsg(true, '0000', '查询用户org', array, null))
-                                                                    } else {
-                                                                        resolve(utils.returnMsg(false, '10001', '查询用户信息错误', null, null));
-                                                                    }
-                                                                }
-
-                                                            })
-
-                                                        } else {
-                                                            resolve(utils.returnMsg(false, '10001', '查询用户信息错误', null, null));
-
-                                                        }
-                                                    }
-                                                })
-
-                                            } else {
-                                                resolve(utils.returnMsg(false, '10001', '查询用户信息错误', null, null));
+                        var returnMap={};
+                        //查找上级机构以及同级所有机构
+                        find_up_bak(user_no, "", returnMap).then(function(rs){
+                            console.log("###############################",rs);
+                            if(rs.success){
+                                model_user.$User.find({
+                                    "user_roles": item_assignee_role,
+                                    "user_org": returnMap.user_org_id
+                                }, function (e, r) {
+                                    if (e) {
+                                        resolve(utils.returnMsg(false, '10001', '查询用户信息错误', null, e));
+                                    } else {
+                                        if (r.length > 0) {
+                                            var array = [];
+                                            for (var user in r) {
+                                                var map = {};
+                                                map.user_no = r[user].user_no;
+                                                map.user_name = r[user].user_name;
+                                                map.node_name = node_name;
+                                                map.node_code = node_code;
+                                                array.push(map);
                                             }
+                                            resolve(utils.returnMsg(true, '0000', '查询用户org', array, null))
+                                        } else {
+                                            resolve(utils.returnMsg(false, '10001', '查询用户信息错误', null, null));
                                         }
-                                    })
+                                    }
 
-                                } else {
-
-                                    resolve(utils.returnMsg(false, '10001', '查询用户信息错误', null, null));
-                                }
-
+                                })
                             }
+
                         })
+
+
+
                     } else {
                         //下级
                         console.log("resultsresultsresultsresultsresultsresultsresultsresultsresultsresults \n", 8)
