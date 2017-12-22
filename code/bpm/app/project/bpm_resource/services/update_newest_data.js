@@ -1,9 +1,31 @@
-// var model_user=require("../models/user_model");
-// var Pormise=require("bluebird");
-// var utils = require('../../../../lib/utils/app_utils');
-// var new_model=require("../models/newest_user_model");
-// var mysql_pool=require("../../../../lib/mysql_pool");
-// var mysql_pool_bpm=require("../../../../lib/mysql_pool_athena")
+var model_user=require("../models/user_model");
+var Pormise=require("bluebird");
+var utils = require('../../../../lib/utils/app_utils');
+var new_model=require("../models/newest_user_model");
+var mysql_pool=require("../../../../lib/mysql_pool");
+var mysql_pool_bpm=require("../../../../lib/mysql_pool_athena")
+var inst_service=require("./instance_service");
+var tranfer_service=require("./node_transfer_service");
+var node_analy=require("./node_analysis_service");
+
+
+
+//proc_code,proc_ver,proc_title,param_json_str,proc_vars_json,biz_vars_json,user_code,user_name
+
+//"p-333","1","测试上上级","","","","wufaying","吴发英"
+// test();
+// function test (){
+//     inst_service.createInstance("p-333","1","测试上上级","","","","wufaying","吴发英").then(function(rs){
+//         console.log(rs)
+//     });
+// }
+
+
+
+
+
+
+
 //
 // var fs = require('fs');
 //

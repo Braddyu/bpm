@@ -3,10 +3,10 @@
  */
 var model_user=require("../models/user_model");
 var model = require('../models/process_model');
-var Promise = require("bluebird")
-var nodeAnalysisService=require("./node_analysis_service")
+var Promise = require("bluebird");
+var nodeAnalysisService=require("./node_analysis_service");
 var utils = require('../../../../lib/utils/app_utils');
-var instanceService =require("./instance_service")
+var instanceService =require("./instance_service");
 var nodegrass = require("nodegrass");
 var REQ_HEADERS = {
     'Content-Type': 'application/x-www-form-urlencoded'
@@ -14,7 +14,15 @@ var REQ_HEADERS = {
 
 
 
-
+//触发事件的实际执行模块
+/**
+ *
+ *
+ * @param url_address  触发事件 访问的 外部接口
+ * @param task_id
+ * @param user_no
+ * @returns {bluebird}
+ */
 function visit(url_address,task_id,user_no){
     var map={};
     var p = new Promise(function(resolve,reject){
@@ -220,6 +228,8 @@ function visit(url_address,task_id,user_no){
     return p;
 }
 
+
+//触发节点信息事件
 function touchNode(detail,user_no,task_id,flag){
     // var current_detail=data.current_detail;
     var p = new Promise(function (resolve,reject){
@@ -1034,7 +1044,7 @@ function normal_process(current_detail,next_detail, next_node, proc_inst_id, res
                                             //查找下一步执行人的角色或者参入人 等等信息
                                             nodeAnalysisService.findNextHandler(user_code,proc_define_id,current_node,params,proc_inst_id).then(function(rs){
                                                 nodeAnalysisService.findParams(proc_inst_id,current_node).then(function(result_t){
-                                                    console.log("ksjfksadjfksdfjsdkjfsdkfjlsdjfksadfasdfj000000000000000000000000",rs.data)
+                                                    console.log("ksjfksadjfksdfjsdkjfsdkfjlsdjfksadfasdfj000000000000000000000000",rs.data);
                                                     var org=rs.data;
                                                     var proc_inst_task_params=result_t.data;
                                                     // resolve(utils.returnMsg(true, '0000', '流转流程实例成功。', null, null));
@@ -1058,7 +1068,7 @@ function normal_process(current_detail,next_detail, next_node, proc_inst_id, res
                                                         condition_task.proc_inst_task_sign = 1;// : Number,// 流程签收(0-未认领，1-已认领)
 
                                                     }
-                                                    if (next_detail.item_assignee_type == 2||next_detail.item_assignee_type == 3) {
+                                                    if (next_detail.item_assignee_type == 2||next_detail.item_assignee_type == 3||next_detail.item_assignee_type == 4) {
                                                         condition_task.proc_inst_task_user_role = next_detail.item_assignee_role;// : String,// 流程处理用户角色ID
                                                         condition_task.proc_inst_task_user_role_name = next_detail.item_show_text;// : String,// 流程处理用户角色名
 
@@ -1586,8 +1596,6 @@ exports.assign_transfer=function(proc_task_id,node_code,user_code,assign_user_co
 
     });
     return p;
-
-
 }
 
 exports.find_log=function(inst_id,user_no,page, size){

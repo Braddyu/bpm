@@ -33,7 +33,6 @@ router.route('/todo').post(function(req,res){
                                // console.log(err_inst);
                                logger.error("route-getMyTaskList","获取我的待办数据异常",err_inst);
                                utils.respMsg(res, false, '1000', '获取数据异常', null, err_inst);
-
                            });
                        }else{
                            utils.respMsg(res, false, '1000', '无用户数据', null, null);
