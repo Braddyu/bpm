@@ -997,64 +997,54 @@ function find_up(user_code, reject, user_org_id, returnMap, resolve) {
 }
 
 function find_up_bak(user_code, user_org_id, returnMap) {
-    return new Promise(function (resolve,reject){
-        console.log("amd********************************************",user_code, user_org_id, returnMap);
+    return new Promise(function (resolve,reject) {
+        console.log("amd********************************************", user_code, user_org_id, returnMap);
         var item_assignee_role;
-        var org_array=[];
+        var org_array = [];
         //上级
-
-        model_user.$User.find({})
-        var query = model_user.$User.find({"user_no": user_code},function(err,rs){
+        model_user.$User.find({"user_no": user_code}, function (err, rs) {
             if (err) {
                 console.log(err);
                 reject(utils.returnMsg(false, '1000', '查询用户信息错误', null, err))
             } else {
-                if(rs.length>0){
+                if (rs.length > 0) {
                     user_org_id = rs[0].user_org;
-                }else{
-                    reject(utils.returnMsg(false, '1000', '查询用户信息错误3333333333333', null, null))
-                    return;
+                    model_user.$CommonCoreOrg.find({"_id": user_org_id}, function (error, result) {
+                        if (error) {
+                            console.log(error)
+                            reject(utils.returnMsg(false, '1000', '查询用户信息错误', null, error))
 
+                        } else {
+                            user_org_id = result[0].org_pid;
+                            org_array.push(user_org_id);
+                            model_user.$CommonCoreOrg.find({"org_pid": user_org_id}, function (est, rst) {
+                                if (est) {
+                                    console.log(est);
+                                    reject(utils.returnMsg(false, '1000', '查询用户jigou 信息错误', null, rst))
+                                } else {
+                                    if (rst.length > 0) {
+                                        for (var i = 0; rst.length > i; i++) {
+                                            org_array.push(rst[i]._id);
+                                        }
+                                        returnMap.user_org_id = org_array;
+                                        returnMap.proc_inst_task_assignee = "";
+                                        returnMap.proc_inst_task_assignee_name = "";
+                                        resolve(utils.returnMsg(true, '10000', '查询用户org', returnMap, null));
+                                    } else {
+                                        reject(utils.returnMsg(false, '1000', '查询用户jigou 信息错误', null, null))
+                                    }
+                                }
+                            });
+                        }
+
+                    })
+                } else {
+                    reject(utils.returnMsg(false, '1000', '查询用户jigou 信息错误', null, null))
                 }
-
-
-                // item_assignee_role = rs[0].user_roles
             }
 
-        }).then(function () {
-            model_user.$CommonCoreOrg.find({"_id": user_org_id}, function (error, result) {
-                if (error) {
-                    console.log(error)
-                    reject(utils.returnMsg(false, '1000', '查询用户信息错误', null, error))
 
-                } else {
-                    user_org_id = result[0].org_pid;
-                    org_array.push(user_org_id);
-                    model_user.$CommonCoreOrg.find({"org_pid":user_org_id},function(est,rst){
-                        if(est){
-                            console.log(est);
-                            reject(utils.returnMsg(false, '1000', '查询用户jigou 信息错误', null, rst))
-                        }else{
-                            if(rst.length>0){
-                                for(var i =0;rst.length>i;i++){
-                                    org_array.push(rst[i]._id);
-                                }
-                            }else{
-                                reject(utils.returnMsg(false, '1000', '查询用户jigou 信息错误', null, null))
-                            }
-                        }
-                    });
-                }
-
-            }).then(function () {
-                // returnMap.item_assignee_role = item_assignee_role;
-                returnMap.user_org_id =org_array;
-                returnMap.proc_inst_task_assignee = "";
-                returnMap.proc_inst_task_assignee_name = "";
-                resolve(utils.returnMsg(true, '10000', '查询用户org', returnMap, null));
-            })
         })
-
     })
 
 }
