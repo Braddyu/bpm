@@ -970,7 +970,7 @@ exports.getMyTaskQuery4Eui= function(page,size,userCode,paramMap) {
         userArr.push(userCode);
         var conditionMap = {};
         //proc_inst_task_user_org  进行模糊匹配
-        conditionMap['$or'] = [{'proc_inst_task_assignee':{'$in':userArr}},{'proc_inst_task_user_role':{'$in':paramMap.roles},{'proc_inst_task_user_org':{$in:paramMap.orgs}}];
+        conditionMap['$or'] = [{'proc_inst_task_assignee':{'$in':userArr}},{'proc_inst_task_user_role':{'$in':paramMap.roles}},{'proc_inst_task_user_org':{'$in':paramMap.orgs}}];
         // conditionMap['$or'] = [{'proc_inst_task_assignee':{'$in':userArr}},{'proc_inst_task_user_role':{'$in':paramMap.roles},'proc_inst_task_user_org':{'$in':paramMap.orgs}}];
         conditionMap.proc_inst_task_status = 0;
         console.log(conditionMap);
@@ -991,7 +991,7 @@ exports.getMyCompleteTaskQuery4Eui= function(page,size,userCode,paramMap) {
         userArr.push(userCode);
         var conditionMap = {};
         //proc_inst_task_user_org  进行模糊匹配
-        conditionMap['$or'] = [{'proc_inst_task_assignee':{'$in':userArr}},{'proc_inst_task_user_role':{'$in':paramMap.roles},{'proc_inst_task_user_org':{$in:paramMap.orgs}}];
+        conditionMap['$or'] = [{'proc_inst_task_assignee':{'$in':userArr}},{'proc_inst_task_user_role':{'$in':paramMap.roles}},{'proc_inst_task_user_org':{$in:paramMap.orgs}}];
         // conditionMap['$or'] = [{'proc_inst_task_assignee':{'$in':userArr}},{'proc_inst_task_user_role':{'$in':paramMap.roles},'proc_inst_task_user_org':{'$in':paramMap.orgs}}];
         conditionMap.proc_inst_task_status = 1;
         console.log(conditionMap);
