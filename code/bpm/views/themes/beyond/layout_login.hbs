@@ -34,6 +34,56 @@
     }
 </style>
 <script>
+    // var message =cc1
+
+    var randomNumber//随机验证xz码\
+
+
+
+    //选项卡触发
+    function loadTab(){
+
+        $("#mod1").hide();
+        $("#mod2").show();
+//        $(this).addClass("active").siblings().removeClass("active");
+    };
+
+    function loadTab2() {
+        $("#mod2").hide();
+        $("#mod1").show();
+    }
+    //手机号码校验
+    function checkPhone(){
+        var phone = document.getElementById('username').value;
+        if(!(/^1(3|4|5|7|8)\d{9}$/.test(phone))){
+            alert("手机号码有误，请重填");
+            return false;
+        }
+    }
+
+
+    //获取验证码
+    var countdown=60;
+    function settime(obj) {
+        if(countdown==60){
+            randomNumber = parseInt(((Math.random()*9+1)*1000))
+            console.log("生成的验证码："+randomNumber);
+        }
+        if (countdown == 0) {
+            obj.removeAttribute("disabled");
+            obj.value="免费获取验证码";
+            countdown = 60;
+            return;
+        } else {
+            obj.setAttribute("disabled", true);
+            obj.value="重新发送(" + countdown + ")";
+            countdown--;
+        }
+        setTimeout(function() {
+                    settime(obj) }
+                ,1000)
+    }
+
 
     function submitForm() {
         var password_ = document.getElementById('password_').value;
@@ -41,6 +91,19 @@
         document.getElementById('password_').value = "";
         return true;
     }
+    //手机号登陆
+    /* function submitForm2() {
+         //checkPhone();
+         var verificationCode = document.getElementById('verificationCode').value;
+         if(verificationCode==randomNumber){
+             console.log("验证码输入正确");
+             return true;
+         }else {
+             console.log("验证码输入有误，请重新输入验证码");
+             return false;
+         }
+
+     }*/
     function reloadCaptcha() {
         document.getElementById('captchaImg').src = '{{projcfg.appurl}}/captcha?'+new Date();
     }
@@ -49,37 +112,85 @@
 <!-- gray-bg-->
 <body class=" {{projcfg.skin}}" style="font-family:'Microsoft YaHei';" >
 <div align="center"><img src="{{projcfg.appurl}}/static/images/login_logo.png"></div>
-<div class="login-container animated fadeInDown">
-    <div class="loginbox bg-white">
-        <div class="loginbox-title" >登陆</div>
 
-        <form class="m-t" role="form" action="{{projcfg.appurl}}/login" method="post" onsubmit="return submitForm();">
-            <div class="loginbox-textbox">
-               <input id="username" name='username'  value='' type="text" class="form-control" placeholder="{{{__ "tips_input_loginid"}}}" />
-            </div>
-            <div class="loginbox-textbox">
-               <input id="password_" name='password_'  value='' type="password" class="form-control" placeholder="{{{__ "tips_input_password"}}}" />
-                <input type="hidden" id="password" name="password"/>
-            </div>
-            {{#if projcfg.captcha_login_enable}}
+
+
+
+
+<!--账号登陆-->
+<div id="mod1" class="mod1">
+    <div class="login-container animated fadeInDown">
+        <div class="loginbox bg-white" style="">
+            <div class="loginbox-title" >账号登陆</div>
+
+            <form class="m-t" role="form" action="{{projcfg.appurl}}/login" method="post" onsubmit="return submitForm();">
                 <div class="loginbox-textbox">
-                    <input id="captcha" name='captcha'  value='' type="text" class="form-control" style="width:127px;display: inline;" placeholder="{{{__ "tips_input_captcha"}}}" />
-                    <img id="captchaImg" style="display: inline;vertical-align: top;" src="{{projcfg.appurl}}/captcha" onclick="reloadCaptcha()"/>
+                    <!-- <input id="username" name='username'  value='' type="text" class="form-control" placeholder="{{{__ "tips_input_loginid"}}}" />-->
+                    <input id="username" name='username'  value='' type="text" class="form-control" placeholder="请输入账号" />
+                    <input type="hidden" id="flag" name="flag" value="1"/>
                 </div>
-            {{/if}}
-            <!-- div class="loginbox-forgot">
-                      <a href="/forgotpassword">{{{__ "tips_forgotpassword"}}}</a>
-                  </div -->
-            <div class="loginbox-submit">
-                <input type="submit" class="btn btn-primary btn-block" value="{{{__ "btn_login"}}}">
-            </div>
-            <div class="loginbox-textbox" style="color:red;">
-                {{message}}
-            </div>
-
-        </form>
+                <div class="loginbox-textbox">
+                    <input id="password_" name='password_'  value='' type="password" class="form-control" placeholder="{{{__ "tips_input_password"}}}" />
+                    <input type="hidden" id="password" name="password"/>
+                </div>
+                {{#if projcfg.captcha_login_enable}}
+                    <div class="loginbox-textbox">
+                        <input id="captcha" name='captcha'  value='' type="text" class="form-control" style="width:127px;display: inline;" placeholder="{{{__ "tips_input_captcha"}}}" />
+                        <img id="captchaImg" style="display: inline;vertical-align: top;" src="{{projcfg.appurl}}/captcha" onclick="reloadCaptcha()"/>
+                    </div>
+                {{/if}}
+                <div class="loginbox-submit">
+                    <input type="submit" class="btn btn-primary btn-block" value="{{{__ "btn_login"}}}">
+                </div>
+                <div class="loginbox-textbox" style="color:red;">
+                    {{message1}}
+                </div>
+                <div class="login" style="margin-left: 68%; margin-bottom: -19px">
+                    <a href="#" >账号登陆</a>
+                </div>
+                <div class="login" style="margin-left: 14%">
+                    <a href="#" onclick="loadTab()">手机登录</a>
+                </div>
+            </form>
+        </div>>
     </div>
+</div>
+<!--手机登录-->
+<div id="mod2" class="mod2" style="display: none">
+    <div class="login-container animated fadeInDown">
+        <div class="loginbox bg-white" style="">
+            <div class="loginbox-title" >手机登陆</div>
 
+            <form class="m-t" role="form" action="{{projcfg.appurl}}/login" method="post" onsubmit="return submitForm();">
+                <div class="loginbox-textbox">
+                    <input id="username" name='username'  value='' type="text" class="form-control" placeholder="请输入手机号" />
+                    <input type="hidden" id="flag" name="flag" value="2"/>
+                </div>
+                <div class="loginbox-textbox" style="margin-top: -22px">
+                    <input type="text" id="verificationCode" class="form-control" value="" placeholder="短信验证码" style="width: 43%;margin-top: 9%"/>
+                    <input type="button" id="btn" class="form-control" value="获取验证码"  style="width: 52%;margin-left: 48%;margin-top: -34px"   onclick="settime(this)" />
+                </div>
+                {{#if projcfg.captcha_login_enable}}
+                    <div class="loginbox-textbox">
+                        <input id="captcha" name='captcha'  value='' type="text" class="form-control" style="width:127px;display: inline;" placeholder="{{{__ "tips_input_captcha"}}}" />
+                        <img id="captchaImg" style="display: inline;vertical-align: top;" src="{{projcfg.appurl}}/captcha" onclick="reloadCaptcha()"/>
+                    </div>
+                {{/if}}
+                <div class="loginbox-submit">
+                    <input type="submit" class="btn btn-primary btn-block" value="{{{__ "btn_login"}}}">
+                </div>
+                <div class="loginbox-textbox" style="color:red;">
+                    {{message2}}
+                </div>
+                <div class="login " style="margin-left: 68%; margin-bottom: -19px">
+                    <a href="#"  onclick="loadTab2()">账号登陆</a>
+                </div>
+                <div class="login" style="margin-left: 14%">
+                    <a href="#" >手机登录</a>
+                </div>
+            </form>
+        </div>>
+    </div>
 </div>
 
 
@@ -92,6 +203,16 @@
 <script src="{{projcfg.appurl}}/static/{{projcfg.theme}}js/beyond.min.js"></script>
 <script src="{{projcfg.appurl}}/static/js/common/md5.js"></script>
 <script src="{{projcfg.appurl}}/static/js/common/security.mini.js"></script>
+
+<script>
+   $(function () {
+        if('{{flag}}'==2){//手机登录
+            loadTab();
+        }else {//账号登陆
+            loadTab2();
+        }
+    });
+</script>>
 
 
 </body>
