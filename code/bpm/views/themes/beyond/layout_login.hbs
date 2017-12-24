@@ -13,6 +13,7 @@
 <link href="{{projcfg.appurl}}/static/{{projcfg.theme}}css/font-awesome.min.css" rel="stylesheet" />
 
 
+
 <!--Fonts-->
 <!--
 <link href="http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,400,600,700,300" rel="stylesheet" type="text/css">
@@ -65,9 +66,24 @@
     //获取验证码
     var countdown=60;
     function settime(obj) {
-        if(countdown==60){
-            randomNumber = parseInt(((Math.random()*9+1)*1000))
-            console.log("生成的验证码："+randomNumber);
+        var phonename = document.getElementById('phonename').value;
+
+       if(countdown==60){
+           /* randomNumber = parseInt(((Math.random()*9+1)*1000))
+            console.log("生成的验证码："+randomNumber);*/
+           $.ajax({
+               url:'{{projcfg.appurl}}/getVerificationcode',
+               type:'post',
+               data:{phonename:phonename},
+               dataType:'json',
+               success:function(result){
+                   if(result.success=true){
+                       msgSuccess(result.msg);
+                   }else {
+                       msgError(result.msg);
+                   }
+               },
+           });
         }
         if (countdown == 0) {
             obj.removeAttribute("disabled");
@@ -85,11 +101,11 @@
     }
 
 
-    function submitForm() {
-        var password_ = document.getElementById('password_').value;
-        document.getElementById('password').value = strEnc(hex_md5(password_), '{{key_1}}', '{{key_2}}', '{{key_3}}');
-        document.getElementById('password_').value = "";
-        return true;
+    function submitForm(flag) {
+            var password_ = document.getElementById('password_').value;
+            document.getElementById('password').value = strEnc(hex_md5(password_), '{{key_1}}', '{{key_2}}', '{{key_3}}');
+            document.getElementById('password_').value = "";
+            return true;
     }
     //手机号登陆
     /* function submitForm2() {
@@ -163,11 +179,11 @@
 
             <form class="m-t" role="form" action="{{projcfg.appurl}}/login" method="post" onsubmit="return submitForm();">
                 <div class="loginbox-textbox">
-                    <input id="username" name='username'  value='' type="text" class="form-control" placeholder="请输入手机号" />
+                    <input id="phonename" name='username'  value='' type="text" class="form-control" placeholder="请输入手机号" />
                     <input type="hidden" id="flag" name="flag" value="2"/>
                 </div>
                 <div class="loginbox-textbox" style="margin-top: -22px">
-                    <input type="text" id="verificationCode" class="form-control" value="" placeholder="短信验证码" style="width: 43%;margin-top: 9%"/>
+                    <input type="text" id="verificationCode" name="verificationCode" class="form-control" value="" placeholder="短信验证码" style="width: 43%;margin-top: 9%"/>
                     <input type="button" id="btn" class="form-control" value="获取验证码"  style="width: 52%;margin-left: 48%;margin-top: -34px"   onclick="settime(this)" />
                 </div>
                 {{#if projcfg.captcha_login_enable}}
@@ -203,6 +219,7 @@
 <script src="{{projcfg.appurl}}/static/{{projcfg.theme}}js/beyond.min.js"></script>
 <script src="{{projcfg.appurl}}/static/js/common/md5.js"></script>
 <script src="{{projcfg.appurl}}/static/js/common/security.mini.js"></script>
+<script src="{{projcfg.appurl}}/static/js/common/sys-init.js"></script>
 
 <script>
    $(function () {
