@@ -273,6 +273,7 @@ router.route("/next/nodeAnduser").post(function(req,res){
     }else{
             //判断用户是否存在
             inst.userInfo(user_no).then(function(rs){
+                console.log("11111111111111111111111111111",rs)
                 if(rs.success && rs.data.length == 1){
                     nodeAnalysisService.getNextNodeAndHandlerInfo(node_code,proc_task_id,proc_inst_id,params,user_no).then(function(rs){
                         // console.log(rs);

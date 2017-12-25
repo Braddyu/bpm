@@ -582,7 +582,14 @@ function insertTask(result,condition){
             task.proc_inst_task_status=0;// : Number,// 流程当前状态
             task.proc_inst_task_assignee=proc_inst_task_assignee;//: array,// 流程处理人ID
             task.proc_inst_task_assignee_name=proc_inst_task_assignee_name;// : array,// 流程处理人名
-            task.proc_inst_task_user_role =proc_inst_task_user_role;//: String,// 流程处理用户角色ID
+            if(proc_inst_task_user_role.indexOf(",")!=-1){
+                task.proc_inst_task_user_role =proc_inst_task_user_role.split(",");
+
+            }else{
+                task.proc_inst_task_user_role =[proc_inst_task_user_role];
+
+            }
+           //: String,// 流程处理用户角色ID
             task.proc_inst_task_user_role_name=proc_inst_task_user_role_name;// : String,// 流程处理用户角色名
             if(condition.proc_inst_task_user_org)
             task.proc_inst_task_user_org=condition.proc_inst_task_user_org;//String  //流程处理用户的组织
@@ -608,7 +615,7 @@ function insertTask(result,condition){
             model.$ProcessInstTask.create(arr,function(error,rs){
                 if(error) {
                     // reject('新增流程实例信息时出现异常。'+error);
-                    console.log(error)
+                    console.log(error);
                     reject(utils.returnMsg(false, '1000', '流程实例创建启动出现异常。', null, error));
                 }
                 else {

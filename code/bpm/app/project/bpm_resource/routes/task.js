@@ -180,7 +180,8 @@ router.route('/complete')
                             console.log(id,node_code,user_code,true,memo,params,biz_vars,proc_vars);
                             console.info(params)
                             nodeTransferService.transfer(id,node_code,user_code,true,memo,params,biz_vars,proc_vars).then(function(result1){
-                                console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!",id,node_code,user_code,true,memo,params)
+                                console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!",id,node_code,user_code,true,memo,params);
+                                console.log(result1);
                                 utils.respJsonData(res, result1);
                             }).catch(function(err_inst){
                                 // console.log(err_inst);

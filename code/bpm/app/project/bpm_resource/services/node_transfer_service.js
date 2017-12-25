@@ -1069,7 +1069,7 @@ function normal_process(current_detail,next_detail, next_node, proc_inst_id, res
 
                                                     }
                                                     if (next_detail.item_assignee_type == 2||next_detail.item_assignee_type == 3||next_detail.item_assignee_type == 4) {
-                                                        condition_task.proc_inst_task_user_role = next_detail.item_assignee_role;// : String,// 流程处理用户角色ID
+                                                        condition_task.proc_inst_task_user_role = (next_detail.item_assignee_role).indexOf(",")?(next_detail.item_assignee_role).split(","):[next_detail.item_assignee_role];// : String,// 流程处理用户角色ID
                                                         condition_task.proc_inst_task_user_role_name = next_detail.item_show_text;// : String,// 流程处理用户角色名
 
                                                     }
@@ -1092,7 +1092,8 @@ function normal_process(current_detail,next_detail, next_node, proc_inst_id, res
                                                             condition_task.proc_inst_id = step_first[0].proc_inst_id;
                                                             condition_task.proc_inst_task_assignee = step_first[0].proc_inst_task_assignee;
                                                             condition_task.proc_inst_task_assignee_name = step_first[0].proc_inst_task_assignee_name;
-                                                            condition_task.proc_inst_task_user_role = next_detail.item_assignee_role;
+
+                                                            // condition_task.proc_inst_task_user_role = (next_detail.item_assignee_role).indexOf(",")?(next_detail.item_assignee_role).split(","):[next_detail.item_assignee_role];
                                                             condition_task.proc_inst_task_user_role_name = next_detail.item_assignee_role_name;
                                                             condition_task.proc_inst_task_params = proc_inst_task_params;// : String,// 流程参数(任务参数)
                                                             condition_task.proc_inst_node_vars = proc_inst_node_vars;// 流程节点变量
@@ -1151,11 +1152,12 @@ function normal_process(current_detail,next_detail, next_node, proc_inst_id, res
                                                                             console.log("短信发送失败",err);
                                                                         });
                                                                     }
-
+                                                                    console.log("))))))))))))))))))))))))))))))))))))))))))))))s")
+                                                                    console.log(rs);
                                                                     resolve(utils.returnMsg(true, '1000', '流程流转新增任务信息正常。', rs, null))
                                                                 }
                                                             });
-                                                            resolve(utils.returnMsg(true, '1000', '流程流转新增任务信息正常8。',res, null));
+                                                            // resolve(utils.returnMsg(true, '1000', '流程流转新增任务信息正常833333。',res, null));
                                                         }).catch(function(err){
                                                             console.log(err);
                                                         });
@@ -1549,7 +1551,7 @@ exports.assign_transfer=function(proc_task_id,node_code,user_code,assign_user_co
                                                                                                }
                                                                                                touchNode(next_detail,user_code,rs[0]._id,true).then(function(res){
                                                                                                    if(res.success){
-                                                                                                       resolve(utils.returnMsg(true, '1000', '流程流转新增任务信息正常8。', rs, null))
+                                                                                                       resolve(utils.returnMsg(true, '1000', '流程流转新增任务信息正常82222。', rs, null))
                                                                                                    }else{
                                                                                                        resolve(rs);
                                                                                                    }
@@ -1932,7 +1934,7 @@ exports.do_payout=function(proc_task_id,node_code,user_code,assign_user_code,pro
                                                                         xunhuan().then(function(res){
                                                                             //将任务信息返回给调用接口方
                                                                             console.log(res,'这个是不是返回给他们的信息');
-                                                                            resolve(utils.returnMsg(true, '1000', '流程流转新增任务信息正常8。',res, null));
+                                                                            resolve(utils.returnMsg(true, '1000', '流程流转新增任务信息正常81111。',res, null));
                                                                         }).catch(function(err){
                                                                             console.log(err);
                                                                         });

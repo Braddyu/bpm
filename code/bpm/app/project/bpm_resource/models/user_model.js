@@ -32,7 +32,7 @@ var userSchema = new Schema(
             theme_skin : String,// 使用皮肤
             user_photo : String,// 用户头像/照片
             user_roles :  [{type: Schema.Types.ObjectId}],// 菜单访问权限使用角色
-            sys_roles:[],//流程使用的角色
+            sys_roles:[{type: Schema.Types.ObjectId}],//流程使用的角色
             boss_id:String,//对接外部系统专用的 Boss_id
             smart_visual_sys_user_id:String,//慧眼系统的 User_id
             athena_sys_user_id:String,//Athena系统的user_id
