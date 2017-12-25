@@ -122,6 +122,7 @@ var config = {
             project_url_prefix + '/portal',
             project_url_prefix +'/profile',
             project_url_prefix +'/setting',
+            project_url_prefix +'/getVerificationcode',
             project_url_prefix +'/api/workflow/*',
             // project_url_prefix + '/api/demo/*',
             // project_url_prefix+"api/workflow/*"

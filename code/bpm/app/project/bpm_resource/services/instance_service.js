@@ -365,12 +365,13 @@ exports.createInstance=function(proc_code,proc_ver,proc_title,param_json_str,pro
                     nodeAnalysisService.getNode(data._id,firstNode,params,true)
                         .then(function(rss){
                             console.log("node in fo   and  note the request node_code and info");
-                            console.log(rss);
+                            // console.log(rss);
 
 
                             //获取下一节点的操作人 或者 操作角色信息
                             nodeAnalysisService.findNextHandler(user_code,data._id,firstNode,params,"").then(function(rsss){
                                 var condition={};
+                                console.log("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++???",rsss);
                                 if(rss.success&&rsss.success){
                                     // console.log(rss.data);
 
@@ -583,6 +584,7 @@ function insertTask(result,condition){
             task.proc_inst_task_assignee_name=proc_inst_task_assignee_name;// : array,// 流程处理人名
             task.proc_inst_task_user_role =proc_inst_task_user_role;//: String,// 流程处理用户角色ID
             task.proc_inst_task_user_role_name=proc_inst_task_user_role_name;// : String,// 流程处理用户角色名
+            if(condition.proc_inst_task_user_org)
             task.proc_inst_task_user_org=condition.proc_inst_task_user_org;//String  //流程处理用户的组织
             // task.proc_inst_task_user_org_name=condition.proc_inst_task_user_org_name;//String  //流程处理用户的组织名称；
             task.proc_inst_task_params=proc_inst_task_params;// : String,// 流程参数(任务参数)
