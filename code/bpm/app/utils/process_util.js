@@ -5,13 +5,14 @@ var http=require('http');
 /**
  *
  * @param mobile 电话
- * @param params 格式:
+ * @param params json对象数据中的key必须与config.js中tmplet_key中变量一致:
  * {
  * "procName":"预警工单",
  * "orderNo":"100000000001"
  * }
+ * @param tmplet_key 模板编码，必须在config.js定义
  */
-exports.sendSMS=function(mobile,params){
+exports.sendSMS=function(mobile,params,tmplet_key){
     return  new Promise(function(resolve,reject){
         try{
             //是否开启短信服务
@@ -19,9 +20,20 @@ exports.sendSMS=function(mobile,params){
             if(isOpen){
                 //获取请求内容
                 var postContent=config.SMS.postContent;
+                var SMS_TEMPLET;
                 //短信模板
-                var SMS_TEMPLET=config.SMS_TEMPLET;
-                SMS_TEMPLET=SMS_TEMPLET.replace('proc',params.procName).replace('order',params.orderNo);
+                if(tmplet_key){
+                    SMS_TEMPLET=config[tmplet_key];
+                    if(SMS_TEMPLET){
+                        for(let key in params){
+                            SMS_TEMPLET=SMS_TEMPLET.replace(key,params[key]);
+                        }
+                    }else{
+                        reject("短信模板不存在");
+                        return;
+                    }
+
+                }
                 console.log(SMS_TEMPLET);
                 //加上时间戳
                 postContent.PubInfo.TransactionTime=moment().format('YYYYMMDDHHmmss');
@@ -69,7 +81,7 @@ exports.sendSMS=function(mobile,params){
 
         }catch (e){
             console.log(e);
-            reject(e);
+            reject("发送短信错误");
         }
     })
 

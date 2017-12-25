@@ -1145,7 +1145,7 @@ function normal_process(current_detail,next_detail, next_node, proc_inst_id, res
                                                                             "procName":proc_name,
                                                                             "orderNo":condition_task.proc_inst_id
                                                                         }
-                                                                        process_utils.sendSMS(mobile,params).then(function(rs){
+                                                                        process_utils.sendSMS(mobile,params,"SMS_TEMPLET_ORDER").then(function(rs){
                                                                             console.log("短信发送成功");
                                                                         }).catch(function(err){
                                                                             console.log("短信发送失败",err);
@@ -1541,7 +1541,7 @@ exports.assign_transfer=function(proc_task_id,node_code,user_code,assign_user_co
                                                                                                        "procName":proc_name,
                                                                                                        "orderNo":inst_id
                                                                                                    }
-                                                                                                   process_utils.sendSMS(mobile,params).then(function(rs){
+                                                                                                   process_utils.sendSMS(mobile,params,"SMS_TEMPLET_ORDER").then(function(rs){
                                                                                                        console.log("短信发送成功");
                                                                                                    }).catch(function(err){
                                                                                                        console.log("短信发送失败",err);
@@ -1915,7 +1915,7 @@ exports.do_payout=function(proc_task_id,node_code,user_code,assign_user_code,pro
                                                                                             "procName":proc_name,
                                                                                             "orderNo":inst_id
                                                                                         }
-                                                                                        process_utils.sendSMS(mobile,params).then(function(rs){
+                                                                                        process_utils.sendSMS(mobile,params,"SMS_TEMPLET_ORDER").then(function(rs){
                                                                                            console.log("短信发送成功");
                                                                                         }).catch(function(err){
                                                                                             console.log("短信发送失败",err);
