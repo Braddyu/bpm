@@ -1074,7 +1074,12 @@ function normal_process(current_detail,next_detail, next_node, proc_inst_id, res
 
                                                     }
                                                     // condition_task.proc_inst_task_user_org_name=org.user_org_name;
+                                                    console.log("_______________________________________________",org.user_org_id);
+                                                    // if(org.user_org_id){
+                                                    //
+                                                    // }
                                                     condition_task.proc_inst_task_user_org=org.user_org_id;
+
 
                                                     if(org.proc_inst_task_assignee) {
                                                         condition_task.proc_inst_task_assignee = org.proc_inst_task_assignee;

@@ -1145,14 +1145,17 @@ exports.findNextHandler=function(user_code,proc_define_id,node_code,params,proc_
                                 })
                             }else if(type==2){
                                 // 角色
-                                if(next_detail.item_assignee_org_ids.indexOf(",")!=-1){
-
-                                    var item_assignee_org_ids = next_detail.item_assignee_org_ids.split(",");
-
+                                var item_assignee_org_ids;
+                                if(next_detail.item_assignee_org_ids){
+                                    if(next_detail.item_assignee_org_ids.indexOf(",")!=-1){
+                                        item_assignee_org_ids = next_detail.item_assignee_org_ids.split(",");
+                                    }else{
+                                        item_assignee_org_ids = [next_detail.item_assignee_org_ids];
+                                    }
                                 }else{
-
-                                    var item_assignee_org_ids = [next_detail.item_assignee_org_ids];
+                                     item_assignee_org_ids = [];
                                 }
+
 
                                 returnMap.proc_inst_task_assignee="";
                                 returnMap.proc_inst_task_assignee_name="";
