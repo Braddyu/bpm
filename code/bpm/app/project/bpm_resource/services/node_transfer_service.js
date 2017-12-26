@@ -1847,7 +1847,7 @@ exports.do_payout=function(proc_task_id,node_code,user_code,assign_user_code,pro
                                                                                     console.log("resultss[0]",resultss[0]);
                                                                                     var user_org = resultss[0].user_org;
                                                                                     var user_name = resultss[0].user_name;
-                                                                                    var user_roles = resultss[0].user_roles.toString();
+                                                                                    var user_roles = resultss[0].user_roles;
                                                                                     //获取流程定义
                                                                                     let result_t = await nodeAnalysisService.findParams(proc_inst_id, node_code);
 
