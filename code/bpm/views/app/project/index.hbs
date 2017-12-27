@@ -108,7 +108,7 @@
             ]],
             onDblClickRow:function(rowIndex, rowData){
                 //待办传状态为2
-                var url='{{projcfg.appurl}}/api/order_manage/order_list/showDetailView?proc_code=p-109&change_id='+rowData._id+'&status=2';
+                var url='{{projcfg.appurl}}/api/order_manage/order_list/showDetailView?proc_code='+rowData.proc_code+'&change_id='+rowData._id+'&status=2';
                 var content = '<iframe src="'+url+'" width="100%" height="99%" frameborder="0" scrolling="yes"></iframe>';
 
 
@@ -195,7 +195,7 @@
                     }}
             ]],
             onDblClickRow:function(rowIndex, rowData){
-                var url='{{projcfg.appurl}}/api/order_manage/order_list/showDetailView?proc_code=p-109&change_id='+rowData.proc_inst_id+'&status=3';
+                var url='{{projcfg.appurl}}/api/order_manage/order_list/showDetailView?proc_code='+rowData.proc_code+'&change_id='+rowData.proc_inst_id+'&status=3';
                 var content = '<iframe src="'+url+'" width="100%" height="99%" frameborder="0" scrolling="yes"></iframe>';
 
 
@@ -226,7 +226,7 @@
     function loadOrderArchiveListDatagrid(){
         // 加载已归档工单基本属性列表
         $('#orderTablelist3').datagrid({
-            url:'{{projcfg.appurl}}/api/order_manage/order_complete/lists',
+            url:'{{projcfg.appurl}}/api/order_manage/order_complete/file_list',
             method:'post',
             rownumbers:true,
             striped:true,
@@ -255,7 +255,7 @@
 
             ]],
             onDblClickRow:function(rowIndex, rowData){
-                var url='{{projcfg.appurl}}/api/order_manage/order_list/showDetailView?proc_code=p-109&change_id='+rowData._id+'&status=1';
+                var url='{{projcfg.appurl}}/api/order_manage/order_list/showDetailView?proc_code='+rowData.proc_code+'&change_id='+rowData._id+'&status=1';
                 var content = '<iframe src="'+url+'" width="100%" height="99%" frameborder="0" scrolling="yes"></iframe>';
 
 

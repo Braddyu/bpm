@@ -374,6 +374,7 @@ exports.transfer=function(proc_inst_task_id,node_code,user_code,opts,memo,param_
                                                                                 }else{
                                                                                     var obj=new Object(r[0]._doc);
                                                                                     obj.proc_task_id=obj._id;
+
                                                                                     delete obj._id;
                                                                                     var arr_c=[];
                                                                                     arr_c.push(obj);
@@ -1459,6 +1460,9 @@ exports.assign_transfer=function(proc_task_id,node_code,user_code,assign_user_co
 
                                                        console.log("1111111111111111111111111111111111",r);
                                                        var obj=new Object(r[0]._doc);
+                                                       var role_code = r[0].proc_task_start_user_role_code;//发起人角色id
+                                                       var role_name = r[0].proc_task_start_user_role_names;//发起人角色名
+                                                       var name = r[0].proc_task_start_name;//流程发起人
                                                        obj.proc_task_id=obj._id;
                                                        delete obj._id;
                                                        var arr_c=[];
@@ -1531,6 +1535,9 @@ exports.assign_transfer=function(proc_task_id,node_code,user_code,assign_user_co
                                                                                        condition_task.proc_inst_task_sms =item_sm_warn;// Number,// 流程是否短信提醒
                                                                                        condition_task.proc_inst_task_remark = "";// : String// 流程处理意见
                                                                                        condition_task.proc_inst_task_assignee = assign_user_code;
+                                                                                       condition_task.proc_task_start_user_role_names = role_name;//流程发起人角色
+                                                                                       condition_task.proc_task_start_user_role_code = role_code;//流程发起人id
+                                                                                       condition_task.proc_task_start_name = name;//流程发起人角色
                                                                                        var arr = [];
                                                                                        arr.push(condition_task);
                                                                                        //创建新流转任务

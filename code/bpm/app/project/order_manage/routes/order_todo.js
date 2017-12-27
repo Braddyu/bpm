@@ -14,6 +14,9 @@ router.route('/list').post(function(req,res){
     var userNo = req.session.current_user.user_no;//用户编号
     var page = req.body.page;//页码
     var length = req.body.rows;//每页条数
+    var proc_code = req.body.proc_code;//流程编码
+    var startDate = req.body.startDate;//创建时间
+    var endDate = req.body.endDate;//创建时间
     console.log("用户编号",userNo)
     // 验证用户编号是否为空
     if(!userNo) {
@@ -24,7 +27,7 @@ router.route('/list').post(function(req,res){
     userService.getUsreRolesByUserNo(userNo).then(function(result){
         console.log(result);
         if(result){
-            todoService.getMyTaskQuery4Eui(page,length,userNo,result).then(function(taskresult){
+            todoService.getMyTaskQuery4Eui(page,length,userNo,result,proc_code,startDate,endDate).then(function(taskresult){
                // console.log(taskresult)
                 utils.respJsonData(res, taskresult);
             }).catch(function(err_inst){

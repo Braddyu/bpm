@@ -3,21 +3,42 @@ var router = express.Router();
 var utils = require('../../../../lib/utils/app_utils');
 var service = require('../services/order_list_service');
 var formidable=require("formidable");
-var inst = require('../services/instance_service');
-var nodeTransferService=require("../services/node_transfer_service");
+var inst = require('../../bpm_resource/services/instance_service');
+var nodeTransferService=require("../../bpm_resource/services/node_transfer_service");
 var userService = require('../../workflow/services/user_service');
-var nodeAnalysisService=require("../services/node_analysis_service");
+var nodeAnalysisService=require("../../bpm_resource/services/node_analysis_service");
 var config = require('../../../../config');
 /**
  * 工单列表
  */
 router.route('/list').post(function(req,res){
+    console.log(req.session.current_user);
     console.log("开始获取所有工单列表...");
     var userNo = req.session.current_user.user_no;//用户编号
     var page = req.body.page;
     var size = req.body.rows;
-    console.log(req.session.current_user)
+    var proc_code = req.body.proc_code;//流程编码
+    var startDate = req.body.startDate;//创建时间
+    var endDate = req.body.endDate;//创建时间
     var conditionMap = {proc_start_user:userNo};
+    if(proc_code){
+        conditionMap.proc_code=proc_code;
+    }
+
+    var compare={};
+    //开始时间
+    if(startDate){
+        compare['$gte']=new Date(startDate);
+    }
+    //结束时间
+    if(endDate){
+        //结束时间追加至当天的最后时间
+        compare['$lte']=new Date(endDate+' 23:59:59');
+    }
+    //时间查询
+    if(!isEmptyObject(compare)){
+        conditionMap['proc_start_time']=compare;
+    }
 
     // 调用分页
     service.getOrderListPage(page,size,conditionMap)
@@ -184,9 +205,11 @@ router.route('/complete') .post(function(req,res) {
         var params={};//流转参数
         //通过或者归档
         if(handle=='1'){
-            params.flag=true;
+            params='{\"flag\":true}';
+           // params.flag=true;
          }else{
-            params.flag=false;
+            params='{\"flag\":false}';
+            //params.flag=false;
         }
         var biz_vars;
         var proc_vars;
@@ -269,6 +292,11 @@ router.post('/orderDetail', function(req, res) {
         });
 
 });
-
+function isEmptyObject(e) {
+    var t;
+    for (t in e)
+        return !1;
+    return !0
+}
 
 module.exports = router;

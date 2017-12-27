@@ -22,7 +22,7 @@
                                     <label for="filterParam3">开始时间：</label>
                                     <input id="endDate" class="easyui-datebox" label="Start Date:" labelPosition="top" style="width:130px;height:30px">
                                 </div>
-                                <span style="color:red;font-size:13px">提示:双击处理工单</span>
+                                <span style="color:red;font-size:13px">提示:双击查看工单</span>
                             </div>
                         </div>
                         <div class="col-xs-4 col-md-4 text-right">
@@ -38,7 +38,7 @@
                             </form>
                         </div>
                     </div>
-                    <table id="orderTablelist">
+                    <table id="detailTable">
 
                     </table>
 
@@ -53,14 +53,11 @@
 
 
 
-
-
 <script type="text/javascript">
 
-
     $(document).ready(function () {
-        //加载我的待办列表
-        loadOrderTodaoListDatagrid();
+        //加载所辖渠道未处理工单
+       loadChannelTodoListDatagrid();
 
         //初始化工单类型下拉框
         getAllProBase();
@@ -106,11 +103,17 @@
             if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
         return fmt;
     }
-    function loadOrderTodaoListDatagrid(){
+    function loadChannelTodoListDatagrid(){
 
         // 加载工单基本属性列表
-        $('#orderTablelist').datagrid({
-            url:'{{projcfg.appurl}}/api/order_manage/order_todo/list',
+        $('#detailTable').datagrid({
+            url:'{{projcfg.appurl}}/api/order_manage/order_statistics/channel_detail_list',
+            queryParams: {
+                status: '3',
+                proc_code: $("#proc_task_code").combobox('getValue'),
+                startDate: $("#startDate").datebox('getValue'),
+                endDate: $("#endDate").datebox('getValue'),
+            },
             method:'post',
             rownumbers:true,
             striped:true,
@@ -123,23 +126,58 @@
             checkOnSelect:true,
             columns:[[
                 {"field":"_id",checkbox:true},
-                {"field": "proc_inst_task_title","title":"工单标题","width":100,
+                {"field": "proc_inst_id","title":"工单ID","width":"150px"},
+                {"field": "proc_title","title":"标题","width":"300px",
                     formatter:function(value,row,index){
-                        return "<span title='" + value + "'>" + value + "</span>";
-
-                }},
-                {"field": "proc_name","title":"工单类型","width":50},
-
-                {"field": "proc_inst_task_name","title":"当前处理节点","width":50},
-                {"field": "proc_task_start_name","title":"申请人","width":50},
-                {"field": "proc_inst_task_arrive_time","title":"创建时间","width":80,
+                        return "<span title='" +value + "'>" + value + "</span>";
+                    }},
+                {"field": "proc_vars","title":"派单内容","width":"300px",
                     formatter:function(value,row,index){
-                        return  new Date(value).Format("yyyy-MM-dd hh:mm:ss");
-                    }}
+                        if(value){
+                            var json=JSON.parse(value);
+                            if(json){
+                                return "<span title='" + json.remark + "'>" + json.remark + "</span>";
+                            }else{
+                                return '<span style="color:red">派单内容格式错误</span>';
+                            }
+
+                        }else{
+                            return '无派单内容';
+                        }
+                    }},
+                {"field": "proc_name","title":"类型","width":"150px"},
+                {"field": "proc_inst_task_assignee_name","title":"当前处理人","width":"150px",
+                    formatter:function(value,row,index){
+                        if(row.proc_inst_status==4){
+                            return  '<span style="color:green">/</span>';
+                        }else{
+                            return value;
+                        }
+                    }},
+                {"field": "proc_inst_task_type","title":"当前状态","width":"150px",
+                    formatter:function(value,row,index){
+                        if(row.proc_inst_status==4){
+                            return  '<span style="color:green">已归档</span>';
+                        }else{
+                            return value;
+                        }
+
+
+                    }},
+                {"field": "proc_cur_arrive_time","title":"创建时间","width":"150px",
+                    formatter:function(value,row,index){
+                        return new Date(value).Format("yyyy-MM-dd hh:mm:ss");
+
+                    }},
+                {"field": "proc_start_user_name","title":"工单发起人","width":"150px"},
+                {"field": "channel_code","title":"被派单渠道ID","width":"100px"},
+                {"field": "channel_name","title":"被派单渠道名称","width":"300px"},
+                {"field": "user_name","title":"被派单渠道负责人","width":"150px"},
+                {"field": "user_phone","title":"被派单渠道负责人手机号码","width":"150px"},
             ]],
             onDblClickRow:function(rowIndex, rowData){
-                //待办传状态为2
-                var url='{{projcfg.appurl}}/api/order_manage/order_list/showDetailView?proc_code='+rowData.proc_code+'&change_id='+rowData._id+'&status=2';
+
+                var url='{{projcfg.appurl}}/api/order_manage/order_list/showDetailView?proc_code='+rowData.proc_code+'&change_id='+rowData.proc_inst_id+'&status=3';
                 var content = '<iframe src="'+url+'" width="100%" height="99%" frameborder="0" scrolling="yes"></iframe>';
 
 
@@ -184,14 +222,15 @@
 
     //查询
     function  doSearch(){
-        $('#orderTablelist').datagrid({
-            url: '{{projcfg.appurl}}/api/order_manage/order_todo/list',
+        $('#detailTable').datagrid({
+            url: '{{projcfg.appurl}}/api/order_manage/order_statistics/channel_detail_list',
             queryParams: {
+                status: '3',
                 proc_code: $("#proc_task_code").combobox('getValue'),
                 startDate: $("#startDate").datebox('getValue'),
                 endDate: $("#endDate").datebox('getValue'),
 
             }
-        });
+        })
     }
 </script>
