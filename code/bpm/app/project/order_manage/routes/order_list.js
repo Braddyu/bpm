@@ -8,6 +8,7 @@ var nodeTransferService=require("../../bpm_resource/services/node_transfer_servi
 var userService = require('../../workflow/services/user_service');
 var nodeAnalysisService=require("../../bpm_resource/services/node_analysis_service");
 var config = require('../../../../config');
+var childProcess = require('child_process');
 /**
  * 工单列表
  */
@@ -52,6 +53,31 @@ router.route('/list').post(function(req,res){
         });
 })
 
+//导出所有工单列表
+router.route('/export_excel').get(function (req,res) {
+    service.getAllOrder( )
+        .then(service.createExcelOrderList)
+        .then(excelBuf=>{
+            const date = new Date();
+            const filename =
+                   date.getFullYear() + '-' +(date.getMonth() + 1) + '-' + date.getDate();
+
+            res.setHeader('Content-Type', 'application/vnd.openxmlformats');
+            res.setHeader(
+                'Content-Disposition',
+                'attachment; filename=' + filename + '.xlsx'
+            );
+            res.end(excelBuf, 'binary');
+        })
+        .catch(e=>{
+            console.log('ERROR: export_excel');
+            console.error(e);
+            utils.respJsonData(res, {
+                error: '服务器出现了问题，请稍候再试'
+            });
+        })
+
+});
 /**
  * 工单类型即所有流程
  */
