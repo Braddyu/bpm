@@ -328,6 +328,13 @@ var config = {
         }
 
     },
+    //所属系统编号
+    joinup_sys:{
+        warningwork_node : 'warnSys_node',//预警工单系统编号
+        error_node: 'errorSys_node',//差错工单系统编号
+        auditor_node: 'auditorSys_node',//稽核工单系统编号
+        eyesight_node: 'syesightSys_node',//慧眼工单系统编号
+    },
     SMS_TEMPLET_ORDER:"渠道工单系统有一张需要您处理的工单，《procName》，工单号：orderNo，请及时登陆认真处理。",
     OPEN_SMS:false
 

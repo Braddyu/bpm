@@ -332,6 +332,7 @@ exports.transfer=function(proc_inst_task_id,node_code,user_code,opts,memo,param_
                                     touchNode(rs.data.next_detail,user_code,proc_inst_task_id,true).then(function(resultss){
                                         if(resultss.success){
                                             if(rs.success){
+                                                console.log(rs,'qwerq')
                                                 var current_detail=rs.data.current_detail;
                                                 var item_type=current_detail.item_type;//当前节点的类型
                                                 console.log("ccccccccccccccccccccccccc",item_type);
@@ -972,6 +973,7 @@ function normal_process(current_detail,next_detail, next_node, proc_inst_id, res
     var proc_inst_node_vars = next_detail.item_node_var;
     var proc_cur_task_name = next_node.name;
     var proc_cur_user;
+    console.log(next_detail,'qwer');
     if (next_detail.item_assignee_type == 1) {
         proc_cur_user = next_detail.item_assignee_user;
 
@@ -1094,6 +1096,8 @@ function normal_process(current_detail,next_detail, next_node, proc_inst_id, res
                                                                 'proc_inst_task_code': proc_cur_task
 
                                                             });
+
+                                                            condition_task.joinup_sys = step_first[0].joinup_sys;//工单所属编号
                                                             condition_task.proc_inst_id = step_first[0].proc_inst_id;
                                                             condition_task.proc_inst_task_assignee = step_first[0].proc_inst_task_assignee;
                                                             condition_task.proc_inst_task_assignee_name = step_first[0].proc_inst_task_assignee_name;
@@ -1113,8 +1117,8 @@ function normal_process(current_detail,next_detail, next_node, proc_inst_id, res
                                                             //condition_task.proc_inst_task_remark = r[0].proc_inst_task_remark;// : String// 流程处理意见
                                                         }
                                                         else{
-                                                         
-                                                            
+
+                                                            condition_task.joinup_sys = r[0].joinup_sys;//工单所属编号
                                                             condition_task.proc_inst_task_params = proc_inst_task_params;// : String,// 流程参数(任务参数)
                                                             condition_task.proc_inst_node_vars = proc_inst_node_vars;// 流程节点变量
                                                             condition_task.proc_inst_biz_vars = biz_vars;// : String,// 业务实例变量
@@ -1463,6 +1467,13 @@ exports.assign_transfer=function(proc_task_id,node_code,user_code,assign_user_co
                                                        delete obj._id;
                                                        var arr_c=[];
                                                        arr_c.push(obj);
+                                                       console.log(arr_c,'arr_carr_carr_c')
+                                                       var role_code = r[0].proc_task_start_user_role_code;//流程发起人角色编码
+                                                       var role_name = r[0].proc_task_start_user_role_names;//流程发起人角色
+                                                       var name = r[0].proc_task_start_name;//流程发起人名
+                                                       var proc_name = r[0].proc_name;
+                                                       var proc_code = r[0].proc_code;
+                                                       var joinup_sys = r[0].joinup_sys;//工单所属系统编号
                                                        // console.log(r);3
                                                        model.$ProcessTaskHistroy.create(arr_c,function (es,ress){
                                                            if(es){
@@ -1531,6 +1542,12 @@ exports.assign_transfer=function(proc_task_id,node_code,user_code,assign_user_co
                                                                                        condition_task.proc_inst_task_sms =item_sm_warn;// Number,// 流程是否短信提醒
                                                                                        condition_task.proc_inst_task_remark = "";// : String// 流程处理意见
                                                                                        condition_task.proc_inst_task_assignee = assign_user_code;
+                                                                                       condition_task.proc_task_start_user_role_names = role_name;//流程发起人角色
+                                                                                       condition_task.proc_task_start_user_role_code = role_code;//流程发起人id
+                                                                                       condition_task.proc_task_start_name = name;//流程发起人姓名
+                                                                                       condition_task.proc_name=proc_name;
+                                                                                       condition_task.proc_code=proc_code;
+                                                                                       condition_task.joinup_sys = joinup_sys;//工单所属系统编号
                                                                                        var arr = [];
                                                                                        arr.push(condition_task);
                                                                                        //创建新流转任务
@@ -1818,11 +1835,13 @@ exports.do_payout=function(proc_task_id,node_code,user_code,assign_user_code,pro
                                                         delete obj._id;
                                                         var arr_c=[];
                                                         arr_c.push(obj);
+                                                        console.log(r,'rrrrrrrrrrrr');
                                                         var role_code = r[0].proc_task_start_user_role_code;//流程发起人角色编码
                                                         var role_name = r[0].proc_task_start_user_role_names;//流程发起人角色
                                                         var name = r[0].proc_task_start_name;//流程发起人名
                                                         var proc_name = r[0].proc_name;
                                                         var proc_code = r[0].proc_code;
+                                                        var joinup_sys = r[0].joinup_sys;//工单所属系统编号
                                                         // console.log(r);3
                                                         model.$ProcessTaskHistroy.create(arr_c,function (es,ress){
                                                             if(es){
@@ -1907,6 +1926,7 @@ exports.do_payout=function(proc_task_id,node_code,user_code,assign_user_code,pro
                                                                                     condition_task.proc_task_start_name = name;//流程发起人姓名
                                                                                     condition_task.proc_name=proc_name;
                                                                                     condition_task.proc_code=proc_code;
+                                                                                    condition_task.joinup_sys = joinup_sys;//工单所属系统编号
                                                                                     // var arr = [];
                                                                                     // arr.push(condition_task);
                                                                                     //创建新流转任务

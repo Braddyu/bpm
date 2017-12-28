@@ -317,7 +317,7 @@ function saveSubIns(dataMap,data,user_code,parent_proc_inst_id){
  */
 
 
-exports.createInstance=function(proc_code,proc_ver,proc_title,param_json_str,proc_vars_json,biz_vars_json,user_code,user_name){
+exports.createInstance=function(proc_code,proc_ver,proc_title,param_json_str,proc_vars_json,biz_vars_json,user_code,user_name,joinup_sys){
     var promise = new Promise(function(resolve,reject){
         var params;
         //解析参数
@@ -427,6 +427,8 @@ exports.createInstance=function(proc_code,proc_ver,proc_title,param_json_str,pro
                                                         condition.proc_inst_task_assignee_name=orgs.proc_inst_task_assignee_name;
                                                     }
                                                     condition.proc_vars = proc_vars_json;
+                                                    //新加字段所属系统编号
+                                                    condition.joinup_sys = joinup_sys;
                                                     console.log(condition);
                                                     //写入数据库 创建流程实例化方法
                                                     saveIns(condition,proc_code,proc_title,user_code).then(function(insresult){
@@ -437,6 +439,8 @@ exports.createInstance=function(proc_code,proc_ver,proc_title,param_json_str,pro
                                                                     console.log(err);
                                                                 }else{
                                                                     console.log(rs);
+                                                                    //新加字段所属系统编号
+                                                                    condition.joinup_sys = rs[0].joinup_sys;
                                                                     condition.work_order_number = rs[0].work_order_number;
                                                                     condition.proc_task_start_user_role_code = rs[0].proc_start_user_role_code;
                                                                     condition.proc_task_start_user_role_names = rs[0].proc_start_user_role_names;
@@ -607,6 +611,7 @@ function insertTask(result,condition){
             task.proc_task_start_user_role_code = condition.proc_start_user_role_code;//流程发起人id
             task.proc_code=condition.proc_code;
             task.proc_name=condition.proc_name;
+            task.joinup_sys = condition.joinup_sys;
             console.log("&&&&&&&&&&&&&&&&&&&&&&&&&&",condition);
 
             var arr=[];
@@ -704,6 +709,7 @@ function saveIns(dataMap,proc_code,proc_title,user_code){
             inst.proc_define=data_define.proc_define;//流程定义文件
             inst.item_config=data_define.item_config;//流程节点信息
             inst.proc_vars=dataMap.proc_vars;//流程变量
+            inst.joinup_sys = dataMap.joinup_sys;//工单所属系统编号
 
             var arr = [];
             arr.push(inst);
@@ -972,14 +978,14 @@ exports.getMyInstList= function(userCode) {
  * @param userCode
  * @param paramMap
  */
-exports.getMyTaskQuery4Eui= function(page,size,userCode,paramMap) {
-
+exports.getMyTaskQuery4Eui= function(page,size,userCode,paramMap,joinup_sys) {
+    console.log(paramMap,'paramMapparamMap');
     var p = new Promise(function(resolve,reject){
         var userArr = [];
         userArr.push(userCode);
         var conditionMap = {};
         //proc_inst_task_user_org  进行模糊匹配
-        conditionMap['$or'] = [{'proc_inst_task_assignee':{'$in':userArr}},{'proc_inst_task_user_role':{'$in':paramMap.roles}},{'proc_inst_task_user_org':{'$in':paramMap.orgs}}];
+        conditionMap['$and'] = [{'joinup_sys':joinup_sys},{'proc_inst_task_assignee':{'$in':userArr}},{$or:[{'proc_inst_task_user_role':{'$in':paramMap.roles}},{'proc_inst_task_user_org':{'$in':paramMap.orgs}}]}];
         // conditionMap['$or'] = [{'proc_inst_task_assignee':{'$in':userArr}},{'proc_inst_task_user_role':{'$in':paramMap.roles},'proc_inst_task_user_org':{'$in':paramMap.orgs}}];
         conditionMap.proc_inst_task_status = 0;
         console.log(conditionMap);
@@ -993,14 +999,14 @@ exports.getMyTaskQuery4Eui= function(page,size,userCode,paramMap) {
  * @param userCode
  * @param paramMap
  */
-exports.getMyCompleteTaskQuery4Eui= function(page,size,userCode,paramMap) {
+exports.getMyCompleteTaskQuery4Eui= function(page,size,userCode,paramMap,joinup_sys) {
 
     var p = new Promise(function(resolve,reject){
         var userArr = [];
         userArr.push(userCode);
         var conditionMap = {};
         //proc_inst_task_user_org  进行模糊匹配
-        conditionMap['$or'] = [{'proc_inst_task_assignee':{'$in':userArr}},{'proc_inst_task_user_role':{'$in':paramMap.roles}},{'proc_inst_task_user_org':{$in:paramMap.orgs}}];
+        conditionMap['$and'] = [{'joinup_sys':joinup_sys},{'proc_inst_task_assignee':{'$in':userArr}},{$or:[{'proc_inst_task_user_role':{'$in':paramMap.roles}},{'proc_inst_task_user_org':{'$in':paramMap.orgs}}]}];
         // conditionMap['$or'] = [{'proc_inst_task_assignee':{'$in':userArr}},{'proc_inst_task_user_role':{'$in':paramMap.roles},'proc_inst_task_user_org':{'$in':paramMap.orgs}}];
         conditionMap.proc_inst_task_status = 1;
         console.log(conditionMap);

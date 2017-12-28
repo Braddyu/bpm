@@ -567,6 +567,7 @@ HOST: http://192.168.9.66:30002/gdgl/api
 			  "proc_vars": "",(json字符串格式-流程实例从开始到归档都不需要变动的工单参数)
 			  "biz_vars":""(json字符串格式-业务工单需要的参数)
 			  "params":{"flag":false}(flag为线上的参数，线上有就必须传没有可以传"")
+			  "joinup_sys":"warnSys_node";//所属系统编号(warnSys_node-预警工单系统编号:errorSys_node-差错工单系统编号:auditorSys_node-稽核工单系统编号:syesightSys_node-慧眼工单系统编号)
             }
     
 + Response 200
@@ -643,7 +644,25 @@ HOST: http://192.168.9.66:30002/gdgl/api
             {
               "user_no": "gongli",
               "page": 1,
-              "rows": 50
+              "rows": 50,
+			  "joinup_sys":"warnSys_node";//所属系统编号(warnSys_node-预警工单系统编号:errorSys_node-差错工单系统编号:auditorSys_node-稽核工单系统编号:syesightSys_node-慧眼工单系统编号)
+            }
+
++ Response 200
+
+    {success:true, code:'0000', msg:'查询成功。',rows:[data],total:2}  
+	
+## 我的已办任务集合 [/task/havetodo]
+### 获取我的已办任务集合 [POST]
+
++ Request
+    + Body
+
+            {
+              "user_no": "gongli",
+              "page": 1,
+              "rows": 50,
+			  "joinup_sys":"warnSys_node";//所属系统编号(warnSys_node-预警工单系统编号:errorSys_node-差错工单系统编号:auditorSys_node-稽核工单系统编号:syesightSys_node-慧眼工单系统编号)
             }
 
 + Response 200
@@ -721,6 +740,70 @@ HOST: http://192.168.9.66:30002/gdgl/api
 
     {success:true, code:'0000', msg:'任务完成成功。'} 
 	
+	
+## 分公司稽核指派任务 [/assign/interim_task]
+### 分公司稽核指派任务 [POST]
+
++ Request
+    + Body
+
+            {
+              proc_inst_id:5a42f6687168ba0e98594b12,(流程实例ID)
+			  task_id:5a42f6687168ba0e98594b15,(当前任务ID)
+			  node_code:processDefineDiv_node_2,(下一节点编号)
+			  user_no:13984126789,(当前处理人编号)
+			  user_name:"梁峻珲",(当前处理人姓名)
+			  assign_user_no:admin1,(下一节点处理人编号)
+			  proc_title:"分公司稽核测试",(标题)
+			  biz_vars:"",(json字符串格式-业务工单需要的参数)
+			  proc_vars:"",(可以为空，json字符串格式-不需变动的工单参数)
+			  memo:"处理意见",(审批意见)
+            }
+
++ Response 200
+
+    {
+  "success": true,
+  "code": "1000",
+  "msg": "流程流转新增任务信息正常82222。",
+  "data": [
+    {
+      "__v": 0,
+      "proc_inst_id": "5a42f6687168ba0e98594b12",
+      "proc_inst_task_code": "processDefineDiv_node_2",
+      "proc_inst_task_name": "省公司稽核",
+      "proc_inst_task_type": "省公司稽核",
+      "proc_inst_task_arrive_time": "2017-12-27T01:29:40.538Z",
+      "proc_inst_task_handle_time": "2017-12-27T01:29:40.538Z",
+      "proc_inst_task_complete_time": null,
+      "proc_inst_task_status": 0,
+      "proc_inst_task_assignee_name": "admin",
+      "proc_inst_task_title": "\"分公司稽核测试\"",
+      "proc_inst_biz_vars": "\"\"",
+      "proc_inst_prev_node_code": "processDefineDiv_node_3",
+      "proc_inst_prev_node_handler_user": "13984126789",
+      "proc_inst_node_vars": "5734140b920170f892249b23",
+      "proc_code": "p-108",
+      "proc_name": "深度稽核派单",
+      "proc_vars": "\"\"",
+      "proc_inst_task_params": "flag",
+      "proc_inst_task_claim": null,
+      "proc_inst_task_sign": 1,
+      "proc_inst_task_sms": 0,
+      "proc_inst_task_remark": "",
+      "proc_inst_task_assignee": "admin1",
+      "_id": "5a42f7847168ba0e98594b19",
+      "proc_task_start_user_role_code": [],
+      "proc_inst_task_user_org": [
+        "5a275c0377ec2e1e844878dd"
+      ],
+      "proc_inst_task_user_role": [
+        "5a24aab506255330b47e45e1"
+      ]
+    }
+  ],
+  "finish": 1
+}	
 
 
 

@@ -151,7 +151,7 @@ var commonProcessInstSchema = new Schema(
         proc_org : String, // 组织
         proc_cur_task_overtime_sms : Number,//流程当前节点超时短信标记(1:待处理，2:已处理，3:不需要处理)
         proc_cur_task_overtime_sms_count : Number,//流程当前节点超时短信发送次数
-        proc_pending_users : [],//当前流程的待处理人信息
+        proc_pending_users : [],//当前流                                                                                                                            程的待处理人信息
         proc_task_history:String,//处理任务历史记录
         proc_define:String,//流程描述文件
         item_config:String,//流程节点配置信息
@@ -161,6 +161,7 @@ var commonProcessInstSchema = new Schema(
         proc_inst_opt_user:String,//流程实例操作人--回退、废弃操作
         proc_inst_opt_user_name:String,//流程实例操作人姓名
         proc_opt_time:Date,//流程实例操作时间
+        joinup_sys:String,//所属系统编号
 
 
     },
@@ -208,7 +209,8 @@ var commonProcessInstTaskSchema = new Schema(
         proc_task_content : String,// 流程派单内容
         proc_task_code : String,// 流程编码
         proc_start_time : Date,// 流程发起时间(开始时间)
-        proc_vars : String// 流程变量
+        proc_vars : String,// 流程变量
+        joinup_sys:String,//所属系统编号
     },
     {collection: "common_bpm_proc_inst_task"}// mongodb集合名
 );
@@ -257,6 +259,7 @@ var commonProcessTaskHistroySchema = new Schema(
         // proc_task_code : String,// 流程编码
         proc_start_time : Date,// 流程发起时间(开始时间)
         proc_vars : String,// 流程变量
+        joinup_sys:String,//所属系统编号
     },
     {collection: "common_bpm_proc_task_histroy"}// mongodb集合名
 );
