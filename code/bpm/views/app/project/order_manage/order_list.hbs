@@ -30,6 +30,7 @@
                                             <!--<input type="input" id="filterParam1" class="form-control" style="width:130px;" placeholder="输入标题查询"/>-->
                                             <span class="input-group-btn">
                                                 <button class="btn btn-default" type="button" onclick="doSearch()"><i class="fa fa-search"></i>查询</button>
+                                                <button class="btn btn-default" type="button" id="exportData"><i class="glyphicon glyphicon-open"></i>导出</button>
                                             </span>
                                         </div>
                                     </div>
@@ -418,4 +419,34 @@
            }
        });
     }
+
+    /**
+     * 导出数据
+     */
+    $("#exportData").click(function () {
+        $.messager.confirm('导出', '确定要导出吗?', function(r) {
+            if (r) {
+                downloadExcel();
+            }
+        });
+    });
+
+    /**
+     * 是否在下载中 防止重复点击
+     */
+    var downloadExcelIng = false;
+    /**
+     * 下载excel
+     */
+    function downloadExcel() {
+        if (downloadExcelIng) {
+            return;
+        }
+        downloadExcelIng = true;
+
+        var downloadUrl = '{{projcfg.appurl}}/api/order_manage/order_list/export_excel';
+        window.open(downloadUrl);
+        downloadExcelIng = false;
+    }
+
 </script>
