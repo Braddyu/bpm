@@ -21,8 +21,9 @@ var commonCoreProcessMistake = new Schema(
         business_name : String,//业务名称
         check_status : String,//稽核状态
         remark : String,//稽核说明
-        status:Number,//派单状态0:未派单 1:已派单 -1:派单失败
-        dispatch_remark:String//派单结果
+        proc_inst_id: Schema.Types.ObjectId,//实例编码
+        status:Number,//派单状态-1:派单失败，0:未派单 1:已派单 ，2：回传失败 3：回传成功
+        dispatch_remark:String//派单说明
 
     },
     {collection: "common_bpm_mistake"}// mongodb集合名
