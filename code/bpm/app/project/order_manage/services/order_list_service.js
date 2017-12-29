@@ -75,8 +75,15 @@ function createExcelOrderList(list) {
 
         data.push(tmp);
     });
+    var ws = {
+        s:{
+            "!row" : [{wpx: 67}]
+        }
+    };
+    ws['!cols']= [{wpx: 100},{wpx: 100},{wpx: 100},{wpx: 100},{wpx: 100},{wpx: 100},{wpx: 100}];
 
-    return xlsx.build([{name:'Sheet1',data:data}]);
+
+    return xlsx.build([{name:'Sheet1',data:data}],ws);
 }
 
 exports.createExcelOrderList = createExcelOrderList;
