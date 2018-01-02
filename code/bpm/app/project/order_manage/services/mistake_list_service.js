@@ -271,7 +271,7 @@ function insertMistake(mistake,business_name,channel_org,queryJson,three_node_co
                                    var memo = '差错工单派发成功';
 
                                    //创建工单，分发任务
-                                   inst.createInstance(proc_code, proc_ver, proc_title, "", proc_vars, biz_vars, user_code, userName)
+                                   inst.createInstance(proc_code, proc_ver, proc_title, "", proc_vars, biz_vars, user_code, userName,"errorSys_node")
                                        .then(function (result) {
                                            if (result.success) {
                                                var task_id = result.data[0]._id;

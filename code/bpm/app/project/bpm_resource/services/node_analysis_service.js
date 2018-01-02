@@ -1103,7 +1103,7 @@ exports.findNextHandler=function(user_code,proc_define_id,node_code,params,proc_
                             }).then(function () {
                                 returnMap.proc_inst_task_assignee="";
                                 returnMap.proc_inst_task_assignee_name="";
-                                returnMap.user_org_id=[user_org_id];
+                                returnMap.user_org_id=user_org_id;
                                 resolve(utils.returnMsg(true, '10000', '查询用户org', returnMap, null))
                             })
 
@@ -1134,7 +1134,7 @@ exports.findNextHandler=function(user_code,proc_define_id,node_code,params,proc_
                                         reject(utils.returnMsg(false, '10001', '查询用户信息错误', null, err))
                                     }else{
                                         if(result.length>0){
-                                            returnMap.user_org_id=[result[0].user_org];
+                                            returnMap.user_org_id=result[0].user_org;
                                             returnMap.proc_inst_task_assignee="";
                                             returnMap.proc_inst_task_assignee_name="";
                                             resolve(utils.returnMsg(true, '00000', '查询用户org', returnMap, null))
@@ -1153,14 +1153,24 @@ exports.findNextHandler=function(user_code,proc_define_id,node_code,params,proc_
                                         item_assignee_org_ids = [next_detail.item_assignee_org_ids];
                                     }
                                 }else{
-                                     item_assignee_org_ids = [];
+                                    model_user.$User.find({"user_no":user_code},function(err,result){
+                                        if(err){
+                                            console.log(err);
+                                            reject(utils.returnMsg(false, '10001', '查询用户信息错误', null, err))
+                                        }else{
+                                            if(result.length>0){
+                                                returnMap.user_org_id=result[0].user_org;
+                                                returnMap.proc_inst_task_assignee="";
+                                                returnMap.proc_inst_task_assignee_name="";
+                                                resolve(utils.returnMsg(true, '00000', '查询用户org', returnMap, null))
+                                            }else{
+                                                resolve(utils.returnMsg(false, '10000', '查询无用户数据',null, err))
+                                            }
+                                        }
+                                    })
                                 }
 
 
-                                returnMap.proc_inst_task_assignee="";
-                                returnMap.proc_inst_task_assignee_name="";
-                                returnMap.user_org_id=item_assignee_org_ids;
-                                resolve(utils.returnMsg(true, '10000', '查询用户org', returnMap, null))
 
                             }else if(type==3){
                                 //参考
@@ -1182,7 +1192,7 @@ exports.findNextHandler=function(user_code,proc_define_id,node_code,params,proc_
                                             // console.log("resultsresultsresultsresultsresultsresultsresultsresultsresultsresults \n",results)
                                             returnMap.proc_inst_task_assignee=results[0].proc_inst_task_assignee;
                                             returnMap.proc_inst_task_assignee_name=results[0].proc_inst_task_assignee
-                                            returnMap.user_org_id=[results[0].proc_inst_task_user_org];
+                                            returnMap.user_org_id=results[0].proc_inst_task_user_org;
                                             resolve(utils.returnMsg(true, '10000', '查询用户org', returnMap, null))
                                         }
                                     })
@@ -1206,7 +1216,7 @@ exports.findNextHandler=function(user_code,proc_define_id,node_code,params,proc_
                                                             reject(utils.returnMsg(false, '10001', '查询用户信息错误', null, e_a));
                                                         }else{
                                                             user_org_id = r_a[0].user_org;
-                                                            returnMap.user_org_id=[user_org_id];
+                                                            returnMap.user_org_id=user_org_id;
                                                             returnMap.proc_inst_task_assignee="";
                                                             returnMap.proc_inst_task_assignee_name="";
                                                             resolve(utils.returnMsg(true, '10000', '查询用户org1', returnMap, null))
@@ -1225,7 +1235,7 @@ exports.findNextHandler=function(user_code,proc_define_id,node_code,params,proc_
                                                     reject(utils.returnMsg(false, '10001', '查询用户信息错误', null, err))
                                                 } else {
                                                     user_org_id = rs[0].user_org;
-                                                    returnMap.user_org_id=[user_org_id];
+                                                    returnMap.user_org_id=user_org_id;
                                                     returnMap.proc_inst_task_assignee="";
                                                     returnMap.proc_inst_task_assignee_name="";
                                                     resolve(utils.returnMsg(true, '10000', '查询用户org1', returnMap, null))
@@ -2746,7 +2756,14 @@ exports.getNextNodeAndHandlerInfo=function(node_code,proc_task_id,proc_inst_id,p
                                 var next_node=data.next_node;
 
                                 if (next_detail.item_assignee_type == 1) {
-                                    resolve({"data":[next_detail.item_assignee_user_code],"msg":"查询完成","error":null,"success":true})
+                                    var ret_map=[];
+                                    var temp={};
+                                    temp.user_no=next_detail.item_assignee_user_code;
+                                    temp.user_name=next_detail.item_show_text;
+                                    temp.node_name=next_node.name;
+                                    temp.node_code=next_detail.item_code;
+                                    ret_map.push(temp);
+                                    resolve({"data":ret_map,"msg":"查询完成","error":null,"success":true})
 
                                 }
                                 if (next_detail.item_assignee_type == 2||next_detail.item_assignee_type == 3||next_detail.item_assignee_type == 4) {
@@ -2759,7 +2776,7 @@ exports.getNextNodeAndHandlerInfo=function(node_code,proc_task_id,proc_inst_id,p
                                                console.log(err);
                                                resolve({"data":null,"msg":"查询完成error","error":err,"success":false});
                                            }else{
-                                               // console.log("1111111111111111111111111111111111",res);
+                                                console.log("1111111111111111111111111111111111",res);
                                                var ret_map=[];
                                                // console.log(res);
                                                for(var i=0;res.length>i;i++){

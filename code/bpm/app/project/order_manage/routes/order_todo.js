@@ -3,6 +3,7 @@ var router = express.Router();
 var utils = require('../../../../lib/utils/app_utils');
 var todoService = require('../services/order_todo_service');
 var userService = require('../../workflow/services/user_service');
+var inst = require('../../bpm_resource/services/instance_service');
 var formidable=require("formidable");
 
 /**
@@ -13,7 +14,9 @@ router.route('/list').post(function(req,res){
     // 获取提交信息
     var userNo = req.session.current_user.user_no;//用户编号
     var page = req.body.page;//页码
-    var length = req.body.rows;//每页条数
+    var length = req.body.rows;//
+    var proc_code = req.body.proc_code;//所属流程
+
     console.log("用户编号",userNo)
     // 验证用户编号是否为空
     if(!userNo) {
@@ -24,7 +27,7 @@ router.route('/list').post(function(req,res){
     userService.getUsreRolesByUserNo(userNo).then(function(result){
         console.log(result);
         if(result){
-            todoService.getMyTaskQuery4Eui(page,length,userNo,result).then(function(taskresult){
+            inst.getMyTaskQuery4Eui(page,length,userNo,result,"",proc_code).then(function(taskresult){
                // console.log(taskresult)
                 utils.respJsonData(res, taskresult);
             }).catch(function(err_inst){

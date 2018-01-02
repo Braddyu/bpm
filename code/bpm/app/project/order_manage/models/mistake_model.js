@@ -34,7 +34,7 @@ exports.$ProcessMistake = mongoose.model('CommonCoreProcessMistake', commonCoreP
 var commonCoreProcessMistakeLogs = new Schema(
     {
         proc_name : String,// 流程名称
-        dispatch_time : Date,// 派单时间
+        dispatch_time : String,// 派单时间
         create_user_no : String,// 创建者编号
         create_user_name : String,// 创建者姓名
         create_time:Date,//创建时间

@@ -28,6 +28,7 @@ router.route("/createAndAcceptAssign").post(function(req,res){
     var memo=req.body.memo;
     var params = req.body.params;
     var joinup_sys = req.body.joinup_sys;//String,//工单所属系统编号
+
     if(!joinup_sys){
         utils.respMsg(res, false, '2001', '工单所属系统编号不能为空。', null, null);
         return;
