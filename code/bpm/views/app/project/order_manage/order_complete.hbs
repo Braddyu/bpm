@@ -8,22 +8,13 @@
                     <div id="toolbar1" class="row tbRow">
                         <div class="col-xs-8 col-md-8">
                             <div class="btn-group" role="group" aria-label="...">
+                                <label for="filterParam3">工单类型：</label>
+                                <select class="easyui-combobox"id="proc_task_code"  style="width: 180px;height:31px;">
+                                </select>
+                            </div>
+                            <div class="btn-group" role="group" aria-label="...">
                                 <span style="color:red;font-size:13px">提示:双击查看工单</span>
 
-                                <div class="btn-group" role="group" aria-label="...">
-                                    <!--<button type="button" class="btn btn-default" onclick="addNewOrder()"><i class="fa fa-plus"></i>新增</button>-->
-                                    <label for="filterParam3">工单类型：</label>
-                                    <select class="easyui-combobox"id="proc_task_code"  style="width: 180px;height:31px;">
-                                    </select>
-                                </div>
-                                <div class="btn-group" role="group" aria-label="...">
-                                    <label for="filterParam3">开始时间：</label>
-                                    <input id="startDate" class="easyui-datebox" label="Start Date:" labelPosition="top" style="width:130px;height:30px">
-                                </div>
-                                <div class="btn-group" role="group" aria-label="...">
-                                    <label for="filterParam3">开始时间：</label>
-                                    <input id="endDate" class="easyui-datebox" label="Start Date:" labelPosition="top" style="width:130px;height:30px">
-                                </div>
                             </div>
                         </div>
                         <div class="col-xs-4 col-md-4 text-right">
@@ -61,30 +52,6 @@
         loadOrderCompleteteListDatagrid();
         //初始化工单类型下拉框
         getAllProBase();
-        $('#startDate').datebox().datebox('calendar').calendar({
-            validator: function(date){
-                var endDate = new Date($('#endDate').datebox('getValue'));
-                if($('#endDate').datebox('getValue')){
-                    var d1 = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate());
-                    return  date<=d1;
-                }else{
-                    return true;
-                }
-            }
-        });
-
-        $('#endDate').datebox().datebox('calendar').calendar({
-            validator: function(date){
-                var startDate = new Date($('#startDate').datebox('getValue'));
-                if($('#startDate').datebox('getValue')){
-                    var d1 = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
-                    return  date>=d1;
-                }else{
-                    return true;
-                }
-
-            }
-        });
     });
     //时间格式化:new Date().Format("yyyy-MM-dd hh:mm:ss");
     Date.prototype.Format = function (fmt) { //author: meizz
@@ -164,7 +131,6 @@
             loadMsg:'正在加载...'
         });
     }
-
     /**
      * 初始化工单类型下拉框
      */
@@ -177,15 +143,12 @@
         });
 
     }
-
     //查询
     function  doSearch(){
         $('#orderTablelist').datagrid({
             url: '{{projcfg.appurl}}/api/order_manage/order_complete/list',
             queryParams: {
-                proc_code: $("#proc_task_code").combobox('getValue'),
-                startDate: $("#startDate").datebox('getValue'),
-                endDate: $("#endDate").datebox('getValue'),
+                proc_code: $("#proc_task_code").combobox('getValue')
 
             }
         });

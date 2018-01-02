@@ -12,116 +12,59 @@
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="FavoritesManager">
-    <favorites_list name="bpm" />
-  </component>
   <component name="FileEditorManager">
-    <leaf SIDE_TABS_SIZE_LIMIT_KEY="375">
-      <file leaf-file-name="order_todo.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/project/order_manage/routes/order_todo.js">
+    <leaf>
+      <file leaf-file-name="order_list.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/project/order_manage/routes/order_list.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="460">
-              <caret line="29" column="32" lean-forward="false" selection-start-line="29" selection-start-column="32" selection-end-line="29" selection-end-column="32" />
+            <state relative-caret-position="253">
+              <caret line="20" column="23" lean-forward="false" selection-start-line="20" selection-start-column="23" selection-end-line="20" selection-end-column="23" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="order_todo_service.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/project/order_manage/services/order_todo_service.js">
+      <file leaf-file-name="order_list_service.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/project/order_manage/services/order_list_service.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="334">
-              <caret line="22" column="47" lean-forward="false" selection-start-line="22" selection-start-column="47" selection-end-line="22" selection-end-column="47" />
+            <state relative-caret-position="161">
+              <caret line="7" column="9" lean-forward="false" selection-start-line="7" selection-start-column="9" selection-end-line="7" selection-end-column="9" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="package.json" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/package.json">
+      <file leaf-file-name="order_model.js" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/app/project/order_manage/models/order_model.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="0">
-              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+            <state relative-caret-position="396">
+              <caret line="49" column="52" lean-forward="false" selection-start-line="49" selection-start-column="16" selection-end-line="49" selection-end-column="52" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="config.js" pinned="false" current-in-tab="true">
+      <file leaf-file-name="order_list.hbs" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/views/app/project/order_manage/order_list.hbs">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-179">
+              <caret line="79" column="15" lean-forward="false" selection-start-line="79" selection-start-column="15" selection-end-line="79" selection-end-column="15" />
+              <folding>
+                <element signature="n#style#0;n#div#0;n#div#0;n#div#0;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#div#0;n#div#0;n#div#0;n#div#0;n#div#0;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#div#0;n#div#0;n#div#0;n#div#0;n#div#0;n#div#0;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#div#0;n#div#0;n#div#0;n#div#0;n#div#0;n#div#0;n#div#0;n#div#0;n#div#0;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#input#0;n#li#0;n#div#0;n#form#0;n#div#0;n#div#0;n#div#0;n#div#0;n#div#0;n#div#0;n#div#0;n#div#0;n#div#0;n#div#0;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="config.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/config.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-6544">
-              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="order_statistics.hbs" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/views/app/project/order_manage/order_statistics.hbs">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="221">
-              <caret line="392" column="64" lean-forward="false" selection-start-line="392" selection-start-column="64" selection-end-line="392" selection-end-column="64" />
-              <folding>
-                <marker date="1514355799795" expanded="true" signature="14752:14761" ph="..." />
-                <marker date="1514355799795" expanded="true" signature="15239:15250" ph="..." />
-                <marker date="1514355799795" expanded="true" signature="15628:15639" ph="..." />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="order_statistics_service.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/project/order_manage/services/order_statistics_service.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="587">
-              <caret line="279" column="14" lean-forward="false" selection-start-line="249" selection-start-column="11" selection-end-line="279" selection-end-column="14" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="channel_todo.hbs" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/views/app/project/order_manage/channel_todo.hbs">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1119">
-              <caret line="151" column="64" lean-forward="false" selection-start-line="151" selection-start-column="64" selection-end-line="151" selection-end-column="64" />
-              <folding>
-                <marker date="1514355814196" expanded="true" signature="6460:6469" ph="..." />
-                <marker date="1514355814196" expanded="true" signature="6964:6975" ph="..." />
-                <marker date="1514355814196" expanded="true" signature="7351:7362" ph="..." />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="order_detail.hbs" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/views/app/project/order_manage/warn_order/order_detail.hbs">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="499">
-              <caret line="127" column="6" lean-forward="true" selection-start-line="127" selection-start-column="6" selection-end-line="127" selection-end-column="6" />
-              <folding>
-                <marker date="1514356001731" expanded="false" signature="4988:4999" ph="..." />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="task.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/project/bpm_resource/routes/task.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="138">
-              <caret line="6" column="15" lean-forward="false" selection-start-line="6" selection-start-column="4" selection-end-line="6" selection-end-column="15" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="instance_service.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/project/bpm_resource/services/instance_service.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="426">
-              <caret line="984" column="32" lean-forward="false" selection-start-line="984" selection-start-column="32" selection-end-line="984" selection-end-column="32" />
+            <state relative-caret-position="649">
+              <caret line="153" column="6" lean-forward="true" selection-start-line="153" selection-start-column="6" selection-end-line="153" selection-end-column="6" />
               <folding />
             </state>
           </provider>
@@ -129,124 +72,32 @@
       </file>
     </leaf>
   </component>
-  <component name="FileTemplateManagerImpl">
-    <option name="RECENT_TEMPLATES">
-      <list>
-        <option value="JavaScript File" />
-      </list>
-    </option>
-  </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>没有这个角色</find>
-      <find>query</find>
-      <find>findNext</find>
-      <find>find_up</find>
-      <find>$in</find>
-      <find>send</find>
-      <find>sendSMS</find>
-      <find>sen</find>
-      <find>proc_inst_id</find>
-      <find>find</find>
-      <find>getPortalModule</find>
-      <find>set</find>
-      <find>dispatch_time</find>
-      <find>aj</find>
-      <find>doSearchOrg</find>
-      <find>CommonCoreProcessTaskHistroy</find>
-      <find>startDate</find>
-      <find>nodeAnalysisService</find>
-      <find>login</find>
-      <find>proc_task_code</find>
-      <find>log</find>
-      <find>user=================</find>
-      <find>assignTask</find>
-      <find>saveUserLoginLog</find>
-      <find>保存登陆日志时出现异常</find>
-      <find>create</find>
-      <find>commonUserLoginLogSchema</find>
-      <find>openDetail</find>
-      <find>assign_transfer</find>
-      <find>transfer</find>
+      <find>datag</find>
+      <find>mysql</find>
     </findStrings>
     <replaceStrings>
       <replace />
     </replaceStrings>
-    <dirStrings>
-      <dir>E:\gdgl\code\bpm\bin</dir>
-      <dir>E:\gdgl\code\bpm\public\static\js\easyui</dir>
-      <dir>E:\gdgl\code\bpm\lib</dir>
-      <dir>E:\gdgl\code\bpm\app</dir>
-      <dir>E:\gdgl\code\bpm</dir>
-    </dirStrings>
   </component>
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/node_modules/gmdp/views/app/common/uum/user.hbs" />
-        <option value="$PROJECT_DIR$/app/project/bpm_resource/services/update_newest_data.js" />
-        <option value="$PROJECT_DIR$/app/project/bpm_resource/routes/process.js" />
-        <option value="$PROJECT_DIR$/app/project/order_manage/models/dict_model.js" />
-        <option value="$PROJECT_DIR$/app/project/order_manage/services/order_list_service.js" />
-        <option value="$PROJECT_DIR$/views/themes/admin/layout.hbs" />
-        <option value="$PROJECT_DIR$/views/themes/beyond/layout.hbs" />
-        <option value="$PROJECT_DIR$/app/project/bpm_resource/services/date_analysis.js" />
-        <option value="$PROJECT_DIR$/app/project/bpm_resource/models/user_model.js" />
-        <option value="$PROJECT_DIR$/app/project/order_manage/services/instance_service.js" />
-        <option value="$PROJECT_DIR$/views/app/project/order_manage/mistake_list.hbs" />
-        <option value="$PROJECT_DIR$/app/project/order_manage/routes/mistake_list.js" />
-        <option value="$PROJECT_DIR$/views/app/project/order_manage/mistake_logs.hbs" />
-        <option value="$PROJECT_DIR$/app/project/order_manage/models/mistake_model.js" />
-        <option value="$PROJECT_DIR$/node_modules/gmdp/views/app/common/uum/org.hbs" />
-        <option value="$PROJECT_DIR$/app/project/bpm_resource/routes/task.js" />
-        <option value="$PROJECT_DIR$/app/project/bpm_resource/routes/extend.js" />
-        <option value="$PROJECT_DIR$/app/project/bpm_resource/services/process_extend_analysis.js" />
-        <option value="$PROJECT_DIR$/app/project/bpm_resource/services/node_analysis_service.js" />
-        <option value="$PROJECT_DIR$/app/project/bpm_resource/routes/test.js" />
-        <option value="$PROJECT_DIR$/app/project/order_manage/services/mistake_list_service.js" />
-        <option value="$PROJECT_DIR$/app/project/order_manage/routes/test.js" />
-        <option value="$PROJECT_DIR$/app/project/bpm_resource/services/test.js" />
-        <option value="$PROJECT_DIR$/app/utils/test.js" />
-        <option value="$PROJECT_DIR$/app/utils/process_util.js" />
-        <option value="$PROJECT_DIR$/app/project/bpm_resource/models/process_model.js" />
-        <option value="$PROJECT_DIR$/app/project/bpm_resource/models/test.js" />
-        <option value="$PROJECT_DIR$/app/project/bpm_resource/models/process_extend_model.js" />
-        <option value="$PROJECT_DIR$/config.js" />
-        <option value="$PROJECT_DIR$/views/app/project/order_manage/order_complete.hbs" />
-        <option value="$PROJECT_DIR$/app/project/order_manage/services/node_analysis_service.js" />
-        <option value="$PROJECT_DIR$/app/project/order_manage/routes/order_todo.js" />
         <option value="$PROJECT_DIR$/views/app/project/order_manage/order_todo.hbs" />
+        <option value="$PROJECT_DIR$/views/app/project/order_manage/order_complete.hbs" />
+        <option value="$PROJECT_DIR$/views/app/project/order_manage/order_drafts.hbs" />
+        <option value="$PROJECT_DIR$/views/app/project/workflow/taskhandler.hbs" />
+        <option value="$PROJECT_DIR$/config.js" />
         <option value="$PROJECT_DIR$/views/app/project/order_manage/order_list.hbs" />
-        <option value="$PROJECT_DIR$/views/app/project/index.hbs" />
-        <option value="$PROJECT_DIR$/app/project/order_manage/services/node_transfer_service.js" />
-        <option value="$PROJECT_DIR$/app/project/order_manage/services/order_complete_service.js" />
-        <option value="$PROJECT_DIR$/app/project/order_manage/routes/order_complete.js" />
         <option value="$PROJECT_DIR$/app/project/order_manage/routes/order_list.js" />
-        <option value="$PROJECT_DIR$/node_modules/gmdp/lib/common/core/models/user_model.js" />
-        <option value="$PROJECT_DIR$/node_modules/gmdp/lib/common/core/services/core_service.js" />
-        <option value="$PROJECT_DIR$/app/project/order_manage/routes/order_statistics.js" />
-        <option value="$PROJECT_DIR$/app/project/bpm_resource/routes/process_extend.js" />
-        <option value="$PROJECT_DIR$/app/project/bpm_resource/services/process_extend_service.js" />
-        <option value="$PROJECT_DIR$/app/project/bpm_resource/services/node_transfer_service.js" />
-        <option value="$PROJECT_DIR$/app/project/order_manage/services/order_statistics_service.js" />
-        <option value="$PROJECT_DIR$/app/project/bpm_resource/services/instance_service.js" />
-        <option value="$PROJECT_DIR$/views/app/project/order_manage/order_statistics.hbs" />
-        <option value="$PROJECT_DIR$/views/app/project/order_manage/channel_todo.hbs" />
-        <option value="$PROJECT_DIR$/views/app/project/order_manage/warn_order/order_detail.hbs" />
-        <option value="$PROJECT_DIR$/app/project/order_manage/services/order_todo_service.js" />
+        <option value="$PROJECT_DIR$/app/project/order_manage/services/order_list_service.js" />
       </list>
     </option>
   </component>
   <component name="JsBuildToolGruntFileManager" detection-done="true" sorting="DEFINITION_ORDER" />
   <component name="JsBuildToolPackageJson" detection-done="true" sorting="DEFINITION_ORDER">
     <package-json value="$PROJECT_DIR$/package.json" />
-  </component>
-  <component name="JsFlowSettings">
-    <service-enabled>true</service-enabled>
-    <exe-path />
-    <annotation-enable>false</annotation-enable>
-    <other-services-enabled>true</other-services-enabled>
-    <auto-save>true</auto-save>
   </component>
   <component name="JsGulpfileManager">
     <detection-done>true</detection-done>
@@ -256,10 +107,10 @@
     <handled-path value="$PROJECT_DIR$/node_modules" />
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="538" />
-    <option name="y" value="25" />
+    <option name="x" value="398" />
+    <option name="y" value="217" />
     <option name="width" value="1304" />
-    <option name="height" value="694" />
+    <option name="height" value="728" />
   </component>
   <component name="ProjectView">
     <navigator currentView="ProjectPane" proportions="" version="1">
@@ -292,28 +143,7 @@
               <item name="bpm" type="b2602c69:ProjectViewProjectNode" />
               <item name="bpm" type="462c0819:PsiDirectoryNode" />
               <item name="app" type="462c0819:PsiDirectoryNode" />
-              <item name="common" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="bpm" type="b2602c69:ProjectViewProjectNode" />
-              <item name="bpm" type="462c0819:PsiDirectoryNode" />
-              <item name="app" type="462c0819:PsiDirectoryNode" />
               <item name="project" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="bpm" type="b2602c69:ProjectViewProjectNode" />
-              <item name="bpm" type="462c0819:PsiDirectoryNode" />
-              <item name="app" type="462c0819:PsiDirectoryNode" />
-              <item name="project" type="462c0819:PsiDirectoryNode" />
-              <item name="bpm_resource" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="bpm" type="b2602c69:ProjectViewProjectNode" />
-              <item name="bpm" type="462c0819:PsiDirectoryNode" />
-              <item name="app" type="462c0819:PsiDirectoryNode" />
-              <item name="project" type="462c0819:PsiDirectoryNode" />
-              <item name="bpm_resource" type="462c0819:PsiDirectoryNode" />
-              <item name="routes" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="bpm" type="b2602c69:ProjectViewProjectNode" />
@@ -321,6 +151,14 @@
               <item name="app" type="462c0819:PsiDirectoryNode" />
               <item name="project" type="462c0819:PsiDirectoryNode" />
               <item name="order_manage" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="bpm" type="b2602c69:ProjectViewProjectNode" />
+              <item name="bpm" type="462c0819:PsiDirectoryNode" />
+              <item name="app" type="462c0819:PsiDirectoryNode" />
+              <item name="project" type="462c0819:PsiDirectoryNode" />
+              <item name="order_manage" type="462c0819:PsiDirectoryNode" />
+              <item name="models" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="bpm" type="b2602c69:ProjectViewProjectNode" />
@@ -334,70 +172,61 @@
               <item name="bpm" type="b2602c69:ProjectViewProjectNode" />
               <item name="bpm" type="462c0819:PsiDirectoryNode" />
               <item name="app" type="462c0819:PsiDirectoryNode" />
-              <item name="utils" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="bpm" type="b2602c69:ProjectViewProjectNode" />
-              <item name="bpm" type="462c0819:PsiDirectoryNode" />
-              <item name="public" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="bpm" type="b2602c69:ProjectViewProjectNode" />
-              <item name="bpm" type="462c0819:PsiDirectoryNode" />
-              <item name="views" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="bpm" type="b2602c69:ProjectViewProjectNode" />
-              <item name="bpm" type="462c0819:PsiDirectoryNode" />
-              <item name="views" type="462c0819:PsiDirectoryNode" />
-              <item name="app" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="bpm" type="b2602c69:ProjectViewProjectNode" />
-              <item name="bpm" type="462c0819:PsiDirectoryNode" />
-              <item name="views" type="462c0819:PsiDirectoryNode" />
-              <item name="app" type="462c0819:PsiDirectoryNode" />
-              <item name="common" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="bpm" type="b2602c69:ProjectViewProjectNode" />
-              <item name="bpm" type="462c0819:PsiDirectoryNode" />
-              <item name="views" type="462c0819:PsiDirectoryNode" />
-              <item name="app" type="462c0819:PsiDirectoryNode" />
-              <item name="project" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="bpm" type="b2602c69:ProjectViewProjectNode" />
-              <item name="bpm" type="462c0819:PsiDirectoryNode" />
-              <item name="views" type="462c0819:PsiDirectoryNode" />
-              <item name="app" type="462c0819:PsiDirectoryNode" />
               <item name="project" type="462c0819:PsiDirectoryNode" />
               <item name="order_manage" type="462c0819:PsiDirectoryNode" />
+              <item name="services" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="bpm" type="b2602c69:ProjectViewProjectNode" />
+              <item name="bpm" type="462c0819:PsiDirectoryNode" />
+              <item name="app" type="462c0819:PsiDirectoryNode" />
+              <item name="project" type="462c0819:PsiDirectoryNode" />
+              <item name="workflow" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="bpm" type="b2602c69:ProjectViewProjectNode" />
+              <item name="bpm" type="462c0819:PsiDirectoryNode" />
+              <item name="app" type="462c0819:PsiDirectoryNode" />
+              <item name="project" type="462c0819:PsiDirectoryNode" />
+              <item name="workflow" type="462c0819:PsiDirectoryNode" />
+              <item name="models" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="bpm" type="b2602c69:ProjectViewProjectNode" />
+              <item name="bpm" type="462c0819:PsiDirectoryNode" />
+              <item name="bin" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="bpm" type="b2602c69:ProjectViewProjectNode" />
+              <item name="bpm" type="462c0819:PsiDirectoryNode" />
+              <item name="views" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="bpm" type="b2602c69:ProjectViewProjectNode" />
+              <item name="bpm" type="462c0819:PsiDirectoryNode" />
+              <item name="views" type="462c0819:PsiDirectoryNode" />
+              <item name="app" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
         </subPane>
       </pane>
-      <pane id="Scratches" />
       <pane id="Scope" />
+      <pane id="Scratches" />
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="nodejs_interpreter_path" value="G:/nodeJs/node" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/bin/gdgl" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="HbShouldOpenHtmlAsHb" value="" />
-    <property name="settings.editor.selected.configurable" value="preferences.keymap" />
-    <property name="JavaScriptPreferStrict" value="false" />
-    <property name="JavaScriptWeakerCompletionTypeGuess" value="true" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
-      <recent name="E:\gdgl\code\bpm\views\app\project\order_manage" />
+      <recent name="E:\gdgl\code\bpm\app\project\order_manage\models" />
       <recent name="E:\gdgl\code\bpm\app\project\order_manage\services" />
       <recent name="E:\gdgl\code\bpm\app\project\order_manage\routes" />
-      <recent name="E:\gdgl\code\bpm\app\project\bpm_resource\services" />
-      <recent name="E:\gdgl\code\bpm\app\project\bpm_resource\models" />
+      <recent name="E:\gdgl\code\bpm\views\app\project\order_manage" />
     </key>
   </component>
   <component name="RunDashboard">
@@ -413,59 +242,21 @@
     </option>
   </component>
   <component name="RunManager" selected="Node.js.Examine">
-    <configuration name="Examine" type="NodeJSConfigurationType" factoryName="Node.js" path-to-node="project" path-to-js-file="gdgl" working-dir="$PROJECT_DIR$/bin">
-      <EXTENSION ID="com.jetbrains.nodejs.remote.docker.NodeJSDockerRunConfigurationExtension">
-        <option name="envVars">
-          <list />
-        </option>
-        <option name="extraHosts">
-          <list />
-        </option>
-        <option name="links">
-          <list />
-        </option>
-        <option name="networkDisabled" value="false" />
-        <option name="networkMode" value="bridge" />
-        <option name="portBindings">
-          <list />
-        </option>
-        <option name="publishAllPorts" value="false" />
-        <option name="version" value="1" />
-        <option name="volumeBindings">
-          <list />
-        </option>
-      </EXTENSION>
-    </configuration>
-    <configuration name="index.js" type="NodeJSConfigurationType" factoryName="Node.js" path-to-node="project" path-to-js-file="index.js" working-dir="$PROJECT_DIR$/routes" />
-    <configuration name="test.js (1)" type="NodeJSConfigurationType" factoryName="Node.js" temporary="true" path-to-node="project" path-to-js-file="test.js" working-dir="$PROJECT_DIR$/app/project/order_manage/routes" />
-    <configuration name="test.js (2)" type="NodeJSConfigurationType" factoryName="Node.js" temporary="true" path-to-node="project" path-to-js-file="test.js" working-dir="$PROJECT_DIR$/app/project/bpm_resource/services" />
-    <configuration name="test.js (3)" type="NodeJSConfigurationType" factoryName="Node.js" temporary="true" path-to-node="project" path-to-js-file="test.js" working-dir="$PROJECT_DIR$/app/utils" />
-    <configuration name="test.js (4)" type="NodeJSConfigurationType" factoryName="Node.js" temporary="true" path-to-node="project" path-to-js-file="test.js" working-dir="$PROJECT_DIR$/app/project/bpm_resource/models" />
-    <configuration name="test.js" type="NodeJSConfigurationType" factoryName="Node.js" temporary="true" path-to-node="project" path-to-js-file="test.js" working-dir="$PROJECT_DIR$/app/project/bpm_resource/routes" />
-    <list size="7">
+    <configuration name="Examine" type="NodeJSConfigurationType" factoryName="Node.js" temporary="true" path-to-node="project" path-to-js-file="Examine" working-dir="$PROJECT_DIR$/bin" />
+    <configuration name="index.js" type="NodeJSConfigurationType" factoryName="Node.js" temporary="true" path-to-node="project" path-to-js-file="index.js" working-dir="$PROJECT_DIR$/routes" />
+    <list size="2">
       <item index="0" class="java.lang.String" itemvalue="Node.js.index.js" />
       <item index="1" class="java.lang.String" itemvalue="Node.js.Examine" />
-      <item index="2" class="java.lang.String" itemvalue="Node.js.test.js" />
-      <item index="3" class="java.lang.String" itemvalue="Node.js.test.js (1)" />
-      <item index="4" class="java.lang.String" itemvalue="Node.js.test.js (2)" />
-      <item index="5" class="java.lang.String" itemvalue="Node.js.test.js (3)" />
-      <item index="6" class="java.lang.String" itemvalue="Node.js.test.js (4)" />
     </list>
     <recent_temporary>
-      <list size="5">
-        <item index="0" class="java.lang.String" itemvalue="Node.js.test.js (4)" />
-        <item index="1" class="java.lang.String" itemvalue="Node.js.test.js (3)" />
-        <item index="2" class="java.lang.String" itemvalue="Node.js.test.js (2)" />
-        <item index="3" class="java.lang.String" itemvalue="Node.js.test.js (1)" />
-        <item index="4" class="java.lang.String" itemvalue="Node.js.test.js" />
+      <list size="2">
+        <item index="0" class="java.lang.String" itemvalue="Node.js.Examine" />
+        <item index="1" class="java.lang.String" itemvalue="Node.js.index.js" />
       </list>
     </recent_temporary>
   </component>
   <component name="ShelveChangesManager" show_recycled="false">
     <option name="remove_strategy" value="false" />
-  </component>
-  <component name="SvnConfiguration">
-    <configuration />
   </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
@@ -474,111 +265,32 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1510278598553</updated>
-      <workItem from="1510278600757" duration="25005000" />
-      <workItem from="1510314181018" duration="4683000" />
-      <workItem from="1510367335988" duration="6651000" />
-      <workItem from="1510374373487" duration="12345000" />
-      <workItem from="1510475377225" duration="2176000" />
-      <workItem from="1510484039470" duration="352000" />
-      <workItem from="1510484842653" duration="5512000" />
-      <workItem from="1510534163473" duration="25461000" />
-      <workItem from="1510622190700" duration="22654000" />
-      <workItem from="1510707405357" duration="22803000" />
-      <workItem from="1510738947857" duration="1402000" />
-      <workItem from="1510794911841" duration="15450000" />
-      <workItem from="1510880081960" duration="10673000" />
-      <workItem from="1510907301138" duration="3383000" />
-      <workItem from="1510973701968" duration="1158000" />
-      <workItem from="1511139275433" duration="1208000" />
-      <workItem from="1511144464092" duration="12104000" />
-      <workItem from="1511172567338" duration="788000" />
-      <workItem from="1511173616748" duration="4487000" />
-      <workItem from="1511225471956" duration="22750000" />
-      <workItem from="1511312887265" duration="23742000" />
-      <workItem from="1511398221777" duration="16196000" />
-      <workItem from="1511485968907" duration="8253000" />
-      <workItem from="1511744400566" duration="4304000" />
-      <workItem from="1511832089573" duration="599000" />
-      <workItem from="1511835940508" duration="3259000" />
-      <workItem from="1511852022347" duration="2202000" />
-      <workItem from="1511917499516" duration="9425000" />
-      <workItem from="1512003281703" duration="829000" />
-      <workItem from="1512004485993" duration="261000" />
-      <workItem from="1512005194303" duration="18447000" />
-      <workItem from="1512090449321" duration="255000" />
-      <workItem from="1512090907252" duration="2767000" />
-      <workItem from="1512107364919" duration="4022000" />
-      <workItem from="1512350530505" duration="17932000" />
-      <workItem from="1512375981398" duration="7006000" />
-      <workItem from="1512435553406" duration="10053000" />
-      <workItem from="1512522245735" duration="1015000" />
-      <workItem from="1512523765879" duration="5210000" />
-      <workItem from="1512550061811" duration="2093000" />
-      <workItem from="1512563259585" duration="990000" />
-      <workItem from="1512566704341" duration="196000" />
-      <workItem from="1512608771404" duration="11090000" />
-      <workItem from="1512637422091" duration="1479000" />
-      <workItem from="1512694703763" duration="9878000" />
-      <workItem from="1512953885556" duration="13437000" />
-      <workItem from="1512983916387" duration="1549000" />
-      <workItem from="1513043431412" duration="639000" />
-      <workItem from="1513128062782" duration="5493000" />
-      <workItem from="1513139009727" duration="14043000" />
-      <workItem from="1513214661398" duration="6446000" />
-      <workItem from="1513235149677" duration="457000" />
-      <workItem from="1513235768760" duration="10633000" />
-      <workItem from="1513254559371" duration="8063000" />
-      <workItem from="1513299436164" duration="11930000" />
-      <workItem from="1513319662339" duration="10233000" />
-      <workItem from="1513558632848" duration="8750000" />
-      <workItem from="1513644931316" duration="21442000" />
-      <workItem from="1513731813603" duration="25711000" />
-      <workItem from="1513771744680" duration="11194000" />
-      <workItem from="1513821799981" duration="9655000" />
-      <workItem from="1513859057294" duration="1899000" />
-      <workItem from="1513904314181" duration="18003000" />
-      <workItem from="1514094260722" duration="1720000" />
-      <workItem from="1514164441931" duration="27970000" />
-      <workItem from="1514203307072" duration="11788000" />
-      <workItem from="1514250959902" duration="24800000" />
-      <workItem from="1514289245098" duration="8420000" />
-      <workItem from="1514336646644" duration="13035000" />
+      <workItem from="1510278600757" duration="14402000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="629858000" />
-  </component>
-  <component name="TodoView" selected-index="2">
-    <todo-panel id="selected-file">
-      <is-autoscroll-to-source value="true" />
-    </todo-panel>
-    <todo-panel id="all">
-      <are-packages-shown value="true" />
-      <is-autoscroll-to-source value="true" />
-    </todo-panel>
+    <option name="totallyTimeSpent" value="14402000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-9" y="-9" width="1938" height="1048" extended-state="6" />
-    <editor active="true" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24682875" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32918552" sideWeight="0.4936575" order="8" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.26696834" sideWeight="0.51585627" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
-      <window_info id="npm" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2963801" sideWeight="0.48414376" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32918552" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="npm" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32918552" sideWeight="0.49577168" order="9" side_tool="false" content_ui="tabs" />
-      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="true" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.39932126" sideWeight="0.49788582" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
-      <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Thumbnails" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32918552" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
+      <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32918552" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
@@ -589,220 +301,43 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="javascript">
-          <url>file://$PROJECT_DIR$/app/project/bpm_resource/services/instance_service.js</url>
-          <line>600</line>
-          <option name="timeStamp" value="27" />
-        </line-breakpoint>
-      </breakpoints>
-      <option name="time" value="30" />
-    </breakpoint-manager>
+    <breakpoint-manager />
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/views/app/project/order_manage/mistake_list.hbs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="452">
-          <caret line="131" column="49" lean-forward="true" selection-start-line="131" selection-start-column="14" selection-end-line="131" selection-end-column="49" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/node_modules/gmdp/views/app/index.hbs">
+    <entry file="file://$PROJECT_DIR$/routes/users.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/node_modules/gmdp/views/layout.hbs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/node_modules/gmdp/views/index.hbs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/node_modules/gmdp/views/app/common/uum/user.hbs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-6900">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/node_modules/gmdp/views/app/common/syscfg/menu.hbs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-10695">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/node_modules/gmdp/views/app/common/syscfg/notice.hbs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-6486">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/node_modules/gmdp/views/app/common/syscfg/dict.hbs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-2530">
-          <caret line="232" column="39" lean-forward="false" selection-start-line="232" selection-start-column="33" selection-end-line="232" selection-end-column="39" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/node_modules/gmdp/views/app/common/app/app_frame.hbs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-7452">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/node_modules/gmdp/views/app/common/app/app_frame2.hbs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/views/common/support.hbs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/views/common/profile.hbs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/views/common/logout.hbs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/views/common/help.hbs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/views/common/about.hbs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/views/common/forgetpassword.hbs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/views/app/project/home.hbs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1369">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/views/app/project/setting.hbs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1277">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/views/themes/beyond_rev/layout.hbs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="7084">
-          <caret line="308" column="107" lean-forward="false" selection-start-line="308" selection-start-column="78" selection-end-line="308" selection-end-column="107" />
-          <folding>
-            <marker date="1510278075375" expanded="true" signature="8128:8134" ph=" " />
-            <marker date="1510278075375" expanded="true" signature="8134:8140" ph=" " />
-            <marker date="1510278075375" expanded="true" signature="8140:8146" ph=" " />
-            <marker date="1510278075375" expanded="true" signature="8146:8152" ph=" " />
-            <marker date="1510278075375" expanded="true" signature="8152:8158" ph=" " />
-            <marker date="1510278075375" expanded="true" signature="8158:8164" ph=" " />
-            <marker date="1510278075375" expanded="true" signature="8430:8450" ph="..." />
-            <marker date="1510278075375" expanded="true" signature="8858:8864" ph=" " />
-            <marker date="1510278075375" expanded="true" signature="55866:55872" ph=" " />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/views/app/project/order_manage/order_list.hbs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3519">
-          <caret line="153" column="11" lean-forward="false" selection-start-line="153" selection-start-column="11" selection-end-line="169" selection-end-column="14" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/views/app/project/order_manage/order_complete.hbs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3174">
-          <caret line="138" column="162" lean-forward="false" selection-start-line="138" selection-start-column="161" selection-end-line="138" selection-end-column="162" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/project/workflow/services/user_service.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3">
-          <caret line="246" column="34" lean-forward="true" selection-start-line="246" selection-start-column="34" selection-end-line="246" selection-end-column="34" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/project/bpm_resource/models/process_model.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="403">
-          <caret line="264" column="27" lean-forward="false" selection-start-line="264" selection-start-column="8" selection-end-line="264" selection-end-column="27" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/views/app/project/index.hbs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="315">
-          <caret line="250" column="47" lean-forward="false" selection-start-line="250" selection-start-column="27" selection-end-line="250" selection-end-column="47" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/project/order_manage/services/order_complete_service.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="218">
-          <caret line="140" column="0" lean-forward="false" selection-start-line="140" selection-start-column="0" selection-end-line="140" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/project/order_manage/routes/order_complete.js">
+    <entry file="file://$PROJECT_DIR$/app_init.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
-          <caret line="0" column="33" lean-forward="true" selection-start-line="0" selection-start-column="33" selection-end-line="0" selection-end-column="33" />
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/project/order_manage/routes/order_drafts.js">
+    <entry file="file://$PROJECT_DIR$/app.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="345">
+          <caret line="15" column="31" lean-forward="true" selection-start-line="15" selection-start-column="31" selection-end-line="15" selection-end-column="31" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/routes/index.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="207">
+          <caret line="9" column="0" lean-forward="true" selection-start-line="9" selection-start-column="0" selection-end-line="9" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/bin/Examine">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
@@ -812,32 +347,156 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/views/app/project/order_manage/order_todo.hbs">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3098">
-          <caret line="187" column="64" lean-forward="false" selection-start-line="187" selection-start-column="64" selection-end-line="187" selection-end-column="64" />
+        <state relative-caret-position="0">
+          <caret line="0" column="4" lean-forward="false" selection-start-line="0" selection-start-column="4" selection-end-line="0" selection-end-column="4" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/node_modules/gmdp/lib/common/core/routes/index.js">
+    <entry file="file://$PROJECT_DIR$/views/app/project/order_manage/order_complete.hbs">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="46">
-          <caret line="383" column="14" lean-forward="true" selection-start-line="383" selection-start-column="14" selection-end-line="383" selection-end-column="14" />
+        <state relative-caret-position="0">
+          <caret line="0" column="4" lean-forward="false" selection-start-line="0" selection-start-column="4" selection-end-line="0" selection-end-column="4" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/node_modules/gmdp/lib/gmdp.js">
+    <entry file="file://$PROJECT_DIR$/views/app/project/workflow/task.hbs">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1380">
+        <state relative-caret-position="-276">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/node_modules/gmdp/lib/common/app/routes/app_api.js">
+    <entry file="file://$PROJECT_DIR$/views/app/project/order_manage/instance.hbs">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-38">
+        <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/views/app/project/workflow/instance.hbs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-1104">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/views/app/project/order_manage/order_drafts.hbs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="3" lean-forward="false" selection-start-line="0" selection-start-column="3" selection-end-line="0" selection-end-column="3" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/views/app/project/order_manage/order_manage_list.hbs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <marker date="1510278075309" expanded="true" signature="22972:22978" ph=" " />
+            <marker date="1510278075309" expanded="true" signature="22978:22984" ph=" " />
+            <marker date="1510278075309" expanded="true" signature="23221:23227" ph=" " />
+            <marker date="1510278075309" expanded="true" signature="23227:23233" ph=" " />
+            <marker date="1510278075309" expanded="true" signature="26213:26219" ph=" " />
+            <marker date="1510278075309" expanded="true" signature="26219:26225" ph=" " />
+            <marker date="1510278075309" expanded="true" signature="29186:29192" ph=" " />
+            <marker date="1510278075309" expanded="true" signature="29192:29198" ph=" " />
+            <marker date="1510278075309" expanded="true" signature="32385:32391" ph=" " />
+            <marker date="1510278075309" expanded="true" signature="32391:32397" ph=" " />
+            <marker date="1510278075309" expanded="true" signature="34888:34894" ph=" " />
+            <marker date="1510278075309" expanded="true" signature="34894:34900" ph=" " />
+            <marker date="1510278075309" expanded="true" signature="36380:36402" ph="..." />
+            <marker date="1510278075309" expanded="true" signature="36488:36494" ph=" " />
+            <marker date="1510278075309" expanded="true" signature="36494:36500" ph=" " />
+            <marker date="1510278075309" expanded="true" signature="37426:37432" ph=" " />
+            <marker date="1510278075309" expanded="true" signature="42746:42752" ph=" " />
+            <marker date="1510278075309" expanded="true" signature="47693:47699" ph=" " />
+            <marker date="1510278075309" expanded="true" signature="50722:50728" ph=" " />
+            <marker date="1510278075309" expanded="true" signature="56335:56341" ph=" " />
+            <marker date="1510278075309" expanded="true" signature="57486:57492" ph=" " />
+            <marker date="1510278075309" expanded="true" signature="58038:58044" ph=" " />
+            <marker date="1510278075309" expanded="true" signature="58044:58050" ph=" " />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/project/workflow/models/dict_model.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-777">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/project/workflow/services/dict_service.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/project/workflow/services/process_service.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/views/app/project/workflow/workflow_list.hbs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="395">
+          <caret line="124" column="1" lean-forward="false" selection-start-line="124" selection-start-column="1" selection-end-line="124" selection-end-column="1" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/views/app/common/app/app_version.hbs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1219">
+          <caret line="160" column="35" lean-forward="false" selection-start-line="160" selection-start-column="35" selection-end-line="160" selection-end-column="35" />
+          <folding>
+            <element signature="n#div#0;n#!!top" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/views/app/project/workflow/taskhandler.hbs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="187">
+          <caret line="23" column="93" lean-forward="false" selection-start-line="23" selection-start-column="93" selection-end-line="23" selection-end-column="93" />
+          <folding>
+            <element signature="n#style#0;n#input#0;n#div#3;n#div#0;n#td#0;n#tr#0;n#table#0;n#form#0;n#div#0;n#div#0;n#div#0;n#div#0;n#!!top" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lib/utils/app_utils.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="187">
+          <caret line="342" column="0" lean-forward="false" selection-start-line="342" selection-start-column="0" selection-end-line="342" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/project/workflow/routes/process.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/node_modules/mysql/lib/Connection.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1084">
+          <caret line="418" column="12" lean-forward="false" selection-start-line="418" selection-start-column="12" selection-end-line="418" selection-end-column="12" />
           <folding />
         </state>
       </provider>
@@ -850,164 +509,74 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/node_modules/gmdp/lib/common/core/models/user_model.js">
+    <entry file="file://$PROJECT_DIR$/app/common/api/services/emos_api_service.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="253">
-          <caret line="171" column="18" lean-forward="false" selection-start-line="171" selection-start-column="18" selection-end-line="171" selection-end-column="18" />
+        <state relative-caret-position="92">
+          <caret line="4" column="14" lean-forward="false" selection-start-line="4" selection-start-column="4" selection-end-line="4" selection-end-column="14" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/project/order_manage/services/node_analysis_service.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="203">
-          <caret line="3465" column="26" lean-forward="true" selection-start-line="3465" selection-start-column="26" selection-end-line="3465" selection-end-column="26" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/node_modules/gmdp/lib/common/core/services/core_service.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="410">
-          <caret line="686" column="10" lean-forward="false" selection-start-line="686" selection-start-column="10" selection-end-line="686" selection-end-column="10" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/project/bpm_resource/routes/process_extend.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="245">
-          <caret line="48" column="31" lean-forward="true" selection-start-line="48" selection-start-column="31" selection-end-line="48" selection-end-column="31" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/project/bpm_resource/services/process_extend_service.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-204">
-          <caret line="191" column="22" lean-forward="true" selection-start-line="191" selection-start-column="22" selection-end-line="191" selection-end-column="22" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/project/order_manage/routes/order_list.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="345">
-          <caret line="228" column="41" lean-forward="true" selection-start-line="228" selection-start-column="41" selection-end-line="228" selection-end-column="41" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/project/bpm_resource/services/node_transfer_service.js">
+    <entry file="file://$PROJECT_DIR$/app/common/job/services/D30174namNumImporter.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="187">
-          <caret line="285" column="16" lean-forward="false" selection-start-line="285" selection-start-column="8" selection-end-line="285" selection-end-column="16" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/project/order_manage/services/node_transfer_service.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1136">
-          <caret line="629" column="9" lean-forward="false" selection-start-line="629" selection-start-column="9" selection-end-line="629" selection-end-column="9" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/project/order_manage/routes/order_statistics.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="368">
-          <caret line="73" column="19" lean-forward="true" selection-start-line="73" selection-start-column="19" selection-end-line="73" selection-end-column="19" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/project/bpm_resource/routes/task.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="138">
-          <caret line="6" column="15" lean-forward="false" selection-start-line="6" selection-start-column="4" selection-end-line="6" selection-end-column="15" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/project/order_manage/routes/order_todo.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="460">
-          <caret line="29" column="32" lean-forward="false" selection-start-line="29" selection-start-column="32" selection-end-line="29" selection-end-column="32" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/project/order_manage/services/order_statistics_service.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="587">
-          <caret line="279" column="14" lean-forward="false" selection-start-line="249" selection-start-column="11" selection-end-line="279" selection-end-column="14" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/project/bpm_resource/services/instance_service.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="426">
-          <caret line="984" column="32" lean-forward="false" selection-start-line="984" selection-start-column="32" selection-end-line="984" selection-end-column="32" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/views/app/project/order_manage/order_statistics.hbs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="221">
-          <caret line="392" column="64" lean-forward="false" selection-start-line="392" selection-start-column="64" selection-end-line="392" selection-end-column="64" />
+          <caret line="15" column="56" lean-forward="false" selection-start-line="15" selection-start-column="56" selection-end-line="15" selection-end-column="56" />
           <folding>
-            <marker date="1514355799795" expanded="true" signature="14752:14761" ph="..." />
-            <marker date="1514355799795" expanded="true" signature="15239:15250" ph="..." />
-            <marker date="1514355799795" expanded="true" signature="15628:15639" ph="..." />
+            <marker date="1510278039514" expanded="true" signature="5173:5195" ph="..." />
+            <marker date="1510278039514" expanded="true" signature="5338:5360" ph="..." />
+            <marker date="1510278039514" expanded="true" signature="5501:5523" ph="..." />
+            <marker date="1510278039514" expanded="true" signature="5711:5733" ph="..." />
+            <marker date="1510278039514" expanded="true" signature="5874:5896" ph="..." />
+            <marker date="1510278039514" expanded="true" signature="6039:6061" ph="..." />
+            <marker date="1510278039514" expanded="true" signature="6252:6274" ph="..." />
+            <marker date="1510278039514" expanded="true" signature="6418:6440" ph="..." />
+            <marker date="1510278039514" expanded="true" signature="6583:6605" ph="..." />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/views/app/project/order_manage/channel_todo.hbs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1119">
-          <caret line="151" column="64" lean-forward="false" selection-start-line="151" selection-start-column="64" selection-end-line="151" selection-end-column="64" />
-          <folding>
-            <marker date="1514355814196" expanded="true" signature="6460:6469" ph="..." />
-            <marker date="1514355814196" expanded="true" signature="6964:6975" ph="..." />
-            <marker date="1514355814196" expanded="true" signature="7351:7362" ph="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/views/app/project/order_manage/warn_order/order_detail.hbs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="499">
-          <caret line="127" column="6" lean-forward="true" selection-start-line="127" selection-start-column="6" selection-end-line="127" selection-end-column="6" />
-          <folding>
-            <marker date="1514356001731" expanded="false" signature="4988:4999" ph="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/project/order_manage/services/order_todo_service.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="334">
-          <caret line="22" column="47" lean-forward="false" selection-start-line="22" selection-start-column="47" selection-end-line="22" selection-end-column="47" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/package.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/config.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-6544">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        <state relative-caret-position="649">
+          <caret line="153" column="6" lean-forward="true" selection-start-line="153" selection-start-column="6" selection-end-line="153" selection-end-column="6" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/views/app/project/order_manage/order_list.hbs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-179">
+          <caret line="79" column="15" lean-forward="false" selection-start-line="79" selection-start-column="15" selection-end-line="79" selection-end-column="15" />
+          <folding>
+            <element signature="n#style#0;n#div#0;n#div#0;n#div#0;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#div#0;n#div#0;n#div#0;n#div#0;n#div#0;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#div#0;n#div#0;n#div#0;n#div#0;n#div#0;n#div#0;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#div#0;n#div#0;n#div#0;n#div#0;n#div#0;n#div#0;n#div#0;n#div#0;n#div#0;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#input#0;n#li#0;n#div#0;n#form#0;n#div#0;n#div#0;n#div#0;n#div#0;n#div#0;n#div#0;n#div#0;n#div#0;n#div#0;n#div#0;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/project/order_manage/routes/order_list.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="253">
+          <caret line="20" column="23" lean-forward="false" selection-start-line="20" selection-start-column="23" selection-end-line="20" selection-end-column="23" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/project/order_manage/services/order_list_service.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="161">
+          <caret line="7" column="9" lean-forward="false" selection-start-line="7" selection-start-column="9" selection-end-line="7" selection-end-column="9" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/project/order_manage/models/order_model.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="396">
+          <caret line="49" column="52" lean-forward="false" selection-start-line="49" selection-start-column="16" selection-end-line="49" selection-end-column="52" />
           <folding />
         </state>
       </provider>

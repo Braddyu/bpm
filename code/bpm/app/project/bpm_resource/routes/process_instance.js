@@ -27,6 +27,12 @@ router.route("/createAndAcceptAssign").post(function(req,res){
     var proc_vars=req.body.proc_vars;
     var memo=req.body.memo;
     var params = req.body.params;
+    var joinup_sys = req.body.joinup_sys;//String,//工单所属系统编号
+
+    if(!joinup_sys){
+        utils.respMsg(res, false, '2001', '工单所属系统编号不能为空。', null, null);
+        return;
+    }
     if(!assign_user_no){
         utils.respMsg(res, false, '2001', '下一节点处理人编号为空', null, null);
         return;
@@ -38,7 +44,7 @@ router.route("/createAndAcceptAssign").post(function(req,res){
             inst.userInfo(user_code).then(function(rs){
                 if(rs.success && rs.data.length==1){
                     //创建实例,并生成任务
-                    inst.createInstance(proc_code,proc_ver,proc_title,params,proc_vars,biz_vars,user_code,userName)
+                    inst.createInstance(proc_code,proc_ver,proc_title,params,proc_vars,biz_vars,user_code,userName,joinup_sys)
                         .then(function(result){
                             if(result.success){
                                 var task_id=result.data[0]._id;
@@ -220,6 +226,7 @@ router.route('/history')
         var user_no = req.body.user_no;//用户编号
         var page = req.body.page;
         var length = req.body.rows;
+
         var conditionMap = {};
         // 用户编号是否为空
         if(!user_no) {
@@ -231,6 +238,7 @@ router.route('/history')
                 if(rs.success && rs.data.length == 1){
                     conditionMap.proc_start_user = user_no;
                     conditionMap.proc_inst_status = 4;//已归档的数据
+                    console.log(conditionMap,'conditionMapconditionMapconditionMap');
                     //调用方法
                     inst.getProcInstHistoryList(page,length,conditionMap).then(function(result){
                         utils.respJsonData(res, result);

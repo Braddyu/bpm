@@ -15,6 +15,13 @@ router.route('/todo').post(function(req,res){
         var userNo = req.body.user_no;//用户编号
         var page = req.body.page;//页码
         var length = req.body.rows;//每页条数
+        var joinup_sys = req.body.joinup_sys;//工单所属系统编号
+        var proc_code = req.body.proc_code;//工单所属流程
+
+        if(!joinup_sys){
+            utils.respMsg(res, false, '2001', '工单所属系统编号不能为空。', null, null);
+            return;
+        }
 
         // 验证用户编号是否为空
         if(!userNo) {
@@ -27,7 +34,7 @@ router.route('/todo').post(function(req,res){
                    userService.getUsreRolesByUserNo(userNo).then(function(result){
                        console.log(result);
                        if(result){
-                           inst.getMyTaskQuery4Eui(page,length,userNo,result).then(function(taskresult){
+                           inst.getMyTaskQuery4Eui(page,length,userNo,result,joinup_sys,proc_code).then(function(taskresult){
                                utils.respJsonData(res, taskresult);
                            }).catch(function(err_inst){
                                // console.log(err_inst);
@@ -56,8 +63,13 @@ router.route('/havetodo').post(function(req,res){
 	var userNo = req.body.user_no;//用户编号
 	var page = req.body.page;//页码
 	var length = req.body.rows;//每页条数
-
-	// 验证流程名是否为空
+    var joinup_sys = req.body.joinup_sys;//工单所属系统编号
+    var proc_code = req.body.proc_code;//工单所属流程
+    if(!joinup_sys){
+        utils.respMsg(res, false, '2001', '工单所属系统编号不能为空。', null, null);
+        return;
+    }
+    // 验证流程名是否为空
 	if(!userNo) {
 		utils.respMsg(res, false, '2001', '用户编号不能为空。', null, null);
 	}else{
@@ -67,7 +79,7 @@ router.route('/havetodo').post(function(req,res){
                 userService.getUsreRolesByUserNo(userNo).then(function(result){
                     console.log(result);
                     if(result){
-                        inst.getMyCompleteTaskQuery4Eui(page,length,userNo,result).then(function(taskresult){
+                        inst.getMyCompleteTaskQuery4Eui(page,length,userNo,result,joinup_sys,proc_code).then(function(taskresult){
                             utils.respJsonData(res, taskresult);
                         }).catch(function(err_inst){
                             // console.log(err_inst);
@@ -398,7 +410,7 @@ router.route("/payout").post(function(req,res){
 router.route("/assign/interim_task").post(function(req,res){
     var inst_id = req.body.proc_inst_id;//实例id
     var task_id = req.body.task_id;//任务id
-    var node_code = req.body.node_code;//任务编号
+    var node_code = req.body.node_code;//下一节点编号
     var user_code = req.body.user_no;//当前处理人编号
     var user_name = req.body.user_name;//当前处理人姓名
     var assign_user_no =req.body.assign_user_no;//指派人编号

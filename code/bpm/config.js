@@ -56,8 +56,8 @@ var config = {
         secret:'gdgl_secret',
         key: 'gdgl_id',   //这里的name值得是cookie的name，默认cookie的name是：connect.sid
         cookie_maxAge:1800000,   //单位ms，即10分钟后session和相应的cookie失效过期
-        resave: true,
-        saveUninitialized: true,
+        resave: false,
+        saveUninitialized: false,
         rolling:true,
           mongodb_url:'mongodb://192.168.9.48:27017/process',
         //  mongodb_url:'mongodb://10.201.253.162:27017/process1',
@@ -112,7 +112,7 @@ var config = {
             project_url_prefix + '/test/*',
             project_url_prefix +'/static/*',
             project_url_prefix + '/api/*',
-            project_url_prefix +'/getVerificationcode',
+
 
         ],
         // 登陆后就能访问的url（无需授权）（支持通配符*，尽量少用）,如：修改个人信息、注销等操作
@@ -122,6 +122,7 @@ var config = {
             project_url_prefix + '/portal',
             project_url_prefix +'/profile',
             project_url_prefix +'/setting',
+            project_url_prefix +'/getVerificationcode',
             project_url_prefix +'/api/workflow/*',
             // project_url_prefix + '/api/demo/*',
             // project_url_prefix+"api/workflow/*"
@@ -327,9 +328,14 @@ var config = {
         }
 
     },
+    //所属系统编号
+    joinup_sys:{
+        warningwork_node : 'warnSys_node',//预警工单系统编号
+        error_node: 'errorSys_node',//差错工单系统编号
+        auditor_node: 'auditorSys_node',//稽核工单系统编号
+        eyesight_node: 'syesightSys_node',//慧眼工单系统编号
+    },
     SMS_TEMPLET_ORDER:"渠道工单系统有一张需要您处理的工单，《procName》，工单号：orderNo，请及时登陆认真处理。",
-
-    VALIDATION:"手机登录工单管理系统收到的验证码：randomNumber",
     OPEN_SMS:false
 
 }

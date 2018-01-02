@@ -8,20 +8,12 @@
                     <div id="toolbar1" class="row tbRow">
                         <div class="col-xs-8 col-md-8">
                             <div class="btn-group" role="group" aria-label="...">
-                                <div class="btn-group" role="group" aria-label="...">
-                                    <!--<button type="button" class="btn btn-default" onclick="addNewOrder()"><i class="fa fa-plus"></i>新增</button>-->
-                                    <label for="filterParam3">工单类型：</label>
-                                    <select class="easyui-combobox"id="proc_task_code"  style="width: 180px;height:31px;">
-                                    </select>
-                                </div>
-                                <div class="btn-group" role="group" aria-label="...">
-                                    <label for="filterParam3">开始时间：</label>
-                                    <input id="startDate" class="easyui-datebox" label="Start Date:" labelPosition="top" style="width:130px;height:30px">
-                                </div>
-                                <div class="btn-group" role="group" aria-label="...">
-                                    <label for="filterParam3">开始时间：</label>
-                                    <input id="endDate" class="easyui-datebox" label="Start Date:" labelPosition="top" style="width:130px;height:30px">
-                                </div>
+                                <!--<button type="button" class="btn btn-default" onclick="addNewOrder()"><i class="fa fa-plus"></i>新增</button>-->
+                                <label for="filterParam3">工单类型：</label>
+                                <select class="easyui-combobox"id="proc_task_code"  style="width: 180px;height:31px;">
+                                </select>
+                            </div>
+                            <div class="btn-group" role="group" aria-label="...">
                                 <span style="color:red;font-size:13px">提示:双击处理工单</span>
                             </div>
                         </div>
@@ -29,7 +21,6 @@
                             <form class="form-inline">
                                 <div class="form-group">
                                     <div class="input-group">
-                                        <!--<input type="input" id="filterParam1" class="form-control" style="width:130px;" placeholder="输入标题查询"/>-->
                                         <span class="input-group-btn">
                                                 <button class="btn btn-default" type="button" onclick="doSearch()"><i class="fa fa-search"></i>查询</button>
                                             </span>
@@ -61,33 +52,9 @@
     $(document).ready(function () {
         //加载我的待办列表
         loadOrderTodaoListDatagrid();
-
         //初始化工单类型下拉框
         getAllProBase();
-        $('#startDate').datebox().datebox('calendar').calendar({
-            validator: function(date){
-                var endDate = new Date($('#endDate').datebox('getValue'));
-                if($('#endDate').datebox('getValue')){
-                    var d1 = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate());
-                    return  date<=d1;
-                }else{
-                    return true;
-                }
-            }
-        });
 
-        $('#endDate').datebox().datebox('calendar').calendar({
-            validator: function(date){
-                var startDate = new Date($('#startDate').datebox('getValue'));
-                if($('#startDate').datebox('getValue')){
-                    var d1 = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
-                    return  date>=d1;
-                }else{
-                    return true;
-                }
-
-            }
-        });
     });
 
     //时间格式化:new Date().Format("yyyy-MM-dd hh:mm:ss");
@@ -168,7 +135,6 @@
     }
 
 
-
     /**
      * 初始化工单类型下拉框
      */
@@ -181,15 +147,12 @@
         });
 
     }
-
     //查询
     function  doSearch(){
         $('#orderTablelist').datagrid({
             url: '{{projcfg.appurl}}/api/order_manage/order_todo/list',
             queryParams: {
-                proc_code: $("#proc_task_code").combobox('getValue'),
-                startDate: $("#startDate").datebox('getValue'),
-                endDate: $("#endDate").datebox('getValue'),
+                proc_code: $("#proc_task_code").combobox('getValue')
 
             }
         });

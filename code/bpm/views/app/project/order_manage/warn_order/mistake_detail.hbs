@@ -109,7 +109,11 @@
                     </td>
 
                 </tr>
-
+                <tr>
+                    <td align="right" class="tdLabel">附件上传:</td>
+                    <td>  <input class="easyui-filebox"labelPosition="top" data-options="prompt:'选择文件...',buttonText:'选择'" style="width:250px"/>
+                    </td>
+                </tr>
 
 
             </table>
@@ -126,7 +130,9 @@
 
             <iframe id="iframeId" frameborder=0 width=850 height=430 marginheight=0 marginwidth=0 scrolling=no src=></iframe>
         </div>
-
+        <div title="附件" style="padding:10px">
+            附件
+        </div>
     </div>
 
 <script type="text/javascript">
@@ -147,8 +153,6 @@
             //待办操作
 
         }
-
-
         $.ajax({
             url: '{{projcfg.appurl}}/api/order_manage/order_list/orderDetail',
             type: 'post',
@@ -242,10 +246,6 @@
                                 }}
                         ]]
                     })
-
-
-
-
 
                 }else{
                     $.messager.alert('错误提示','工单创建失败');
@@ -408,7 +408,6 @@
             });
         }else{
             //中间节点处理
-
             //easyui textbox 设置为禁用 serializeJson 不能获取json
             formData.push({"name":"proc_inst_task_title",
                         "value":$("#proc_inst_task_title").textbox('getValue')});
@@ -433,10 +432,4 @@
 
     }
 
-
-
     </script>
-
-
-
-

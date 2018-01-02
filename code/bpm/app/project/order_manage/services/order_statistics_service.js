@@ -110,7 +110,7 @@ exports.getStatisticsListPage= function(org_id,proc_code,level,status,dispatch_t
                     org_fullname:{ $first: "$org_fullname" },
                     org_id:{ $first: "$_id" },
                     success:{$sum: { $cond: { if:  { $in: [ "$inst.proc_inst_status", [4] ] }, then:{ $sum: 1 } , else: 0 }}},
-                    fail:{$sum: { $cond: { if:  { $in: [ "$inst.proc_inst_status", [1,2,3] ] }, then:{ $sum: 1 } , else: 0 }}},
+                    fail:{$sum: { $cond: { if:  { $in: [ "$inst.proc_inst_status", [1,2,3]]}, then:{ $sum: 1 } , else: 0 }}},
                 }
             }
 
@@ -398,6 +398,8 @@ exports.local_user= function(user_org,user_no) {
     })
 
 }
+
+
 
 
 function isEmptyObject(e) {

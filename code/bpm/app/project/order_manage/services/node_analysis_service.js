@@ -60,7 +60,7 @@ exports.getNode=function(process_define_id,node_id,params,flag){
                             }else if(type=="fork"){
                                 //并行分支节点开始节点
                                 //返回所有的下一并行节点数组
-                                var result=choiceNode(item_config,process_define,node_id,null);
+                               var result=choiceNode(item_config,process_define,node_id,null);
                                 resolve(utils.returnMsg(true, '0000', '查询结果正常', result, null));
 
                             }else{
@@ -107,25 +107,20 @@ function getNode(process_define_id,node_id,params,flag){
                 if(flag){
                     //查找下一节点信息
                     console.log("查找下一节点信息");
-                    console.log("node_id",node_id);
                     for (var node in nodes){
                         if(node==node_id){
                             // console.log(node_id);
                             var node_array=getValidNode(process_define,node_id,flag);
                             var  type=nodes[node].type;
-                            console.log("type",type);
                             //判断是不是分支节点
                             if(type=="chat"){
                                 //分支节点专用的方法区
                                 console.log("进入选择分支节点方法区");
                                 node_array=deleteInvalidNode(process_define,item_config,node_array,node_id,params,reject);
                                 console.log("after delete the invalid data")
-                                console.log(node_array)
-                                if(node_array.length>1){
-                                    resolve(utils.returnMsg(false, '1000', '有效节点删除不完全，或者错误', null, null));
-
-                                }else if(node_array.length==0){
-                                    resolve(utils.returnMsg(false, '1000', '不存在有效节点', null, null));
+                                // console.log(node_array);
+                                if(node_array.length!=1){
+                                    reject(utils.returnMsg(false, '1000', '有效节点删除不完全，或者错误', null, null));
 
                                 }else{
                                     var result=choiceNode(item_config,process_define,node_id,node_array[0]);
@@ -145,7 +140,7 @@ function getNode(process_define_id,node_id,params,flag){
                                 console.log("进入单一节点方法区");
                                 if(node_array.length!=1){
                                     console.error("节点信息错误");
-                                    resolve(utils.returnMsg(false, '1000', '有效节点删除不完全，或者错误', null, null));
+                                    reject(utils.returnMsg(false, '1000', '有效节点删除不完全，或者错误', null, null));
 
                                 }else{
                                     var result=choiceNode(item_config,process_define,node_id,node_array[0]);
@@ -293,39 +288,46 @@ exports.getNodeInfo=function(item_config,process_define,current_node,next_node){
 //查找首位节点(开始节点)
 exports.findFirstNode=function(process_define){
     var lines=process_define.lines;
-    var nodes=process_define.nodes;
     var map={};
     map.first_node="";
-    circleFind(nodes,lines,map);
+   circleFind(lines,map);
     return map.first_node;
 }
 
 function findFirstNode(process_define){
     var lines=process_define.lines;
-    var nodes=process_define.nodes;
     var map={};
     map.first_node="";
-    circleFind(nodes,lines,map);
+    circleFind(lines,map);
     return map.first_node;
 }
 
 //递归查找首位节点
-function circleFind(nodes,lines,map){
-    //查找开始节点
-    for(var item in nodes){
-        var node=nodes[item];
-        if(node.type=='start  round'){
-            for(var item2 in lines){
-                var line=lines[item2];
-                if(line.from==item){
-                    map.first_node=line.to;
-                    return;
-                }
+function circleFind(lines,map){
+    var temp=map.first_node;
+    // console.log(typeof temp);
+    for(var line in lines){
+        var from=lines[line].from;
+        var to=lines[line].to;
+        if(map.first_node==""){
+            //初次运行firstNode初始化
+            map.first_node=from;
+        }else{
+            if(map.first_node==to){
+                map.first_node=from;
             }
         }
     }
+    if(temp==map.first_node){
+        // console.log(typeof map);
+        // console.log(map);
+        return;
+    }else{
+        circleFind(lines,map);
+    }
 
 }
+
 //findNodeDetail function
 function findNodeDetail(process_define,node_code){
     var nodes=process_define.nodes
@@ -334,7 +336,6 @@ function findNodeDetail(process_define,node_code){
     for(var node in nodes){
         if(node_code==node){
             detail=nodes[node];
-
         }
     }
     return detail;
@@ -388,15 +389,17 @@ function determinChoice(str, condition,reject) {
     var array=new Array();
     var result = "";
     var flag = true
-    if(str){
-
-    }
     map=choiceDetermin(str)
     array=map;
-
     if(array.length>0){
-
-        try{
+        for(var item in condition){
+            if(contains(array,item)){
+                map=remove(map,item);
+            }
+        }
+        if (map.length>0){
+            reject(map,"没有传递")
+        }else{
             for (var item in condition) {
 
                 if ((typeof condition[item]) == "string") {
@@ -406,22 +409,38 @@ function determinChoice(str, condition,reject) {
                 }
             }
             result+=str;
-            console.log("result",result);
             if(eval(result)){
                 return true;
             }else{
                 return false;
             }
 
-
-        }catch(e){
-
-            return false;
         }
 
-
     }
+    // for (var item in condition) {
+    //
 
+        // var array = str.split("&")
+        // for (var i = 0; i < array.length; i++) {
+        //     var single = array[i];
+        //     if (single.indexOf(item) != -1) {
+        //         if ((typeof condition[item]) == "string") {
+        //             result = "var " + item + " ='" + condition[item] + "';" + single + " ;"
+        //         } else {
+        //             result = "var " + item + " = " + condition[item] + ";" + single + " ;"
+        //         }
+        //         if (!eval(result)) {
+        //             flag = false;
+        //         }
+        //     }
+        // }
+    // }
+    // if (flag) {
+    //     return true;
+    // } else {
+    //     return false;
+    // }
 }
 
 //找到配置文件中的 参数表达式
@@ -431,7 +450,7 @@ function findEval(line,item_config){
         var item_code=temp.item_code;
         // console.log(line,"    ===  ",item_code)
         if(line==item_code){
-            return temp.item_el;
+          return temp.item_el;
         }
 
     }
@@ -478,7 +497,7 @@ exports.findParams=function (proc_inst_id,node_code){
 
     });
 
-    return p;
+return p;
 
 }
 
@@ -494,45 +513,40 @@ function deleteInvalidNode(process_define,item_config,node_array,node_code,param
         //把params的key全部放入数组中
         params_key_array.push(param);
     }
-    for(var line in lines){
-        var from=lines[line].from;
-        var to =lines[line].to;
-        var name=findEval(line,item_config);
+   for(var line in lines){
+       var from=lines[line].from;
+       var to =lines[line].to;
+       var name=findEval(line,item_config);
+       if(node_code==from){
+           var eval_flag=false;
+           for(var j=0;j<params_key_array.length;j++){
+               var key=params_key_array[j];
+                var index=name.indexOf(key);
+               if(index != -1){
+                   eval_flag=true;
+               }
+           }
 
-
-        if(node_code==from){
-
-            var eval_flag=true;
-
-            // for(var j=0;j<params_key_array.length;j++){
-            //     var key=params_key_array[j];
-            //     var index=name.indexOf(key);
-            //     if(index != -1){
-            //         eval_flag=true;
-            //     }
-            // }
-            //  console.log("name",name);
-            if(eval_flag){
-                // return false this next_node is invalid node; return true this next_node is valid;
-                var invalid_flag=determinChoice(name,params,reject);
-                console.log("invalid_flag",invalid_flag,to);
-                if(invalid_flag){
-                    status_default=false;
-                }else{
-                    node_array=remove(node_array,to);
-                }
-            } else{
-                //匹配不上当前节点
-                if(status_default){
-                    //匹配不到走默认路线
-                    console.log("匹配不到走默认路线");
-                }else{
-                    //匹配到了删除默认路线
-                    node_array=remove(node_array,to);
-                }
-            }
-        }
-    }
+           if(eval_flag){
+               // return false this next_node is invalid node; return true this next_node is valid;
+               var invalid_flag=determinChoice(name,params,reject);
+               if(invalid_flag){
+                  status_default=false;
+               }else{
+                  node_array=remove(node_array,to);
+               }
+           } else{
+               //匹配不上当前节点
+               if(status_default){
+                   //匹配不到走默认路线
+                   console.log("匹配不到走默认路线");
+               }else{
+                   //匹配到了删除默认路线
+                   node_array=remove(node_array,to);
+               }
+           }
+       }
+   }
     return node_array;
 }
 
@@ -888,7 +902,7 @@ function choiceDetermin(str){
         for(var item in map){
             arrs.push(item);
         }
-
+        
     }
     return arrs;
 
@@ -942,110 +956,6 @@ function findOrg (user_code,reject){
         });
     });
 }
-//查找上级人员
-function find_up(user_code, reject, user_org_id, returnMap, resolve) {
-    console.log("amd??????????????????????????????????????????????",user_code, user_org_id, returnMap);
-    var item_assignee_role;
-    var org_array=[];
-    //上级
-
-    model_user.$User.find({"user_no": user_code},function(err,rs) {
-        if (err) {
-            console.log(err);
-            reject(utils.returnMsg(false, '1000', '查询用户信息错误', null, err))
-        } else {
-            if (rs.length > 0) {
-                user_org_id = rs[0].user_org;
-                model_user.$CommonCoreOrg.find({"_id": user_org_id}, function (error, result) {
-                    if (error) {
-                        console.log(error)
-                        reject(utils.returnMsg(false, '1000', '查询用户信息错误', null, error))
-
-                    } else {
-                        user_org_id = result[0].org_pid;
-                        org_array.push(user_org_id);
-                        model_user.$CommonCoreOrg.find({"org_pid": user_org_id}, function (est, rst) {
-                            if (est) {
-                                console.log(est);
-                                reject(utils.returnMsg(false, '1000', '查询用户jigou 信息错误', null, rst))
-                            } else {
-                                if (rst.length > 0) {
-                                    for (var i = 0; rst.length > i; i++) {
-                                        org_array.push(rst[i]._id);
-                                    }
-                                    returnMap.user_org_id = org_array;
-                                    returnMap.proc_inst_task_assignee = "";
-                                    returnMap.proc_inst_task_assignee_name = "";
-                                    resolve(utils.returnMsg(true, '10000', '查询用户org', returnMap, null));
-                                } else {
-                                    reject(utils.returnMsg(false, '1000', '查询用户jigou 信息错误', null, null))
-                                }
-                            }
-                        });
-                    }
-
-                })
-
-            } else {
-                reject(utils.returnMsg(false, '1000', '查询用户jigou 信息错误', null, null))
-            }
-
-        }
-    })
-}
-
-function find_up_bak(user_code, user_org_id, returnMap) {
-    return new Promise(function (resolve,reject) {
-        console.log("amd********************************************", user_code, user_org_id, returnMap);
-        var item_assignee_role;
-        var org_array = [];
-        //上级
-        model_user.$User.find({"user_no": user_code}, function (err, rs) {
-            if (err) {
-                console.log(err);
-                reject(utils.returnMsg(false, '1000', '查询用户信息错误', null, err))
-            } else {
-                if (rs.length > 0) {
-                    user_org_id = rs[0].user_org;
-                    model_user.$CommonCoreOrg.find({"_id": user_org_id}, function (error, result) {
-                        if (error) {
-                            console.log(error)
-                            reject(utils.returnMsg(false, '1000', '查询用户信息错误', null, error))
-
-                        } else {
-                            user_org_id = result[0].org_pid;
-                            org_array.push(user_org_id);
-                            model_user.$CommonCoreOrg.find({"org_pid": user_org_id}, function (est, rst) {
-                                if (est) {
-                                    console.log(est);
-                                    reject(utils.returnMsg(false, '1000', '查询用户jigou 信息错误', null, rst))
-                                } else {
-                                    if (rst.length > 0) {
-                                        for (var i = 0; rst.length > i; i++) {
-                                            org_array.push(rst[i]._id);
-                                        }
-                                        returnMap.user_org_id = org_array;
-                                        returnMap.proc_inst_task_assignee = "";
-                                        returnMap.proc_inst_task_assignee_name = "";
-                                        resolve(utils.returnMsg(true, '10000', '查询用户org', returnMap, null));
-                                    } else {
-                                        reject(utils.returnMsg(false, '1000', '查询用户jigou 信息错误', null, null))
-                                    }
-                                }
-                            });
-                        }
-
-                    })
-                } else {
-                    reject(utils.returnMsg(false, '1000', '查询用户jigou 信息错误', null, null))
-                }
-            }
-
-
-        })
-    })
-
-}
 
 /**
  *
@@ -1055,6 +965,7 @@ function find_up_bak(user_code, user_org_id, returnMap) {
  * @param node_code
  * @param params
  */
+
 exports.findNextHandler=function(user_code,proc_define_id,node_code,params,proc_inst_id) {
     console.log(node_code);
     console.log(node_code);
@@ -1063,7 +974,7 @@ exports.findNextHandler=function(user_code,proc_define_id,node_code,params,proc_
     var p=new Promise(function(resolve,reject){
         model.$ProcessDefine.find({"_id":proc_define_id}, function (errs, result) {
             if (errs) {
-                console.log(errs);
+                console.log(errs)
                 reject(utils.returnMsg(false, '1000', '查询用户信息错误', null, errs))
             } else {
                 // console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
@@ -1077,12 +988,8 @@ exports.findNextHandler=function(user_code,proc_define_id,node_code,params,proc_
 
                     getNode(proc_define_id,node_code,params,true).then(function(rs){
 
-                        console.log("kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk");
-                        console.log(rs)
-                        if(!rs.success){
-                            resolve(utils.returnMsg(false, '1001', '节点获取失败', null, rs));
-                            return;
-                        }
+                        // console.log("kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk",)
+                        // console.log(rs)
                         var data=rs.data;
                         var current_detail=data.current_detail;
                         var current_node=data.current_node;
@@ -1098,12 +1005,12 @@ exports.findNextHandler=function(user_code,proc_define_id,node_code,params,proc_
                                     reject(utils.returnMsg(false, '10001', '查询用户信息错误', null, err))
                                 } else {
 
-                                    user_org_id = rs[0].user_org;
+                                        user_org_id = rs[0].user_org;
                                 }
                             }).then(function () {
                                 returnMap.proc_inst_task_assignee="";
                                 returnMap.proc_inst_task_assignee_name="";
-                                returnMap.user_org_id=[user_org_id];
+                                returnMap.user_org_id=user_org_id;
                                 resolve(utils.returnMsg(true, '10000', '查询用户org', returnMap, null))
                             })
 
@@ -1134,7 +1041,7 @@ exports.findNextHandler=function(user_code,proc_define_id,node_code,params,proc_
                                         reject(utils.returnMsg(false, '10001', '查询用户信息错误', null, err))
                                     }else{
                                         if(result.length>0){
-                                            returnMap.user_org_id=[result[0].user_org];
+                                            returnMap.user_org_id=result[0].user_org;
                                             returnMap.proc_inst_task_assignee="";
                                             returnMap.proc_inst_task_assignee_name="";
                                             resolve(utils.returnMsg(true, '00000', '查询用户org', returnMap, null))
@@ -1145,30 +1052,17 @@ exports.findNextHandler=function(user_code,proc_define_id,node_code,params,proc_
                                 })
                             }else if(type==2){
                                 // 角色
-                                var item_assignee_org_ids;
-                                if(next_detail.item_assignee_org_ids){
-                                    if(next_detail.item_assignee_org_ids.indexOf(",")!=-1){
-                                        item_assignee_org_ids = next_detail.item_assignee_org_ids.split(",");
-                                    }else{
-                                        item_assignee_org_ids = [next_detail.item_assignee_org_ids];
-                                    }
-                                }else{
-                                    item_assignee_org_ids = [];
-                                }
-
-
+                                var item_assignee_org_ids = next_detail.item_assignee_org_ids;
                                 returnMap.proc_inst_task_assignee="";
                                 returnMap.proc_inst_task_assignee_name="";
                                 returnMap.user_org_id=item_assignee_org_ids;
                                 resolve(utils.returnMsg(true, '10000', '查询用户org', returnMap, null))
 
                             }else if(type==3){
-                                //参考
-
-                                console.log("resultsresultsresultsresultsresultsresultsresultsresultsresultsresults \n",3);
+                                console.log("resultsresultsresultsresultsresultsresultsresultsresultsresultsresults \n",3)
 
                                 if(item_assignee_ref_type==1){
-                                    console.log("resultsresultsresultsresultsresultsresultsresultsresultsresultsresults \n",4);
+                                    console.log("resultsresultsresultsresultsresultsresultsresultsresultsresultsresults \n",4)
                                     //当前人  1
                                     //1. 提取参照节点
                                     //2.去任务表 根据节点和proc_define_id 找到相对应的任务执行完成人（操作人）
@@ -1182,7 +1076,7 @@ exports.findNextHandler=function(user_code,proc_define_id,node_code,params,proc_
                                             // console.log("resultsresultsresultsresultsresultsresultsresultsresultsresultsresults \n",results)
                                             returnMap.proc_inst_task_assignee=results[0].proc_inst_task_assignee;
                                             returnMap.proc_inst_task_assignee_name=results[0].proc_inst_task_assignee
-                                            returnMap.user_org_id=[results[0].proc_inst_task_user_org];
+                                            returnMap.user_org_id=results[0].proc_inst_task_user_org
                                             resolve(utils.returnMsg(true, '10000', '查询用户org', returnMap, null))
                                         }
                                     })
@@ -1192,189 +1086,84 @@ exports.findNextHandler=function(user_code,proc_define_id,node_code,params,proc_
 
                                     if (item_assignee_ref_cur_org == 1) {
                                         //同级
-                                        if(proc_inst_id){
-                                            //
-                                            model.$ProcessInstTask.find({"proc_inst_id" : proc_inst_id,"proc_inst_task_code" : item_assignee_ref_task},function(err,results){
-                                                if(err){
-                                                    console.log(err)
-                                                    reject(utils.returnMsg(false, '10001', '查询用户信息错误', null, err))
-                                                }else{
-                                                    // console.log("resultsresultsresultsresultsresultsresultsresultsresultsresultsresults \n",results)
-                                                    model_user.$User.find({"user_no":results[0].proc_inst_task_assignee},function(e_a,r_a){
-                                                        if(e_a){
-                                                            console.log(e_a);
-                                                            reject(utils.returnMsg(false, '10001', '查询用户信息错误', null, e_a));
-                                                        }else{
-                                                            user_org_id = r_a[0].user_org;
-                                                            returnMap.user_org_id=[user_org_id];
-                                                            returnMap.proc_inst_task_assignee="";
-                                                            returnMap.proc_inst_task_assignee_name="";
-                                                            resolve(utils.returnMsg(true, '10000', '查询用户org1', returnMap, null))
-                                                        }
-                                                    });
+                                        var query = model_user.$User.find({});
+                                        query.where("user_no", user_code);
+                                        query.exec(function (err, rs) {
+                                            if (err) {
+                                                console.log(err);
+                                                reject(utils.returnMsg(false, '10001', '查询用户信息错误', null, err))
+                                            } else {
 
-                                                }
-                                            })
-
-                                        }else{
-                                            var query = model_user.$User.find({});
-                                            query.where("user_no", user_code);
-                                            query.exec(function (err, rs) {
-                                                if (err) {
-                                                    console.log(err);
-                                                    reject(utils.returnMsg(false, '10001', '查询用户信息错误', null, err))
-                                                } else {
                                                     user_org_id = rs[0].user_org;
-                                                    returnMap.user_org_id=[user_org_id];
+                                                    returnMap.user_org_id=user_org_id;
                                                     returnMap.proc_inst_task_assignee="";
                                                     returnMap.proc_inst_task_assignee_name="";
-                                                    resolve(utils.returnMsg(true, '10000', '查询用户org1', returnMap, null))
-                                                }
-                                            }) ;
+                                                    resolve(utils.returnMsg(true, '10000', '查询用户org', returnMap, null))
 
-                                        }
+                                            }
+                                        }) ;
 
 
                                     } else if (item_assignee_ref_cur_org == 2) {
                                         //上级
-                                        if(proc_inst_id){
-                                            model.$ProcessInstTask.find({"proc_inst_id" : proc_inst_id,"proc_inst_task_code" : item_assignee_ref_task},function(err,results){
-                                                if(err){
-                                                    console.log(err)
-                                                    reject(utils.returnMsg(false, '10001', '查询用户信息错误', null, err))
-                                                }else{
-                                                    // console.log("resultsresultsresultsresultsresultsresultsresultsresultsresultsresults \n",results)
-                                                    // returnMap.proc_inst_task_assignee=results[0].proc_inst_task_assignee;
-                                                    if(results.length>0){
-                                                        find_up(results[0].proc_inst_task_assignee, reject, user_org_id, returnMap, resolve);
-                                                    }else{
-                                                        reject(utils.returnMsg(false, '10001', '查询用户信息错误', null, null));
-                                                    }
+                                        var query = model_user.$User.find({});
+                                        query.where("user_no", user_code);
+                                        query.exec(function (err, rs) {
+                                            if (err) {
+                                                console.log(err);
+                                                reject(utils.returnMsg(false, '1000', '查询用户信息错误', null, err))
+                                            } else {
+
+                                                    user_org_id = rs[0].user_org;
+
+                                            }
+                                        }).then(function () {
+                                            model_user.$CommonCoreOrg.find({"_id": user_org_id}, function (error, result) {
+                                                if (error) {
+                                                    console.log(error)
+                                                    reject(utils.returnMsg(false, '1000', '查询用户信息错误', null, error))
+
+                                                } else {
+                                                    user_org_id = result[0].org_pid;
                                                 }
-                                            });
 
-                                        }else{
-
-                                            find_up(user_code, reject, user_org_id, returnMap, resolve);
-                                        }
-
+                                            }).then(function () {
+                                                returnMap.item_assignee_role = item_assignee_role;
+                                                returnMap.user_org_id = user_org_id;
+                                                returnMap.proc_inst_task_assignee="";
+                                                returnMap.proc_inst_task_assignee_name="";
+                                                resolve(utils.returnMsg(true, '10000', '查询用户org', returnMap, null));
+                                            })
+                                        })
                                     }else if(item_assignee_ref_cur_org == 3){
                                         //下级
-                                        if(proc_inst_id){
-                                            model.$ProcessInstTask.find({"proc_inst_id" : proc_inst_id,"proc_inst_task_code" : item_assignee_ref_task},function(errors,results){
-                                                if(errors){
-                                                    console.log(errors);
-                                                    reject(utils.returnMsg(false, '10001', '查询用户信息错误', null, errors));
-                                                }else{
-                                                    // console.log("resultsresultsresultsresultsresultsresultsresultsresultsresultsresults \n",results)
-                                                    // returnMap.proc_inst_task_assignee=results[0].proc_inst_task_assignee;
-                                                    // find_up(results[0].proc_inst_task_assignee, reject, user_org_id, returnMap, resolve);
-                                                    if(results.length>0){
-                                                        model_user.$User.find({"user_no":results[0].proc_inst_task_assignee},function(err,rs){
-                                                            if (err) {
-                                                                console.log(err);
-                                                                reject(utils.returnMsg(false, '1000', '查询用户信息错误', null, err))
-                                                            } else {
-                                                                if(rs.length>0){
-                                                                    // user_org_id = ;
-                                                                    console.log(rs,rs[0].user_org);
-                                                                    model_user.$CommonCoreOrg.find({"org_pid": {$in:rs[0].user_org}}, function (error, result) {
-                                                                        if (error) {
-                                                                            console.log(error)
-                                                                            reject(utils.returnMsg(false, '1000', '查询用户信息错误', null, error))
-                                                                        } else {
-                                                                            var arr_t=[];
-                                                                            for(var i=0;result.length>i;i++){
-                                                                                arr_t.push(result[i]._id);
-                                                                            }
-                                                                            user_org_id = arr_t;
-                                                                            // user_org_id = result[0].org_pid;
-                                                                            // returnMap.item_assignee_role = item_assignee_role;
-                                                                            returnMap.user_org_id = arr_t;
-                                                                            returnMap.proc_inst_task_assignee="";
-                                                                            returnMap.proc_inst_task_assignee_name="";
-                                                                            resolve(utils.returnMsg(true, '10000', '查询用户org', returnMap, null));
-                                                                        }
-                                                                    })
-                                                                }else{
+                                        var query = model_user.$User.find({});
+                                        query.where("user_no", user_code);
+                                        query.exec(function (err, rs) {
+                                            if (err) {
+                                                console.log(err);
+                                                reject(utils.returnMsg(false, '1000', '查询用户信息错误', null, err))
+                                            } else {
 
-                                                                    reject(utils.returnMsg(false, '1000', '查询budao用户信息', null, null))
-                                                                }
-                                                            }
-
-                                                        })
-
-                                                    }else{
-                                                        reject(utils.returnMsg(false, '1000', '查询用户信息错误', null, null))
-                                                    }
-                                                }
-                                            });
-
-
-
-                                        }else{
-
-                                            //下级
-                                            var query = model_user.$User.find({});
-                                            query.where("user_no", user_code);
-                                            query.exec(function (err, rs) {
-                                                if (err) {
-                                                    console.log(err);
-                                                    reject(utils.returnMsg(false, '1000', '查询用户信息错误', null, err))
+                                                    user_org_id = rs[0].user_org;
+                                            }
+                                        }).then(function () {
+                                            model_user.$CommonCoreOrg.find({"org_pid": user_org_id}, function (error, result) {
+                                                if (error) {
+                                                    console.log(error)
+                                                    reject(utils.returnMsg(false, '1000', '查询用户信息错误', null, error))
                                                 } else {
-                                                    if(rs.length>0){
-                                                        user_org_id = rs[0].user_org;
-                                                    }else{
-
-                                                        reject(utils.returnMsg(false, '1000', '查询budao用户信息', null, null))
-                                                    }
-
-
+                                                    user_org_id = result[0].org_pid;
                                                 }
+
                                             }).then(function () {
-                                                model_user.$CommonCoreOrg.find({"org_pid": user_org_id}, function (error, result) {
-                                                    if (error) {
-                                                        console.log(error)
-                                                        reject(utils.returnMsg(false, '1000', '查询用户信息错误', null, error))
-                                                    } else {
-                                                        user_org_id = result[0].org_pid;
-                                                    }
-
-                                                }).then(function () {
-                                                    returnMap.item_assignee_role = item_assignee_role;
-                                                    returnMap.user_org_id = [user_org_id];
-                                                    returnMap.proc_inst_task_assignee="";
-                                                    returnMap.proc_inst_task_assignee_name="";
-                                                    resolve(utils.returnMsg(true, '10000', '查询用户org', returnMap, null));
-                                                })
+                                                returnMap.item_assignee_role = item_assignee_role;
+                                                returnMap.user_org_id = user_org_id;
+                                                returnMap.proc_inst_task_assignee="";
+                                                returnMap.proc_inst_task_assignee_name="";
+                                                resolve(utils.returnMsg(true, '10000', '查询用户org', returnMap, null));
                                             })
-                                        }
-
-
-                                    }else if(item_assignee_ref_cur_org == 4){
-                                        //上上级
-                                        //user_code, reject, user_org_id, returnMap, resolve
-                                        if(proc_inst_id){
-                                            model.$ProcessInstTask.find({"proc_inst_id" : proc_inst_id,"proc_inst_task_code" : item_assignee_ref_task},function(error,result){
-                                                if(error){
-                                                    console.log(error);
-                                                    reject(utils.returnMsg(false, '1000', '查询用户信息错误', null,error))
-                                                }else{
-                                                    if(result.length>0){
-                                                        find_up_up(result[0].proc_inst_task_assignee, reject, user_org_id, returnMap, resolve)
-
-                                                    }else{
-                                                        reject(utils.returnMsg(false, '1000', '查询用户信息错误', null, null))
-
-                                                    }
-
-                                                }
-                                            })
-
-                                        }else{
-                                            find_up_up(user_code, reject, user_org_id, returnMap, resolve);
-                                            // find_up_up(result[0].proc_inst_task_assignee, reject, user_org_id, returnMap, resolve)
-                                        }
+                                        })
 
                                     }
                                 }
@@ -1392,283 +1181,6 @@ exports.findNextHandler=function(user_code,proc_define_id,node_code,params,proc_
 
     });
     return p;
-
-}
-// exports.findNextHandler=function(user_code,proc_define_id,node_code,params,proc_inst_id) {
-//
-//     console.log(user_code,proc_define_id,node_code,params,proc_inst_id);
-//     var user_org_id, org_pid, type;
-//     var returnMap = {};
-//
-//
-//
-//     var p=new Promise(function(resolve,reject){
-//         model.$ProcessDefine.find({"_id":proc_define_id}, function (errs, result) {
-//             if (errs) {
-//                 console.log(errs)
-//                 reject(utils.returnMsg(false, '1000', '查询用户信息错误', null, errs))
-//             } else {
-//                 // console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-//                 if (result.length > 0) {
-//                     // console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-//                     // console.log(result);
-//                     var proc_define = JSON.parse(result[0].proc_define);
-//                     var item_config = JSON.parse(result[0].item_config);
-//
-//                     // var proc_define_id=result[0].proc_define_id;
-//
-//                     getNode(proc_define_id,node_code,params,true).then(function(rs){
-//
-//                         console.log("kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk");
-//                         console.log(rs)
-//                         if(!rs.success){
-//                             resolve(utils.returnMsg(false, '1001', '节点获取失败', null, rs));
-//                             return;
-//                         }
-//                         var data=rs.data;
-//                         var current_detail=data.current_detail;
-//                         var current_node=data.current_node;
-//
-//                         var next_node=data.next_node;
-//                         // console.log("next______________________________________node",data);
-//                         if(next_node.type=="end  round"){
-//                             var query = model_user.$User.find({});
-//                             query.where("user_no", user_code);
-//                             query.exec(function (err, rs) {
-//                                 if (err) {
-//                                     console.log(err);
-//                                     reject(utils.returnMsg(false, '10001', '查询用户信息错误', null, err))
-//                                 } else {
-//
-//                                         user_org_id = rs[0].user_org;
-//                                 }
-//                             }).then(function () {
-//                                 returnMap.proc_inst_task_assignee="";
-//                                 returnMap.proc_inst_task_assignee_name="";
-//                                 returnMap.user_org_id=[user_org_id];
-//                                 resolve(utils.returnMsg(true, '10000', '查询用户org', returnMap, null))
-//                             })
-//
-//                         }else{
-//                             var next_detail=data.next_detail;
-//                             var item_assignee_ref_task=next_detail.item_assignee_ref_task;
-//                             var results=choiceNode(item_config,proc_define,item_assignee_ref_task,null);
-//                             // console.log("result   ",results);
-//                             var ref_node_detail=results.current_detail;
-//                             // var ref_item_assignee_type=ref_node_detail.item_assignee_type
-//                             // if()
-//                             // var item_assignee_role=ref_node_detail.item_assignee_role//: '595cafd7e3c7c90e1c599732',
-//                             var item_assignee_ref_cur_org=next_detail.item_assignee_ref_cur_org//: '1',
-//                             var item_assignee_ref_type=next_detail.item_assignee_ref_type;//// 参照人类别 1-当前人，2-当前机构
-//                             /**
-//                              *  \"item_assignee_ref_cur_org\": \"1\",
-//                              \"item_assignee_ref_type\": \"2\",
-//                              \"item_assignee_type\": 3,
-//                              *
-//                              */
-//                             type=next_detail.item_assignee_type
-//
-//                             if(type==1){
-//                                 //单人
-//                                 console.log("resultsresultsresultsresultsresultsresultsresultsresultsresultsresults \n",1)
-//                                 model_user.$User.find({"user_no":user_code},function(err,result){
-//                                     if(err){
-//                                         console.log(err);
-//                                         reject(utils.returnMsg(false, '10001', '查询用户信息错误', null, err))
-//                                     }else{
-//                                         if(result.length>0){
-//                                             returnMap.user_org_id=[result[0].user_org];
-//                                             returnMap.proc_inst_task_assignee="";
-//                                             returnMap.proc_inst_task_assignee_name="";
-//                                             resolve(utils.returnMsg(true, '00000', '查询用户org', returnMap, null))
-//                                         }else{
-//                                             resolve(utils.returnMsg(false, '10000', '查询无用户数据',null, err))
-//                                         }
-//                                     }
-//                                 })
-//                             }else if(type==2){
-//                                 // 角色
-//                                 console.log("&&&&&&&&&&&&&&&&&**************************",type);
-//                                 console.log( next_detail);
-//                                 if(next_detail.item_assignee_org_ids){
-//                                     var item_assignee_org_ids =next_detail.item_assignee_org_ids;
-//                                 }else{
-//                                     var item_assignee_org_ids =[];
-//
-//                                 }
-//
-//                                 returnMap.proc_inst_task_assignee="";
-//                                 returnMap.proc_inst_task_assignee_name="";
-//                                 returnMap.user_org_id=item_assignee_org_ids;
-//                                 resolve(utils.returnMsg(true, '10000', '查询用户org', returnMap, null))
-//
-//                             }else if(type==3){
-//                                 console.log("resultsresultsresultsresultsresultsresultsresultsresultsresultsresults \n",3)
-//
-//                                 if(item_assignee_ref_type==1){
-//                                     console.log("resultsresultsresultsresultsresultsresultsresultsresultsresultsresults \n",4)
-//                                     //当前人  1
-//                                     //1. 提取参照节点
-//                                     //2.去任务表 根据节点和proc_define_id 找到相对应的任务执行完成人（操作人）
-//                                     //3.提取操作人的信息（user_no,org_no）
-//
-//                                     model.$ProcessInstTask.find({"proc_inst_id" : proc_inst_id,"proc_inst_task_code" : item_assignee_ref_task},function(err,results){
-//                                         if(err){
-//                                             console.log(err)
-//                                             reject(utils.returnMsg(false, '10001', '查询用户信息错误', null, err))
-//                                         }else{
-//                                             // console.log("resultsresultsresultsresultsresultsresultsresultsresultsresultsresults \n",results)
-//                                             returnMap.proc_inst_task_assignee=results[0].proc_inst_task_assignee;
-//                                             returnMap.proc_inst_task_assignee_name=results[0].proc_inst_task_assignee
-//                                             returnMap.user_org_id=[results[0].proc_inst_task_user_org];
-//                                             resolve(utils.returnMsg(true, '10000', '查询用户org', returnMap, null))
-//                                         }
-//                                     })
-//
-//                                 }else if(item_assignee_ref_type==2){
-//                                     //参照人
-//
-//                                     if (item_assignee_ref_cur_org == 1) {
-//                                         //同级
-//                                         var query = model_user.$User.find({});
-//                                         query.where("user_no", user_code);
-//                                         query.exec(function (err, rs) {
-//                                             if (err) {
-//                                                 console.log(err);
-//                                                 reject(utils.returnMsg(false, '10001', '查询用户信息错误', null, err))
-//                                             } else {
-//                                                 user_org_id = rs[0].user_org;
-//                                                 returnMap.user_org_id=[user_org_id];
-//                                                 returnMap.proc_inst_task_assignee="";
-//                                                 returnMap.proc_inst_task_assignee_name="";
-//                                                 resolve(utils.returnMsg(true, '10000', '查询用户org1', returnMap, null))
-//                                             }
-//                                         }) ;
-//
-//                                     } else if (item_assignee_ref_cur_org == 2) {
-//                                         find_up(user_code, reject, user_org_id, returnMap, resolve);
-//                                     }else if(item_assignee_ref_cur_org == 3){
-//                                         //下级
-//                                         var query = model_user.$User.find({});
-//                                         query.where("user_no", user_code);
-//                                         query.exec(function (err, rs) {
-//                                             if (err) {
-//                                                 console.log(err);
-//                                                 reject(utils.returnMsg(false, '1000', '查询用户信息错误', null, err))
-//                                             } else {
-//                                                 if(rs.length>0){
-//                                                     user_org_id = rs[0].user_org;
-//                                                 }else{
-//
-//                                                     reject(utils.returnMsg(false, '1000', '查询budao用户信息', null, null))
-//                                                 }
-//
-//
-//                                             }
-//                                         }).then(function () {
-//                                             model_user.$CommonCoreOrg.find({"org_pid": user_org_id}, function (error, result) {
-//                                                 if (error) {
-//                                                     console.log(error)
-//                                                     reject(utils.returnMsg(false, '1000', '查询用户信息错误', null, error))
-//                                                 } else {
-//                                                     user_org_id = result[0].org_pid;
-//                                                 }
-//
-//                                             }).then(function () {
-//                                                 returnMap.item_assignee_role = item_assignee_role;
-//                                                 returnMap.user_org_id = [user_org_id];
-//                                                 returnMap.proc_inst_task_assignee="";
-//                                                 returnMap.proc_inst_task_assignee_name="";
-//                                                 resolve(utils.returnMsg(true, '10000', '查询用户org', returnMap, null));
-//                                             })
-//                                         })
-//
-//                                     }else if(item_assignee_ref_cur_org == 4){
-//                                         //上上级
-//                                         //user_code, reject, user_org_id, returnMap, resolve
-//                                         find_up_up(user_code, reject, user_org_id, returnMap, resolve)
-//
-//                                     }
-//                                 }
-//                             }
-//                         }
-//
-//                     })
-//                 }else{
-//                     reject(utils.returnMsg(false, '1000', '查询用户信息错误', null, null))
-//
-//
-//                 }
-//             }
-//         })
-//
-//     });
-//     return p;
-//
-// }
-
-function find_up_up(user_code, reject, user_org_id, returnMap, resolve){
-    var org_array=[];
-    model_user.$User.find({"user_no": user_code},function(e,r){
-        if(e){
-            console.log(e);
-            reject(utils.returnMsg(false, '10001', '查询用户信息错误', null, e))
-        }else{
-            if(r.length>0){
-                model_user.$CommonCoreOrg.find({"_id":{$in:r[0].user_org}},function(es,rs){
-
-                    if(es){
-                        console.log(es);
-                        reject(utils.returnMsg(false, '10001', '查询用户信息错误', null, es))
-                    }else{
-                        if(rs.length>0){
-                            model_user.$CommonCoreOrg.find({"_id":{$in:rs[0].org_pid}},function(err,res){
-                                if(err){
-                                    console.log(err);
-                                    reject(utils.returnMsg(false, '10001', '查询用户信息错误', null, err))
-                                }else{
-                                    org_array.push(res[0]._id);
-                                    model_user.$CommonCoreOrg.find({"_id":res[0].org_pid},function(error,result){
-                                        if(error){
-                                            console.log(error);
-                                            reject(utils.returnMsg(false, '10001', '查询用户信息错误', null, error))
-                                        }else{
-
-                                            if(result.length>0){
-                                                model_user.$CommonCoreOrg.find({"org_pid":result[0]._id},function(errors,results){
-                                                    if(errors){
-                                                        console.log(errors);
-                                                    }else{
-                                                        if(results.length>0){
-                                                            for(var i =0;i<results.length;i++){
-                                                                org_array.push(results[i]._id);
-                                                            }
-                                                            returnMap.user_org_id = org_array;
-                                                            returnMap.proc_inst_task_assignee="";
-                                                            returnMap.proc_inst_task_assignee_name="";
-                                                            resolve(utils.returnMsg(true, '10000', '查询用户org', returnMap, null));
-                                                        }else{
-                                                            reject(utils.returnMsg(false, '10000', '查询用户信息错误', null, null))
-                                                        }
-                                                    }
-                                                })
-                                            }else{
-                                                reject(utils.returnMsg(false, '10000', '查询用户信息错误', null, null))
-                                            }
-                                        }
-                                    })
-                                }
-                            })
-                        }else{
-                            reject(utils.returnMsg(false, '1000', '查询用户信息错误', null, null))
-                        }
-                    }
-                })
-            }else{
-                reject(utils.returnMsg(false, '1000', '查询用户信息错误', null, null))
-            }
-        }
-    })
 
 }
 
@@ -1721,10 +1233,19 @@ exports.findCurrentHandler=function(user_code,proc_define_id,node_code,params,pr
                             var current_detail=data.current_detail;
                             var item_assignee_ref_task=current_detail.item_assignee_ref_task;
                             var results=choiceNode(item_config,proc_define,item_assignee_ref_task,null);
+                            // console.log("result   ",results);
                             var ref_node_detail=results.current_detail;
+                            // var ref_item_assignee_type=ref_node_detail.item_assignee_type
+                            // if()
+                            // var item_assignee_role=ref_node_detail.item_assignee_role//: '595cafd7e3c7c90e1c599732',
                             var item_assignee_ref_cur_org=current_detail.item_assignee_ref_cur_org//: '1',
                             var item_assignee_ref_type=current_detail.item_assignee_ref_type;//// 参照人类别 1-当前人，2-当前机构
-
+                            /**
+                             *  \"item_assignee_ref_cur_org\": \"1\",
+                             \"item_assignee_ref_type\": \"2\",
+                             \"item_assignee_type\": 3,
+                             *
+                             */
                             type=current_detail.item_assignee_type
                             if(type==1){
                                 //单人
@@ -1855,8 +1376,8 @@ function findUserByOrgs(orgs, i, item_assignee_role,array,node_name,node_code) {
                 if (err) {
                     resolve(utils.returnMsg(false, '10001', '查询用户信息错误', null, err));
                 } else {
-                    //    var map={};
-                    console.log(result)
+                //    var map={};
+                   console.log(result)
                     if(result.length>0){
                         console.log('begin--');
                         for (var index = 0; index < result.length; index++) {
@@ -1877,7 +1398,7 @@ function findUserByOrgs(orgs, i, item_assignee_role,array,node_name,node_code) {
                         i++;
                         findUserByOrg(orgs, i, item_assignee_role, resolve,array,node_name,node_code)
                     }else{
-                        return ;
+                       return ;
                     }
 
                 }
@@ -1901,7 +1422,7 @@ function findUserByOrg(orgs, i, item_assignee_role, resolve,array,node_name,node
                 if (err) {
                     resolve(utils.returnMsg(false, '10001', '查询用户信息错误', null, err));
                 } else {
-
+                    
                     console.log(result)
                     if(result.length>0){
                         console.log('begin--');
@@ -1961,10 +1482,6 @@ function findInfo(next_node, resolve, next_detail, proc_inst_id) {
         var item_assignee_user = next_detail.item_assignee_user;
         var item_assignee_user_code = next_detail.item_assignee_user_code;
         var item_assignee_role = next_detail.item_assignee_role;
-        //  var item_assignee_roles = next_detail.item_assignee_role;
-        //  var role = model_user.$Role({_id: item_assignee_roles});
-        //  var item_assignee_role =[];
-        //  item_assignee_role.push(role._id);
         var item_assignee_org_ids = next_detail.item_assignee_org_ids;
         var node_code = next_detail.item_code
         var node_name = next_node.name
@@ -2182,79 +1699,79 @@ function findInfo(next_node, resolve, next_detail, proc_inst_id) {
                                 })
 
                             } else {
-                                model.$ProcessInstTask.find({
-                                        "proc_inst_id": proc_inst_id,
-                                        "proc_inst_task_code": item_assignee_ref_task}
-                                    ,function(errss,resu){
-                                        if(errss){
-                                            console.log(errss);
-                                            resolve(utils.returnMsg(false, '10001', '查询用户信息错误', null, errss));
-                                        }else{
-                                            if(resu.length>0){
-                                                var proc_inst_task_assignee = resu[0].proc_inst_task_assignee;
-                                                model_user.$User.find({"user_no": proc_inst_task_assignee}, function (errs, res) {
-                                                    if (errs) {
-                                                        resolve(utils.returnMsg(false, '10001', '查询用户信息错误', null, errs));
-                                                    } else {
-                                                        if (res.length > 0) {
-                                                            var org = res[0].user_org;
-                                                            model_user.$CommonCoreOrg.find({"_id": org}, function (error, result) {
-                                                                if (error) {
-                                                                    resolve(utils.returnMsg(false, '10001', '查询用户信息错误', null, error));
-                                                                } else {
-                                                                    if (result.length > 0) {
-                                                                        var org_pid = result[0].org_pid;
-                                                                        model_user.$CommonCoreOrg.find({"_id": org_pid}, function (errors, resul) {
-                                                                            if (errors) {
-                                                                                resolve(utils.returnMsg(false, '10001', '查询用户信息错误', null, errors));
-                                                                            } else {
-                                                                                if (resul.length > 0) {
-                                                                                    var org_id = resul[0]._id;
-                                                                                    model_user.$User.find({
-                                                                                        "user_roles": item_assignee_role,
-                                                                                        "user_org": org_id
-                                                                                    }, function (e, r) {
-                                                                                        if (e) {
-                                                                                            resolve(utils.returnMsg(false, '10001', '查询用户信息错误', null, e));
-                                                                                        } else {
-                                                                                            if (r.length > 0) {
-                                                                                                var array = [];
-                                                                                                for (var user in r) {
-                                                                                                    var map = {};
-                                                                                                    map.user_no = r[user].user_no;
-                                                                                                    map.user_name = r[user].user_name;
-                                                                                                    map.node_name = node_name;
-                                                                                                    map.node_code = node_code;
-                                                                                                    array.push(map);
-                                                                                                }
-                                                                                                resolve(utils.returnMsg(true, '0000', '查询用户org', array, null))
-                                                                                            } else {
-                                                                                                resolve(utils.returnMsg(false, '10001', '查询用户信息错误', null, null));
-                                                                                            }
-                                                                                        }
-                                                                                    })
-                                                                                } else {
-                                                                                    resolve(utils.returnMsg(false, '10001', '查询用户信息错误', null, null));
-
-                                                                                }
-                                                                            }
-                                                                        })
-                                                                    } else {
-                                                                        resolve(utils.returnMsg(false, '10001', '查询用户信息错误', null, null));
-                                                                    }
+                              model.$ProcessInstTask.find({
+                                "proc_inst_id": proc_inst_id,
+                                "proc_inst_task_code": item_assignee_ref_task}
+                                ,function(errss,resu){
+                                  if(errss){
+                                      console.log(errss);
+                                    resolve(utils.returnMsg(false, '10001', '查询用户信息错误', null, errss));
+                                  }else{
+                                      if(resu.length>0){
+                                        var proc_inst_task_assignee = resu[0].proc_inst_task_assignee;
+                                        model_user.$User.find({"user_no": proc_inst_task_assignee}, function (errs, res) {
+                                          if (errs) {
+                                            resolve(utils.returnMsg(false, '10001', '查询用户信息错误', null, errs));
+                                          } else {
+                                            if (res.length > 0) {
+                                              var org = res[0].user_org;
+                                              model_user.$CommonCoreOrg.find({"_id": org}, function (error, result) {
+                                                if (error) {
+                                                  resolve(utils.returnMsg(false, '10001', '查询用户信息错误', null, error));
+                                                } else {
+                                                  if (result.length > 0) {
+                                                    var org_pid = result[0].org_pid;
+                                                    model_user.$CommonCoreOrg.find({"_id": org_pid}, function (errors, resul) {
+                                                      if (errors) {
+                                                        resolve(utils.returnMsg(false, '10001', '查询用户信息错误', null, errors));
+                                                      } else {
+                                                        if (resul.length > 0) {
+                                                          var org_id = resul[0]._id;
+                                                          model_user.$User.find({
+                                                            "user_roles": item_assignee_role,
+                                                            "user_org": org_id
+                                                          }, function (e, r) {
+                                                            if (e) {
+                                                              resolve(utils.returnMsg(false, '10001', '查询用户信息错误', null, e));
+                                                            } else {
+                                                              if (r.length > 0) {
+                                                                var array = [];
+                                                                for (var user in r) {
+                                                                  var map = {};
+                                                                  map.user_no = r[user].user_no;
+                                                                  map.user_name = r[user].user_name;
+                                                                  map.node_name = node_name;
+                                                                  map.node_code = node_code;
+                                                                  array.push(map);
                                                                 }
-                                                            })
+                                                                resolve(utils.returnMsg(true, '0000', '查询用户org', array, null))
+                                                              } else {
+                                                                resolve(utils.returnMsg(false, '10001', '查询用户信息错误', null, null));
+                                                              }
+                                                            }
+                                                          })
                                                         } else {
-                                                            resolve(utils.returnMsg(false, '10001', '查询用户信息错误', null, null));
-                                                        }
+                                                          resolve(utils.returnMsg(false, '10001', '查询用户信息错误', null, null));
 
-                                                    }
-                                                })
-                                            }else{
-                                                resolve(utils.returnMsg(false, '10001', '查询用户信息错误', null, null));
+                                                        }
+                                                      }
+                                                    })
+                                                  } else {
+                                                    resolve(utils.returnMsg(false, '10001', '查询用户信息错误', null, null));
+                                                  }
+                                                }
+                                              })
+                                            } else {
+                                              resolve(utils.returnMsg(false, '10001', '查询用户信息错误', null, null));
                                             }
-                                        }
-                                    })
+
+                                          }
+                                        })
+                                      }else{
+                                          resolve(utils.returnMsg(false, '10001', '查询用户信息错误', null, null));
+                                      }
+                                  }
+                              })
 
 
                             }
@@ -2351,372 +1868,39 @@ function findInfo(next_node, resolve, next_detail, proc_inst_id) {
 }
 
 
-/*
-获取下一节点
- */
 
 function findNextHandler(user_code,proc_define_id,node_code,params,proc_inst_id) {
-    console.log(node_code);
-    console.log(node_code);
-    var user_org_id, org_pid, type;
+    var user_org_id, type;
     var returnMap = {};
     var p=new Promise(function(resolve,reject){
         model.$ProcessDefine.find({"_id":proc_define_id}, function (errs, result) {
             if (errs) {
-                console.log(errs);
+                console.log(errs)
                 reject(utils.returnMsg(false, '1000', '查询用户信息错误', null, errs))
             } else {
-                // console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
                 if (result.length > 0) {
-                    // console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-                    // console.log(result);
                     var proc_define = JSON.parse(result[0].proc_define);
                     var item_config = JSON.parse(result[0].item_config);
 
                     // var proc_define_id=result[0].proc_define_id;
 
                     getNode(proc_define_id,node_code,params,true).then(function(rs){
-
-                        console.log("kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk");
-                        console.log(rs)
-                        if(!rs.success){
-                            resolve(utils.returnMsg(false, '1001', '节点获取失败', null, rs));
-                            return;
-                        }
                         var data=rs.data;
-                        var current_detail=data.current_detail;
-                        var current_node=data.current_node;
-
                         var next_node=data.next_node;
-                        // console.log("next______________________________________node",data);
-                        if(next_node.type=="end  round"){
-                            var query = model_user.$User.find({});
-                            query.where("user_no", user_code);
-                            query.exec(function (err, rs) {
-                                if (err) {
-                                    console.log(err);
-                                    reject(utils.returnMsg(false, '10001', '查询用户信息错误', null, err))
-                                } else {
-
-                                    user_org_id = rs[0].user_org;
-                                }
-                            }).then(function () {
-                                returnMap.proc_inst_task_assignee="";
-                                returnMap.proc_inst_task_assignee_name="";
-                                returnMap.user_org_id=[user_org_id];
-                                resolve(utils.returnMsg(true, '10000', '查询用户org', returnMap, null))
-                            })
-
-                        }else{
-                            var next_detail=data.next_detail;
-                            var item_assignee_ref_task=next_detail.item_assignee_ref_task;
-                            var results=choiceNode(item_config,proc_define,item_assignee_ref_task,null);
-                            // console.log("result   ",results);
-                            var ref_node_detail=results.current_detail;
-                            // var ref_item_assignee_type=ref_node_detail.item_assignee_type
-                            // if()
-                            // var item_assignee_role=ref_node_detail.item_assignee_role//: '595cafd7e3c7c90e1c599732',
-                            var item_assignee_ref_cur_org=next_detail.item_assignee_ref_cur_org//: '1',
-                            var item_assignee_ref_type=next_detail.item_assignee_ref_type;//// 参照人类别 1-当前人，2-当前机构
-                            /**
-                             *  \"item_assignee_ref_cur_org\": \"1\",
-                             \"item_assignee_ref_type\": \"2\",
-                             \"item_assignee_type\": 3,
-                             *
-                             */
-                            type=next_detail.item_assignee_type
-                            if(type==1){
-                                //单人
-                                console.log("resultsresultsresultsresultsresultsresultsresultsresultsresultsresults \n",1)
-                                model_user.$User.find({"user_no":user_code},function(err,result){
-                                    if(err){
-                                        console.log(err);
-                                        reject(utils.returnMsg(false, '10001', '查询用户信息错误', null, err))
-                                    }else{
-                                        if(result.length>0){
-                                            returnMap.user_org_id=[result[0].user_org];
-                                            returnMap.proc_inst_task_assignee="";
-                                            returnMap.proc_inst_task_assignee_name="";
-                                            resolve(utils.returnMsg(true, '00000', '查询用户org', returnMap, null))
-                                        }else{
-                                            resolve(utils.returnMsg(false, '10000', '查询无用户数据',null, err))
-                                        }
-                                    }
-                                })
-                            }else if(type==2){
-                                // 角色
-                                if(next_detail.item_assignee_org_ids){
-                                    // let temp=
-                                    if(next_detail.item_assignee_org_ids.indexOf(",")!=-1){
-
-                                        var item_assignee_org_ids = next_detail.item_assignee_org_ids.split(",");
-
-                                    }else{
-
-                                        var item_assignee_org_ids = [next_detail.item_assignee_org_ids];
-                                    }
-
-                                }else{
-
-                                    var item_assignee_org_ids =[];
-
-                                }
-
-                                returnMap.proc_inst_task_assignee="";
-                                returnMap.proc_inst_task_assignee_name="";
-                                returnMap.user_org_id=item_assignee_org_ids;
-                                resolve(utils.returnMsg(true, '10000', '查询用户org', returnMap, null))
-
-                            }else if(type==3){
-                                //参考
-
-                                console.log("resultsresultsresultsresultsresultsresultsresultsresultsresultsresults \n",3)
-
-                                if(item_assignee_ref_type==1){
-                                    console.log("resultsresultsresultsresultsresultsresultsresultsresultsresultsresults \n",4)
-                                    //当前人  1
-                                    //1. 提取参照节点
-                                    //2.去任务表 根据节点和proc_define_id 找到相对应的任务执行完成人（操作人）
-                                    //3.提取操作人的信息（user_no,org_no）
-
-                                    model.$ProcessInstTask.find({"proc_inst_id" : proc_inst_id,"proc_inst_task_code" : item_assignee_ref_task},function(err,results){
-                                        if(err){
-                                            console.log(err)
-                                            reject(utils.returnMsg(false, '10001', '查询用户信息错误', null, err))
-                                        }else{
-                                            // console.log("resultsresultsresultsresultsresultsresultsresultsresultsresultsresults \n",results)
-                                            returnMap.proc_inst_task_assignee=results[0].proc_inst_task_assignee;
-                                            returnMap.proc_inst_task_assignee_name=results[0].proc_inst_task_assignee
-                                            returnMap.user_org_id=[results[0].proc_inst_task_user_org];
-                                            resolve(utils.returnMsg(true, '10000', '查询用户org', returnMap, null))
-                                        }
-                                    })
-
-                                }else if(item_assignee_ref_type==2){
-                                    //参照人
-
-                                    if (item_assignee_ref_cur_org == 1) {
-                                        //同级
-                                        model.$ProcessInstTask.find({"proc_inst_id" : proc_inst_id,"proc_inst_task_code" : item_assignee_ref_task},function(err,results){
-                                            if(err){
-                                                console.log(err)
-                                                reject(utils.returnMsg(false, '10001', '查询用户信息错误', null, err))
-                                            }else{
-                                                // console.log("resultsresultsresultsresultsresultsresultsresultsresultsresultsresults \n",results)
-                                                model_user.$User.find({"user_no":results[0].proc_inst_task_assignee},function(e_a,r_a){
-                                                    if(e_a){
-                                                        console.log(e_a);
-                                                        reject(utils.returnMsg(false, '10001', '查询用户信息错误', null, e_a));
-                                                    }else{
-                                                        user_org_id = r_a[0].user_org;
-                                                        returnMap.user_org_id=[user_org_id];
-                                                        returnMap.proc_inst_task_assignee="";
-                                                        returnMap.proc_inst_task_assignee_name="";
-                                                        resolve(utils.returnMsg(true, '10000', '查询用户org1', returnMap, null))
-                                                    }
-                                                });
-
-                                            }
-                                        })
-
-
-
-                                    } else if (item_assignee_ref_cur_org == 2) {
-                                        //上级
-                                        model.$ProcessInstTask.find({"proc_inst_id" : proc_inst_id,"proc_inst_task_code" : item_assignee_ref_task},function(err,results){
-                                            if(err){
-                                                console.log(err)
-                                                reject(utils.returnMsg(false, '10001', '查询用户信息错误', null, err))
-                                            }else{
-                                                // console.log("resultsresultsresultsresultsresultsresultsresultsresultsresultsresults \n",results)
-                                                // returnMap.proc_inst_task_assignee=results[0].proc_inst_task_assignee;
-                                                if(results.length>0){
-                                                    find_up(results[0].proc_inst_task_assignee, reject, user_org_id, returnMap, resolve);
-                                                }else{
-                                                    reject(utils.returnMsg(false, '10001', '查询用户信息错误', null, null));
-                                                }
-                                            }
-                                        });
-
-                                    }else if(item_assignee_ref_cur_org == 3){
-                                        //下级
-                                        if(proc_inst_id){
-                                            console.log( proc_inst_id,item_assignee_ref_task);
-                                            model.$ProcessInstTask.find({"proc_inst_id" : proc_inst_id,"proc_inst_task_code" : item_assignee_ref_task},function(errors,results){
-                                                if(errors){
-                                                    console.log(errors);
-                                                    reject(utils.returnMsg(false, '10001', '查询用户信息错误', null, errors));
-                                                }else{
-                                                    // console.log("resultsresultsresultsresultsresultsresultsresultsresultsresultsresults \n",results)
-                                                    // returnMap.proc_inst_task_assignee=results[0].proc_inst_task_assignee;
-                                                    // find_up(results[0].proc_inst_task_assignee, reject, user_org_id, returnMap, resolve);
-                                                    if(results.length>0){
-                                                        model_user.$User.find({"user_no":results[0].proc_inst_task_assignee},function(err,rs){
-                                                            if (err) {
-                                                                console.log(err);
-                                                                reject(utils.returnMsg(false, '1000', '查询用户信息错误', null, err))
-                                                            } else {
-                                                                if(rs.length>0){
-                                                                    // user_org_id = ;
-                                                                    console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++++",rs);
-                                                                    model_user.$CommonCoreOrg.find({"org_pid": {$in:rs[0].user_org}}, function (error, result) {
-                                                                        if (error) {
-                                                                            console.log(error)
-                                                                            reject(utils.returnMsg(false, '1000', '查询用户信息错误', null, error))
-                                                                        } else {
-
-                                                                            var arr_t=[];
-                                                                            for(var i=0;result.length>i;i++){
-                                                                                arr_t.push(result[i]._id);
-                                                                            }
-                                                                            user_org_id = arr_t;
-                                                                            // returnMap.item_assignee_role = item_assignee_role;
-                                                                            returnMap.user_org_id = arr_t;
-                                                                            returnMap.proc_inst_task_assignee="";
-                                                                            returnMap.proc_inst_task_assignee_name="";
-                                                                            console.log("*********************************************",user_org_id);
-                                                                            resolve(utils.returnMsg(true, '10000', '查询用户org', returnMap, null));
-                                                                        }
-                                                                    })
-                                                                }else{
-
-                                                                    reject(utils.returnMsg(false, '1000', '查询budao用户信息', null, null))
-                                                                }
-                                                            }
-
-                                                        })
-
-                                                    }else{
-                                                        reject(utils.returnMsg(false, '1000', '查询用户信息错误', null, null))
-                                                    }
-                                                }
-                                            });
-
-
-                                        }else{
-                                            var query = model_user.$User.find({});
-                                            query.where("user_no", user_code);
-                                            query.exec(function (err, rs) {
-                                                if (err) {
-                                                    console.log(err);
-                                                    reject(utils.returnMsg(false, '1000', '查询用户信息错误', null, err))
-                                                } else {
-                                                    if(rs.length>0){
-                                                        user_org_id = rs[0].user_org;
-                                                    }else{
-
-                                                        reject(utils.returnMsg(false, '1000', '查询budao用户信息', null, null))
-                                                    }
-
-
-                                                }
-                                            }).then(function () {
-                                                model_user.$CommonCoreOrg.find({"org_pid": user_org_id}, function (error, result) {
-                                                    if (error) {
-                                                        console.log(error)
-                                                        reject(utils.returnMsg(false, '1000', '查询用户信息错误', null, error))
-                                                    } else {
-                                                        user_org_id = result[0].org_pid;
-                                                    }
-
-                                                }).then(function () {
-                                                    returnMap.item_assignee_role = item_assignee_role;
-                                                    returnMap.user_org_id = [user_org_id];
-                                                    returnMap.proc_inst_task_assignee="";
-                                                    returnMap.proc_inst_task_assignee_name="";
-                                                    resolve(utils.returnMsg(true, '10000', '查询用户org', returnMap, null));
-                                                })
-                                            })
-
-                                        }
-
-
-
-                                    }else if(item_assignee_ref_cur_org == 4){
-                                        //上上级
-                                        //user_code, reject, user_org_id, returnMap, resolve
-                                        model.$ProcessInstTask.find({"proc_inst_id" : proc_inst_id,"proc_inst_task_code" : item_assignee_ref_task},function(error,result){
-                                            if(error){
-                                                console.log(error);
-                                                reject(utils.returnMsg(false, '1000', '查询用户信息错误', null,error))
-                                            }else{
-                                                if(result.length>0){
-                                                    find_up_up(result[0].proc_inst_task_assignee, reject, user_org_id, returnMap, resolve)
-
-                                                }else{
-                                                    reject(utils.returnMsg(false, '1000', '查询用户信息错误', null, null))
-
-                                                }
-
-                                            }
-                                        })
-                                    }
-                                }
-                            }
-                        }
-
+                        findInfo(next_node, resolve, data.next_detail, proc_inst_id);
                     })
                 }else{
-                    reject(utils.returnMsg(false, '1000', '查询用户信息错误', null, null))
-
-
+                    resolve(utils.returnMsg(false, '1000', '查询用户信息错误', null, null));
                 }
             }
         })
 
     });
-    return p;
 
+    return p;
 }
 
-// function findNextHandler(user_code,proc_define_id,node_code,params,proc_inst_id) {
-//     var user_org_id, type;
-//     var returnMap = {};
-//     var p=new Promise(function(resolve,reject){
-//         model.$ProcessDefine.find({"_id":proc_define_id}, function (errs, result) {
-//             if (errs) {
-//                 console.log(errs)
-//                 reject(utils.returnMsg(false, '1000', '查询用户信息错误', null, errs))
-//             } else {
-//                 // console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-//                 if (result.length > 0) {
-//                     // console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-//                     // console.log(result);
-//                     var proc_define = JSON.parse(result[0].proc_define);
-//                     var item_config = JSON.parse(result[0].item_config);
-//
-//                     // var proc_define_id=result[0].proc_define_id;
-//
-//                     getNode(proc_define_id,node_code,params,true).then(function(rs){
-//                          console.log(rs)
-//                         if(rs.success){
-//                             var data=rs.data;
-//                             // console.log("current_detail  ",current_detail)
-//                             var next_node=data.next_node;
-//                             // console.log("next______________________________________node",data);
-//                             // console.log(proc_define_id,node_code,params)
-//                             //next_node, resolve, next_detail, proc_inst_id
-//                             findInfo(next_node, resolve, data.next_detail, proc_inst_id);
-//
-//                         }  else{
-//                             resolve(rs);
-//
-//                         }
-//                     })
-//                 }else{
-//                     resolve(utils.returnMsg(false, '1000', '查询用户信息错误', null, null));
-//                 }
-//             }
-//         })
-//
-//     });
-//
-//     return p;
-// }
 
-/*
-获取下一步节点或者操作人
- */
 exports.getNextNodeAndHandlerInfo=function(node_code,proc_task_id,proc_inst_id,params,user_code){
     console.log(typeof params);
     console.info(node_code,proc_task_id,proc_inst_id,params);
@@ -2726,61 +1910,10 @@ exports.getNextNodeAndHandlerInfo=function(node_code,proc_task_id,proc_inst_id,p
                 resolve(utils.returnMsg(false, '1000', '查询实例化表失败 for getNextNodeAndHandlerInfo', null,err))
             }else{
                 if(rs.length>0) {
-                    // var item_config = JSON.parse(rs[0].item_config);
-                    // var proc_define = JSON.parse(rs[0].proc_define);
-                    //获取流程定义id
                     var proc_define_id = rs[0].proc_define_id;
-
+                    console.log("ooooooooooooooooooooooooooooooooooooooooooooooooooooooo")
                     findNextHandler(user_code,proc_define_id,node_code,params,proc_inst_id).then(function(r){
-                        if(r.success){
-                            var data_s=r.data;
-                            getNode(proc_define_id,node_code,params,true).then(function(rsss){
-                                console.log("ooooooooooooooooooooooooooooooooooooooooooooooooooooooo",rsss);
-                                if(!rsss.success){
-                                    resolve(utils.returnMsg(false, '1001', '节点获取失败', null, null));
-                                    return;
-                                }
-                                var data=rsss.data;
-
-                                var next_detail=data.next_detail;
-                                var next_node=data.next_node;
-
-                                if (next_detail.item_assignee_type == 1) {
-                                    resolve({"data":[next_detail.item_assignee_user_code],"msg":"查询完成","error":null,"success":true})
-
-                                }
-                                if (next_detail.item_assignee_type == 2||next_detail.item_assignee_type == 3||next_detail.item_assignee_type == 4) {
-                                    if(next_detail.item_assignee_role){
-                                        // console.log(data_s.user_org_id);
-                                        // console.log(next_detail.item_assignee_role);
-                                        // console.log("_____________________________+++++++++++++++++++++++++",data_s.user_org_id);
-                                        model_user.$User.find({"user_org":{$in:data_s.user_org_id},"user_roles":{$in:next_detail.item_assignee_role.indexOf(",")!=-1?next_detail.item_assignee_role.split(","):[next_detail.item_assignee_role]}},function(err,res){
-                                            if(err){
-                                                console.log(err);
-                                                resolve({"data":null,"msg":"查询完成error","error":err,"success":false});
-                                            }else{
-                                                // console.log("1111111111111111111111111111111111",res);
-                                                var ret_map=[];
-                                                // console.log(res);
-                                                for(var i=0;res.length>i;i++){
-                                                    var temp={};
-                                                    temp.user_no=res[i].user_no;
-                                                    temp.user_name=res[i].user_name;
-                                                    temp.node_name=next_node.name;
-                                                    temp.node_code=next_detail.item_code;
-                                                    ret_map.push(temp);
-                                                }
-
-                                                resolve({"data":ret_map,"msg":"查询完成","error":null,"success":true});
-                                            }
-                                        }) ;
-                                    }
-                                }
-                            })
-                        }else{
-                            resolve(r)
-                        }
-
+                        resolve(r)
                     });
                 }
             }
@@ -2790,9 +1923,7 @@ exports.getNextNodeAndHandlerInfo=function(node_code,proc_task_id,proc_inst_id,p
 }
 
 
-/*
-查询所有的下一节点
- */
+
 exports.getAllNextNodeAndInfo=function(proc_inst_task_id,node_code){
     var p = new  Promise(function(resolve,reject){
         var maps={};
@@ -2813,7 +1944,6 @@ exports.getAllNextNodeAndInfo=function(proc_inst_task_id,node_code){
                                 var item_config=JSON.parse(res[0].item_config);
                                 var lines=proc_define.lines;
                                 var allNextNode=[];
-
                                 for (var line in lines){
                                     var to =lines[line].to;
                                     var from =lines[line].from;
@@ -2832,7 +1962,10 @@ exports.getAllNextNodeAndInfo=function(proc_inst_task_id,node_code){
                                             maps[temp_node.toString()]=line;
                                         }
                                     }
+
                                 }
+
+
 
                                 var array=[];
                                 for(var item in item_config){
@@ -2877,27 +2010,27 @@ exports.findCurrentHandlers=function(proc_task_id,node_code){
                 if(rs.length>0){
                     var proc_inst_id=rs[0].proc_inst_id;
                     model.$ProcessInst.find({"_id":proc_inst_id},function(err,res){
-                        if(err){
-                            resolve(utils.returnMsg(false, '1000', '查询实例表失败', null,err));
+                       if(err){
+                           resolve(utils.returnMsg(false, '1000', '查询实例表失败', null,err));
 
-                        }else{
-                            if(res.length>0){
-                                var proc_define=JSON.parse(res[0].proc_define);
-                                var item_config=JSON.parse(res[0].item_config);
-                                var nodes=proc_define.nodes;
-                                var current_node=nodes[node_code];
-                                var current_detail;
-                                for(var item in item_config){
-                                    var item_code=item_config[item].item_code
+                       }else{
+                           if(res.length>0){
+                               var proc_define=JSON.parse(res[0].proc_define);
+                               var item_config=JSON.parse(res[0].item_config);
+                               var nodes=proc_define.nodes;
+                               var current_node=nodes[node_code];
+                               var current_detail;
+                               for(var item in item_config){
+                                   var item_code=item_config[item].item_code
                                     if(item_code==node_code){
-                                        current_detail=item_config[item];
+                                       current_detail=item_config[item];
                                     }
-                                }
-                                findInfo(current_node,resolve,current_detail,proc_task_id)
-                            }else{
-                                resolve(utils.returnMsg(false, '1000', '查询实例表失败', null,err));
-                            }
-                        }
+                               }
+                               findInfo(current_node,resolve,current_detail,proc_task_id)
+                           }else{
+                               resolve(utils.returnMsg(false, '1000', '查询实例表失败', null,err));
+                           }
+                       }
                     });
 
                 }else{
@@ -2935,7 +2068,7 @@ exports.getSecondNodeInfo=function(proc_code,proc_ver,proc_title){
                 resolve(utils.returnMsg(false, '1000', '获取流程定义信息时出现异常。', null, error));
             }else{
                 if(rs.length > 0){
-                    console.log()
+                   console.log()
                     var data=rs[0]._doc;
                     var proc_define=JSON.parse(data.proc_define);
                     var item_config=JSON.parse(data.item_config);
@@ -3016,380 +2149,6 @@ function findSecondNode(proc_define,node_code){
     }
     return node;
 }
-
-
-
-/**
- * 获取第三节点处理人
- * @param proc_code
- * @returns {bluebird}
- */
-
-exports.getNodeAndHandlerInfo=function(proc_code,user_no,param_json_str){
-    console.log("getNodeAndHandlerInfo...");
-    console.info("proc_code",proc_code,"user_no",user_no,"param_json_str",param_json_str)
-    var p=new Promise(function(resolve,reject) {
-        var params=param_json_str;
-        //解析参数
-        if(!(!param_json_str||param_json_str=="undefined"||param_json_str=="{}")){
-
-            var params_json=JSON.parse(param_json_str);
-            var flag=true;
-            for(var items_ in params_json){
-                flag=false;
-            }
-            if(flag){
-                resolve(utils.returnMsg(false, '1001', '参数解析不正确。', null, null));
-            }else{
-                params=params_json;
-            }
-        }else{
-            params={};
-        }
-        //获取流程最大版本号信息
-        var query = model.$ProcessDefine.find({});
-        query.where('proc_code', proc_code);
-        query.sort({ 'version': 'desc'});
-        query.limit(1);
-        query.exec(function (err, rs) {
-            console.log("rs=====",rs.length);
-            if (err) {
-                resolve(utils.returnMsg(false, '1000', '查询流程', null, err))
-            } else {
-                if (rs.length > 0) {
-                    //获取流程id
-                    var proc_define_id=rs[0]._id;
-                    var node_code;
-                    console.log(rs[0].proc_define);
-                    var proc_define=JSON.parse(rs[0].proc_define);
-
-                    //获取节点详细信息
-                    var nodes=proc_define.nodes;
-                    //获取节点之间关系
-                    var lines=proc_define.lines;
-                    //开始节点
-                    var nodePar;
-                    var beginNode;
-                    //获取节点开始节点
-                    for(var item in nodes){
-                        var node=nodes[item];
-                        if(node.type=='start  round'){
-                            nodePar=item;
-                            beginNode=item;
-                        }
-                    }
-                    console.log("beginNode======",beginNode);
-                    console.log("proc_define_id======",proc_define_id);
-                    var params1;
-                    //获取开始节点的下一节点，即实际派单节点的处理人
-                    getNode(proc_define_id,beginNode,params1,true).then(function(rs){
-                        if(!rs.success)
-                            resolve(utils.returnMsg(false, '1003', '流程图第二节点错误', null, null));
-                        else{
-                            var data=rs.data;
-                            var next_node=data.next_node;
-                            node_code=data.next_detail.item_code;
-                            console.log("data================",data);
-                            console.log("node_code======",node_code);
-                            //获取第三节点所有处理人
-                            getNode(proc_define_id,node_code,params,true).then(function(rs){
-                                if(!rs.success)
-                                    resolve(utils.returnMsg(false, '1004', '流程图第三节点错误', null, null));
-                                else{
-                                    var data=rs.data;
-                                    var next_node=data.next_node;
-                                    findNodeInfo(next_node, data.next_detail,user_no).then(function(rs){
-                                        resolve(rs);
-                                    });
-                                }
-
-
-                            });
-
-                        }
-
-                    })
-
-                }else{
-                    resolve(utils.returnMsg(false, '1000', '查询用户信息错误1', null, null));
-                }
-            }
-        });
-    })
-    return  p;
-}
-
-/**
- * 获取节点详细信息
- * @param next_node
- * @param resolve
- * @param next_detail
- */
-function findNodeInfo(next_node, next_detail,user_no) {
-    var promise=new Promise(function(resolve,reject) {
-        if (next_node.type == "end  round") {
-            var array = []
-            var map = {};
-            var node_name = next_node.name
-            map.node_name = node_name;
-            array.push(map)
-            resolve(utils.returnMsg(true, '0000', '查询用户org', array, null))
-
-        } else {
-            console.log("@@@@@@@@@@@@@@@@@@@@@@@",next_detail);
-
-            var item_assignee_ref_task = next_detail.item_assignee_ref_task;
-
-
-            var item_assignee_ref_cur_org = next_detail.item_assignee_ref_cur_org//: '1',
-            var item_assignee_ref_type = next_detail.item_assignee_ref_type;//// 参照人类别 1-当前人，2-当前机构
-            console.log("next_detail   ;", next_detail)
-            var item_assignee_user = next_detail.item_assignee_user;
-            var item_assignee_user_code = next_detail.item_assignee_user_code;
-            var item_assignee_role = next_detail.item_assignee_role;
-            var item_assignee_org_ids = next_detail.item_assignee_org_ids;
-            var node_code = next_detail.item_code
-            var node_name = next_node.name
-
-            var type = next_detail.item_assignee_type
-            if (type == 1) {
-                //单人
-                console.log("resultsresultsresultsresultsresultsresultsresultsresultsresultsresults \n", 1)
-
-                var array = []
-                var map = {};
-                map.user_name = next_detail.item_show_text;
-                map.user_no = item_assignee_user_code;
-                map.node_name = node_name;
-                map.node_code = node_code;
-                array.push(map)
-                resolve(utils.returnMsg(true, '0000', '查询用户org', array, null))
-            } else if (type == 2) {
-                var item_assignee_org_ids = next_detail.item_assignee_org_ids;
-                var orgs = item_assignee_org_ids.split(",")
-
-                console.log("ccccccccccccccccccccccccccccccccccccccccccccc")
-                console.log(orgs)
-                var i = 0;
-                var array = [];
-                findUserByOrg(orgs, i, item_assignee_role, resolve, array, node_name, node_code);
-
-            } else if (type == 3) {
-                // resolve(utils.returnMsg(false, '1000', '第三节点不可配置参照人', null))
-                console.log("resultsresultsresultsresultsresultsresultsresultsresultsresultsresults \n", 3)
-
-                if (item_assignee_ref_type == 1) {
-                    model_user.$User.find({"user_no": user_no}, function (errs, res) {
-                        if (errs) {
-                            resolve(utils.returnMsg(false, '10001', '查询用户信息错误', null, errs));
-                        } else {
-                            var array = [];
-                            var map = {};
-                            map.user_no = res[0].user_no;
-                            map.user_name = res[0].user_name;
-                            map.node_name = node_name;
-                            map.node_code = node_code;
-                            array.push(map);
-                            resolve(utils.returnMsg(true, '0000', '查询用户org12', array, null))
-                        }
-                    })
-
-                } else if (item_assignee_ref_type == 2) {
-
-                    //参照人
-
-                    if (item_assignee_ref_cur_org == 1) {
-                        model_user.$User.find({"user_no": user_no}, function (errs, res) {
-                            if (errs) {
-                                resolve(utils.returnMsg(false, '10001', '查询用户信息错误', null, errs));
-                            } else {
-                                if (res.length > 0) {
-                                    var org = res[0].user_org;
-                                    console.log(item_assignee_role,'resresres');
-
-                                    model_user.$User.find({
-                                        "user_org": {$in:org},
-                                        "user_roles": {$in:item_assignee_role.indexOf(",")!=-1?item_assignee_role.split(","):[item_assignee_role]}
-                                    }, function (error, result) {
-                                        if (error) {
-                                            resolve(utils.returnMsg(false, '10001', '查询用户信息错误', null, errs));
-                                        } else {
-                                            // console.log("resultsresultsresultsresultsresultsresultsresultsresultsresultsresults \n", 6,  item_assignee_ref_task, org, item_assignee_role, result);
-                                            if (result.length > 0) {
-                                                var array = [];
-                                                for (var user in result) {
-                                                    var map = {};
-                                                    map.user_no = result[user].user_no;
-                                                    map.user_name = result[user].user_name;
-                                                    map.node_name = node_name;
-                                                    map.node_code = node_code;
-                                                    array.push(map)
-                                                }
-                                                resolve(utils.returnMsg(true, '0000', '查询用户org', array, null))
-                                            } else {
-                                                resolve(utils.returnMsg(false, '10001', '查询用户信息错误', null, null));
-
-                                            }
-                                        }
-
-                                    })
-
-                                } else {
-                                    resolve(utils.returnMsg(false, '10001', '查询用户信息错误', null, null));
-                                }
-
-                            }
-                        })
-
-                    } else if (item_assignee_ref_cur_org == 2) {
-                        console.log("resultsresultsresultsresultsresultsresultsresultsresultsresultsresults \n", 7)
-                        var returnMap={};
-                        //查找上级机构以及同级所有机构
-                        find_up_bak(user_no, "", returnMap).then(function(rs){
-                            if(rs.success){
-                                console.log("###############################",item_assignee_role);
-                                if(item_assignee_role.indexOf(",")!=-1){
-                                    model_user.$User.find({"user_roles": {$in: item_assignee_role.split(",")},
-                                        "user_org": {$in:rs.data.user_org_id}
-                                    }, function (e, r) {
-                                        if (e) {
-                                            resolve(utils.returnMsg(false, '10001', '查询用户信息错误', null, e));
-                                        } else {
-                                            if (r.length > 0) {
-                                                var array = [];
-                                                for (var user in r) {
-                                                    var map = {};
-                                                    map.user_no = r[user].user_no;
-                                                    map.user_name = r[user].user_name;
-                                                    map.node_name = node_name;
-                                                    map.node_code = node_code;
-                                                    array.push(map);
-                                                }
-                                                resolve(utils.returnMsg(true, '0000', '查询用户org', array, null))
-                                            } else {
-                                                resolve(utils.returnMsg(false, '10001', '查询用户信息错误', null, null));
-                                            }
-                                        }
-
-                                    })
-                                }else{
-
-                                    model_user.$User.find({"user_roles": {$in: [item_assignee_role]},
-                                        "user_org": {$in:rs.data.user_org_id}
-                                    }, function (e, r) {
-                                        if (e) {
-                                            resolve(utils.returnMsg(false, '10001', '查询用户信息错误', null, e));
-                                        } else {
-                                            if (r.length > 0) {
-                                                var array = [];
-                                                for (var user in r) {
-                                                    var map = {};
-                                                    map.user_no = r[user].user_no;
-                                                    map.user_name = r[user].user_name;
-                                                    map.node_name = node_name;
-                                                    map.node_code = node_code;
-                                                    array.push(map);
-                                                }
-                                                resolve(utils.returnMsg(true, '0000', '查询用户org', array, null))
-                                            } else {
-                                                resolve(utils.returnMsg(false, '10001', '查询用户信息错误', null, null));
-                                            }
-                                        }
-
-                                    })
-
-                                }
-
-                            }
-
-                        })
-
-
-
-                    } else {
-                        //下级
-                        console.log("resultsresultsresultsresultsresultsresultsresultsresultsresultsresults \n", 8)
-                        model.$ProcessInstTask.find({
-                            "proc_inst_id": proc_inst_id,
-                            "proc_inst_task_code": item_assignee_ref_task,
-                            "proc_inst_task_status": 1
-                        }, function (err, results) {
-                            if (err) {
-                                console.log(err)
-                                resolve(utils.returnMsg(false, '10001', '查询用户信息错误', null, err));
-                            } else {
-                                model_user.$User.find({"user_no": user_no}, function (errs, res) {
-                                    if (errs) {
-                                        resolve(utils.returnMsg(false, '10001', '查询用户信息错误', null, errs));
-                                    } else {
-                                        if (res.length > 0) {
-                                            var org = res[0].user_org;
-                                            model_user.$CommonCoreOrg.find({"_id": org}, function (error, result) {
-                                                if (error) {
-                                                    resolve(utils.returnMsg(false, '10001', '查询用户信息错误', null, error));
-                                                } else {
-                                                    if (result.length > 0) {
-                                                        var org_pid = result[0].org_pid;
-                                                        model_user.$CommonCoreOrg.find({"_id": org_pid}, function (errors, resul) {
-                                                            if (errors) {
-                                                                resolve(utils.returnMsg(false, '10001', '查询用户信息错误', null, errors));
-
-                                                            } else {
-                                                                if (resul.length > 0) {
-                                                                    var org_id = resul[0]._id;
-                                                                    model_user.$User.find({
-                                                                        "user_roles": item_assignee_role,
-                                                                        "user_org": org_id
-                                                                    }, function (e, r) {
-                                                                        if (e) {
-                                                                            resolve(utils.returnMsg(false, '10001', '查询用户信息错误', null, e));
-                                                                        } else {
-                                                                            if (r.length > 0) {
-                                                                                var array = [];
-                                                                                for (var user in r) {
-                                                                                    var map = {};
-                                                                                    map.user_no = r[user].user_no;
-                                                                                    map.user_name = r[user].user_name;
-                                                                                    map.node_name = node_name;
-                                                                                    map.node_code = node_code;
-                                                                                    array.push(map)
-                                                                                }
-                                                                                resolve(utils.returnMsg(true, '0000', '查询用户org', array, null))
-                                                                            } else {
-                                                                                resolve(utils.returnMsg(false, '10001', '查询用户信息错误', null, null));
-                                                                            }
-                                                                        }
-                                                                    })
-                                                                } else {
-                                                                    resolve(utils.returnMsg(false, '10001', '查询用户信息错误', null, null));
-                                                                }
-                                                            }
-                                                        })
-
-                                                    } else {
-                                                        resolve(utils.returnMsg(false, '10001', '查询用户信息错误', null, null));
-                                                    }
-                                                }
-                                            })
-
-
-                                        } else {
-                                            resolve(utils.returnMsg(false, '10001', '查询用户信息错误', null, null));
-                                        }
-
-                                    }
-                                })
-
-                            }
-                        })
-                    }
-                }
-            }
-        }
-    })
-    return promise;
-}
-
 /**
  * 获取节点详细信息
  * @param proc_code

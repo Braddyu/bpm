@@ -233,9 +233,9 @@ exports.getViewUrl= function(proc_code) {
                          }else{
                              //获取所以对应流程的详细处理界面的配置信息
                              if(result.length>0){
-                                for(var i=0;i<result.length;i++){
+                                for(let i=0;i<result.length;i++){
                                     var res=result[i];
-                                    if(res.field_name=proc_code){
+                                    if(res.field_name==proc_code){
                                         resolve({'success':true,'code':'0000','msg':'获取流程详细信息成功',"data":res.field_value,"error":null});
                                         break;
                                     }

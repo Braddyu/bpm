@@ -183,7 +183,7 @@
             columns:[[
                 {"field":"_id",checkbox:true},
                 {"field":"fail",hidden:true},
-                {"field": "org_fullname","title":"区域名称","width":"400px",
+                {"field": "org_fullname","title":"区域名称","width":"450px",
                     formatter:function(value,row,index){
                         //大于6表示已经下砖到渠道层级
                         if(level+1>6){
@@ -194,7 +194,7 @@
                         }
 
                     }},
-                {"field": "t","title":"工单数","width":"200px",
+                {"field": "t","title":"工单数","width":"220px",
                     formatter:function(value,row,index){
 
                         var total=(parseInt(row.success)+parseInt(row.fail));
@@ -209,7 +209,7 @@
                     }
                     },
 
-                {"field": "success","title":"归档工单数","width":"200px",
+                {"field": "success","title":"归档工单数","width":"220px",
                     formatter:function(value,row,index){
 
                         if(parseInt(row.success)>0){
@@ -223,7 +223,7 @@
 
 
                     }},
-                {"field": "t3","title":"未处理工单数","width":"200px",
+                {"field": "t3","title":"未处理工单数","width":"220px",
                     formatter:function(value,row,index){
                         //大于6表示已经下砖到渠道层级
                         var total=parseInt(row.fail);
@@ -390,7 +390,7 @@
                     formatter:function(value,row,index){
 
                         if(row.proc_inst_status==4){
-                            return  '<span style="color:green">/</span>';
+                            return  '<span style="color:green">已归档</span>';
                         }else{
                             return value;
                         }
