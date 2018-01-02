@@ -14,6 +14,7 @@
 
 
 
+
 <!--Fonts-->
 <!--
 <link href="http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,400,600,700,300" rel="stylesheet" type="text/css">
@@ -43,51 +44,60 @@
 
     //选项卡触发
     function loadTab(){
-
+        //document.getElementById('message2').innerHTML='';
         $("#mod1").hide();
         $("#mod2").show();
 //        $(this).addClass("active").siblings().removeClass("active");
     };
 
     function loadTab2() {
+        //document.getElementById('message2').innerHTML='';
         $("#mod2").hide();
         $("#mod1").show();
     }
     //手机号码校验
-    function checkPhone(){
-        var phone = document.getElementById('username').value;
-        if(!(/^1(3|4|5|7|8)\d{9}$/.test(phone))){
-            alert("手机号码有误，请重填");
-            return false;
+    function checkPhone(mobile){
+        // var mobile = document.getElementById('phonename').value;
+        var reg = /^(13[0-9]|15[012356789]|17[678]|18[0-9]|14[57])[0-9]{8}$/;
+        if (!reg.test(mobile)) {
+            document.getElementById('message2').innerHTML='请填入正确的手机号！';
+            return 1;
         }
     }
+
 
 
     //获取验证码
     var countdown=60;
     function settime(obj) {
         var phonename = document.getElementById('phonename').value;
+        if(phonename==''){
+            document.getElementById('message2').innerHTML='手机号码不能为空！';
+            return;
+        }
+        if(checkPhone(phonename)){
+            return;
+        };
+        if(countdown==60){
+            /* randomNumber = parseInt(((Math.random()*9+1)*1000))
+             console.log("生成的验证码："+randomNumber);*/
+            $.ajax({
+                url:'{{projcfg.appurl}}/getVerificationcode',
+                type:'post',
+                data:{phonename:phonename},
+                dataType:'json',
+                success:function(result){
+                    if(result.success){
 
-       if(countdown==60){
-           /* randomNumber = parseInt(((Math.random()*9+1)*1000))
-            console.log("生成的验证码："+randomNumber);*/
-           $.ajax({
-               url:'{{projcfg.appurl}}/getVerificationcode',
-               type:'post',
-               data:{phonename:phonename},
-               dataType:'json',
-               success:function(result){
-                   if(result.success=true){
-                       msgSuccess(result.msg);
-                   }else {
-                       msgError(result.msg);
-                   }
-               },
-           });
+                    }else {
+                        document.getElementById('message2').innerHTML=result.msg;
+                    }
+                },
+            });
         }
         if (countdown == 0) {
             obj.removeAttribute("disabled");
-            obj.value="免费获取验证码";
+            obj.value="获取验证码";
             countdown = 60;
             return;
         } else {
@@ -102,10 +112,42 @@
 
 
     function submitForm(flag) {
+        if(flag==1){
+            var username = document.getElementById('username').value;
+            if(username==''){
+                document.getElementById('message1').innerHTML='账号不能为空！';
+                return false;
+            }
             var password_ = document.getElementById('password_').value;
+            if(password_==''){
+                document.getElementById('message1').innerHTML='密码不能为空！';
+                return false;
+            }
             document.getElementById('password').value = strEnc(hex_md5(password_), '{{key_1}}', '{{key_2}}', '{{key_3}}');
             document.getElementById('password_').value = "";
             return true;
+        }else if(flag==2){//phonename
+            var phonename = document.getElementById('phonename').value;
+            if(phonename==''){
+                document.getElementById('message2').innerHTML='手机号不能为空！';
+                return false;
+            }
+            if(checkPhone(phonename)){
+                return false;
+            }
+
+            var verificationCode = document.getElementById('verificationCode').value;
+            if(verificationCode==''){//verificationCode
+                document.getElementById('message2').innerHTML='请输入短信验证码！';
+                return false;
+            }
+            var butten = document.getElementById('btn').value;
+            if(butten=='获取验证码'){
+                document.getElementById('message2').innerHTML='请重新发送验证码！';
+                return false;
+            }
+        }
+
     }
     //手机号登陆
     /* function submitForm2() {
@@ -120,9 +162,9 @@
          }
 
      }*/
-    function reloadCaptcha() {
-        document.getElementById('captchaImg').src = '{{projcfg.appurl}}/captcha?'+new Date();
-    }
+    /*    function reloadCaptcha() {
+            document.getElementById('captchaImg').src = '{{projcfg.appurl}}/captcha?'+new Date();
+    }*/
 
 </script>
 <!-- gray-bg-->
@@ -139,7 +181,7 @@
         <div class="loginbox bg-white" style="">
             <div class="loginbox-title" >账号登陆</div>
 
-            <form class="m-t" role="form" action="{{projcfg.appurl}}/login" method="post" onsubmit="return submitForm();">
+            <form class="m-t" role="form" action="{{projcfg.appurl}}/login" method="post" onsubmit="return submitForm(1);">
                 <div class="loginbox-textbox">
                     <!-- <input id="username" name='username'  value='' type="text" class="form-control" placeholder="{{{__ "tips_input_loginid"}}}" />-->
                     <input id="username" name='username'  value='' type="text" class="form-control" placeholder="请输入账号" />
@@ -149,16 +191,16 @@
                     <input id="password_" name='password_'  value='' type="password" class="form-control" placeholder="{{{__ "tips_input_password"}}}" />
                     <input type="hidden" id="password" name="password"/>
                 </div>
-                {{#if projcfg.captcha_login_enable}}
+                <!-- {{#if projcfg.captcha_login_enable}}
                     <div class="loginbox-textbox">
                         <input id="captcha" name='captcha'  value='' type="text" class="form-control" style="width:127px;display: inline;" placeholder="{{{__ "tips_input_captcha"}}}" />
                         <img id="captchaImg" style="display: inline;vertical-align: top;" src="{{projcfg.appurl}}/captcha" onclick="reloadCaptcha()"/>
                     </div>
-                {{/if}}
+                {{/if}}-->
                 <div class="loginbox-submit">
                     <input type="submit" class="btn btn-primary btn-block" value="{{{__ "btn_login"}}}">
                 </div>
-                <div class="loginbox-textbox" style="color:red;">
+                <div  id="message1" class="loginbox-textbox" style="color:red;">
                     {{message1}}
                 </div>
                 <div class="login" style="margin-left: 68%; margin-bottom: -19px">
@@ -177,7 +219,7 @@
         <div class="loginbox bg-white" style="">
             <div class="loginbox-title" >手机登陆</div>
 
-            <form class="m-t" role="form" action="{{projcfg.appurl}}/login" method="post" onsubmit="return submitForm();">
+            <form class="m-t" role="form" action="{{projcfg.appurl}}/login" method="post" onsubmit="return submitForm(2);">
                 <div class="loginbox-textbox">
                     <input id="phonename" name='username'  value='' type="text" class="form-control" placeholder="请输入手机号" />
                     <input type="hidden" id="flag" name="flag" value="2"/>
@@ -186,16 +228,16 @@
                     <input type="text" id="verificationCode" name="verificationCode" class="form-control" value="" placeholder="短信验证码" style="width: 43%;margin-top: 9%"/>
                     <input type="button" id="btn" class="form-control" value="获取验证码"  style="width: 52%;margin-left: 48%;margin-top: -34px"   onclick="settime(this)" />
                 </div>
-                {{#if projcfg.captcha_login_enable}}
+                <!-- {{#if projcfg.captcha_login_enable}}
                     <div class="loginbox-textbox">
                         <input id="captcha" name='captcha'  value='' type="text" class="form-control" style="width:127px;display: inline;" placeholder="{{{__ "tips_input_captcha"}}}" />
                         <img id="captchaImg" style="display: inline;vertical-align: top;" src="{{projcfg.appurl}}/captcha" onclick="reloadCaptcha()"/>
                     </div>
-                {{/if}}
+                {{/if}}-->
                 <div class="loginbox-submit">
                     <input type="submit" class="btn btn-primary btn-block" value="{{{__ "btn_login"}}}">
                 </div>
-                <div class="loginbox-textbox" style="color:red;">
+                <div id="message2" class="loginbox-textbox" style="color:red;">
                     {{message2}}
                 </div>
                 <div class="login " style="margin-left: 68%; margin-bottom: -19px">
@@ -219,10 +261,10 @@
 <script src="{{projcfg.appurl}}/static/{{projcfg.theme}}js/beyond.min.js"></script>
 <script src="{{projcfg.appurl}}/static/js/common/md5.js"></script>
 <script src="{{projcfg.appurl}}/static/js/common/security.mini.js"></script>
-<script src="{{projcfg.appurl}}/static/js/common/sys-init.js"></script>
+
 
 <script>
-   $(function () {
+    $(function () {
         if('{{flag}}'==2){//手机登录
             loadTab();
         }else {//账号登陆

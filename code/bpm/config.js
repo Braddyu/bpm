@@ -109,6 +109,7 @@ var config = {
         exclude_auth_check_urls:[
             project_url_prefix + '/login',
             project_url_prefix + '/captcha',
+            project_url_prefix +'/getVerificationcode',
             project_url_prefix + '/test/*',
             project_url_prefix +'/static/*',
             project_url_prefix + '/api/*',
@@ -122,7 +123,6 @@ var config = {
             project_url_prefix + '/portal',
             project_url_prefix +'/profile',
             project_url_prefix +'/setting',
-            project_url_prefix +'/getVerificationcode',
             project_url_prefix +'/api/workflow/*',
             // project_url_prefix + '/api/demo/*',
             // project_url_prefix+"api/workflow/*"
