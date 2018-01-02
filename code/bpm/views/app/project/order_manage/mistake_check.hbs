@@ -8,17 +8,42 @@
                         <div id="toolbar1" class="row tbRow">
                             <div class="col-xs-8 col-md-8">
                                 <div class="btn-group" role="group" aria-label="...">
-                                    <button type="button" class="btn btn-default" onclick="dispatch()"><i class="fa fa-plus"></i>派单</button>
+                                    <label for="filterParam3">派单时间：</label>
+                                    <input id="queryDate" class="easyui-datebox" label="Start Date:" labelPosition="top" style="width:130px;height:35px">
 
+                                </div>
+                                <div class="btn-group" role="group" aria-label="...">
+                                    <label for="filterParam3">稽核状态：</label>
+                                    <select class="easyui-combobox"id="check_status" style="width: 230px;height:31px;">
+                                        <option value="4">无纸化打印传送中</option>
+                                        <option value="14">前端软件异常退出电子工单</option>
+                                        <option value="6">纸质重打成功</option>
+                                        <option value="31">[用户没有签名笔迹]</option>
+                                        <option value="15">进入电子免填单，营业员不扫描证件，不签字，不盖章，退出电子工单</option>
+                                        <option value="31">[身份证扫描件不清晰或未扫描证件]</option>
+                                        <option value="2">已撤单</option>
+                                        <option value="10">无纸化打印控件未安装</option>
+                                        <option value="9">无纸化补打传送中</option>
+                                        <option value="1">纸质打印成功</option>
+                                        <option value="8">纸质补打成功</option>
+                                        <option value="31">[没有身份证正面]</option>
+                                        <option value="7">无纸化重打传送中</option>
+                                        <option value="13">盖章时异常退出电子工单</option>
+                                        <option value="0">未打印</option>
+                                        <option value="31">[受理人员没有扫描客户证件信息, 未扫描证件]</option>
+                                        <option value="17">纸质打印控件未安装</option>
+                                        <option value="31">[客户证号与受理客户信息不一致]</option>
+                                        <option value="12">签字屏故障退出电子工单</option>
+                                        <option value="11">证件识读设备故障退出电子工单</option>
+                                        <option value="31">[未扫描证件]</option>
+
+                                    </select>
                                 </div>
                             </div>
                             <div class="col-xs-4 col-md-4 text-right">
                                 <form class="form-inline">
                                     <div class="form-group">
                                         <div class="input-group">
-                                            <label for="filterParam3">派单时间：</label>
-                                            <input id="queryDate" class="easyui-datebox" label="Start Date:" labelPosition="top" style="width:130px;height:35px">
-
                                             <span class="input-group-btn">
                                                 <button class="btn btn-default" type="button" onclick="doSearch()"><i class="fa fa-search"></i>查询</button>
                                             </span>
@@ -76,10 +101,10 @@
             toolbar: '#toolbar1',
             columns:[[
                 {"field":"_id",checkbox:true},
-                {"field": "mistake_time","title":"日期","width":50},
+                {"field": "mistake_time","title":"日期","width":30},
                 {"field": "city_code","title":"地市编码","width":30},
                 {"field": "BOSS_NUM","title":"BOSS订单编码","width":80},
-                {"field": "staff_num","title":"营业员工号","width":50},
+                {"field": "staff_num","title":"营业员工号","width":60},
                 {"field": "channel_type","title":"渠道类型","width":30},
                 {"field": "channel_org","title":"渠道组织","width":30},
                 {"field": "business_num","title":"业务编码","width":50},
@@ -102,51 +127,20 @@
 
     //搜索
     function doSearch(){
-
-     $('#mistakeTablelist').datagrid(
-             {   url:'{{projcfg.appurl}}/api/order_manage/mistake_list/list',
-                 queryParams:{
-                     queryDate:$('#queryDate').datebox('getValue'),
-                     status:0
-
-                 }
-             }
-     );
- }
- //派单
- function dispatch(){
         if($('#queryDate').datebox('getValue')){
-            $.ajax({
-                url: '{{projcfg.appurl}}/api/order_manage/mistake_list/dispatch',
-                type: 'post',
-                dataType:'json',
-                timeout: 100000000,
-                data: {
-                    queryDate:$('#queryDate').datebox('getValue')
-                },
-                beforeSend: ajaxLoading,
-                success: function (data) {
-                    ajaxLoadEnd();
-                    if(data.success){
-                        $("#mistakeTablelist").datagrid('reload')
-                        $.messager.alert('提示',data.msg);
-                    }else{
-                        $.messager.alert('错误提示',data.msg);
+            $('#mistakeTablelist').datagrid(
+                    {   url:'{{projcfg.appurl}}/api/order_manage/mistake_list/list',
+                        queryParams:{
+                            queryDate:$('#queryDate').datebox('getValue'),
+                            check_status:$('#check_status').combobox('getValue')
+
+                        }
                     }
-                }
-            });
+            );
         }else{
-            $.messager.alert('提示','时间不得为空');
+            $.messager.alert('提示','查询时间不得为空');
         }
 
  }
 
-    function ajaxLoading(){
-        $("<div class=\"datagrid-mask\"></div>").css({display:"block",width:"100%",height:"50px"}).appendTo("body");
-        $("<div class=\"datagrid-mask-msg\"></div>").html("正在派单，请稍候...").appendTo("body").css({display:"block",height:"50px",left:($(document.body).outerWidth(true) - 190) / 2,top:($(window).height() - 45) / 2});
-    }
-    function ajaxLoadEnd(){
-        $(".datagrid-mask").remove();
-        $(".datagrid-mask-msg").remove();
-    }
 </script>

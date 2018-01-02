@@ -8,17 +8,30 @@
                         <div id="toolbar1" class="row tbRow">
                             <div class="col-xs-8 col-md-8">
                                 <div class="btn-group" role="group" aria-label="...">
-                                    <button type="button" class="btn btn-default" onclick="dispatch()"><i class="fa fa-plus"></i>派单</button>
+                                    <label for="filterParam3">派单时间：</label>
+                                    <input id="queryDate" class="easyui-datebox" label="Start Date:" labelPosition="top" style="width:130px;height:35px">
 
+                                </div>
+                                <div class="btn-group" role="group" aria-label="...">
+                                    <label for="filterParam3">地市：</label>
+                                    <select class="easyui-combobox"id="city_code"  data-options="panelHeight:'auto'"style="width: 180px;height:31px;">
+                                        <option value="850">贵安</option>
+                                        <option value="851">贵阳</option>
+                                        <option value="852">遵义</option>
+                                        <option value="853">安顺</option>
+                                        <option value="854">黔南</option>
+                                        <option value="855">黔东南</option>
+                                        <option value="856">铜仁</option>
+                                        <option value="857">毕节</option>
+                                        <option value="858">六盘水</option>
+                                        <option value="859">黔西南</option>
+                                    </select>
                                 </div>
                             </div>
                             <div class="col-xs-4 col-md-4 text-right">
                                 <form class="form-inline">
                                     <div class="form-group">
                                         <div class="input-group">
-                                            <label for="filterParam3">派单时间：</label>
-                                            <input id="queryDate" class="easyui-datebox" label="Start Date:" labelPosition="top" style="width:130px;height:35px">
-
                                             <span class="input-group-btn">
                                                 <button class="btn btn-default" type="button" onclick="doSearch()"><i class="fa fa-search"></i>查询</button>
                                             </span>
@@ -61,11 +74,10 @@
         $('#mistakeTablelist').datagrid({
             url:'{{projcfg.appurl}}/api/order_manage/mistake_list/list',
             method:'post',
-            queryParams:{
-                status:0
-
-            },
             rownumbers:true,
+            queryParams:{
+                status:-1,
+            },
             striped:true,
             fitColumns:true,
             border:false,
@@ -76,16 +88,17 @@
             toolbar: '#toolbar1',
             columns:[[
                 {"field":"_id",checkbox:true},
-                {"field": "mistake_time","title":"日期","width":50},
+                {"field": "mistake_time","title":"日期","width":30},
                 {"field": "city_code","title":"地市编码","width":30},
                 {"field": "BOSS_NUM","title":"BOSS订单编码","width":80},
-                {"field": "staff_num","title":"营业员工号","width":50},
+                {"field": "staff_num","title":"营业员工号","width":45},
                 {"field": "channel_type","title":"渠道类型","width":30},
                 {"field": "channel_org","title":"渠道组织","width":30},
                 {"field": "business_num","title":"业务编码","width":50},
                 {"field": "business_name","title":"业务名称","width":50},
-                {"field": "check_status","title":"稽核状态","width":30},
-                {"field": "remark","title":"稽核说明","width":70}
+                {"field": "check_status","title":"稽核状态","width":25},
+                {"field": "remark","title":"稽核说明","width":50},
+                {"field": "dispatch_remark","title":"失败原因","width":60}
             ]],
             onLoadSuccess:function(json) {
                 if(!json.success) {
@@ -107,46 +120,11 @@
              {   url:'{{projcfg.appurl}}/api/order_manage/mistake_list/list',
                  queryParams:{
                      queryDate:$('#queryDate').datebox('getValue'),
-                     status:0
+                     status:-1,
+                     city_code:$('#city_code').combobox('getValue'),
 
                  }
              }
      );
  }
- //派单
- function dispatch(){
-        if($('#queryDate').datebox('getValue')){
-            $.ajax({
-                url: '{{projcfg.appurl}}/api/order_manage/mistake_list/dispatch',
-                type: 'post',
-                dataType:'json',
-                timeout: 100000000,
-                data: {
-                    queryDate:$('#queryDate').datebox('getValue')
-                },
-                beforeSend: ajaxLoading,
-                success: function (data) {
-                    ajaxLoadEnd();
-                    if(data.success){
-                        $("#mistakeTablelist").datagrid('reload')
-                        $.messager.alert('提示',data.msg);
-                    }else{
-                        $.messager.alert('错误提示',data.msg);
-                    }
-                }
-            });
-        }else{
-            $.messager.alert('提示','时间不得为空');
-        }
-
- }
-
-    function ajaxLoading(){
-        $("<div class=\"datagrid-mask\"></div>").css({display:"block",width:"100%",height:"50px"}).appendTo("body");
-        $("<div class=\"datagrid-mask-msg\"></div>").html("正在派单，请稍候...").appendTo("body").css({display:"block",height:"50px",left:($(document.body).outerWidth(true) - 190) / 2,top:($(window).height() - 45) / 2});
-    }
-    function ajaxLoadEnd(){
-        $(".datagrid-mask").remove();
-        $(".datagrid-mask-msg").remove();
-    }
 </script>

@@ -1404,12 +1404,7 @@ exports.assign_transfer=function(proc_task_id,node_code,user_code,assign_user_co
                                }
                                console.log(next_detail,'next_detailnext_detailaaaa');
                                //var proc_inst_node_vars = next_detail.item_node_var;
-                               if(res[0].proc_code=='p-108'){
-                                   //针对稽核系统
-                                   var proc_inst_node_vars = item_config[2].item_node_var;
-                               }else{
-                                   var proc_inst_node_vars = next_detail.item_node_var;
-                               }
+                               var proc_inst_node_vars = next_detail.item_node_var;
                                 //var proc_inst_node_vars = current_detail.item_node_var;
                                 console.log(proc_inst_node_vars,'proc_inst_node_varsproc_inst_node_vars11');
                                var proc_cur_user;

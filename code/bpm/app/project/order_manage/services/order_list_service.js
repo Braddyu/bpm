@@ -4,6 +4,8 @@ var dict_model = require('../../workflow/models/dict_model');
 
 var utils = require('../../../../lib/utils/app_utils');
 var logger = require('../../../../lib/logHelper').helper;
+var xlsx = require('node-xlsx');
+
 /**
  * 工单列表分页
  * @param page
@@ -21,6 +23,66 @@ exports.getOrderListPage= function(page, size, conditionMap) {
 
     return p;
 };
+
+/**
+ * 获取所有工单列表
+ * @returns {Promise}
+ */
+exports.getAllOrder= function() {
+
+    var p = new Promise(function(resolve,reject){
+        model.$ProcessInst.find({},function(err,result){
+            if(err){
+                console.log('获取所有工单列表失败',err);
+                resolve({'success':false,'code':'1000','msg':'获取所有工单列表失败',"error":err});
+            }else{
+                resolve(result)
+                //resolve({'success':true,'code':'0000','msg':'获取所有工单列表成功',"data":result,"error":null});
+            }
+        });
+
+    });
+    return p;
+};
+
+/**
+ * 创建excel文件
+ */
+function createExcelOrderList(list) {
+    const headers = [
+        '工单标题',
+        '所属流程',
+        '版本',
+        '当前处理节点',
+        '状态',
+        '申请人',
+        '创建时间'
+    ];
+
+    var data = [headers];
+
+    list.map(c=>{
+        var doc = c._doc;
+        const tmp = [
+            doc.proc_title,
+            doc.proc_name,
+            doc.proc_ver,
+            doc.proc_cur_task_name,
+            doc.proc_inst_status,
+            doc.proc_start_user_name,
+            doc.proc_start_time
+        ]
+
+        data.push(tmp);
+    });
+
+    return xlsx.build([{name:'Sheet1',data:data}]);
+}
+
+exports.createExcelOrderList = createExcelOrderList;
+
+
+
 /**
  * 获取所有流程
  * @returns {Promise}
@@ -164,9 +226,9 @@ exports.getViewUrl= function(proc_code) {
                          }else{
                              //获取所以对应流程的详细处理界面的配置信息
                              if(result.length>0){
-                                for(var i=0;i<result.length;i++){
+                                for(let i=0;i<result.length;i++){
                                     var res=result[i];
-                                    if(res.field_name=proc_code){
+                                    if(res.field_name==proc_code){
                                         resolve({'success':true,'code':'0000','msg':'获取流程详细信息成功',"data":res.field_value,"error":null});
                                         break;
                                     }
