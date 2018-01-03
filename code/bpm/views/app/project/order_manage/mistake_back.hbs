@@ -92,14 +92,22 @@
                         return '回传失败';
                     }
                 }},
-                {"field": "dispatch_remark","title":"回传说明","width":"120px"},
+                {"field": "dispatch_remark","title":"回传说明","width":"120px",
+                    formatter:function(value,row,index){
+                        return "<span title='" + value + "'>" + value + "</span>";
+
+                    }},
                 {"field": "staff_num","title":"营业员工号","width":"150px"},
                 {"field": "channel_type","title":"渠道类型","width":"80px"},
                 {"field": "channel_org","title":"渠道组织","width":"120px"},
                 {"field": "business_num","title":"业务编码","width":"120px"},
                 {"field": "business_name","title":"业务名称","width":"120px"},
                 {"field": "check_status","title":"稽核状态","width":"80px"},
-                {"field": "remark","title":"稽核说明","width":"200px"},
+                {"field": "remark","title":"稽核说明","width":"200px",   formatter:function(value,row,index){
+                    return "<span title='" + value + "'>" + value + "</span>";
+
+                }
+                },
             ]],
             onLoadSuccess:function(json) {
                 if(!json.success) {

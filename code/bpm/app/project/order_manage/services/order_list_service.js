@@ -319,7 +319,7 @@ exports.orderDetail= function(change_id,status) {
  * @param proc_inst_id 订单编码
  * @returns {Promise}
  */
-exports.repareHuanghe= function(result1,proc_code,proc_inst_id) {
+exports.repareHuanghe= function(result1,proc_code,proc_inst_id,memo) {
 
     var p = new Promise(function(resolve,reject){
         console.log(result1);
@@ -333,9 +333,9 @@ exports.repareHuanghe= function(result1,proc_code,proc_inst_id) {
                         var _id=res[0]._id;
                         var postData={
                             "JobId":proc_inst_id,
-                            //"orderId":"", BOSS订单ID不知
+                            "orderId":res[0].staff_num,
                             "orderCode":res[0].BOSS_NUM,
-                            //"Suggestion":"",未知参数不知
+                            "Suggestion":memo,
                             "yearMonth":moment().format('YYYY-MM-DD HH:mm:ss')
                         };
                         //回传地址

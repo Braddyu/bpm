@@ -248,8 +248,7 @@ function insertMistake(mistake,business_name,channel_org,queryJson,three_node_co
                                if (res.length == 1) {
                                    //用户编号
                                    var user_no = res[0].user_no;
-                                   //用户姓名
-                                   var user_name = res[0].user_name;
+
                                    var proc_ver;
                                    var proc_title = orgName + " " + business_name + "差错工单";
                                    var user_code = 'admin';
@@ -260,7 +259,7 @@ function insertMistake(mistake,business_name,channel_org,queryJson,three_node_co
                                    var mistak_json = JSON.stringify(mistake);
                                    mistake = JSON.parse(mistak_json);
 
-                                   mistake["start_user"]=role_name;
+                                   mistake.start_user=role_name;
                                    mistake.start_user_name=user_name;
                                    mistake.time=queryDate;//文件中的派单时间
                                    mistake.start_time=moment().format('YYYY-MM-DD HH:mm:ss');

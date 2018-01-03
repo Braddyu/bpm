@@ -229,7 +229,7 @@ router.route('/complete') .post(function(req,res) {
                 console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!",id,node_code,user_code,true,memo,params)
                 //归档时,回传黄河数据
                 if(handle==1){
-                    service.repareHuanghe(result1,proc_code,proc_inst_id).then(function(result){
+                    service.repareHuanghe(result1,proc_code,proc_inst_id,memo).then(function(result){
                         utils.respJsonData(res, result);
                     }).catch(function(err){
                         utils.respMsg(res, false, '1000', '回传黄河失败', null, err);

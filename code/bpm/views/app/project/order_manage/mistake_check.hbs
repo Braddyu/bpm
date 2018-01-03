@@ -106,7 +106,11 @@
                 {"field": "business_num","title":"业务编码","width":50},
                 {"field": "business_name","title":"业务名称","width":50},
                 {"field": "check_status","title":"稽核状态","width":30},
-                {"field": "remark","title":"稽核说明","width":70}
+                {"field": "remark","title":"稽核说明","width":70,
+                    formatter:function(value,row,index){
+                        return "<span title='" + value + "'>" + value + "</span>";
+
+                    }}
             ]],
             onLoadSuccess:function(json) {
                 if(!json.success) {
