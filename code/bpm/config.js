@@ -328,6 +328,16 @@ var config = {
         }
 
     },
+    //差错工单归档时回传黄河地址
+    repair_huanghe:{
+        hostname:'135.10.38.80',
+        port:9090,
+        path:'/ewfs/client/ewf4store/repair.do',
+        method:'POST',
+        headers:{
+            'Content-Type':'application/x-www-form-urlencoded; charset=UTF-8'
+        }
+    },
     //所属系统编号
     joinup_sys:{
         warningwork_node : 'warnSys_node',//预警工单系统编号

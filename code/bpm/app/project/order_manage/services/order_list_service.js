@@ -1,11 +1,13 @@
 
 var model = require('../../bpm_resource/models/process_model');
+var mistake_model = require('../models/mistake_model');
+var process_extend_model = require('../../bpm_resource/models/process_extend_model');
 var dict_model = require('../../workflow/models/dict_model');
-
+var process_utils = require('../../../utils/process_util');
 var utils = require('../../../../lib/utils/app_utils');
-var logger = require('../../../../lib/logHelper').helper;
 var xlsx = require('node-xlsx');
-
+var fs = require('fs');
+var moment = require('moment');
 /**
  * 工单列表分页
  * @param page
@@ -317,12 +319,12 @@ exports.orderDetail= function(change_id,status) {
  * @param proc_inst_id 订单编码
  * @returns {Promise}
  */
-exports.repareHuanghe= function(result1,proc_code,proc_inst_id,handle) {
+exports.repareHuanghe= function(result1,proc_code,proc_inst_id) {
 
     var p = new Promise(function(resolve,reject){
         console.log(result1);
         //如果是差错工单归档则进行回传黄河数据
-        if(handle=='1' && result1.success && proc_code=='p-201'){
+        if( result1.success && proc_code=='p-201'){
             mistake_model.$ProcessMistake.find({"proc_inst_id":proc_inst_id},function(err,res){
                 if(err){
                     reject({'success':false,'code':'1000','msg':'获取差错信息失败',"error":err});
@@ -380,3 +382,160 @@ exports.repareHuanghe= function(result1,proc_code,proc_inst_id,handle) {
 
     return p;
 };
+
+/**
+ * 上传文件
+ * @param files
+ * @param task_id
+ * @returns {Promise}
+ */
+exports.upload_images= function(files,task_id) {
+
+    var p = new Promise(function(resolve,reject){
+        var date=moment().format('YYYYMMDDHHmmss');
+        let  path = "../public/files/mistake/"+date;
+        ( async function(){
+            //如果有上传文件
+            if(files.length>0){
+                await ( function(){
+                    //判断文件夹是否存在
+                    fs.exists(path,function(exists){
+                        if(!exists)
+                            fs.mkdir(path,function(err){
+                                if(err)
+                                    console.error(err);
+                            });
+                    });
+                })()
+                //给上传文件命名回原来的名称并插入数组
+
+                await ( function(){
+                    model.$ProcessInstTask.find({"_id":task_id},function(err,res){
+                        if(err){
+                            reject({'success':false,'code':'1000','msg':'获取任务信息错误',"error":null});
+                        }else{
+                            if(res.length==1){
+                                var data={};
+                                data.proc_task_id=task_id;
+                                data.proc_inst_id=res[0].proc_inst_id;
+                                data.proc_inst_task_code=res[0].proc_inst_task_code;
+                                data.proc_inst_task_type=res[0].proc_inst_task_type;
+                                data.user_name=res[0].proc_inst_task_assignee_name;
+                                data.proc_code=res[0].proc_code;
+                                data.proc_name=res[0].proc_name;
+                                for(let item in files){
+                                    let file=files[item];
+                                    console.log("path:",file.path,file.originalname);
+                                    fs.rename(file.path, path+"/"+file.originalname,function(err){
+                                        if(err){
+                                            console.log(err);
+                                        }else{
+                                            var datas=[];
+                                            data.file_path=path+"/"+file.originalname;
+                                            data.file_name=file.originalname;
+                                            data.insert_time=new Date();
+                                            datas.push(data);
+                                            //插入附件表
+                                            process_extend_model.$ProcessTaskFile.create(datas,function(err){
+                                                if(err){
+                                                    reject({'success':false,'code':'1000','msg':'节点流转成功，但附件上传失败',"error":null});
+                                                }else{
+                                                    if(item==files.length-1){
+                                                        resolve({'success':true,'code':'2000','msg':'节点流转成功',"error":null});
+
+                                                    }
+                                                }
+                                            })
+                                        }
+
+                                    });
+                                }
+                            }else{
+                                reject({'success':false,'code':'1000','msg':'获取任务不存在',"error":null});
+                            }
+                        }
+                    })
+                })()
+            }else{
+                resolve({'success':true,'code':'2000','msg':'节点流转成功',"error":null});
+            }
+        })()
+
+    });
+
+    return p;
+};
+
+
+/**
+ * 获取附件日志
+ * @param inst_id
+ */
+exports.fileLogs= function(inst_id) {
+    return new Promise(function(resolve,reject){
+        process_extend_model.$ProcessTaskFile.find({"proc_inst_id":inst_id},function(err,res){
+            if(err){
+                reject({'success':false,'code':'1000','msg':'获取附件日志失败',"error":null});
+            }else{
+                var data={"rows":res};
+                resolve(data);
+            }
+        })
+    });
+}
+
+/**
+ * 上传文件
+ * @param files
+ * @param fileID
+ * @returns {Promise}
+ */
+exports.update_images= function(files,fileID) {
+    var p = new Promise(function(resolve,reject){
+        var date=moment().format('YYYYMMDDHHmmss');
+        let  path = "../public/files/mistake/"+date;
+        ( async function(){
+            //如果有上传文件
+            if(files.length>0){
+                await ( function(){
+                    //判断文件夹是否存在
+                    fs.exists(path,function(exists){
+                        if(!exists)
+                            fs.mkdir(path,function(err){
+                                if(err)
+                                    console.error(err);
+                            });
+                    });
+                })()
+                //给上传文件转移位置
+                await ( function(){
+                    fs.rename(files[0].path, path+"/"+files[0].originalname,function(err){
+                        if(err){
+                            console.log(err);
+                        }else{
+                            var data={};
+                            data.file_path=path+"/"+files[0].originalname;
+                            data.file_name=files[0].originalname;
+                            data.insert_time=new Date();
+                            var conditions = {_id: fileID};
+                            var update = {$set: data};
+                            var options = {};
+                            //修改附件表
+                              process_extend_model.$ProcessTaskFile.update(conditions, update, options, function (errors){
+                                if(err){
+                                    reject({'success':false,'code':'1000','msg':'节点流转成功，但附件上传失败',"error":null});
+                                }else{
+                                    resolve({'success':true,'code':'2000','msg':'上传成功',"error":null});
+                                }
+                            })
+                        }
+                    });
+                })()
+
+            }
+        })()
+
+    });
+
+    return p;
+}

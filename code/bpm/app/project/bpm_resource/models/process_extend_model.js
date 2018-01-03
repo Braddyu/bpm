@@ -31,3 +31,25 @@ var commonProcessTaskStatisticsSchema = new Schema(
 
 // 针对预警工单与差错工单的统计model
 exports.$ProcessTaskStatistics = mongoose.model('CommonCoreProcessTaskStatistics', commonProcessTaskStatisticsSchema);
+
+
+//针对文件上传
+var commonProcessTaskFileSchema = new Schema(
+    {
+        proc_inst_id : {type: Schema.Types.ObjectId}, // 实例ID
+        proc_task_id : {type: Schema.Types.ObjectId}, // 任务ID
+        proc_code:String,//所属流程编码
+        proc_name:String,//所属流程
+        proc_inst_task_code:String,//所属流程节点
+        proc_inst_task_type:String,//所属用户电话
+        user_no:String,//文件上传用户编号
+        user_name:String,//文件上传人
+        file_path:String,//文件路径
+        file_name:String,//文件名称
+        insert_time:Date,//插入时间
+    },
+    {collection: "common_bpm_proc_task_file"}// mongodb集合名
+);
+
+// 针对文件上传
+exports.$ProcessTaskFile = mongoose.model('CommonCoreProcessTaskFile', commonProcessTaskFileSchema);

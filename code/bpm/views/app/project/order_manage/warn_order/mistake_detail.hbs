@@ -5,16 +5,18 @@
     <div class="easyui-tabs" id="tabs" >
         <div title="工单信息" style="padding:10px">
         <legend ><b>任务基本信息</b></legend>
-        <form id="orderDetailForm" method="post" enctype="multipart/form-data">
+        <form id="orderDetailForm" method="post" enctype="multipart/form-data" >
             <table cellpadding="5" align="center" style="border-collapse:separate; border-spacing:0px 5px;">
 
                 <input  type="hidden"id="node_code"  name="proc_inst_task_code"/>
                 <input  type="hidden"id="next_code" name="next_code" />
                 <input  type="hidden"id="proc_inst_id"  name="proc_inst_id"/>
                 <input  type="hidden"id="proc_task_id"  name="proc_task_id"/>
+                <input  type="hidden"id="task_title"  name="proc_inst_task_title"/>
+
                 <tr>
                     <td align="right" class="tdLabel">工单标题:</td>
-                    <td colspan="3"><input disabled style="width: 665px" class="easyui-textbox"data-options="required:true, missingMessage:'请输入工单标题'" id="proc_inst_task_title" name="proc_inst_task_title" ></input></td>
+                    <td colspan="3"><input disabled style="width: 665px" class="easyui-textbox"data-options="required:true, missingMessage:'请输入工单标题'" id="proc_inst_task_title"  ></input></td>
                 </tr>
                 <tr>
                     <td align="right" class="tdLabel">工单类型:</td>
@@ -109,17 +111,19 @@
                     </td>
 
                 </tr>
-                <tr>
+                <tr  id="fileUpload">
                     <td align="right" class="tdLabel">附件上传:</td>
-                    <td>  <input class="easyui-filebox"labelPosition="top"id="file" name="myfile" data-options="prompt:'选择文件...',buttonText:'选择'" style="width:250px"/>
+                    <td>  <input type="file"labelPosition="top"id="images" name="images"multiple="true" data-options="prompt:'选择文件...',buttonText:'选择'" style="width:250px"/>
                     </td>
                 </tr>
 
 
             </table>
+
                 <div style="padding:5px 0;" align="center" id="button_group">
                     <a href="javascript:void(0);" class="easyui-linkbutton" onclick="submitTask()" style="width: 100px;">提交</a>
                 </div>
+
             </fieldset>
 
         </form>
@@ -131,7 +135,14 @@
             <iframe id="iframeId" frameborder=0 width=850 height=430 marginheight=0 marginwidth=0 scrolling=no src=></iframe>
         </div>
         <div title="附件" style="padding:10px">
-            附件
+            <table cellpadding="5" align="center">
+                <tr>
+                    <td colspan="4">
+                        <table id="file_dg"></table>
+                    </td>
+                </tr>
+
+            </table>
         </div>
     </div>
 
@@ -142,10 +153,8 @@
 
         //状态1:已发起的工单,2：我的待办,3:我的已办，4：新增操作
         var status=GetQueryString("status");
-
         //状态为2时表示任务id，1和3时为实例id
         var change_id=GetQueryString("change_id");
-
         if(status==1 ||status==3){
             //隐藏处理操作
             $("#detail").hide();
@@ -237,12 +246,52 @@
                                     }else{
                                         return '';
                                     }
-
                                 }},
                             {field:'proc_inst_task_remark',title:'处理意见',width:350,
                                 halign:'center',
                                 formatter: function (value) {
                                     return "<span title='" + value + "'>" + value + "</span>";
+                                }}
+                        ]]
+                    })
+                   //上传附件
+                    $('#file_dg').datagrid({
+                        url:'{{projcfg.appurl}}/api/order_manage/order_list/fileLogs',
+                        width:800,
+                        queryParams: {
+                            inst_id: inst_id
+                        },
+                        rownumbers:true,
+                        method:'post',
+                        columns:[[
+                            {field:'_id',hidden:true},
+                            {field:'file_name',title:'文件名',width:130, halign:'center',
+                                formatter:function(value,row,index){
+
+                                    return "<a href='{{projcfg.appurl}}/api/order_manage/order_list/download/"+row._id+"'>" + value + "</a>";
+
+                                }},
+                            {field:'proc_inst_task_type',title:'上传节点',width:150, halign:'center'},
+                            {field:'user_name',title:'上传人',width:100, halign:'center'},
+                            {field:'insert_time',title:'上传时间',width:160, halign:'center',
+                                formatter:function(value,row,index){
+                                    if(value!=null){
+                                        var isoDateStr = value;
+                                        var d2 = new Date(isoDateStr);
+                                        return new Date(d2).Format("yyyy-MM-dd hh:mm:ss");
+                                    }else{
+                                        return '';
+                                    }
+                                }},
+                            {field:'proc_inst_task_remark',title:'点击上传文件',width:250,
+                                halign:'center',
+                                formatter: function (value,row,index) {
+                                  var html=   '<div align="center"><form id="form'+row._id+'" method="post" enctype="multipart/form-data"> <input id="file'+row._id+'" name="image" type="file"onchange="doUploadCorrect(this)"style="width: 0px;height:0px"/>'+
+                                    ' <a  href="javascript:void(0);"type="file" onclick="uploadFile(\''+row._id+'\')">再次上传</a></form>'+
+                                         ' &nbsp;&nbsp;<a href="javascript:void(0);" onclick="deleteFile(\''+row._id+'\')" >删除</a></div>'
+
+
+                                    return html;
                                 }}
                         ]]
                     })
@@ -353,6 +402,8 @@
                         $("#tr_5").hide();
                         endFlag=true;
                         comboboxData.push({ value: '1', text: '归档' })  ;
+                        $("#fileUpload").hide();
+
                     }else{
                         //获取下一节点处理人
                         getNextNodeUser(node_code,task_id,inst_id);
@@ -387,10 +438,9 @@
 
         }
 
-        var formData=$('#orderDetailForm').serializeArray();
-        console.log("formData",formData);
         //归档
         if(endFlag){
+            var formData=$('#orderDetailForm').serializeArray();
             $.ajax({
                 url: '{{projcfg.appurl}}/api/order_manage/order_list/complete',
                 type: 'post',
@@ -407,25 +457,45 @@
                 }
             });
         }else{
-            //中间节点处理
-            //easyui textbox 设置为禁用 serializeJson 不能获取json
-            formData.push({"name":"proc_inst_task_title",
-                        "value":$("#proc_inst_task_title").textbox('getValue')});
-            console.log("formData",formData);
+            $("#task_title").val($("#proc_inst_task_title").textbox('getValue'));
 
-          $.ajax({
-                url: '{{projcfg.appurl}}/api/order_manage/order_list/assignTask',
-                type: 'post',
-                dataType:'json',
-                data: formData,
-              contentType: false,    //不可缺
-              processData: false,    //不可缺
-                success: function (data) {
+            var obj = document.getElementById("images");
+            var length = obj.files.length;
+            for(var i=0;i<obj.files.length;i++){
+                var temp = obj.files[i].name;
+                var size = obj.files[i].size;
+
+                var extStart=temp.lastIndexOf(".");
+                var ext=temp.substring(extStart,temp.length).toUpperCase();
+
+                if(ext!=".JPG" && ext!=".PNG"){
+                    $.messager.alert('提示','文件:'+temp+' 限于jpg与png格式');
+                    return;
+                }
+
+                if(size > 1024 * 200){
+                    $.messager.alert('提示','文件:'+temp+'必须小于200KB');
+                    return;
+                }
+            }
+
+
+            //中间节点处理
+           $('#orderDetailForm').form('submit', {
+                url:'{{projcfg.appurl}}/api/order_manage/order_list/assignTask',
+                onSubmit: function(){
+                    // do some check
+                    // return false to prevent submit;
+                },
+                success:function(data){
                     if(data.success){
+                        $.messager.alert('提示','处理成功');
                         parent.$("#dd").dialog('close');
                         parent.$('#orderTablelist').datagrid('reload');
-                        $.messager.alert('提示','处理成功');
+
                     }else{
+                        parent.$("#dd").dialog('close');
+                        parent.$('#orderTablelist').datagrid('reload');
                         $.messager.alert('错误提示',data.error);
                     }
                 }
@@ -434,4 +504,65 @@
 
     }
 
+    /**
+     * 删除上传附件
+     * @param id
+     */
+    function deleteFile(id){
+        $.ajax({
+            url: '{{projcfg.appurl}}/api/order_manage/order_list/deleteFile',
+            type: 'post',
+            dataType:'json',
+            data: {
+                id:id,
+            },
+            success: function (data) {
+                if(data.success){
+                    $('#file_dg').datagrid('reload');
+                }else{
+                    $.messager.alert('删除失败');
+                }
+            }
+        });
+    }
+    var file_id;
+    function uploadFile(id){
+
+        file_id=id;
+        document.getElementById("file"+id).click();
+
+    }
+    /**
+     * 上传
+     */
+    function doUploadCorrect(){
+        var  filepath = $("#file"+file_id).val();
+        // 图片类型
+        var extStart=filepath.lastIndexOf(".");
+        var ext=filepath.substring(extStart,filepath.length).toUpperCase();
+
+        if(ext!=".JPG" && ext!=".PNG"){
+            $.messager.alert('提示','文件限于jpg与png格式');
+            return;
+        }
+        $.ajaxFileUpload({
+            type:'POST',
+            url : '{{projcfg.appurl}}/api/order_manage/order_list/uploadFile?id='+file_id,
+            secureuri : false,
+            fileElementId : 'file'+file_id,     //与html代码中的input的id值对应
+            dataType : 'json',
+            success : function(data) {
+                if(data.success){
+                    $.messager.alert('提示','修正成功!');
+                    $('#file_dg').datagrid('reload');//刷新
+                }else{
+                    $.messager.alert('警告',data.msg,'error');
+                }
+            },
+            error:function(err){
+                alert(JSON.stringify(err));
+            }
+        })
+        document.getElementById('file'+file_id).outerHTML+="";
+    }
     </script>

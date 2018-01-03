@@ -2,13 +2,16 @@ var express = require('express');
 var router = express.Router();
 var utils = require('../../../../lib/utils/app_utils');
 var service = require('../services/order_list_service');
-var formidable=require("formidable");
 var inst = require('../../bpm_resource/services/instance_service');
 var nodeTransferService=require("../../bpm_resource/services/node_transfer_service");
-var userService = require('../../workflow/services/user_service');
 var nodeAnalysisService=require("../../bpm_resource/services/node_analysis_service");
 var config = require('../../../../config');
-var childProcess = require('child_process');
+var multer = require('multer')
+var upload = multer({ dest: '../public/files/mistake' });
+var process_extend_model = require('../../bpm_resource/models/process_extend_model');
+var fs = require('fs');
+var path = require('path');
+var urlencode = require('urlencode');
 /**
  * 工单列表
  */
@@ -149,8 +152,11 @@ router.route("/nextNodeUser").post(function(req,res){
 /**
  * 指派任务
  */
-router.route("/assignTask").post(function(req,res){
+
+router.post('/assignTask',  upload.array("images"), function(req,res, next){
     console.log("开始分配任务...")
+    //文件路径
+    var files=req.files;
     var task_id=req.body.proc_task_id;
     var node_code=req.body.next_code;
     var user_no=req.session.current_user.user_no;
@@ -161,7 +167,20 @@ router.route("/assignTask").post(function(req,res){
     var memo=req.body.memo;//流程变量
     if(task_id){
         nodeTransferService.assign_transfer(task_id,node_code,user_no,assign_user_no,proc_title,biz_vars,proc_vars,memo).then(function(rs){
-            utils.respJsonData(res,rs);
+            if(rs.success){
+                service.upload_images(files,task_id).then(function(result){
+                    utils.respJsonData(res, result);
+                }).catch(function(err){
+                    utils.respMsg(res, false, '1000', '回传黄河失败', null, err);
+                })
+            }else{
+                //删除文件
+                for(let item in files){
+                    let file=files[item];
+                    fs.unlinkSync(file.path);
+                }
+                utils.respJsonData(res,rs);
+            }
         }).catch(function(err){
             utils.respMsg(res, false, '1000', 'rouute-assign/task', null, err);
         });
@@ -200,13 +219,25 @@ router.route('/complete') .post(function(req,res) {
 
         if(taskresult.success){
             var node_code = taskresult.data._doc.proc_inst_task_code;
-            //流程流转方法
-            console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+            var proc_inst_id =taskresult.data.proc_inst_id;
+            var proc_code =taskresult.data.proc_code;
+                //流程流转方法
+            console.log("!!!!!!!!!!!!!$$$$$$$$$$",taskresult);
             console.log(id,node_code,user_code,true,memo,params,biz_vars,proc_vars);
             console.info(params)
             nodeTransferService.transfer(id,node_code,user_code,true,memo,params,biz_vars,proc_vars).then(function(result1){
                 console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!",id,node_code,user_code,true,memo,params)
-                utils.respJsonData(res, result1);
+                //归档时,回传黄河数据
+                if(handle==1){
+                    service.repareHuanghe(result1,proc_code,proc_inst_id).then(function(result){
+                        utils.respJsonData(res, result);
+                    }).catch(function(err){
+                        utils.respMsg(res, false, '1000', '回传黄河失败', null, err);
+                    })
+                }else{
+                    utils.respJsonData(res, result1);
+                }
+
             }).catch(function(err_inst){
                 // console.log(err_inst);
                 console.log("route-transfer","流程流转异常",err_inst);
@@ -270,6 +301,87 @@ router.post('/orderDetail', function(req, res) {
         });
 
 });
+
+
+router.post('/fileLogs', function(req, res) {
+    console.log("开始附件日志...");
+    var inst_id=req.body.inst_id;
+
+    //获取对应的详情数据
+    service.fileLogs(inst_id)
+        .then(function(result){
+            utils.respJsonData(res, result);
+        })
+        .catch(function(err){
+            console.log('附件日志失败',err);
+
+        });
+
+});
+
+router.get('/download/:fileID', function(req, res, next) {
+    console.log("开始下载...");
+    // 实现文件下载
+    var fileID = req.params.fileID;
+    process_extend_model.$ProcessTaskFile.find({"_id":fileID},function(err,result){
+        if(err){
+            utils.respJsonData(res, "下载文件失败");
+        }else{
+            if(res.length=1){
+                var filePath = result[0].file_path;
+                var fileName=result[0].file_name;
+                console.log(fileName);
+                var stats = fs.statSync(filePath);
+                if(stats.isFile()){
+                    res.set({
+                        'Content-Type': 'application/octet-stream',
+                        'Content-Disposition': 'attachment;filename='+urlencode(fileName),
+                        'Content-Length': stats.size
+                    });
+                    fs.createReadStream(filePath).pipe(res);
+                } else {
+                    res.end(404);
+                }
+            }else{
+                utils.respJsonData(res, "下载文件失败");
+            }
+        }
+    })
+
+});
+
+/**
+ * 上传附件
+ */
+router.post('/uploadFile',upload.array("image"), function(req, res, next) {
+    console.log("开始上传...");
+    // 实现文件下载
+    var fileID = req.query.id;
+    var files=req.files;
+    service.update_images(files,fileID).then(function(result){
+        utils.respJsonData(res, result);
+    }).catch(function(err){
+        utils.respMsg(res, false, '1000', '上传失败', null, err);
+    })
+
+
+});
+
+
+router.post('/deleteFile', function(req, res) {
+    console.log("开始删除附件...");
+    var id=req.body.id;
+
+    process_extend_model.$ProcessTaskFile.remove({"_id":id},function(err,result){
+        if (err) {
+            utils.respJsonData(res, {success:false});
+        } else {
+            utils.respJsonData(res,  {success:true});
+        }
+    });
+
+});
+
 function isEmptyObject(e) {
     var t;
     for (t in e)

@@ -1,5 +1,5 @@
 var config = require('../../config');
-var moment = require('../../node_modules/moment');
+var moment = require('moment');
 var http=require('http');
 
 /**
