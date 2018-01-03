@@ -84,7 +84,60 @@ exports.sendSMS=function(mobile,params,tmplet_key){
             reject("发送短信错误");
         }
     })
+}
+
+/**
+ * post请求
+ * @param postContent 请求数据
+ * @param options 请求地址：如
+ * {
+        hostname:'135.10.38.80',
+        port:9090,
+        path:'/ewfs/client/ewf4store/repair.do',
+        method:'POST',
+        headers:{
+            'Content-Type':'application/x-www-form-urlencoded; charset=UTF-8'
+        }
+    }
+ * @returns {Promise}
+ */
+exports.httpPost=function(postContent,options){
+    return  new Promise(function(resolve,reject){
+        try{
+                console.log("postContent",JSON.stringify(postContent));
+                console.log("options",JSON.stringify(options));
+                //返回结果
+                var result={};
+                //发送请求
+                var req=http.request(options, function(res) {
+                    console.log('Status:',res.statusCode);
+                    console.log('headers:',JSON.stringify(res.headers));
+                    res.setEncoding('utf-8');
+                    res.on('data',function(chun){
+                        console.log('body分隔线---------------------------------\r\n');
+                        console.info(chun);
+                        resolve(chun);
+                    });
+                    res.on('end',function(){
+                        console.log('No more data in response.********');
+                    });
+                });
+
+                req.on('error',function(err){
+                    console.error(err);
+                    reject(err);
+
+                });
+                req.write(JSON.stringify(postContent));
+                req.end();
+
+
+        }catch (e){
+            console.log(e);
+            reject("post请求错误");
+        }
+    })
 
 
 
-};
+};;

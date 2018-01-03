@@ -6,7 +6,7 @@ var utils = require('../../../../lib/utils/app_utils');
 var inst = require('../../bpm_resource/services/instance_service');
 var nodeTransferService=require("../../bpm_resource/services/node_transfer_service");
 var process_extend_service = require("../../bpm_resource/services/process_extend_service");
-var moment = require('../../../../node_modules/moment');
+var moment = require('moment');
 /**
  * 查询差错工单列表
  * @param page

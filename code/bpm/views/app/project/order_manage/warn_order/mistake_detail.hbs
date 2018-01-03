@@ -1,5 +1,5 @@
 <link rel="stylesheet" type="text/css" href="{{projcfg.appurl}}/static/order/css/order_detail.css">
-
+<script src="{{projcfg.appurl}}/static/js/ajaxfileupload.js"></script>
 
 
     <div class="easyui-tabs" id="tabs" >
@@ -111,7 +111,7 @@
                 </tr>
                 <tr>
                     <td align="right" class="tdLabel">附件上传:</td>
-                    <td>  <input class="easyui-filebox"labelPosition="top" data-options="prompt:'选择文件...',buttonText:'选择'" style="width:250px"/>
+                    <td>  <input class="easyui-filebox"labelPosition="top"id="file" name="myfile" data-options="prompt:'选择文件...',buttonText:'选择'" style="width:250px"/>
                     </td>
                 </tr>
 
@@ -418,6 +418,8 @@
                 type: 'post',
                 dataType:'json',
                 data: formData,
+              contentType: false,    //不可缺
+              processData: false,    //不可缺
                 success: function (data) {
                     if(data.success){
                         parent.$("#dd").dialog('close');

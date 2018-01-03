@@ -309,3 +309,74 @@ exports.orderDetail= function(change_id,status) {
 
     return p;
 };
+
+/**
+ * 回传黄河
+ * @param result1 结果
+ * @param proc_code  流程编码
+ * @param proc_inst_id 订单编码
+ * @returns {Promise}
+ */
+exports.repareHuanghe= function(result1,proc_code,proc_inst_id,handle) {
+
+    var p = new Promise(function(resolve,reject){
+        console.log(result1);
+        //如果是差错工单归档则进行回传黄河数据
+        if(handle=='1' && result1.success && proc_code=='p-201'){
+            mistake_model.$ProcessMistake.find({"proc_inst_id":proc_inst_id},function(err,res){
+                if(err){
+                    reject({'success':false,'code':'1000','msg':'获取差错信息失败',"error":err});
+                }else{
+                    if(res.length==1){
+                        var _id=res[0]._id;
+                        var postData={
+                            "JobId":proc_inst_id,
+                            //"orderId":"", BOSS订单ID不知
+                            "orderCode":res[0].BOSS_NUM,
+                            //"Suggestion":"",未知参数不知
+                            "yearMonth":moment().format('YYYY-MM-DD HH:mm:ss')
+                        };
+                        //回传地址
+                        var options= config.repair_huanghe;
+                        //开始回传
+                        process_utils.httpPost(postData,options).then(function(rs){
+                            // ret_code 对应关系：
+                            // -1 = 服务器异常
+                            //  0 = 补录成功
+                            //  1 = 补录失败
+                            //  2 = BOSS订单编码为空
+                            //  3 = 附件为空
+                            //  4 = 非法文件
+                            var conditions = {_id: _id};
+                            var update={};
+                            if(rs.ret_code==0){
+                                update.status=3;
+                                update.dispatch_remark="补录成功";
+                            }else{
+                                update.status=2;
+                                update.dispatch_remark=rs.ret_msg;
+                            }
+                            //修改状态
+                            mistake_model.$ProcessMistake.update(conditions, update, {}, function (errors) {
+                                if(errors){
+                                    reject({'success':false,'code':'1000','msg':'修改回传黄河状态失败',"error":err});
+                                }else{
+                                    resolve({'success':true,'code':'2000','msg':'回传黄河成功',"error":null});
+                                }
+                            });
+                        }).catch(function(err){
+                            reject({'success':false,'code':'1000','msg':'回传黄河失败',"error":err});
+                        });
+                    }else{
+                        reject({'success':false,'code':'1000','msg':'获取差错信息错误',"error":null});
+                    }
+
+                }
+            })
+        }
+
+
+    });
+
+    return p;
+};
