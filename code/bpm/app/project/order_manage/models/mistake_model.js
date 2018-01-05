@@ -51,3 +51,18 @@ var commonCoreProcessMistakeLogs = new Schema(
 
 // 差错工单日志model
 exports.$ProcessMistakeLogs = mongoose.model('CommonCoreProcessMistakeLogs', commonCoreProcessMistakeLogs);
+
+var commonCoreProcessMistakeReadlogs = new Schema(
+    {
+        //dispatch_time : String,// 派单时间
+        insert_time : String,// 插入时间
+        file_no : String,// 文件行数
+        file_name : String,//文件名
+        Success_failure:Number,//是否成功 0表示:失败。1表示：成功
+        Remarks :  String,//备注
+    },
+    {collection: "common_bpm_mistake_logs"}// mongodb集合名
+);
+
+// 读取差错工单文件日志model
+exports.$ProcessMistakeReadlogs = mongoose.model('CommonCoreProcessMistakeReadlogs', commonCoreProcessMistakeReadlogs);
