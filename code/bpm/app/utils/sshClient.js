@@ -128,7 +128,7 @@ function GetFileOrDirList(server, remotePath, isFile, then){
 
 function copyFiles(server, remotePath, newPath, then){
     var cmd ="mkdir -p "+ newPath;
-     cmd += "\r\ncp -R"+" ";
+     cmd += "\r\nmv "+" ";
     for(var i in remotePath){
         cmd+= remotePath[i]+" ";
     }

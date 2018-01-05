@@ -346,7 +346,13 @@ var config = {
         eyesight_node: 'syesightSys_node',//慧眼工单系统编号
     },
     SMS_TEMPLET_ORDER:"渠道工单系统有一张需要您处理的工单，《procName》，工单号：orderNo，请及时登陆认真处理。",
-    OPEN_SMS:false
+    OPEN_SMS:false,
+    ftp_huanghe_server:{
+        host: '192.168.9.68',
+        port: 22,
+        username: 'root',
+        password: 'root'
+    }//差错工单文件导入地址
 
 }
 module.exports = config;

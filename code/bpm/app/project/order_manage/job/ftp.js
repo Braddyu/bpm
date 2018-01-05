@@ -6,9 +6,8 @@ const path = require('path');
 const mistake_model = require('../models/mistake_model');
 const utils = require('../../../../lib/utils/app_utils');
 const ssh = require('../../../utils/sshClient');
-// var http     = require('http');
 const schedule = require("node-schedule");
-
+const config = require('../../../../config');
 var rule     = new schedule.RecurrenceRule();
  rule.dayOfWeek = [0, new schedule.Range(1, 6)];
  rule.hour =9;
@@ -16,16 +15,11 @@ var rule     = new schedule.RecurrenceRule();
 // var times2    = [1,31];
 // rule.second  = times2;
 // rule.hour  = times3; rule1.minute = 0;
- schedule.scheduleJob(rule, function(){
-    ftp();
-});
+  schedule.scheduleJob(rule, function(){
+     ftp();
+ });
 
-var server = {
-    host: '192.168.9.68',
-    port: 22,
-    username: 'root',
-    password: 'root'
-};
+var server = config.ftp_huanghe_server;
 function ftp() {
     var Client = require('ssh2').Client;
     var conn = new Client();
@@ -97,25 +91,23 @@ function ftp() {
                                                     condition_task.status = 0;//派单状态
                                                     condition_task.dispatch_remark = '';//派单说明
                                                     condition_task.insert_time = new Date();//插入时间
-                                                    arr.push(condition_task);
-
+                                                      arr.push(condition_task);
                                                 }
                                             }
-
                                         console.log(arr);
                                         await new Promise(function(resolve,reject){
                                             mistake_model.$ProcessMistake.create(arr, function (error, rs) {
                                                 if(error){
                                                     resolve(utils.returnMsg(false, '1000', '插入数据异常。', null, error));
                                                 }else{
-                                                    console.log("数据插入到数据库成功");
+                                                    console.log("数据插入到数据库成功",item);
                                                     resolve(utils.returnMsg(true, '0000', '插入数据成功。', rs, null));
                                                     //将出入到数据库的文件拷贝到/usr/read文件夹下
-                                                    ssh.copyFiles(server,files,'/usr/read',function(er,result) {
+                                                    ssh.copyFiles(server,files,'/usr/Read',function(er,result) {
                                                         if (er) {
-                                                            resolve(utils.returnMsg(false, '1000', '拷贝数据异常。', null, er));
+                                                            resolve(utils.returnMsg(false, '1000', '移动数据异常。', null, er));
                                                         } else {
-                                                            resolve(utils.returnMsg(true, '0000', '拷贝数据成功。', result, null));
+                                                            resolve(utils.returnMsg(true, '0000', '移动数据成功。', result, null));
                                                         }
                                                     });
                                                 }
@@ -137,12 +129,12 @@ function ftp() {
                                             resolve(utils.returnMsg(true, '0000', '插入数据成功。', re, null));
                                         }
                                     });
-                                    //将出错的文件拷贝到/usr/notread文件夹下
-                                    ssh.copyFiles(server,i,'/usr/notread',function(er,result){
+                                    //将出错的文件拷贝到/usr/Failread文件夹下
+                                    ssh.copyFiles(server,i,'/usr/Failread',function(er,result){
                                         if(er){
-                                            resolve(utils.returnMsg(false, '1000', '拷贝数据异常。', null, er));
+                                            resolve(utils.returnMsg(false, '1000', '移动数据异常。', null, er));
                                         }else{
-                                            resolve(utils.returnMsg(true, '0000', '拷贝数据成功。', result, null));
+                                            resolve(utils.returnMsg(true, '0000', '移动数据成功。', result, null));
                                         }
                                     });
                                 }
@@ -152,12 +144,7 @@ function ftp() {
                 }
             });
         });
-    }).connect({
-        host: '192.168.9.68',
-        port: 22,
-        username: 'root',
-        password: 'root'
-    });
+    }).connect(config.ftp_huanghe_server);
 }
 
 
