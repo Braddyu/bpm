@@ -392,3 +392,72 @@ exports.queryUserByLoginaccount = function(account,password) {
     return p;
 }
 
+/**
+ * 修改密码
+ * @param tag 当前用户状态
+ * @param user_id _id用户表_id
+ * @param new_pwd 新密码
+ * @param old_pwd 旧密码
+ * @returns {bluebird}
+ */
+exports.update_password = function(tag,user_id,new_pwd,old_pwd) {
+    var p = new Promise(function(resolve,reject){
+        model.$User.find({'_id':user_id,'user_status':tag}, function(error, result) {
+            if(error) {
+                resolve(utils.returnMsg(false, '1000', '获取用户信息异常', null, error));
+            }
+            else {
+                if(result[0].login_password==old_pwd){
+                    var udata = {
+                       login_password : new_pwd
+                    }
+                    var update = {$set: udata};
+                    var options = {};
+                    model.$User.update({'_id':user_id},update,options,function(err,rs){
+                        if(err){
+                            resolve(utils.returnMsg(false, '1000', '修改密码出错', null, err));
+                        }else{
+                            resolve(utils.returnMsg(true, '0000', '密码修改成功',rs, null));
+                        }
+                    });
+                }else{
+                    resolve(utils.returnMsg(false, '1000', '原密码错误1', null, null));
+                }
+            }
+        });
+    });
+    return p;
+}
+/**
+ * 获取机构信息
+ * @param tag 当前用户状态
+ * @param _id _id用户表_id
+ * @returns {bluebird}
+ */
+exports.getInfo = function (tag,_id) {
+    var p = new Promise(function(resolve,reject){
+        model.$User.find({'_id':_id,'user_status':tag}, function(error, result) {
+           if(error){
+               resolve(utils.returnMsg(false, '1000', '获取用户信息异常', null, error));
+           }else{
+               if(result.length>0){
+                   var org_id = result[0].user_org;
+                   model.$CommonCoreOrg.find({'_id':org_id},function (err,rs){
+                       if(err){
+                           resolve(utils.returnMsg(false, '1000', '查询出错', null, err));
+                       }else{
+                           console.log(rs);
+                           resolve(utils.returnMsg(true, '0000', '查询成功',rs, null));
+                       }
+                   });
+               }else{
+                   resolve(utils.returnMsg(false, '1000', '获取用户信息出错', null, null));
+               }
+           }
+        });
+    });
+    return p;
+}
+
+
+

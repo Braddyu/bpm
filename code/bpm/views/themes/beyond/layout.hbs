@@ -39,6 +39,7 @@
     <script src="{{projcfg.appurl}}/static/{{projcfg.theme}}js/skins.js"></script>
 
     <!--Basic Scripts-->
+    <script src="{{projcfg.appurl}}/static/js/common/md5.js"></script>
     <script src="{{projcfg.appurl}}/static/{{projcfg.theme}}js/jquery.min.js"></script>
     <script src="{{projcfg.appurl}}/static/{{projcfg.theme}}js/bootstrap.min.js"></script>
     <script src="{{projcfg.appurl}}/static/{{projcfg.theme}}js/slimscroll/jquery.slimscroll.min.js"></script>
@@ -101,9 +102,23 @@
                                     </div>
                                 </li>
                                 <!--Avatar Area-->
+                                <!--<li class="edit">-->
+                                    <!--<a href="{{projcfg.appurl}}{{__ "link_profile"}}" class="pull-left">{{__ "btn_profile"}}</a>-->
+                                    <!--<a href="{{projcfg.appurl}}{{__ "link_setting"}}" class="pull-right">{{__ "btn_setting"}}</a>-->
+                                <!--</li>-->
+                                <!--<li class="edit">-->
+                                <!--<a href="{{__ "link_profile"}}" class="pull-left">{{__ "btn_profile"}}</a>-->
+                                <!--<a href="{{__ "link_setting"}}" class="pull-right">{{__ "btn_setting"}}</a>-->
+                                <!--</li>-->
                                 <li class="edit">
-                                    <a href="{{projcfg.appurl}}{{__ "link_profile"}}" class="pull-left">{{__ "btn_profile"}}</a>
-                                    <a href="{{projcfg.appurl}}{{__ "link_setting"}}" class="pull-right">{{__ "btn_setting"}}</a>
+                                    <!--<a href="{{projcfg.appurl}}/api/common_user_profile/user_profile/to_profile" class="pull-left">{{__
+                                            "btn_profile"}}</a>-->
+                                    <a href="javascript:openMyProfileModal();" class="pull-left">{{__
+                                            "btn_profile"}}</a>
+                                    <!--<a href="{{projcfg.appurl}}/api/common_user_profile/user_profile/to_edit" class="pull-right">{{__
+                                            "btn_setting"}}</a>-->
+                                    <a href="javascript:openEditProfileModal()" class="pull-right">{{__
+                                            "btn_setting"}}</a>
                                 </li>
                                 <!--Theme Selector Area-->
                                 <li class="theme-area">
@@ -326,5 +341,332 @@
         </div>
     </div>
 </div>
+
+<div id="myProfileModal" class="mydialog">
+    <div class="row">
+        <div class="col-lg-12 col-sm-12 col-xs-12">
+            <div class="row">
+                <div class="col-lg-12 col-sm-12 col-xs-12">
+                    <div class="widget flat radius-bordered">
+                        <div class="widget-body">
+                            <div id="registration-form">
+                                <form role="form" id="editMyForm">
+                                    <div class="form-title">
+                                        基本信息
+                                    </div>
+                                    <div class="row">
+                                        <label class="col-sm-3 control-label no-padding-right"
+                                               style="line-height: 34px">姓　　名：</label>
+                                        <div class="col-sm-9">
+                                            <div class="last-form-group">
+                                        <span class="input-icon icon-right">
+                                            <input type="text" value="{{currentUser.user_name}}" class="form-control"
+                                                   id="" disabled="disabled" placeholder="">
+                                            <!--<i class="fa fa-user"></i>-->
+                                        </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <label class="col-sm-3 control-label no-padding-right"
+                                               style="line-height: 34px">手机号码：</label>
+                                        <div class="col-sm-9">
+                                            <div class="last-form-group">
+                                        <span class="input-icon icon-right">
+                                            <input type="text" class="form-control" value="{{currentUser.user_phone}}"
+                                                   id="" disabled="disabled" placeholder="">
+                                            <!--<i class="glyphicon glyphicon-earphone"></i>-->
+                                        </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <label class="col-sm-3 control-label no-padding-right"
+                                               style="line-height: 34px">邮　　箱：</label>
+                                        <div class="col-sm-9">
+                                            <div class="last-form-group">
+                                        <span class="input-icon icon-right">
+                                            <input type="text" class="form-control" value="{{currentUser.user_email}}"
+                                                   id="" disabled="disabled" placeholder="">
+                                            <!--<i class="glyphicon glyphicon-earphone"></i>-->
+                                        </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <label class="col-sm-3 control-label no-padding-right"
+                                               style="line-height: 34px">所属机构：</label>
+                                        <div class="col-sm-9">
+                                            <div class="last-form-group">
+                                                <span class="input-icon icon-right">
+                                                    <input type="text" class="form-control"  id="org_name"  disabled="disabled">
+                                                    <!--<i class="fa fa-user"></i>-->
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <label class="col-sm-3 control-label no-padding-right"
+                                               style="line-height: 34px">所属机构编码：</label>
+                                        <div class="col-sm-9">
+                                            <div class="last-form-group">
+                                        <span class="input-icon icon-right">
+                                            <input type="text" class="form-control"
+                                                   id="org_code" disabled="disabled" value=""
+                                                   placeholder="">
+                                            <!--<i class="glyphicon glyphicon-earphone"></i>-->
+                                        </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="editProfileModal" style="display: none">
+    <div class="row">
+        <div class="col-lg-12 col-sm-12 col-xs-12">
+            <div class="row">
+                <div class="col-lg-12 col-sm-12 col-xs-12">
+                    <div class="widget flat radius-bordered">
+                        <div class="widget-body">
+                            <div id="registration-form">
+                                <form role="form" id="editMyForm">
+                                    <div class="form-title">
+                                        基本信息
+                                    </div>
+                                    <div class="row">
+                                        <label class="col-sm-3 control-label no-padding-right"
+                                               style="line-height: 34px">姓　　名：</label>
+                                        <div class="col-sm-9">
+                                            <div class="last-form-group">
+                                        <span class="input-icon icon-right">
+                                            <input type="text" value="{{currentUser.user_name}}" class="form-control"
+                                                   id="edit_user_name" disabled="disabled" placeholder="姓名">
+                                            <i class="fa fa-user"></i>
+                                        </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <label class="col-sm-3 control-label no-padding-right"
+                                               style="line-height: 34px">手机号码：</label>
+                                        <div class="col-sm-9">
+                                            <div class="last-form-group">
+                                        <span class="input-icon icon-right">
+                                            <input type="text" class="form-control" value="{{currentUser.user_phone}}"
+                                                   id="edit_user_phone" disabled="disabled" placeholder="手机号码">
+                                            <i class="glyphicon glyphicon-earphone"></i>
+                                        </span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <hr class="wide"/>
+                                    <div class="form-title">
+                                        密码修改
+                                    </div>
+                                    <div class="row">
+                                        <label class="col-sm-3 control-label no-padding-right"
+                                               style="line-height: 34px">登录账号：</label>
+                                        <div class="col-sm-9">
+                                            <div class="form-group">
+                                        <span class="input-icon icon-right">
+                                            <input type="text" class="form-control"
+                                                   value="{{currentUser.login_account}}" data-value2=""
+                                                   disabled="disabled" id="user_account_" placeholder="账号">
+                                            <i class="glyphicon glyphicon-user circular"></i>
+                                        </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <label class="col-sm-3 control-label no-padding-right"
+                                               style="line-height: 34px">密　　码：</label>
+                                        <div class="col-sm-9">
+                                            <div class="form-group">
+                                        <span class="input-icon icon-right">
+                                            <input type="password" class="form-control" data-value=""
+                                                   name="old_password_" id="old_password_" placeholder="请输入旧密码">
+                                            <i class="fa fa-lock circular"></i>
+                                        </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <label class="col-sm-3 control-label no-padding-right"
+                                               style="line-height: 34px">新 密 码：</label>
+                                        <div class="col-sm-9">
+                                            <div class="form-group">
+                                        <span class="input-icon icon-right">
+                                            <input type="password" class="form-control" data-value=""
+                                                   name="new_password" id="new_password" placeholder="请输入新密码">
+                                            <i class="fa fa-lock circular"></i>
+                                        </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <label class="col-sm-3 control-label no-padding-right"
+                                               style="line-height: 34px">确认密码：</label>
+                                        <div class="col-sm-9">
+                                            <div class="form-group">
+                                        <span class="input-icon icon-right">
+                                            <input type="password" class="form-control" data-value=""
+                                                   name="confirm_password" id="confirm_password" placeholder="请确认新密码">
+                                            <i class="fa fa-lock circular"></i>
+                                        </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var user_tag = '{{currentUser.user_tag}}';
+    var user_id = '{{currentUser._id}}';
+    function openMyProfileModal() {
+        info();
+        $('#myProfileModal').show();
+        $('#myProfileModal').mydialog({
+            title:"个人信息",
+            width: 700,
+            height: 425,
+            top:100,
+            modal: true,
+            myButtons:[
+                {
+                    text:'关闭',
+                    btnCls:'btn btn-danger',
+                    handler:function(){
+                        $('#myProfileModal').dialog('close');
+                    }
+                }
+            ]
+        });
+//        bootbox.dialog({
+//            message: $("#myProfileModal").html(),
+//            title: '个人信息',
+//            className: "modal-blue",
+//            buttons: {
+//                    "关闭": {
+//                        className: "btn-danger",
+//                        callback: function () {
+//                            $("#myProfileModal").modal('hide');
+//                        }
+//                    }
+//            }
+//        });
+    }
+
+    function info() {
+        var flag = false;
+        $.ajax({
+            url: "{{projcfg.appurl}}/api/workflow/process/information",
+            method: "post",
+            async: false,
+            data: {
+                tag: user_tag,
+                user_id: user_id,
+            },
+            success: function (data) {
+                if (data.success == true) {
+                    $("#org_code").val(data.data[0].org_code);
+                    $("#org_name").val(data.data[0].org_name);
+                    //msgSuccess(data.msg);
+                    flag = true;
+                } else {
+                    msgError(data.msg);
+                }
+            }
+        });
+        return flag;
+    }
+    function openEditProfileModal() {
+        bootbox.dialog({
+            message: $("#editProfileModal").html(),
+            title: '信息修改',
+            className: "modal-blue",
+            buttons: {
+                "修改": {
+                    className: "btn-danger",
+                    callback: function () {
+                        //保存数据
+                        return submitPwdInfo();
+                    }
+                },
+                "关闭": {
+                    className: "btn-danger",
+                    callback: function () {
+                        $("#editProfileModal").modal('hide');
+                    }
+                },
+            }
+        });
+    }
+    function submitPwdInfo() {
+        /*var edit_user_name = $("input[id='edit_user_name']").get(1).value;
+        var edit_user_phone = $("input[id='edit_user_phone']").get(1).value;*/
+        var old_password = $("input[id='old_password_']").get(1).value;
+        var new_password = $("input[id='new_password']").get(1).value;
+        var confirm_password = $("input[id='confirm_password']").get(1).value;
+        if (old_password == '') {
+//            bootbox.alert('请输入原密码！', function(result){});
+            msgError("请输入原密码！");
+            return false;
+        }
+        if (new_password == '') {
+            msgError("请输入新密码！");
+            return false;
+        }
+        var reg = /^(?:(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!@$%^&*])(?=.*[^A-Za-z0-9])).{6,18}$/;
+        if (!reg.test(new_password)) {
+            msgError("密码格式需要长度在6~18之间，必须包含大写、小写、数字、特殊字符(特殊字符不能是#号)！");
+            return false;
+        }
+        if (new_password != confirm_password) {
+            msgError("两次输入的密码不一致！");
+            return false;
+        }
+        var oldpwd = hex_md5(old_password);
+        var newpwd = hex_md5(new_password);
+        var cfmpwd = hex_md5(confirm_password);
+        var flag = false;
+        $.ajax({
+            url: "{{projcfg.appurl}}/api/workflow/process/edit_info",
+            method: "post",
+            async: false,
+            data: {
+                tag: user_tag,
+                user_id: user_id,
+//                user_name:edit_user_name,
+//                user_phone:edit_user_phone,
+                old_pwd: oldpwd,
+                new_pwd: newpwd,
+                cfm_pwd: cfmpwd
+            },
+            success: function (data) {
+                if (data.success == true) {
+                    msgSuccess(data.msg);
+                    flag = true;
+                } else {
+                    msgError(data.msg);
+                }
+            }
+        });
+        return flag;
+    }
+</script>
 </body>
 </html>

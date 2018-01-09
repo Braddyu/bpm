@@ -805,4 +805,40 @@ router.route("/handler/logs").get(function(req,res){
     });
 });
 
+
+/**
+ * 修改用户密码(工单系统使用)
+ */
+router.route("/edit_info").post(function(req,res){
+    var tag = req.body.tag;//用户状态
+    var user_id = req.body.user_id;//用户表里的_id
+    var new_pwd = req.body.new_pwd;//新密码
+    var old_pwd = req.body.old_pwd;//老密码
+    var cfm_pwd = req.body.cfm_pwd;//第二次输入的密码
+    console.log(tag,user_id,new_pwd,old_pwd,cfm_pwd);
+    if(new_pwd==cfm_pwd){
+        user.update_password(tag,user_id,new_pwd,old_pwd).then(function(rs){
+            utils.respJsonData(res,rs);
+        }).catch(function(err){
+            console.log('err');
+            console.log(err);
+        });
+    }else{
+        utils.respMsg(res, false, '2001', '两次输入的密码不一致', null, null);
+    }
+
+});
+/**
+ * 获取机构信息(工单系统使用)
+ */
+router.route("/information").post(function(req,res){
+    var tag = req.body.tag;
+    var _id = req.body.user_id;
+    user.getInfo(tag,_id).then(function(rs){
+        utils.respJsonData(res,rs);
+    }).catch(function(err){
+        console.log('err');
+        console.log(err);
+    });
+});
 module.exports = router;
