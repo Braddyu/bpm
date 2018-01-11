@@ -59,8 +59,9 @@ var config = {
         resave: false,
         saveUninitialized: false,
         rolling:true,
-          mongodb_url:'mongodb://192.168.9.48:27017/process',
-        //  mongodb_url:'mongodb://10.201.253.162:27017/process1',
+        //   mongodb_url:'mongodb://10.196.153.11:30000/process',
+        mongodb_url:'mongodb://192.168.9.48:27017/process',
+        // mongodb_url:'mongodb://10.201.253.162:27017/process1',
         //mongodb_url:'mongodb://127.0.0.1:27017/ywcj',  //内网
         mongodb_collection:'common_user_session'
     },
@@ -130,6 +131,7 @@ var config = {
     },
     mongdb:{
           url: 'mongodb://192.168.9.48:27017/process',
+        //  url: 'mongodb://10.196.153.11:30000/process',
         // url:'mongodb://10.201.253.162:27017/process1',
         // url: 'mongodb://10.201.253.111:27017/Examine',
         //url: 'mongodb://127.0.0.1:27017/ywcj',   //内网
@@ -138,7 +140,7 @@ var config = {
     memcached:{
         // server_locations:['117.135.196.139:11211'],  //外网
         server_locations:['192.168.9.48:11211'],//内网
-        //  server_locations:['127.0.0.1:11211'],//本地
+        // server_locations:['127.0.0.1:11211'],//本地
 
         options:{debug: true}
     },
@@ -348,11 +350,13 @@ var config = {
     SMS_TEMPLET_ORDER:"渠道工单系统有一张需要您处理的工单，《procName》，工单号：orderNo，请及时登陆认真处理。",
     OPEN_SMS:false,
     ftp_huanghe_server:{
-        host: '192.168.9.68',
-        port: 22,
-        username: 'root',
-        password: 'root'
-    }//差错工单文件导入地址
+        host: '192.168.9.66',
+        port: 21,
+        username: 'test',
+        password: '123456'
+    },//差错工单ftp地址
+    ftp_huanghe_get:'/upload/',//获取差错工单ftp路径
+    ftp_huanghe_put:'/upload/'//上传差错工单附件路径
 
 }
 module.exports = config;

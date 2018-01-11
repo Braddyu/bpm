@@ -289,10 +289,12 @@ router.post('/orderDetail', function(req, res) {
     var status=req.body.status;
     //状态为1和3时，此为实例ID；状态为2时，为任务id
     var change_id=req.body.change_id;
-
+    var user_name = req.session.current_user.user_name;//处理人姓名
     //获取对应的详情数据
     service.orderDetail(change_id,status)
         .then(function(result){
+            result.userName=user_name;
+            console.log(result);
             utils.respJsonData(res, result);
         })
         .catch(function(err){
