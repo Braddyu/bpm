@@ -136,11 +136,13 @@
                         $('#p2_item_code').textbox('setValue', id);
                         $('#p2_item_type').textbox('setValue', obj.type);
                         $("input[type=radio][name='smsType'][value='0']").attr("checked",true);
+                        $("input[type=radio][name='jump'][value='0']").attr("checked",true);
                         $.each(taskNodeDatas,function(i,n){
                             if(n.item_code && n.item_code==id){
                                 var selectType = n.selectType;
                                 $("input[type=radio][name='checkType'][value='"+selectType+"']").attr("checked",true);
                                 $("input[type=radio][name='smsType'][value='"+n.item_sms_warn+"']").attr("checked",true);
+                                $("input[type=radio][name='jump'][value='"+n.item_jump+"']").attr("checked",true);
                                 $('#p2_textArea').textbox('setValue', n.selectVal);
                                 $('#p2_item_id').val(n._id);
                                 if(selectType == 1){
@@ -397,6 +399,8 @@
                     taskNode.item_code = id;
                     taskNode.item_type = obj.type;
                     taskNode.item_sms_warn = $("input[name='smsType']:checked").val();
+                    taskNode.item_jump = $("input[name='jump']:checked").val()
+                    console.log(taskNode.item_message,'111');
                     taskNode.selectType = itemType;
                     taskNode.selectVal = itemText;
                     if(itemType == 1){//参与人
@@ -436,7 +440,7 @@
                     taskNode.item_remark = itemTextarea;
                     taskNode._id = $('#p2_item_id').val();
                     var tag = true;
-                    console.log("1========",taskNodeDatas);
+                    console.log("1========2222",taskNodeDatas);
                     $.each(taskNodeDatas,function(i,n){
                         if(n.item_code && n.item_code==id){
                             tag = false;
@@ -447,7 +451,7 @@
                     if(tag){
                         taskNodeDatas.push(taskNode);
                     }
-                    console.log("2========",taskNodeDatas);
+                    console.log("2========333",taskNodeDatas);
                 }
             }
             $.messager.show({
@@ -685,6 +689,7 @@
                                             taskNode.item_code = n.item_code;
                                             taskNode.item_type = n.item_type;
                                             taskNode.item_sms_warn = n.item_sms_warn;
+                                            taskNode.item_jump = n.item_jump;
                                             taskNode.selectVal = n.item_show_text;
                                             if(n.item_assignee_type && n.item_assignee_type == "1"){
                                                 taskNode.selectType = 1;
@@ -882,6 +887,11 @@
                     <p style="margin-bottom:5px;color:#00a0e9">短信通知:</p>
                     <input type="radio" name="smsType" value="1"/>是
                     <input type="radio" name="smsType" value="0"/>否
+                </div>
+                <div style="margin-bottom:10px">
+                    <p style="margin-bottom:5px;color:#00a0e9">是否可以跳过:</p>
+                    <input type="radio" name="jump" value="1"/>是
+                    <input type="radio" name="jump" value="0"/>否
                 </div>
                 <div style="text-align:right;margin-bottom:10px">
                     <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'" onclick="saveNodeData(2)">保存节点配置</a>

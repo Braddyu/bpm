@@ -103,7 +103,8 @@ var commonProcessItemSchema = new Schema(
         item_touchEvent_info : String,//触发事件内容
         item_filePath : String,//文件路径
         item_funName : String,//方法名
-        item_remark : String//节点备注
+        item_remark : String,//节点备注
+        item_jump : Number//是否跳过(1-可以跳过 0-不可以跳过)
     },
     {collection: "common_bpm_proc_item_cfg"}// mongodb集合名
 );
