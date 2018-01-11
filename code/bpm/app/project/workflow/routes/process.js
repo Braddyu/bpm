@@ -412,6 +412,7 @@ router.route('/version')
                                 processItemEntity.item_code = taskNodeDatas[i].item_code;
                                 processItemEntity.item_type = taskNodeDatas[i].item_type;
                                 processItemEntity.item_sms_warn = taskNodeDatas[i].item_sms_warn;
+                                processItemEntity.item_jump = taskNodeDatas[i].jump;
                                 processItemEntity.item_show_text = taskNodeDatas[i].selectVal;
                                 if(taskNodeDatas[i].selectType == 1){//参与人
                                     processItemEntity.item_assignee_type = taskNodeDatas[i].selectType;
@@ -546,6 +547,7 @@ router.route('/process/version/:id')
                     processItemEntity.item_code = taskNodeDatas[i].item_code;
                     processItemEntity.item_type = taskNodeDatas[i].item_type;
                     processItemEntity.item_sms_warn = taskNodeDatas[i].item_sms_warn;
+                    processItemEntity.item_jump = taskNodeDatas[i].item_jump;
                     processItemEntity.item_show_text = taskNodeDatas[i].selectVal;
                     if(taskNodeDatas[i].selectType == 1){//参与人
                         processItemEntity.item_assignee_type = taskNodeDatas[i].selectType;
