@@ -196,6 +196,34 @@ router.route("/data/info").post(function(req,res){
     }
 
 });
+/**
+ *  跳过节点的任务新建和下下节点任务的指派
+ *
+ */
 
+router.route("/skip/node/user/info").post(function (req,res){
+    var map ={};
+    map.flag=true;
+    var  proc_code=req.body.proc_code;
+    var  user_no=req.body.user_no;
+    var params=req.body.params;
+    var  node_code=req.body.node_code;
+    if(!user_no ){
+        utils.respMsg(res, false, '2001', '派单人姓名不能为空。', null, null);
+        return;
+    }
+    if(!proc_code ){
+        utils.respMsg(res, false, '2001', '流程编码不能为空。', null, null);
+        return;
+    }
+    if(!node_code){
+        utils.respMsg(res, false, '2001', '节点编码不能为空。', null, null);
+        return;
+    }
+
+    nodeAnalysisService.skipNodeAndGetHandlerInfo(user_no,proc_code,JSON.stringify(map),node_code).then(function(rs){
+        utils.respJsonData(res,rs);
+    });
+});
 
 module.exports = router;

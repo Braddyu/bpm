@@ -3035,6 +3035,624 @@ function findSecondNode(proc_define,node_code){
 }
 
 
+exports.skipNodeAndGetHandlerInfo=(user_no,proc_code,param_json_str,node_code)=>{
+    // console.log("get Skip node handler info   .......",user_no,proc_code,param_json_str,node_code);
+    return new Promise((resolve,reject)=>{
+        var params=param_json_str;
+        //解析参数
+        if(!(!param_json_str||param_json_str=="undefined"||param_json_str=="{}")){
+
+            let params_json=JSON.parse(param_json_str);
+            var flag=true;
+            for(var items_ in params_json){
+                flag=false;
+            }
+            if(flag){
+                resolve(utils.returnMsg(false, '1001', '参数解析不正确。', null, null));
+            }else{
+                params=params_json;
+            }
+        }else{
+            params={};
+        }
+
+        model.$ProcessDefine.find({'proc_code':proc_code},(err,res)=>{
+            if(err){
+                resolve(utils.returnMsg(false, '1000', '查询流程出错', null, err));
+            }else{
+                if(res.length>0){
+                    //获取流程id
+                    var proc_define_id=res[0]._id;
+                    // var node_code;
+                    // console.log(res[0].proc_define);
+                    var proc_define=JSON.parse(res[0].proc_define);
+
+                    //获取节点详细信息
+                    var nodes=proc_define.nodes;
+                    //获取节点之间关系
+                    var lines=proc_define.lines;
+                    for (let  node in nodes){
+                        console.log(nodes[node],node);
+                    }
+                    //节点配置信息
+                    let item_config=JSON.parse(res[0].item_config);
+                    // console.log(item_config);
+                    var flag=false;
+                    for(var node in item_config){
+                        // console.log(item_config[node].item_code,node_code);
+                        if(item_config[node].item_code==node_code){
+                            if(item_config[node].item_jump==1){
+                                flag=true
+                            }
+                        }
+                    }
+
+                    if(flag){
+                        //获取 跳过之后的节点信息
+                       getNode(proc_define_id,node_code,params,flag).then(function(rs){
+                           console.log(rs);
+                           if(rs.success){
+                               var current_detail=rs.data.current_detail;
+                               var next_detail=rs.data.next_detail;
+                               getSkipedNodeAndHandler(nodes[next_detail.item_code], next_detail,user_no,proc_code).then((rs)=>{
+                                   resolve(rs);
+                                   return ;
+                               })
+                               // findNodeInfo(rs.data.next_node, rs.data.next_detail,user_no).then(function(rs){
+                               //     resolve(rs);
+                               // });
+                           }else{
+                               resolve(rs);
+
+                           }
+                       })
+
+                    }
+
+                    // resolve(utils.returnMsg(false, '1000', '查询流程出错', null, null))
+                }else{
+                 resolve(utils.returnMsg(false, '1000', '查询流程出错', null, null))
+                }
+            }
+        });
+    });
+
+}
+
+
+/**
+ * 当跳过节点的时候获取跳过的节点的下一步处理人和节点信息
+ */
+function getSkipedNodeAndHandler(next_node, next_detail,user_no,proc_code){
+    var promise=new Promise(function(resolve,reject) {
+        if (next_node.type == "end  round") {
+            var array = []
+            var map = {};
+            var node_name = next_node.name
+            map.node_name = node_name;
+            array.push(map)
+            resolve(utils.returnMsg(true, '0000', '查询用户org', array, null))
+
+        } else {
+            console.log("@@@@@@@@@@@@@@@@@@@@@@@",next_detail);
+
+            var item_assignee_ref_task = next_detail.item_assignee_ref_task;
+
+
+            var item_assignee_ref_cur_org = next_detail.item_assignee_ref_cur_org//: '1',
+            var item_assignee_ref_type = next_detail.item_assignee_ref_type;//// 参照人类别 1-当前人，2-当前机构
+            console.log("next_detail   ;", next_detail)
+            var item_assignee_user = next_detail.item_assignee_user;
+            var item_assignee_user_code = next_detail.item_assignee_user_code;
+            var item_assignee_role = next_detail.item_assignee_role;
+            var item_assignee_org_ids = next_detail.item_assignee_org_ids;
+            var node_code = next_detail.item_code
+            var node_name = next_node.name
+
+            var type = next_detail.item_assignee_type
+            if (type == 1) {
+                //单人
+                console.log("resultsresultsresultsresultsresultsresultsresultsresultsresultsresults \n", 1)
+
+                var array = []
+                var map = {};
+                map.user_name = next_detail.item_show_text;
+                map.user_no = item_assignee_user_code;
+                map.node_name = node_name;
+                map.node_code = node_code;
+                array.push(map)
+                resolve(utils.returnMsg(true, '0000', '查询用户org', array, null))
+            } else if (type == 2) {
+                var item_assignee_org_ids = next_detail.item_assignee_org_ids;
+                var orgs = item_assignee_org_ids.split(",")
+
+                // console.log("ccccccccccccccccccccccccccccccccccccccccccccc")
+                // console.log(orgs)
+                var i = 0;
+                var array = [];
+                findUserByOrg(orgs, i, item_assignee_role, resolve, array, node_name, node_code);
+
+            } else if (type == 3) {
+                // resolve(utils.returnMsg(false, '1000', '第三节点不可配置参照人', null))
+                console.log("resultsresultsresultsresultsresultsresultsresultsresultsresultsresults \n", 3);
+                //首先获取参照节点的信息
+                console.log(item_assignee_ref_type);
+                if(item_assignee_ref_task){
+                    if (item_assignee_ref_type == 1) {
+                        //参照当前人的处理方法
+                        model.$ProcessInstTask.find({"proc_code":proc_code,"proc_inst_task_code":item_assignee_ref_task},function (err_task,res_task){
+                            if(err_task){
+                                reoslve(err_task);
+                            }else{
+                                if(res_task.length>0){
+                                    //有效直接使用任务的处理人信息
+                                    //组成数据返回
+                                    console.log(res_task);
+                                    resolve({"data":310})
+                                }else{
+                                    //不存在使用节点配置信息
+                                    getRefNodeInfo(node_code,proc_code).then((rs)=>{
+                                        if(rs.success){
+                                            model_user.$User.find({"user_roles":{$in:[]},"user_org":{$in:[]}},(err_user,res_user)=>{
+                                               if(err_user){
+                                                   resolve();
+                                               } else{
+                                                    //组成数据ObJECT 返回
+                                                   console.log(res_user);
+                                                   resolve({"data":311})
+
+
+                                               }
+                                            });
+                                        }
+                                    })
+                                }
+                            }
+                        } );
+
+                    } else if (item_assignee_ref_type == 2) {
+
+                        //参照人
+                        console.log(item_assignee_ref_cur_org);
+
+                        if (item_assignee_ref_cur_org == 1) {
+                            //同级
+                            model.$ProcessInstTask.find({"proc_code":proc_code,"proc_inst_task_code":item_assignee_ref_task},function(err_task,res_task){
+                                if(err_task){
+                                    resolve()
+                                }else{
+                                    if(res_task.length>0){
+                                        model_user.$User.find({},function(err_user,res_user){
+                                            if(err_user){
+                                                resolve(err_user);
+                                            }else{
+                                                if(res_user.length>0){
+                                                    let org=res_user.role_rog;
+                                                    model_user.$User.find({"role":{$in:[]},"org":{$in:org}},function(errors,results){
+                                                        if(errors){
+                                                            console.log(errors);
+                                                        }else{
+                                                            //f返回数据
+                                                            console.log(results);
+                                                            resolve({"data":320})
+                                                        }
+                                                    })
+                                                }else{
+
+                                                    resolve(null)
+
+                                                }
+                                            }
+
+                                        })
+
+
+                                    }else{
+                                        getRefNodeInfo(node_code,proc_code).then((rs)=>{
+                                            if(rs.success){
+
+                                                let org=rs.data;
+                                                model_user.$User.find({"user_roles":{$in:[]},"user_org":{$in:[]}},(err_user,res_user)=>{
+                                                    if(err_user){
+                                                        resolve();
+                                                    } else{
+                                                        //组成数据ObJECT 返回
+                                                        console.log(res_user);
+                                                        resolve({"data":321})
+
+                                                        // resolve()
+                                                    }
+                                                });
+                                            }
+                                        })
+
+
+                                    }
+                                }
+                            })
+
+
+                        } else if (item_assignee_ref_cur_org == 2) {
+
+                            //上级
+                            model.$ProcessInstTask.find({"proc_code":proc_code,"proc_inst_task_code":item_assignee_ref_task},function(err_task,res_task){
+                                if(err_task){
+                                    resolve(err_task)
+                                }else{
+                                    //如果参考的节点  存在数据的 时候直接说使用节点的数据
+                                     if(res_task.length>0){
+                                         model_user.$User.find({},function(err_user,res_user){
+                                             if(err_user){
+                                                 resolve(err_user);
+                                             }else{
+                                                 model_user.$CommonCoreOrg.find({"_id":{$in:[]}},function(err_org,res_org){
+                                                    if(err_org){
+
+                                                        resolve(err_org)
+                                                    } else{
+                                                        if(res_org.length>0){
+                                                            model_user.$User.find({},function(errors,results){
+                                                                if(errors){
+                                                                    resolve(errors);
+
+                                                                }else{
+                                                                    //合成 最后的结果数据
+                                                                    //组成数据ObJECT 返回
+                                                                    console.log(results);
+                                                                    resolve({"data":3220})
+                                                                }
+                                                            })
+                                                        }else{
+                                                            resolve(NULL)
+                                                        }
+                                                    }
+                                                 });
+
+                                             }
+                                         })
+                                     } else{
+                                        //如果节点的数据不存在  直接使用  配置文件中的  数据 来寻找
+                                         getRefNodeInfo(item_assignee_ref_task,proc_code).then((rs)=>{
+                                             if(rs.success){
+                                                 let org=rs.data;
+                                                 console.log(rs);
+                                                 if(rs.data.item_assignee_org_ids){
+                                                     model_user.$CommonCoreOrg.find({"_id":{$in:rs.data.item_assignee_org_ids.split(",")}},function(org_err,org_res){
+                                                         if(org_err){
+                                                             resolve(org_err);
+                                                         }else{
+                                                             var pid=[];
+                                                             if(org_res.length>0){
+                                                                 for(let i in org_res){
+                                                                     pid.push(org_res[i].org_pid);
+                                                                 }
+                                                                 pid.concat(rs.data.item_assignee_org_ids.split(","));
+                                                                 model_user.$CommonCoreOrg.find({"user_org":{$in:pid},"user_roles":{$in:item_assignee_role.split(",")}},function (err_pid,res_pid){
+                                                                     if(err_pid){
+                                                                         resolve(err_pid);
+                                                                     }else{
+                                                                        if(res_pid.length>0){
+                                                                            var array=[];
+                                                                            for(let i in res_pid){
+                                                                                let map={};
+                                                                                map.user_name = res_pid[i].user_name;
+                                                                                map.user_no = res_pid[i].user_no;
+                                                                                map.node_name = node_name;
+                                                                                map.node_code = node_code;
+                                                                                array.push(map);
+                                                                            }
+                                                                            resolve(utils.returnMsg(true, '0000', '查询用户org', array, null))
+                                                                         }else{
+                                                                            resolve(utils.returnMsg(false, '1000', '查询用户shibai', null, null))
+                                                                        }
+                                                                     }
+                                                                 })
+                                                             }
+                                                         }
+                                                     });
+
+                                                 }else{
+                                                     resolve(utils.returnMsg(false, '1000', '查询用户shibai', null, null))
+                                                 }
+                                             }
+                                         })
+                                     }
+                                }
+                            });
+
+
+                        } else if(item_assignee_ref_cur_org == 4){
+                            //上上级
+                            model.$ProcessInstTask.find({"proc_code":proc_code,"proc_inst_task_code":item_assignee_ref_task},function(err_task,res_task){
+                                if(err_task){
+                                    resolve(err_task)
+                                }else{
+                                    //如果参考的节点  存在数据的 时候直接说使用节点的数据
+                                    if(res_task.length>0){
+                                        model_user.$User.find({},function(err_user,res_user){
+                                            if(err_user){
+                                                resolve(err_user);
+                                            }else{
+                                                model_user.$CommonCoreOrg.find({"_id":{$in:[]}},function(err_org,res_org){
+                                                    if(err_org){
+
+                                                        resolve(err_org)
+                                                    } else{
+                                                        if(res_org.length>0){
+                                                            model_user.$User.find({},function(errors,results){
+                                                                if(errors){
+                                                                    resolve(errors);
+
+                                                                }else{
+                                                                    //合成 最后的结果数据
+                                                                    //组成数据ObJECT 返回
+                                                                    console.log(results);
+                                                                    resolve({"data":3220})
+                                                                }
+                                                            })
+                                                        }else{
+                                                            resolve(NULL)
+                                                        }
+                                                    }
+                                                });
+
+                                            }
+                                        })
+                                    } else{
+                                        //如果节点的数据不存在  直接使用  配置文件中的  数据 来寻找
+                                        getRefNodeInfo(item_assignee_ref_task,proc_code).then((rs)=>{
+                                            if(rs.success){
+                                                let org=rs.data;
+                                                getRefNodeInfo(rs.data.item_code,proc_code).then((rss)=>{
+                                                    console.log(rss);
+
+                                                    if(rss.data.item_assignee_org_ids){
+                                                        model_user.$CommonCoreOrg.find({"_id":{$in:rss.data.item_assignee_org_ids.split(",")}},function(org_err,org_res){
+                                                            if(org_err){
+                                                                resolve(org_err);
+                                                            }else{
+                                                                var pid=[];
+                                                                if(org_res.length>0){
+                                                                    for(let i in org_res){
+                                                                        pid.push(org_res[i].org_pid);//上级
+                                                                    }
+                                                                    console.log(pid);
+
+                                                                    model_user.$CommonCoreOrg.find({"_id":{$in:pid}},function(errss,resss){
+                                                                        if(errss){
+                                                                            console.log(errss);
+                                                                        }else{
+                                                                            if(resss.length>0){
+                                                                                var org_pid=[];
+                                                                                for(let i in resss){
+                                                                                    pid.push(resss[i].org_pid)//上上级
+                                                                                    org_pid.push(resss[i].org_pid);
+                                                                                }
+
+                                                                                console.log(pid,item_assignee_role);
+                                                                                //上级
+                                                                                model_user.$CommonCoreOrg.find({"org_pid":{$in:org_pid}},function(errsr,resultss){
+                                                                                    if(errsr){
+                                                                                        resolve(errsr)
+                                                                                        console.log(errsr);
+                                                                                    }else{
+                                                                                        if(resultss.length>0){
+                                                                                            var org_tem=[];
+                                                                                            for(let i in resultss){
+                                                                                                if(resultss[i].org_pid!=1){
+                                                                                                    pid.push(resultss[i]._id)
+                                                                                                    org_tem.push(resultss[i]._id)
+                                                                                                }
+                                                                                            }
+                                                                                            console.log(pid);
+                                                                                            //上上级的下级
+                                                                                            // model_user.$CommonCoreOrg.find({"org_pid":{$in:org_tem}},function(errsss,resss){
+                                                                                            //     if(errsss){
+                                                                                            //         resolve(errsss);
+                                                                                            //     }else{
+                                                                                            //         if(resss.length>0){
+                                                                                            //             for(let i in resss){
+                                                                                            //                 if(resultss[i].org_pid!=1){
+                                                                                            //                     pid.push(resss[i]._id)
+                                                                                            //                 }
+                                                                                            //             }
+
+                                                                                                        model_user.$User.find({"user_org":{$in:pid},"user_roles":{$in:item_assignee_role.split(",")}},function (err_pid,res_pid){
+                                                                                                            if(err_pid){
+                                                                                                                console.log(err_pid);
+                                                                                                                resolve(err_pid);
+                                                                                                            }else{
+                                                                                                                if(res_pid.length>0){
+                                                                                                                    var array=[];
+                                                                                                                    for(let i in res_pid){
+                                                                                                                        let map={};
+                                                                                                                        map.user_name = res_pid[i].user_name;
+                                                                                                                        map.user_no = res_pid[i].user_no;
+                                                                                                                        map.node_name = node_name;
+                                                                                                                        map.node_code = node_code;
+                                                                                                                        array.push(map);
+                                                                                                                    }
+                                                                                                                    resolve(utils.returnMsg(true, '0000', '查询用户org', array, null))
+                                                                                                                }else{
+                                                                                                                    resolve(utils.returnMsg(false, '1000', '查询用户shibai', null, null))
+                                                                                                                }
+                                                                                                            }
+                                                                                                        })
+                                                                                                    }else{
+                                                                                                        resolve(utils.returnMsg(false, '1000', '查询用户shibai111333', null, null))
+
+                                                                                                    }
+                                                                                            //
+                                                                                            //     }
+                                                                                            //
+                                                                                            //
+                                                                                            // })
+                                                                                            //
+                                                                                        //
+                                                                                        // }else{
+                                                                                        //
+                                                                                        //
+                                                                                        //     resolve(utils.returnMsg(false, '1000', '查询用户shibai111333', null, null))
+                                                                                        //
+                                                                                        // }
+
+                                                                                    }
+
+                                                                                })
+
+
+                                                                            }else{
+
+                                                                                resolve(utils.returnMsg(false, '1000', '查询用户shibai111', null, null))
+
+                                                                            }
+
+                                                                        }
+                                                                    })
+
+                                                                }
+                                                            }
+                                                        });
+
+                                                    }else{
+                                                        resolve(utils.returnMsg(false, '1000', '查询用户shibai22222', null, null))
+                                                    }
+                                                });
+
+                                            }
+                                        })
+                                    }
+                                }
+                            });
+
+
+                        }else{
+                            //下级
+                            model.$ProcessInstTask.find({"proc_code":proc_code,"proc_inst_task_code":item_assignee_ref_task},function(err_task,res_task){
+                                if(err_task){
+                                    resolve(err_task);
+                                }else{
+                                    if(res_task.length>0){
+                                        //当任务节点 存在的时候的  我们可以使用 任务节点的 实际完成的 的 组织信息来寻在 下级处理的人的信息
+                                        model_user.$CommonCoreOrg.find({"org_pid":{$in:[]}},function(err_org,res_org){
+                                            if(err_org){
+                                                resolve(err_org);
+                                            }else{
+                                                if(res_org.length>0){
+                                                    model_user.$User.find({"user_org":{$in:[]},"user_roles":{$in:[]}},function(errors,results){
+                                                        if(errors){
+                                                            resolve(errors);
+
+                                                        }else{
+                                                            //组装数据  返回给前端使用
+                                                            console.log(results);
+                                                            resolve({"data":32210})
+
+
+                                                        }
+                                                    });
+                                                }else{
+
+                                                    resolve(null);
+
+                                                }
+
+
+                                            }
+
+                                        })
+
+
+
+
+                                    }else{
+                                        //当查询节点任务信息不存在的时候直接读取该点的 Org  同时依照器下级 来寻在用户
+                                        model_user.$CommonCoreOrg.find({"org_pid":{$in:[]}},function(err_org,res_org){
+                                            if(err_org){
+                                                resolve(err_org);
+                                            }else{
+                                                if(res_org.length>0){
+                                                    model_user.$User.find({"user_org":{$in:[]},"user_roles":{$in:[]}},function(errors,results){
+                                                        if(errors){
+                                                            resolve(errors);
+
+                                                        }else{
+                                                            //组装数据  返回给前端使用
+                                                            console.log(results);
+                                                            resolve({"data":32211})
+
+                                                        }
+                                                    });
+                                                }else{
+
+                                                    resolve(null);
+
+                                                }
+                                            }
+                                        })
+                                    }
+                                }
+                            });
+
+
+                        }
+                    }
+
+                }else{
+                    resolve(utils.returnMsg(false, '10001', '查询用户信息错误', null, null))
+
+                }
+            }
+        }
+    })
+    return promise;
+
+
+}
+
+
+//获取参照节点
+function getRefNodeInfo(node_code,proc_code){
+    return new Promise((resolve,reject)=> {
+        model.$ProcessDefine.find({'proc_code': proc_code}, (err, res) => {
+            if (err){
+                resolve(utils.returnMsg(false, '1000', '查询流程', null, err));
+            }else{
+                if(res.length>0){
+                    var proc_define_id=res[0]._id;
+                    // var node_code;
+                    // console.log(res[0].proc_define);
+                    var proc_define=JSON.parse(res[0].proc_define);
+
+                    //获取节点详细信息
+                    var nodes=proc_define.nodes;
+                    //获取节点之间关系
+                    var lines=proc_define.lines;
+                    // for (let  node in nodes){
+                    //     console.log(nodes[node]);
+                    // }
+                    //节点配置信息
+                    let item_config=JSON.parse(res[0].item_config);
+                    // console.log(item_config);
+                    var current_detail;
+                    for(var node in item_config){
+                        // console.log(item_config[node].item_code,node_code);
+                        if(item_config[node].item_code==node_code){
+                           resolve({"data":item_config[node],"error":null,"msg":"ok","success":true});
+                           return ;
+                        }
+                    }
+                }else{
+                    resolve(utils.returnMsg(false, '1000', '查询流程', null, null));
+
+                }
+
+            }
+        });
+    });
+}
+
+
 
 /**
  * 获取第三节点处理人
@@ -3185,8 +3803,8 @@ function findNodeInfo(next_node, next_detail,user_no) {
                 var item_assignee_org_ids = next_detail.item_assignee_org_ids;
                 var orgs = item_assignee_org_ids.split(",")
 
-                console.log("ccccccccccccccccccccccccccccccccccccccccccccc")
-                console.log(orgs)
+                // console.log("ccccccccccccccccccccccccccccccccccccccccccccc")
+                // console.log(orgs)
                 var i = 0;
                 var array = [];
                 findUserByOrg(orgs, i, item_assignee_role, resolve, array, node_name, node_code);
