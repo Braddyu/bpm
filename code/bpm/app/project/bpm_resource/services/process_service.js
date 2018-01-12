@@ -17,7 +17,8 @@
 
 var model = require('../models/process_model');
 var model_user=require("../models/user_model");
-
+var mongoUtils  = require('../../../common/core/mongodb/mongoose_utils');
+var mongoose = mongoUtils.init();
 var utils = require('../../../utils/app_utils');
 var logger = require('../../../../lib/logHelper').helper;
 
@@ -707,14 +708,44 @@ exports.getProcHandlerLogsList=function(page,size,condition){
  */
 exports.sendSalesDataToAthena=function(condition){
     return  new Promise(function(resolve,reject){
-        model_user.$User.find({"user_roles":condition.user_roles},function(err,res){
-            if(err){
-                console.log(err);
-                resolve({'success':false, 'code':1001, 'msg':"没有查询到数据 请检查参数是否正确" ,"data":null,"error":err});
-            }else{
-                resolve(utils.returnMsg(true, '0000', '(传入参数)查询用户数据正常。', res, null));
-            }
-        });
+
+        model_user.$User.aggregate(
+            [
+
+                {
+                    $match: {"user_roles":{$in:[new mongoose.Types.ObjectId(condition.user_roles)]}}
+                 },
+                {
+                    $lookup: {
+                        from: "common_bpm_org_info",
+                        localField: 'user_org',
+                        foreignField: "_id",
+                        as: "org"
+                    }
+                },
+                // {
+                //     $unwind : { path: "$org", preserveNullAndEmptyArrays: true }
+                // },
+            ]
+        ).exec(function(err,res){
+                 if(err){
+                    console.log(err);
+                    resolve({'success':false, 'code':1001, 'msg':"没有查询到数据 请检查参数是否正确" ,"data":null,"error":err});
+                }else{
+                     console.log("length:",res.length);
+                    resolve(utils.returnMsg(true, '0000', '(传入参数)查询用户数据正常。', res, null));
+                }
+        })
+
+        // var  match={"user_roles":{$in:[condition.user_roles]}};
+        // model_user.$User.find(match,function(err,res){
+        //     if(err){
+        //         console.log(err);
+        //         resolve({'success':false, 'code':1001, 'msg':"没有查询到数据 请检查参数是否正确" ,"data":null,"error":err});
+        //     }else{
+        //         resolve(utils.returnMsg(true, '0000', '(传入参数)查询用户数据正常。', res, null));
+        //     }
+        // });
     });
 }
 

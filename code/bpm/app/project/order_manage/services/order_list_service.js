@@ -8,6 +8,7 @@ var utils = require('../../../../lib/utils/app_utils');
 var xlsx = require('node-xlsx');
 var fs = require('fs');
 var moment = require('moment');
+var config = require('../../../../config');
 /**
  * 工单列表分页
  * @param page
@@ -356,7 +357,7 @@ exports.repareHuanghe= function(result1,proc_code,proc_inst_id,memo) {
                                 update.dispatch_remark="补录成功";
                             }else{
                                 update.status=2;
-                                update.dispatch_remark=rs.ret_msg;
+                                update.dispatch_remark="回传结果:"+rs.ret_msg;
                             }
                             //修改状态
                             mistake_model.$ProcessMistake.update(conditions, update, {}, function (errors) {

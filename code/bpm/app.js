@@ -145,8 +145,10 @@ hbs.registerHelper('totree', function (v1, options) {
 // uncomment after placing your favicon in /public
 app.use(favicon(path.join(__dirname, 'public', 'static/images/favicon.ico')));
 //app.use(logger('dev'));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: false}));
+// app.use(bodyParser.json());
+// app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.json({limit: '10mb'}));
+app.use(bodyParser.urlencoded({limit: '10mb', extended: false}));
 app.use(cookieParser());
 
 //Mongo-Session
@@ -167,6 +169,7 @@ app.use(session({
 }));
 
 app.use(config.project.appurl, express.static(path.join(__dirname, 'public')));
+
 
 //国际化支持
 app.use(i18n.init);
