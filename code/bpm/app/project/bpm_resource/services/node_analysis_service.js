@@ -3199,8 +3199,18 @@ function getSkipedNodeAndHandler(next_node, next_detail,user_no,proc_code){
                                                    resolve();
                                                } else{
                                                     //组成数据ObJECT 返回
-                                                   console.log(res_user);
-                                                   resolve({"data":311})
+                                                   // console.log(res_user);
+                                                   var array=[];
+                                                   for(let i in res_user){
+                                                       let map={};
+                                                       map.user_name = res_user[i].user_name;
+                                                       map.user_no = res_user[i].user_no;
+                                                       map.node_name = node_name;
+                                                       map.node_code = node_code;
+                                                       array.push(map);
+                                                   }
+                                                   resolve(utils.returnMsg(true, '0000', '查询用户org', array, null))
+                                                   // resolve({"data":311})
 
 
                                                }
@@ -3236,8 +3246,18 @@ function getSkipedNodeAndHandler(next_node, next_detail,user_no,proc_code){
                                                             console.log(errors);
                                                         }else{
                                                             //f返回数据
-                                                            console.log(results);
-                                                            resolve({"data":results})
+                                                            // console.log(results);
+                                                            // resolve({"data":results})
+                                                            var array=[];
+                                                            for(let i in results){
+                                                                let map={};
+                                                                map.user_name = results[i].user_name;
+                                                                map.user_no = results[i].user_no;
+                                                                map.node_name = node_name;
+                                                                map.node_code = node_code;
+                                                                array.push(map);
+                                                            }
+                                                            resolve(utils.returnMsg(true, '0000', '查询用户org', array, null))
                                                         }
                                                     })
                                                 }else{
@@ -3260,8 +3280,18 @@ function getSkipedNodeAndHandler(next_node, next_detail,user_no,proc_code){
                                                             resolve(err_user);
                                                         } else{
                                                             //组成数据ObJECT 返回
-                                                            console.log(res_user);
-                                                            resolve({"data":res_user})
+                                                            // console.log(res_user);
+                                                            var array=[];
+                                                            for(let i in res_user){
+                                                                let map={};
+                                                                map.user_name = res_user[i].user_name;
+                                                                map.user_no = res_user[i].user_no;
+                                                                map.node_name = node_name;
+                                                                map.node_code = node_code;
+                                                                array.push(map);
+                                                            }
+                                                            resolve(utils.returnMsg(true, '0000', '查询用户org', array, null))
+                                                            // resolve({"data":res_user})
 
                                                         }
                                                     });
@@ -3310,8 +3340,19 @@ function getSkipedNodeAndHandler(next_node, next_detail,user_no,proc_code){
                                                                      }else{
                                                                          //合成 最后的结果数据
                                                                          //组成数据ObJECT 返回
-                                                                         console.log(results);
-                                                                         resolve({"data":results})
+                                                                         // console.log(results);
+                                                                         // resolve({"data":results})
+                                                                         var array=[];
+                                                                         for(let i in results){
+                                                                             let map={};
+                                                                             map.user_name = results[i].user_name;
+                                                                             map.user_no = results[i].user_no;
+                                                                             map.node_name = node_name;
+                                                                             map.node_code = node_code;
+                                                                             array.push(map);
+                                                                         }
+                                                                         resolve(utils.returnMsg(true, '0000', '查询用户org', array, null))
+
                                                                      }
                                                                  })
                                                              }else{
@@ -3425,7 +3466,17 @@ function getSkipedNodeAndHandler(next_node, next_detail,user_no,proc_code){
                                                                                 console.log(error_s);
                                                                             }else{
                                                                                if(result_s){
-                                                                                   resolve(result_s)
+                                                                                   // resolve(result_s)
+                                                                                   var array=[];
+                                                                                   for(let i in result_s){
+                                                                                       let map={};
+                                                                                       map.user_name = result_s[i].user_name;
+                                                                                       map.user_no = result_s[i].user_no;
+                                                                                       map.node_name = node_name;
+                                                                                       map.node_code = node_code;
+                                                                                       array.push(map);
+                                                                                   }
+                                                                                   resolve(utils.returnMsg(true, '0000', '查询用户org', array, null))
                                                                                }else{
                                                                                    resolve(null);
                                                                                }
@@ -3575,8 +3626,18 @@ function getSkipedNodeAndHandler(next_node, next_detail,user_no,proc_code){
 
                                                                     }else{
                                                                         //组装数据  返回给前端使用
-                                                                        console.log(results);
-                                                                        resolve({"data":results});
+                                                                        // console.log(results);
+                                                                        // resolve({"data":results});
+                                                                        var array=[];
+                                                                        for(let i in results){
+                                                                            let map={};
+                                                                            map.user_name = results[i].user_name;
+                                                                            map.user_no = results[i].user_no;
+                                                                            map.node_name = node_name;
+                                                                            map.node_code = node_code;
+                                                                            array.push(map);
+                                                                        }
+                                                                        resolve(utils.returnMsg(true, '0000', '查询用户org', array, null))
                                                                     }
                                                                 });
                                                             }else{
@@ -3606,8 +3667,18 @@ function getSkipedNodeAndHandler(next_node, next_detail,user_no,proc_code){
 
                                                             }else{
                                                                 //组装数据  返回给前端使用
-                                                                console.log(results);
-                                                                resolve({"data":results});
+                                                                // console.log(results);
+                                                                // resolve({"data":results});
+                                                                var array=[];
+                                                                for(let i in results){
+                                                                    let map={};
+                                                                    map.user_name = results[i].user_name;
+                                                                    map.user_no = results[i].user_no;
+                                                                    map.node_name = node_name;
+                                                                    map.node_code = node_code;
+                                                                    array.push(map);
+                                                                }
+                                                                resolve(utils.returnMsg(true, '0000', '查询用户org', array, null))
 
                                                             }
                                                         });
