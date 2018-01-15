@@ -5,6 +5,7 @@ var logger = require('../../../../lib/logHelper').helper
 var proc = require('../services/process_service');
 var config = require('../../../../config');
 var nodeAnalysisService = require("../services/node_analysis_service");
+var nodeTransferService=require("../services/node_transfer_service");
 var inst = require('../services/instance_service');
 //process
 /**
@@ -197,6 +198,72 @@ router.route("/data/info").post(function(req,res){
 
 });
 /**
+ *  跳过节点的三合一接口(慧眼系统)
+ *
+ */
+
+router.route("/exampleAndTask").post(function (req,res){
+    var map ={};
+    map.flag=true;
+    var  proc_code=req.body.proc_code;
+    var  user_no=req.body.user_no;
+    var  params=req.body.params;
+    var  node_code=req.body.node_code;
+    var joinup_sys = req.body.joinup_sys;
+    var user_name = req.body.user_name;
+    var proc_vars = req.body.proc_vars;
+    var proc_title = req.body.proc_title;
+    var memo=req.body.memo;
+    var assign_user_no=req.body.assign_user_no;
+    var biz_vars=req.body.biz_vars;
+    if(!user_no ){
+        utils.respMsg(res, false, '2001', '派单人姓名不能为空。', null, null);
+        return;
+    }
+    if(!proc_code ){
+        utils.respMsg(res, false, '2001', '流程编码不能为空。', null, null);
+        return;
+    }
+    if(!node_code){
+        utils.respMsg(res, false, '2001', '节点编码不能为空。', null, null);
+        return;
+    }
+    nodeAnalysisService.find_role(user_no).then(function (rs) {
+        var user_info = rs.data;
+        console.log(user_info[0].user_roles,"aaa123");
+          if(rs.success){
+              nodeAnalysisService.example_task(user_no,proc_code,JSON.stringify(map),node_code,joinup_sys,user_name,proc_vars,user_info[0].user_roles,proc_title).then(function(rs){
+                  if(rs.success){
+                      console.log(rs,'lslkdkdo');
+                      var task_id=rs.data[0]._id;
+                      //认领任务
+                      inst.acceptTask(task_id,user_no,user_name).then(function(rs){
+                          if(rs.success){
+                              nodeTransferService.assigntransfer(task_id,node_code,user_no,assign_user_no,proc_title,biz_vars,proc_vars,memo).then(function(results){
+                                  utils.respJsonData(res,results);
+                              }).catch(function(err_inst){
+                                  // console.log(err_inst);
+                                  logger.error("route-do_payout","派发任务异常",err_inst);
+                                  utils.respMsg(res, false, '1000', '派发任务异常', null, err_inst);
+                              });
+                          }else{
+                              utils.respJsonData(res,rs);
+                          }
+                      }).catch(function(err_inst){
+                          logger.error("route-acceptTask","认领任务异常",err_inst);
+                          utils.respMsg(res, false, '1000', '认领任务异常', null, err_inst);
+                      });
+                  }else{
+                      utils.respJsonData(res,result);
+                  }
+              });
+          }else{
+
+          }
+    });
+});
+
+/**
  *  跳过节点的任务新建和下下节点任务的指派
  *
  */
@@ -225,5 +292,6 @@ router.route("/skip/node/user/info").post(function (req,res){
         utils.respJsonData(res,rs);
     });
 });
+
 
 module.exports = router;

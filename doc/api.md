@@ -650,7 +650,55 @@ HOST: http://192.168.9.66:30002/gdgl/api
 
 + Response 200
 
-    {success:true, code:'0000', msg:'查询成功。',rows:[data],total:2}  
+    {success:true, code:'0000', msg:'查询成功。',rows:[data],total:2} 
+
+## 查询某一条待办的详细信息 [/process/single/todo]
+###  查询某一条待办的详细信息[POST]
+
++ Request
+    + Body
+
+            {
+              "id":'5a4b370ca47b293d3882cba3';//任务_id
+            }
+
++ Response 200
+
+    {success:true, code:'0000', msg:'查询成功。',data{
+	 { proc_inst_task_user_role: [ '5a26418c5eb3fe1068448753', '5a266868bfb42d1e9cdd5c6e' ],
+     proc_inst_task_user_org: [ '5a275dbe9ae723244868c617' ],
+     proc_task_start_user_role_code: [ '5a24aab506255330b47e45e1' ],
+     __v: 0,
+     joinup_sys: 'warnSys_node',
+     proc_code: 'p-109',
+     proc_name: '业务指标预警流程',
+     proc_task_start_name: '系统管理员',
+     proc_task_start_user_role_names: '管理员',
+     proc_inst_task_assignee: '15085084383',
+     proc_inst_task_remark: '',
+     proc_inst_task_sms: 1,
+     proc_inst_task_sign: 1,
+     proc_inst_task_claim: null,
+     proc_inst_task_params: 'flag',
+     proc_vars: '{"time":"20171210","type":"1","start_time":"2018-01-02 15:38:51","end_time":"2018-01-05 15:38:51","start_user":"系统管理员","start_user_name":"管理员","work_day":"3","remark":"截至12月09日,策略:和家享套餐（2017年12月1日至2018年12月31日）,渠道:湄潭县兴隆镇诚信手机专卖店(KF)的总目标值为77.00,累计办理量为0.00,与总目标差距77。当日目标值为0.00,当日实际完成值为0.00,与目标差距0。请72小时内处理工单反馈整改期限与落后原因及建议。"}',
+     proc_inst_node_vars: 'www.baidu.com 
+
+',
+     proc_inst_prev_node_handler_user: '56d67d83a6fb090cead52968',
+     proc_inst_prev_node_code: 'processDefineDiv_node_2',
+     proc_inst_task_title: '12月10日和家享套餐（2017年12月1日至2018年12月31日） 渠道业务预警工单',
+     proc_inst_task_assignee_name: '李树静',
+     proc_inst_task_status: 0,
+     proc_inst_task_complete_time: null,
+     proc_inst_task_handle_time: '2018-01-02T07:38:52.101Z',
+     proc_inst_task_arrive_time: '2018-01-02T07:38:52.101Z',
+     proc_inst_task_type: '厅店处理回复',
+     proc_inst_task_name: '厅店处理回复',
+     proc_inst_task_code: 'processDefineDiv_node_3',
+     proc_inst_id: '5a4b370ba47b293d3882cba0',
+     _id: '5a4b370ca47b293d3882cba3' } }
+}}  
+	
 	
 ## 我的已办任务集合 [/task/havetodo]
 ### 获取我的已办任务集合 [POST]

@@ -212,6 +212,7 @@ var commonProcessInstTaskSchema = new Schema(
         proc_start_time : Date,// 流程发起时间(开始时间)
         proc_vars : String,// 流程变量
         joinup_sys:String,//所属系统编号
+        skip:Number,//是否为跳过节点任务
     },
     {collection: "common_bpm_proc_inst_task"}// mongodb集合名
 );

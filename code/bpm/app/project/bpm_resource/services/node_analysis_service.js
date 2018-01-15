@@ -8,6 +8,8 @@ var utils = require('../../../utils/app_utils');
 var Promise = require("bluebird");
 var proc=require("./instance_service");
 var querystring = require('querystring');
+var nodeDetail,data_define;
+
 
 
 //查找当前节点相关的下一节点或者上一节点的信息方法 主要是读取解析节点配置文件和节点信息文件
@@ -3034,7 +3036,182 @@ function findSecondNode(proc_define,node_code){
     return node;
 }
 
+/**
+ *  三合一接口
+ * @param user_no
+ * @param proc_code
+ * @param param_json_str
+ * @param node_code
+ * @param joinup_sys
+ * @param user_name
+ * @param proc_vars
+ * @param role_code
+ * @param proc_title
+ * @returns {bluebird}
+ */
+exports.example_task=(user_no,proc_code,param_json_str,node_code,joinup_sys,user_name,proc_vars,role_code,proc_title)=>{
+    // console.log("get Skip node handler info   .......",user_no,proc_code,param_json_str,node_code);
+    return new Promise((resolve,reject)=>{
+        var params=param_json_str;
+        //解析参数
+        if(!(!param_json_str||param_json_str=="undefined"||param_json_str=="{}")){
 
+            let params_json=JSON.parse(param_json_str);
+            var flag=true;
+            for(var items_ in params_json){
+                flag=false;
+            }
+            if(flag){
+                resolve(utils.returnMsg(false, '1001', '参数解析不正确。', null, null));
+            }else{
+                params=params_json;
+            }
+        }else{
+            params={};
+        }
+
+        model.$ProcessDefine.find({'proc_code':proc_code},(err,res)=>{
+            if(err){
+                resolve(utils.returnMsg(false, '1000', '查询流程出错', null, err));
+            }else{
+                if(res.length>0){
+                    //获取流程id
+                    var proc_define_id=res[0]._id;
+                    // var node_code;
+                    data_define=res;
+                     console.log(res,'777777777777777777');
+                    var proc_define=JSON.parse(res[0].proc_define);
+                    var firstNode = findFirstNode(JSON.parse(res[0].proc_define));
+                    console.log(firstNode,'777777777777777777');
+
+
+
+                    //获取节点详细信息
+                    var nodes=proc_define.nodes;
+
+                    console.log(nodes,'999');
+                    //获取节点之间关系
+                    var lines=proc_define.lines;
+                    for (let  node in nodes) {
+                        console.log(nodes[node], node);
+                    }
+                    //节点配置信息
+                    let item_config=JSON.parse(res[0].item_config);
+                    console.log(item_config,'5677676');
+                    var flag=false;
+                    for(var node in item_config){
+
+                        if(item_config[node].item_code==node_code){
+                            console.log(item_config[node],node_code,'111111111111111');
+                            if(item_config[node].item_jump==1){
+                                flag=true
+                            }
+                        }
+                    }
+
+                    if(flag){
+                        //获取起草节点的信息
+                        getNode(proc_define_id,firstNode,params,flag).then(function(res){
+                            if(res.success){
+                                //获取 跳过之后的节点信息
+                                console.log(res,'22222222222222222222222222222222');
+                                getNode(proc_define_id,node_code,params,flag).then(function(rs){
+                                    if(rs.success){
+                                         nodeDetail = [];
+                                        var s = {};
+
+                                        var current_detail=res.data.current_detail;
+                                        var next_detail=rs.data.next_detail;
+                                        var next_node = rs.data.next_node;
+                                        s.current_detail =current_detail;
+                                        s.next_detail = next_detail;
+                                        nodeDetail.push(s);
+                                        console.log(current_detail,'dddddddddddddd');
+                                            find(role_code).then(function(role) {
+                                                if (role.success) {
+                                                    console.log(role,"1111111111")
+                                                    var condition = {};
+                                                    condition.proc_start_user_role_names = role.data.toString().split(',');
+                                                    console.log(condition.proc_start_user_role_names, '0000000');
+                                                    condition.proc_start_user_role_code = role_code.toString();
+
+                                                    condition.proc_start_user = user_no;
+                                                    condition.proc_start_user_name = user_name;
+                                                    condition.proc_code = proc_code;
+
+                                                    condition.proc_cur_task = current_detail.item_code;
+                                                    condition.proc_cur_task_name = next_node.name;
+                                                    condition.joinup_sys = joinup_sys;
+                                                    condition.proc_cur_task_name = next_detail.item_assignee_role_name;
+                                                    condition.proc_vars = proc_vars;
+                                                    //写入数据库 创建流程实例化方法
+                                                    saveIns(condition,proc_code,proc_title,user_no).then(function(insresult){
+                                                        if(insresult.success){
+                                                            console.log("创建实例成功了吗");
+                                                            model.$ProcessInst.find({'_id':insresult.data},function(err,rs){
+                                                                if(err){
+                                                                    console.log(err);
+                                                                }else{
+                                                                    console.log(rs);
+                                                                    //新加字段所属系统编号
+                                                                    condition.joinup_sys = rs[0].joinup_sys;
+                                                                    condition.work_order_number = rs[0].work_order_number;
+                                                                    condition.proc_task_start_user_role_code = rs[0].proc_start_user_role_code;
+                                                                    condition.proc_task_start_user_role_names = rs[0].proc_start_user_role_names;
+                                                                    condition.proc_task_start_name = user_name;
+                                                                    condition.proc_inst_task_title = proc_title;
+                                                                    //condition.proc_inst_biz_vars = biz_vars_json;
+                                                                    condition.proc_inst_task_title = proc_title;
+                                                                    //condition.proc_inst_biz_vars = biz_vars_json;
+                                                                    // condition.proc_vars = proc_vars_json;
+                                                                    condition.proc_code = rs[0].proc_code;
+                                                                    condition.proc_name = rs[0].proc_name;
+                                                                    console.log(nodeDetail,'8888');
+                                                                    if(nodeDetail[0].next_detail)      {
+                                                                        //创建流程任务
+                                                                        insertTask(insresult,condition).then(function(taskresult){
+                                                                            resolve(taskresult);
+                                                                            resolve(utils.returnMsg(true, '0000', '创建成功',taskresult));
+                                                                            console.log('创建chengg  ss ');
+                                                                        });
+                                                                    }  else{
+                                                                        resolve(utils.returnMsg(false, '1000', '创建失败，无法找到下一节点',null));
+
+                                                                    }
+                                                                }
+                                                            });
+                                                        }else{
+                                                            console.log("shibai");
+                                                        }
+                                                    });
+                                                }
+                                            });
+                                    }else{
+                                        resolve(rs);
+
+                                    }
+                                })
+                            }
+                        });
+                    }
+                    // resolve(utils.returnMsg(false, '1000', '查询流程出错', null, null))
+                }else{
+                 resolve(utils.returnMsg(false, '1000', '查询流程出错', null, null))
+                }
+            }
+        });
+    });
+
+}
+
+/**
+ *   找下下节点处理人
+ * @param user_no
+ * @param proc_code
+ * @param param_json_str
+ * @param node_code
+ * @returns {bluebird}
+ */
 exports.skipNodeAndGetHandlerInfo=(user_no,proc_code,param_json_str,node_code)=>{
     // console.log("get Skip node handler info   .......",user_no,proc_code,param_json_str,node_code);
     return new Promise((resolve,reject)=>{
@@ -3076,10 +3253,9 @@ exports.skipNodeAndGetHandlerInfo=(user_no,proc_code,param_json_str,node_code)=>
                     }
                     //节点配置信息
                     let item_config=JSON.parse(res[0].item_config);
-                    // console.log(item_config);
                     var flag=false;
                     for(var node in item_config){
-                        // console.log(item_config[node].item_code,node_code);
+                         console.log(item_config[node].item_code,node_code);
                         if(item_config[node].item_code==node_code){
                             if(item_config[node].item_jump==1){
                                 flag=true
@@ -3089,37 +3265,35 @@ exports.skipNodeAndGetHandlerInfo=(user_no,proc_code,param_json_str,node_code)=>
 
                     if(flag){
                         //获取 跳过之后的节点信息
-                       getNode(proc_define_id,node_code,params,flag).then(function(rs){
-                           console.log(rs);
-                           if(rs.success){
-                               var current_detail=rs.data.current_detail;
-                               var next_detail=rs.data.next_detail;
-                               getSkipedNodeAndHandler(nodes[next_detail.item_code], next_detail,user_no,proc_code).then((rs)=>{
-                                   resolve(rs);
-                                   return ;
-                               })
-                               // findNodeInfo(rs.data.next_node, rs.data.next_detail,user_no).then(function(rs){
-                               //     resolve(rs);
-                               // });
-                           }else{
-                               resolve(rs);
+                        getNode(proc_define_id,node_code,params,flag).then(function(rs){
+                            console.log(rs);
+                            if(rs.success){
+                                var current_detail=rs.data.current_detail;
+                                var next_detail=rs.data.next_detail;
+                                getSkipedNodeAndHandler(nodes[next_detail.item_code], next_detail,user_no,proc_code).then((rs)=>{
+                                    resolve(rs);
+                                    return ;
+                                })
+                                // findNodeInfo(rs.data.next_node, rs.data.next_detail,user_no).then(function(rs){
+                                //     resolve(rs);
+                                // });
+                            }else{
+                                resolve(rs);
 
-                           }
-                       })
+                            }
+                        })
 
                     }
 
                     // resolve(utils.returnMsg(false, '1000', '查询流程出错', null, null))
                 }else{
-                 resolve(utils.returnMsg(false, '1000', '查询流程出错', null, null))
+                    resolve(utils.returnMsg(false, '1000', '查询流程出错', null, null))
                 }
             }
         });
     });
 
 }
-
-
 /**
  * 当跳过节点的时候获取跳过的节点的下一步处理人和节点信息
  */
@@ -3420,7 +3594,7 @@ function getSkipedNodeAndHandler(next_node, next_detail,user_no,proc_code){
                                                      resolve(utils.returnMsg(false, '1000', '查询用户shibai', null, null))
                                                  }
                                              }
-                                         })
+                                         });
                                      }
                                 }
                             });
@@ -4207,4 +4381,298 @@ exports.getNodeDetail=function(proc_code,node_code){
         });
     });
     return promise;
+}
+
+
+
+/**
+ * 保存流程实例数据
+ * @param dataMap 参数
+ * @param proc_code 流程编码
+ * @param proc_title 流程名称
+ * @param user_code 当前用户
+ */
+function saveIns(dataMap,proc_code,proc_title,user_code){
+    var p = new Promise(function(resolve,reject) {
+        if(dataMap){
+            var  inst={}
+            console.log(data_define,'3333333333333');
+            inst.proc_id =data_define[0].proc_id;// 流程实例ID
+            inst.proc_define_id =data_define[0]._id;//{type: Schema.Types.ObjectId, ref: 'CommonCoreProcessDefine'}, 流程图ID
+            inst.proc_code =proc_code// 流程编码
+            inst.parent_id=0// 父节点
+            inst.parent_proc_inst_id=""//父流程id
+            inst.proc_name=data_define[0].proc_name;// 流程名
+            inst.proc_ver=data_define[0].version;// 流程版本号
+            inst.catalog="";//流程类别
+            inst.proce_reject_params="";//是否驳回
+            inst.proc_instance_code="";//实例编码
+            inst.proc_title=proc_title;//流程标题
+            var myDate = new Date();
+            var year = myDate.getFullYear();
+            var month = myDate.getMonth()+1;
+            var day = myDate.getDate();
+            var randomNumber = parseInt(((Math.random()*9+1)*100000));
+            inst.work_order_number="GDBH"+year+month+day+randomNumber;//工单编号
+            inst.proc_cur_task=dataMap.proc_cur_task;// 流程当前节点编码
+
+            inst.proc_cur_task_name=dataMap.proc_cur_task_name;// 流程当前节点名称
+
+            inst.proc_cur_user=dataMap.current_opt;//{type: Schema.Types.ObjectId, ref: 'CommonCoreUser'},当前流程处理人ID
+
+            inst.proc_cur_user_name ='';//: String,当前流程处理人名
+
+            inst.proc_cur_arrive_time=new Date();// : Date,当前流程到达时间
+            inst.proc_cur_task_item_conf="";// : String,//当前流程节点配置信息(当前配置阶段编码)
+
+            inst.proc_start_user=user_code;//:String,//流程发起人(开始用户)
+            inst.proc_start_user_name=dataMap.proc_start_user_name;// : String,// 流程发起人名(开始用户姓名)
+
+            inst.proc_start_time=new Date();// : Date,// 流程发起时间(开始时间)
+            inst.proc_params="";// : String,// 流转参数
+            inst.proc_inst_status=2;  // : Number,// 流程流转状态 1 已启用  0 已禁用,2 流转中，3 归档
+            inst.proc_attached_type="";// : Number,// 流程附加类型(1:待办业务联系函;2:待办工单;3:待办考核;4:其他待办)
+            inst.proce_attached_params="";// : {},// 流程附加属性
+            inst.proce_reject_params="";// : {},// 流程驳回附加参数
+            inst.proc_cur_task_code_num="";// : String,//节点编号
+            inst.proc_task_overtime="";// : [],//超时时间设置
+            inst.proc_cur_task_overtime="";// : Date,//当前节点的超时时间
+            inst.proc_cur_task_remark="";// : String,//节点备注
+            inst.proc_city="";// : String,// 地市
+            inst.proc_county="";// : String,// 区县
+            inst.proc_org="";// : String, // 组织
+            inst.proc_cur_task_overtime_sms="";// : Number,//流程当前节点超时短信标记(1:待处理，2:已处理，3:不需要处理)
+            inst.proc_cur_task_overtime_sms_count="";// : Number,//流程当前节点超时短信发送次数
+            inst.proc_pending_users=dataMap.current_opt;// : []//当前流程的待处理人信息
+            inst.proc_start_user_role_code = dataMap.proc_start_user_role_code;//流程发起人角色id
+            inst.proc_start_user_role_names = dataMap.proc_start_user_role_names;//流程发起人角色名
+            inst.proc_define=data_define[0].proc_define;//流程定义文件
+            inst.item_config=data_define[0].item_config;//流程节点信息
+            inst.proc_vars=dataMap.proc_vars;//流程变量
+            inst.joinup_sys = dataMap.joinup_sys;//工单所属系统编号
+
+            var arr = [];
+            arr.push(inst);
+            //写入数据库创建流程
+            model.$ProcessInst.create(arr,function(error,rs){
+                if(error) {
+                    // reject('新增流程实例信息时出现异常。'+error);
+                    console.log(error)
+                    reject(utils.returnMsg(false, '1000', '新增流程实例信息时出现异常。', null, error));
+                }
+                else {
+                    resolve(utils.returnMsg(true, '0000', '新增流程实例信息成功。', rs[0]._doc._id, null));
+
+                }
+            });
+
+        }
+    });
+    return p;
+}
+
+/*
+查询用户所拥有的角色
+ */
+function find(role_code){
+    var p = new Promise(function(resolve,reject){
+        if(role_code){
+            if(role_code.length>1){
+                model_user.$Role.find({'_id':{$in:role_code.split(",")}},function(err,rs){
+                    if(err){
+                        console.log(err);
+                    }else{
+                        var roleNames = '';
+                        if(rs.length>0){
+                            for(var i=0;i<rs.length;i++){
+                                var roleName = rs[i].role_name;
+                                roleNames +=roleName+',';
+                            }
+                            roleNames = roleNames.substring(0,roleNames.length-1);
+                            resolve(utils.returnMsg(true, '0000', '查询成功。', roleNames, null));
+                        }
+                    }
+                });
+            }
+            else{
+                model_user.$Role.find({'_id':role_code},function(err,rs){
+                    if(err){
+                        console.log(err);
+                    }else{
+                        var roleNames = '';
+                        if(rs.length>0){
+                            for(var i=0;i<rs.length;i++){
+                                var roleName = rs[i].role_name;
+                                roleNames +=roleName+',';
+                            }
+                            roleNames = roleNames.substring(0,roleNames.length-1);
+                            resolve(utils.returnMsg(true, '0000', '查询成功。', roleNames, null));
+                        }
+                    }
+                });
+            }
+        }else{
+            resolve(utils.returnMsg(false, '1000', '没有这个角色。',null,null));
+        }
+    });
+    return p;
+}
+
+exports.find_role = function(user_no){
+    var p = new Promise(function(resolve,reject){
+        model_user.$User.find({'user_no':user_no},function (err,rs) {
+            if(err){
+                console.log(err);
+            }else{
+                if(rs.length>0){
+                    var role_code = rs.user_roles;
+                    resolve(utils.returnMsg(true, '0000', '查询成功。', rs, null));
+                }
+            }
+        })
+    });
+    return p;
+}
+
+/**
+ * 新增流程任务
+ * @param result
+ * @param condition
+ */
+function insertTask(result,condition){
+    var proc_inst_task_assignee,proc_inst_task_assignee_name,proc_inst_task_sign;
+    var proc_inst_task_user_role,proc_inst_task_user_role_name
+console.log(nodeDetail,'8888');
+    if(  nodeDetail[0].next_detail.item_assignee_type==1){
+        proc_inst_task_assignee=nodeDetail[0].next_detail.item_assignee_user_code;
+        proc_inst_task_assignee_name=nodeDetail[0].next_detail.item_show_text;
+        proc_inst_task_user_role ="";
+        proc_inst_task_user_role_name="";
+        proc_inst_task_sign=1;// : Number,// 流程签收(0-未认领，1-已认领)
+    }
+    if( nodeDetail[0].next_detail.item_assignee_type==2||nodeDetail[0].next_detail.item_assignee_type==3||nodeDetail.next_detail.item_assignee_type==4){
+        proc_inst_task_assignee="";
+        proc_inst_task_assignee_name="";
+        proc_inst_task_user_role =nodeDetail[0].next_detail.item_assignee_role;
+        proc_inst_task_user_role_name=nodeDetail[0].current_detail.item_show_text;
+        proc_inst_task_sign=0;// : Number,// 流程签收(0-未认领，1-已认领)
+    }
+
+    if(condition.proc_inst_task_assignee){
+        proc_inst_task_assignee=condition.proc_inst_task_assignee;
+    }
+    if( condition.proc_inst_task_assignee_name){
+        proc_inst_task_assignee_name=condition.proc_inst_task_assignee_name;
+    }
+
+    var current_node=condition.proc_cur_task;
+    var p=new Promise(function(resolve,reject){
+        var task={};
+        findParamss(result.data,condition.proc_cur_task).then(function(result_t){
+            var proc_inst_task_params=result_t.data;
+            task.work_order_number=condition.work_order_number//工单编号
+            task.proc_inst_id=result.data;// : {type: Schema.Types.ObjectId, ref: 'CommonCoreProcessInst'}, // 流程流转当前信息ID
+            task.proc_inst_task_code=condition.proc_cur_task;// : String,// 流程当前节点编码(流程任务编号)
+            task.proc_inst_task_name=condition.proc_name;// : String,// 流程当前节点名称(任务名称)
+            task.proc_inst_task_title=condition.proc_inst_task_title;// : String,// 任务标题proc_inst_task_title
+            task.proc_inst_task_type=condition.proc_name;// : String,// 流程当前节点类型(任务类型)
+            task.proc_inst_task_arrive_time=new Date();// : Date,// 流程到达时间
+            task.proc_inst_task_handle_time="";//: Date,// 流程认领时间
+            task.proc_inst_task_complete_time="";// : Date,// 流程完成时间
+            task.proc_inst_task_status=0;// : Number,// 流程当前状态
+            task.proc_inst_task_assignee=condition.proc_start_user;//: array,// 流程处理人ID
+            task.proc_inst_task_assignee_name=condition.proc_start_user_name;// : array,// 流程处理人名
+            if(proc_inst_task_user_role.indexOf(",")!=-1){
+                task.proc_inst_task_user_role =proc_inst_task_user_role.split(",");
+
+            }else{
+                task.proc_inst_task_user_role =[proc_inst_task_user_role];
+
+            }
+            //: String,// 流程处理用户角色ID
+            task.proc_inst_task_user_role_name=proc_inst_task_user_role_name;// : String,// 流程处理用户角色名
+            if(condition.proc_inst_task_user_org)
+                task.proc_inst_task_user_org=condition.proc_inst_task_user_org;//String  //流程处理用户的组织
+            // task.proc_inst_task_user_org_name=condition.proc_inst_task_user_org_name;//String  //流程处理用户的组织名称；
+            task.proc_inst_task_params=proc_inst_task_params;// : String,// 流程参数(任务参数)
+            task.proc_inst_task_claim="";// : Number,// 流程会签
+            task.proc_inst_task_sign=proc_inst_task_sign;// : Number,// 流程签收(0-未认领，1-已认领)
+            task.proc_inst_task_sms="";//"// : String// 流程处理意见
+            task.proc_inst_task_remark="";
+            task.proc_inst_biz_vars=condition.proc_inst_biz_vars;//实例变量
+            task.proc_inst_node_vars=condition.proc_inst_node_vars;//流程节点变量
+            task.proc_vars=condition.proc_vars;//流程变量
+            task.proc_task_start_name = condition.proc_start_user_name;//流程发起人姓名
+            task.proc_task_start_user_role_names = condition.proc_start_user_role_names;//流程发起人角色
+            task.proc_task_start_user_role_code = condition.proc_start_user_role_code;//流程发起人id
+            task.proc_code=condition.proc_code;
+            task.proc_name=condition.proc_name;
+            task.joinup_sys = condition.joinup_sys;
+            console.log("&&&&&&&&&&&&&&&&&&&&&&&&&&",condition);
+
+            var arr=[];
+            arr.push(task);
+            //写入数据库创建流程任务表
+            model.$ProcessInstTask.create(arr,function(error,rs){
+                if(error) {
+                    // reject('新增流程实例信息时出现异常。'+error);
+                    console.log(error);
+                    reject(utils.returnMsg(false, '1000', '流程实例创建启动出现异常。', null, error));
+                }
+                else {
+                    console.log(rs,'这个是什么呢');
+                    resolve(utils.returnMsg(true, '0000', '流程实例创建启动成功。', rs, null));
+
+
+                }
+            });
+
+        });
+
+    });
+    return p;
+
+}
+
+function findParamss(proc_inst_id,node_code){
+
+    var p =new Promise(function(resolve,reject){
+        model.$ProcessInst.find({"_id":proc_inst_id},function(err,result){
+            if(err){
+                console.log(err);
+                resolve(utils.returnMsg(false, '1000', '查询参数错误', null, null))
+            }else{
+                var allArray=[]
+                var item_config=JSON.parse(result[0].item_config);
+                var proc_define=JSON.parse(result[0].proc_define);
+                var nodeArray=getValidNode(proc_define,node_code,true)
+                // console.log("nodeArray     ",nodeArray)
+                var lines=proc_define.lines;
+                // console.log("lines      ",lines);
+                // console.log("item_config     ",item_config);
+                for(var line in lines){
+                    var from =lines[line].from;
+                    var to = lines[line].to;
+                    for(var node in nodeArray){
+                        if(nodeArray[node]==to){
+                            var evalStr=findEval(line,item_config);
+                            var array_params=choiceDetermin(evalStr)
+                            for(var i=0;i<array_params.length;i++){
+                                var temp=array_params[i];
+                                if(!contains(allArray,temp)){
+                                    allArray.push(temp);
+                                }
+                            }
+                        }
+                    }
+                }
+
+                resolve(utils.returnMsg(true, '0000', '，查询参数正常', allArray, null)) ;
+            }
+        })
+
+    });
+
+    return p;
+
 }
