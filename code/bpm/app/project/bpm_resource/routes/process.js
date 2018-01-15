@@ -226,4 +226,22 @@ router.route("/skip/node/user/info").post(function (req,res){
     });
 });
 
+/**
+ *  查询某一条待办的接口，返回这条待办的对象数据
+ *
+ */
+router.route("/single/todo").post(function(req,res){
+    var _id = req.body.id;//任务_id
+    inst.getMyTaskQuery(_id)
+        .then(function (result) {
+            utils.respJsonData(res, result);
+        })
+        .catch(function (err) {
+            logger.error("route-getTaskByid","根据任务_id获取我的待办数据异常",err);
+            utils.respMsg(res, false, '1000', '获取数据异常', null, err);
+        })
+
+});
+
+
 module.exports = router;
