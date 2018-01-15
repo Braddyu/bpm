@@ -38,7 +38,7 @@ v\:group,v\:rect,v\:imagedata,v\:oval,v\:line,v\:polyline,v\:stroke,v\:textbox {
 }
 
 .GooFlow_work{float:right;margin:0px 2px 3px 0px;border-left:#99B1CE 1px solid;border-right:none;border-bottom:#99B1CE 1px solid;position:relative;overflow:hidden;}
-.GooFlow_work .GooFlow_work_inner{background-image:url(img/gooflow_blank.gif);position:relative;overflow:scroll;}
+.GooFlow_work .GooFlow_work_inner{background-image:url(img/gooflow_blank.gif);position:relative;overflow:hidden;}
 .GooFlow_work .GooFlow_work_group{cursor:default;position:absolute;overflow:hidden;top:0px;left:0px}
 
 .GooFlow_area{position:absolute;overflow:hidden;}
