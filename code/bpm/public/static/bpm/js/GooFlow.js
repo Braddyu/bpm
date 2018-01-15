@@ -17,8 +17,10 @@ function GooFlow(property){
 	// 作为顶级DIV
 	this.$bgDiv = bgDiv;
 	this.$bgDiv.addClass("GooFlow");
-	var width = (property.width || 800) + 2;
-	var height = (property.height||500) - 2;
+	// var width = (property.width || 800) + 2;
+	// var height = (property.height||500) - 2;
+	var width = (property.width || 800);
+	var height = (property.height||500)*1.5;
 	this.$bgDiv.css({
 		width: width+"px",
 		height: height+"px"
@@ -398,6 +400,7 @@ GooFlow.prototype = {
 		this.$draw.id = id;
 		this.$draw.style.width = width + "px";
 		this.$draw.style.height = +height + "px";
+		this.$draw.style.overflow = "auto";
 
 		var tmpClk = null;
 		if(GooFlow.prototype.useSVG  !=  ""){
