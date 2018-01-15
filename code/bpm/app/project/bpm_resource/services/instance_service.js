@@ -589,6 +589,8 @@ function insertTask(result,condition){
             if(proc_inst_task_user_role.indexOf(",")!=-1){
                 task.proc_inst_task_user_role =proc_inst_task_user_role.split(",");
 
+            }else if(proc_inst_task_user_role==''){
+                task.proc_inst_task_user_role=[];
             }else{
                 task.proc_inst_task_user_role =[proc_inst_task_user_role];
 
@@ -1000,6 +1002,27 @@ exports.getMyTaskQuery4Eui= function(page,size,userCode,paramMap,joinup_sys,proc
     });
     return p;
 };
+/**
+ * 根据任务id查询待办信息
+ */
+exports.getMyTaskQuery= function(taskId) {
+    var p = new Promise(function(resolve,reject){
+        model.$ProcessInstTask.find({'_id':taskId,'proc_inst_task_status':0},function (e,r) {
+            if(e){
+                resolve({'success': false, 'code': '1000', 'msg': '查询待办任务出现异常'});
+            }else {
+                if(r[0]){
+                    resolve({'success': true, 'code': '0000', 'msg': '查询待办任务成功','data':r[0]._doc});
+
+                }else {
+                    resolve({'success': false, 'code': '0000', 'msg': '查询待办任务成功','data':null});
+                }
+            }
+        })
+    });
+    return p;
+};
+
 
 /**
  * 获取我的已办任务列表分页方法
