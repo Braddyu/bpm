@@ -25,7 +25,7 @@ router.route('/list').post(function(req,res){
     // 调用分页
     service.getStatisticsListPage(org_id,proc_code,level,status,dispatch_time,startDate,endDate)
         .then(function(result){
-            // console.log("获取所有工单列表成功",result);
+             console.log("获取所有工单列表成功",result);
 
             utils.respJsonData(res, result);
         })
@@ -33,6 +33,44 @@ router.route('/list').post(function(req,res){
             console.log('获取所有工单列表失败',err);
 
         });
+})
+
+/**
+ * 导出工单统计查询出来的数据
+ */
+router.route('/export_excel').get(function(req,res){
+    console.log("开始导出统计列表...");
+    var org_id = req.query.org_id;//机构编号
+    var proc_code = req.query.proc_code;//流程编号
+    var level = req.query.level;//机构等级
+    var status = req.query.status;//是否返回到当前所在机构
+    var dispatch_time = req.query.dispatch_time;//派单时间
+    var startDate = req.query.startDate;//开始插入时间
+    var endDate = req.query.endDate;//结束插入时间
+
+    console.log("params",org_id,proc_code,level,status,dispatch_time,startDate,endDate);
+    // 调用分页
+    service.exportStatisticsList(org_id,proc_code,level,status,dispatch_time,startDate,endDate)
+        .then(service.createExcelOrderList)
+        .then(excelBuf=>{
+            const date = new Date();
+            const filename =
+                date.getFullYear() + '-' +(date.getMonth() + 1) + '-' + date.getDate();
+
+            res.setHeader('Content-Type', 'application/vnd.openxmlformats');
+            res.setHeader(
+                'Content-Disposition',
+                'attachment; filename=' + filename + '.xlsx'
+            );
+            res.end(excelBuf, 'binary');
+        })
+        .catch(e=>{
+            console.log('ERROR: export_excel');
+            console.error(e);
+            utils.respJsonData(res, {
+                error: '服务器出现了问题，请稍候再试'
+            });
+        })
 })
 
 /**
