@@ -233,7 +233,7 @@ var config = {
         logstashPort : 18087 ,
         logstashLevel:"DEBUG",
         consoleLevel :"DEBUG",
-        path : '../logs'
+        path : './logs'
     },
     //中间表名
     res_mapping : {table_name :"common_org_major_mapping"},
