@@ -26,7 +26,6 @@
     "formidable": "*",
     "fs-extra": "*",
     "ftp": "*",
-    "gmdp": "*",
     "hbs": "~3.1.0",
     "i18n": "*",
     "influx": "*",
