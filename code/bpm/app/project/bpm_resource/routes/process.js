@@ -201,11 +201,11 @@ router.route("/data/info").post(function(req,res){
  *  跳过节点的三合一接口(慧眼系统)
  *
  */
-
 router.route("/exampleAndTask").post(function (req,res){
     var map ={};
     map.flag=true;
     var  proc_code=req.body.proc_code;
+    var  proc_ver = req.body.proc_ver;
     var  user_no=req.body.user_no;
     var  params=req.body.params;
     var  node_code=req.body.node_code;
@@ -232,7 +232,7 @@ router.route("/exampleAndTask").post(function (req,res){
         var user_info = rs.data;
         console.log(user_info[0].user_roles,"aaa123");
           if(rs.success){
-              nodeAnalysisService.example_task(user_no,proc_code,JSON.stringify(map),node_code,joinup_sys,user_name,proc_vars,user_info[0].user_roles,proc_title).then(function(rs){
+              nodeAnalysisService.example_task(user_no,proc_code,JSON.stringify(map),node_code,joinup_sys,user_name,proc_vars,user_info[0].user_roles,proc_title,proc_ver).then(function(rs){
                   if(rs.success){
                       console.log(rs,'lslkdkdo');
                       var task_id=rs.data[0]._id;
@@ -254,7 +254,7 @@ router.route("/exampleAndTask").post(function (req,res){
                           utils.respMsg(res, false, '1000', '认领任务异常', null, err_inst);
                       });
                   }else{
-                      utils.respJsonData(res,result);
+                      //utils.respJsonData(res,result);
                   }
               });
           }else{
@@ -273,7 +273,7 @@ router.route("/skip/node/user/info").post(function (req,res){
     map.flag=true;
     var  proc_code=req.body.proc_code;
     var  user_no=req.body.user_no;
-    var params=req.body.params;
+    var  params=req.body.params;
     var  node_code=req.body.node_code;
     if(!user_no ){
         utils.respMsg(res, false, '2001', '派单人姓名不能为空。', null, null);
@@ -298,8 +298,9 @@ router.route("/skip/node/user/info").post(function (req,res){
  *
  */
 router.route("/single/todo").post(function(req,res){
-    var _id = req.body.id;//任务_id
-    inst.getMyTaskQuery(_id)
+    var _id = req.body.inst_id;//实例Id
+    var user_no = req.body.user_no;//当前任务处理人
+    inst.getMyTaskQuery(_id,user_no)
         .then(function (result) {
             utils.respJsonData(res, result);
         })
@@ -309,6 +310,7 @@ router.route("/single/todo").post(function(req,res){
         })
 
 });
+
 
 
 module.exports = router;

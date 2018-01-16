@@ -3049,7 +3049,7 @@ function findSecondNode(proc_define,node_code){
  * @param proc_title
  * @returns {bluebird}
  */
-exports.example_task=(user_no,proc_code,param_json_str,node_code,joinup_sys,user_name,proc_vars,role_code,proc_title)=>{
+exports.example_task=(user_no,proc_code,param_json_str,node_code,joinup_sys,user_name,proc_vars,role_code,proc_title,proc_ver)=>{
     // console.log("get Skip node handler info   .......",user_no,proc_code,param_json_str,node_code);
     return new Promise((resolve,reject)=>{
         var params=param_json_str;
@@ -3079,13 +3079,8 @@ exports.example_task=(user_no,proc_code,param_json_str,node_code,joinup_sys,user
                     var proc_define_id=res[0]._id;
                     // var node_code;
                     data_define=res;
-                     console.log(res,'777777777777777777');
                     var proc_define=JSON.parse(res[0].proc_define);
                     var firstNode = findFirstNode(JSON.parse(res[0].proc_define));
-                    console.log(firstNode,'777777777777777777');
-
-
-
                     //获取节点详细信息
                     var nodes=proc_define.nodes;
 
@@ -3097,7 +3092,7 @@ exports.example_task=(user_no,proc_code,param_json_str,node_code,joinup_sys,user
                     }
                     //节点配置信息
                     let item_config=JSON.parse(res[0].item_config);
-                    console.log(item_config,'5677676');
+                    // console.log(item_config);
                     var flag=false;
                     for(var node in item_config){
 
@@ -3205,7 +3200,7 @@ exports.example_task=(user_no,proc_code,param_json_str,node_code,joinup_sys,user
 }
 
 /**
- *   找下下节点处理人
+ *
  * @param user_no
  * @param proc_code
  * @param param_json_str
@@ -3253,9 +3248,10 @@ exports.skipNodeAndGetHandlerInfo=(user_no,proc_code,param_json_str,node_code)=>
                     }
                     //节点配置信息
                     let item_config=JSON.parse(res[0].item_config);
+                    // console.log(item_config);
                     var flag=false;
                     for(var node in item_config){
-                         console.log(item_config[node].item_code,node_code);
+                        // console.log(item_config[node].item_code,node_code);
                         if(item_config[node].item_code==node_code){
                             if(item_config[node].item_jump==1){
                                 flag=true
@@ -3266,12 +3262,12 @@ exports.skipNodeAndGetHandlerInfo=(user_no,proc_code,param_json_str,node_code)=>
                     if(flag){
                         //获取 跳过之后的节点信息
                         getNode(proc_define_id,node_code,params,flag).then(function(rs){
-                            console.log(rs);
                             if(rs.success){
                                 var current_detail=rs.data.current_detail;
                                 var next_detail=rs.data.next_detail;
                                 getSkipedNodeAndHandler(nodes[next_detail.item_code], next_detail,user_no,proc_code).then((rs)=>{
                                     resolve(rs);
+                                    console.log(rs,'aaaaaaaaaaaaaaaaa');
                                     return ;
                                 })
                                 // findNodeInfo(rs.data.next_node, rs.data.next_detail,user_no).then(function(rs){
@@ -3525,7 +3521,7 @@ function getSkipedNodeAndHandler(next_node, next_detail,user_no,proc_code){
                                                                              map.node_code = node_code;
                                                                              array.push(map);
                                                                          }
-                                                                         resolve(utils.returnMsg(true, '0000', '查询用户org', array, null))
+                                                                         resolve(utils.returnMsg(true, '0000', '查询用户org11', array, null))
 
                                                                      }
                                                                  })
@@ -4133,7 +4129,7 @@ function findNodeInfo(next_node, next_detail,user_no) {
                                                 }
                                                 resolve(utils.returnMsg(true, '0000', '查询用户org', array, null))
                                             } else {
-                                                resolve(utils.returnMsg(false, '10001', '查询用户信息错误', null, null));
+                                                resolve(utils.returnMsg(false, '10001', '查询用户信息错误', null, JSON.stringify({node_code:node_code})));
 
                                             }
                                         }
@@ -4173,13 +4169,12 @@ function findNodeInfo(next_node, next_detail,user_no) {
                                                }
                                                resolve(utils.returnMsg(true, '0000', '查询用户org', array, null))
                                            } else {
-                                               resolve(utils.returnMsg(false, '10001', '查询用户信息错误', null, null));
+                                               resolve(utils.returnMsg(false, '10001', '查询用户信息错误', null, JSON.stringify({node_code:node_code})));
                                            }
                                        }
 
                                    })
                                }else{
-
                                    model_user.$User.find({"user_roles": {$in: [item_assignee_role]},
                                        "user_org": {$in:rs.data.user_org_id}
                                    }, function (e, r) {
@@ -4198,7 +4193,7 @@ function findNodeInfo(next_node, next_detail,user_no) {
                                                }
                                                resolve(utils.returnMsg(true, '0000', '查询用户org', array, null))
                                            } else {
-                                               resolve(utils.returnMsg(false, '10001', '查询用户信息错误', null, null));
+                                               resolve(utils.returnMsg(false, '10001', '查询用户信息错误', null, JSON.stringify({node_code:node_code})));
                                            }
                                        }
 
@@ -4262,12 +4257,12 @@ function findNodeInfo(next_node, next_detail,user_no) {
                                                                                 }
                                                                                 resolve(utils.returnMsg(true, '0000', '查询用户org', array, null))
                                                                             } else {
-                                                                                resolve(utils.returnMsg(false, '10001', '查询用户信息错误', null, null));
+                                                                                resolve(utils.returnMsg(false, '10001', '查询用户信息错误', null, JSON.stringify({node_code:node_code})));
                                                                             }
                                                                         }
                                                                     })
                                                                 } else {
-                                                                    resolve(utils.returnMsg(false, '10001', '查询用户信息错误', null, null));
+                                                                    resolve(utils.returnMsg(false, '10001', '查询用户信息错误', null, JSON.stringify({node_code:node_code})));
                                                                 }
                                                             }
                                                         })

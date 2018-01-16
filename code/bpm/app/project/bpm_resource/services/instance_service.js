@@ -1003,11 +1003,11 @@ exports.getMyTaskQuery4Eui= function(page,size,userCode,paramMap,joinup_sys,proc
     return p;
 };
 /**
- * 根据任务id查询待办信息
+ * 根据s实例id当前任务处理人查询待办信息
  */
-exports.getMyTaskQuery= function(taskId) {
+exports.getMyTaskQuery= function(taskId,user_no) {
     var p = new Promise(function(resolve,reject){
-        model.$ProcessInstTask.find({'_id':taskId,'proc_inst_task_status':0},function (e,r) {
+        model.$ProcessInstTask.find({'proc_inst_id':taskId,'proc_inst_task_status':0,'proc_inst_task_assignee':user_no},function (e,r) {
             if(e){
                 resolve({'success': false, 'code': '1000', 'msg': '查询待办任务出现异常'});
             }else {

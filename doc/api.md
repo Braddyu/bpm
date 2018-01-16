@@ -116,6 +116,110 @@ HOST: http://192.168.9.66:30002/gdgl/api
         "isEnd": true（是否存在归档节点）
     }
 }
+## 获取下下节点处理人信息 [/process/skip/node/user/info]
+
+
+### 获取下下节点处理人节点信息 [POST]
+
++ Request
+    + Body
+
+            {
+                node_code:processDefineDiv_node_3,//跳过的节点编号
+				proc_code:p-999,//流程编号
+				params:"asd",
+				user_no:songfei3,//当前节点处理人
+            }
+
++ Response 200
+  {
+    {
+  "success": true,
+  "code": "0000",
+  "msg": "查询用户org",
+  "data": [
+    {
+      "user_no": "wangke1",
+      "user_name": "王可",
+      "node_name": "部门副总审批",
+      "node_code": "processDefineDiv_node_4"
+    }
+  ]
+}
+}
+## 跳过节点的创建实例指派任务的接口慧眼系统 [/process/exampleAndTask]
+
+
+### 跳过节点的创建实例指派任务的接口 [POST]
+
++ Request
+    + Body
+
+            {
+              "proc_code": "p-999流程编码",
+              "proc_ver": 4,(可选)
+              "title": "流程实例测试",
+              "user_no": "lixun",(操作人)
+			  "user_name": "李询",(操作人)
+			  "node_code": "processDefineDiv_node_4",(下一节点编号)
+			  "assign_user_no": "luolisha",(下一节点处理人编号)
+			  "memo": "处理内容",
+			  "proc_vars": "",(json字符串格式-流程实例从开始到归档都不需要变动的工单参数)
+			  "biz_vars":""(json字符串格式-业务工单需要的参数)
+			  "params":{"flag":false}(flag为线上的参数，线上有就必须传没有可以传"")
+			  "joinup_sys":"warnSys_node";//所属系统编号(warnSys_node-预警工单系统编号:errorSys_node-差错工单系统编号:auditorSys_node-稽核工单系统编号:syesightSys_node-慧眼工单系统编号)
+            }
+
++ Response 200
+  {
+   {
+  "success": true,
+  "code": "1000",
+  "msg": "流程流转新增任务信息正常82222。",
+  "data": [
+    {
+      "__v": 0,
+      "proc_inst_id": "5a5cacae0d9e72015c0d88f3",
+      "proc_inst_task_code": "processDefineDiv_node_4",
+      "proc_inst_task_name": "部门副总审批",
+      "proc_inst_task_type": "部门副总审批",
+      "proc_inst_task_arrive_time": "2018-01-15T13:29:19.046Z",
+      "proc_inst_task_handle_time": "2018-01-15T13:29:19.046Z",
+      "proc_inst_task_complete_time": null,
+      "proc_inst_task_status": 0,
+      "proc_inst_task_assignee_name": "骆莉莎",
+      "proc_inst_task_title": "\"assas\"",
+      "proc_inst_biz_vars": "“ss”",
+      "proc_inst_prev_node_code": "processDefineDiv_node_2",
+      "proc_inst_prev_node_handler_user": "lixun",
+      "proc_inst_node_vars": "",
+      "proc_code": "p-999",
+      "proc_name": "测试跳级",
+      "proc_vars": "“sss”",
+      "proc_inst_task_params": "flag",
+      "proc_inst_task_claim": null,
+      "proc_inst_task_sign": 1,
+      "proc_inst_task_sms": 0,
+      "proc_inst_task_remark": "",
+      "proc_inst_task_assignee": "luolisha",
+      "proc_task_start_user_role_names": "普通员工",
+      "proc_task_start_name": "代维",
+      "joinup_sys": "\"syesightSys_node\"",
+      "skip": 1,
+      "_id": "5a5cacaf0d9e72015c0d88f6",
+      "proc_task_start_user_role_code": [
+        "5a264057c819ed2118539070"
+      ],
+      "proc_inst_task_user_org": [
+        "5a275c0677ec2e1e8448799a"
+      ],
+      "proc_inst_task_user_role": [
+        "5a264057c819ed2118539070"
+      ]
+    }
+  ]
+}
+}
 
 ## 获取当前节点信息 [/process/data/info]
 
@@ -659,45 +763,53 @@ HOST: http://192.168.9.66:30002/gdgl/api
     + Body
 
             {
-              "id":'5a4b370ca47b293d3882cba3';//任务_id
+              "user_no":"luolisha",//当前任务处理人编号
+              "inst_id":"5a5cacae0d9e72015c0d88f3"//当前流程实例id
             }
 
 + Response 200
 
-    {success:true, code:'0000', msg:'查询成功。',data{
-	 { proc_inst_task_user_role: [ '5a26418c5eb3fe1068448753', '5a266868bfb42d1e9cdd5c6e' ],
-     proc_inst_task_user_org: [ '5a275dbe9ae723244868c617' ],
-     proc_task_start_user_role_code: [ '5a24aab506255330b47e45e1' ],
-     __v: 0,
-     joinup_sys: 'warnSys_node',
-     proc_code: 'p-109',
-     proc_name: '业务指标预警流程',
-     proc_task_start_name: '系统管理员',
-     proc_task_start_user_role_names: '管理员',
-     proc_inst_task_assignee: '15085084383',
-     proc_inst_task_remark: '',
-     proc_inst_task_sms: 1,
-     proc_inst_task_sign: 1,
-     proc_inst_task_claim: null,
-     proc_inst_task_params: 'flag',
-     proc_vars: '{"time":"20171210","type":"1","start_time":"2018-01-02 15:38:51","end_time":"2018-01-05 15:38:51","start_user":"系统管理员","start_user_name":"管理员","work_day":"3","remark":"截至12月09日,策略:和家享套餐（2017年12月1日至2018年12月31日）,渠道:湄潭县兴隆镇诚信手机专卖店(KF)的总目标值为77.00,累计办理量为0.00,与总目标差距77。当日目标值为0.00,当日实际完成值为0.00,与目标差距0。请72小时内处理工单反馈整改期限与落后原因及建议。"}',
-     proc_inst_node_vars: 'www.baidu.com 
-
-',
-     proc_inst_prev_node_handler_user: '56d67d83a6fb090cead52968',
-     proc_inst_prev_node_code: 'processDefineDiv_node_2',
-     proc_inst_task_title: '12月10日和家享套餐（2017年12月1日至2018年12月31日） 渠道业务预警工单',
-     proc_inst_task_assignee_name: '李树静',
-     proc_inst_task_status: 0,
-     proc_inst_task_complete_time: null,
-     proc_inst_task_handle_time: '2018-01-02T07:38:52.101Z',
-     proc_inst_task_arrive_time: '2018-01-02T07:38:52.101Z',
-     proc_inst_task_type: '厅店处理回复',
-     proc_inst_task_name: '厅店处理回复',
-     proc_inst_task_code: 'processDefineDiv_node_3',
-     proc_inst_id: '5a4b370ba47b293d3882cba0',
-     _id: '5a4b370ca47b293d3882cba3' } }
-}}  
+    {success:true, code:'0000', msg:'查询成功。',
+  "data": {
+    "proc_inst_task_user_role": [
+      "5a264057c819ed2118539070"
+    ],
+    "proc_inst_task_user_org": [
+      "5a275c0677ec2e1e8448799a"
+    ],
+    "proc_task_start_user_role_code": [
+      "5a264057c819ed2118539070"
+    ],
+    "__v": 0,
+    "skip": 1,
+    "joinup_sys": "\"syesightSys_node\"",
+    "proc_task_start_name": "代维",
+    "proc_task_start_user_role_names": "普通员工",
+    "proc_inst_task_assignee": "luolisha",
+    "proc_inst_task_remark": "",
+    "proc_inst_task_sms": 0,
+    "proc_inst_task_sign": 1,
+    "proc_inst_task_claim": null,
+    "proc_inst_task_params": "flag",
+    "proc_vars": "“sss”",
+    "proc_name": "测试跳级",
+    "proc_code": "p-999",
+    "proc_inst_node_vars": "",
+    "proc_inst_prev_node_handler_user": "lixun",
+    "proc_inst_prev_node_code": "processDefineDiv_node_2",
+    "proc_inst_biz_vars": "“ss”",
+    "proc_inst_task_title": "\"assas\"",
+    "proc_inst_task_assignee_name": "骆莉莎",
+    "proc_inst_task_status": 0,
+    "proc_inst_task_complete_time": null,
+    "proc_inst_task_handle_time": "2018-01-15T13:29:19.046Z",
+    "proc_inst_task_arrive_time": "2018-01-15T13:29:19.046Z",
+    "proc_inst_task_type": "部门副总审批",
+    "proc_inst_task_name": "部门副总审批",
+    "proc_inst_task_code": "processDefineDiv_node_4",
+    "proc_inst_id": "5a5cacae0d9e72015c0d88f3",
+    "_id": "5a5cacaf0d9e72015c0d88f6"
+  }}  
 	
 	
 ## 我的已办任务集合 [/task/havetodo]
@@ -774,11 +886,11 @@ HOST: http://192.168.9.66:30002/gdgl/api
     + Body
 
             {
-              "task_id": "5947398aba36650788eaa89b",
-              "user_no": "70001",
+              "task_id": "5947398aba36650788eaa89b",//当前任务id
+              "user_no": "70001",//当前节点处理人
 			  "memo": "处理意见",
-              "assign_user_no": "70001",
-              "node_code":"processDefineDiv_node_3",
+              "assign_user_no": "70001",//下一节点处理人
+              "node_code":"processDefineDiv_node_3",//要指派到的节点编号
 			  "proc_title":"预警工单处理",
 			  "proc_vars": "",(可以为空，json字符串格式-不需变动的工单参数)
 			  "biz_vars":""(json字符串格式-业务工单需要的参数)
