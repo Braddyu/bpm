@@ -5,6 +5,7 @@ var mongoUtils  = require('../../../common/core/mongodb/mongoose_utils');
 var mongoose = mongoUtils.init();
 var utils = require('../../../../lib/utils/app_utils');
 var logger = require('../../../../lib/logHelper').helper;
+var xlsx = require('node-xlsx');
 
 
 /**
@@ -130,6 +131,167 @@ exports.getStatisticsListPage= function(org_id,proc_code,level,status,dispatch_t
 
     return p;
 };
+
+
+/**
+ * 导出工单统计查询结果
+ * @param org_id 机构id
+ * @param proc_code 流程编码
+ * @param level  区域等级
+ * @param dispatch_time 派单时间
+ * @param startDate 插入时间
+ * @param endDate 插入时间
+ * @returns {Promise}
+ */
+exports.exportStatisticsList= function(org_id,proc_code,level,status,dispatch_time,startDate,endDate) {
+
+    var p = new Promise(function(resolve,reject){
+
+        var match={};
+        var foreignField;
+        //等级为2表示省公司,
+        if(level==2){
+            match._id=new mongoose.Types.ObjectId(org_id);
+            foreignField='province_id';
+        } else if(level==3){
+            //地市
+            foreignField='city_id';
+        } else if(level==4){
+            //区县
+            foreignField='county_id';
+        } else if(level==5){
+            //网格
+            foreignField='grid_id';
+        }else if(level==6){
+            //渠道
+            foreignField='channel_id';
+        }
+        //状态为1表示为统计顶页只显示当前登录机构
+        if(status==1 && level!=2){
+            match._id=new mongoose.Types.ObjectId(org_id);
+        }else if(level!=2){
+            match.org_pid=org_id;
+        }
+        console.log("match",match);
+
+        //查询统计表
+        var statistics={};
+        //流程编码
+        if(proc_code){
+            statistics['proc_code']=proc_code;
+        }
+        //派单时间
+        if(dispatch_time){
+            statistics['dispatch_time']=dispatch_time.replace(/\-/g,'');
+        }
+
+        var compare={};
+        //开始时间
+        if(startDate){
+            compare['$gte']=new Date(startDate);
+        }
+        //结束时间
+        if(endDate){
+            //结束时间追加至当天的最后时间
+            compare['$lte']=new Date(endDate+' 23:59:59');
+        }
+        //时间查询
+        if(!isEmptyObject(compare)){
+            statistics['insert_time']=compare;
+        }
+
+        console.log("statistics",statistics);
+        //依机构表为主表，关联统计表和实例表
+        user_model.$CommonCoreOrg.aggregate([
+            {
+                $match: match
+            },
+            {
+                $graphLookup: {
+                    from: "common_bpm_proc_task_statistics",
+                    startWith: "$_id",
+                    connectFromField: "_id",
+                    connectToField: foreignField,
+                    as: "statistics",
+                    restrictSearchWithMatch: statistics
+                }
+            },
+            {
+                $unwind : { path: "$statistics", preserveNullAndEmptyArrays: true }
+            },
+            {
+                $lookup: {
+                    from: "common_bpm_proc_inst",
+                    localField: 'statistics.proc_inst_id',
+                    foreignField: "_id",
+                    as: "inst"
+                }
+            },
+            {
+                $unwind :{ path: "$inst", preserveNullAndEmptyArrays: true }
+            },
+            {
+                $group : {
+                    _id : "$_id",
+                    org_fullname:{ $first: "$org_fullname" },
+                    org_id:{ $first: "$_id" },
+                    success:{$sum: { $cond: { if:  { $in: [ "$inst.proc_inst_status", [4] ] }, then:{ $sum: 1 } , else: 0 }}},
+                    fail:{$sum: { $cond: { if:  { $in: [ "$inst.proc_inst_status", [1,2,3]]}, then:{ $sum: 1 } , else: 0 }}},
+                }
+            }
+
+
+        ]).exec(function(err,res){
+            if(err){
+                reject(utils.returnMsg(false, '1000', '查询统计失败。',null,err));
+            }else{
+                resolve(res);
+
+            }
+
+        })
+
+    });
+
+    return p;
+};
+
+/**
+ * 创建excel文件
+ */
+function createExcelOrderList(list) {
+    const headers = [
+        '区域名称',
+        '工单数',
+        '归档工单数',
+        '未处理工单数',
+    ];
+
+    var data = [headers];
+
+    list.map(c=>{
+        const tmp = [
+            c.org_fullname,
+            c.success+ c.fail,
+            c.success,
+            c.fail,
+        ]
+
+        data.push(tmp);
+    });
+    var ws = {
+        s:{
+            "!row" : [{wpx: 67}]
+        }
+    };
+    ws['!cols']= [{wpx: 100},{wpx: 100},{wpx: 100},{wpx: 100}];
+
+
+    return xlsx.build([{name:'Sheet1',data:data}],ws);
+}
+
+exports.createExcelOrderList = createExcelOrderList;
+
 
 /**
  * 获取上级机构
