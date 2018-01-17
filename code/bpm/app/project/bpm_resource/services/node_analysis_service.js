@@ -94,8 +94,8 @@ exports.getNode=function(process_define_id,node_id,params,flag){
 }
 //getNode的对内方法 注释看对外方法
 function getNode(process_define_id,node_id,params,flag){
-    console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
-    console.log(process_define_id,node_id,params,flag)
+    // console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
+    // console.log(process_define_id,node_id,params,flag)
     var process_define,item_config;
     var promise=new Promise(function(resolve,reject){
         model.$ProcessDefine.find({"_id":process_define_id},function(err,rs){
@@ -116,6 +116,7 @@ function getNode(process_define_id,node_id,params,flag){
                             var node_array=getValidNode(process_define,node_id,flag);
                             var  type=nodes[node].type;
                             console.log("type",type);
+                            console.log("nodes  :",node_array );
                             //判断是不是分支节点
                             if(type=="chat"){
                                 //分支节点专用的方法区
@@ -352,6 +353,7 @@ function findNodeDetail(process_define,node_code){
  */
 function getValidNode(process_define,node_code,flag){
     var lines=process_define.lines;
+    // console.log("line   :",lines);
     var allNextNode=[];
     for (var line in lines){
         var to =lines[line].to;
@@ -391,8 +393,8 @@ function determinChoice(str, condition,reject) {
     var result = "";
     var flag = true
     if(str){
-
     }
+
     map=choiceDetermin(str)
     array=map;
 
@@ -408,13 +410,8 @@ function determinChoice(str, condition,reject) {
                     }
                 }
                 result+=str;
-                console.log("result",result);
-                if(eval(result)){
-                    return true;
-                }else{
-                    return false;
-                }
-
+                // console.log("result",result);
+                return eval(result)
 
         }catch(e){
 
@@ -504,23 +501,25 @@ function deleteInvalidNode(process_define,item_config,node_array,node_code,param
 
        if(node_code==from){
 
-           var eval_flag=true;
+           var eval_flag=false;
 
-           // for(var j=0;j<params_key_array.length;j++){
-           //     var key=params_key_array[j];
-           //     var index=name.indexOf(key);
-           //     if(index != -1){
-           //         eval_flag=true;
-           //     }
-           // }
-           //  console.log("name",name);
+           for(var j=0;j<params_key_array.length;j++){
+               var key=params_key_array[j];
+               var index=name.indexOf(key);
+               if(index != -1){
+                   eval_flag=true;
+               }
+           }
+
            if(eval_flag){
                // return false this next_node is invalid node; return true this next_node is valid;
                var invalid_flag=determinChoice(name,params,reject);
-               console.log("invalid_flag",invalid_flag,to);
+               console.log("name",name,params,invalid_flag,to);
+               // console.log("invalid_flag",invalid_flag,to);
                if(invalid_flag){
                   status_default=false;
                }else{
+                   console.log("删除    无效节点",to);
                   node_array=remove(node_array,to);
                }
            } else{
@@ -3208,7 +3207,7 @@ exports.example_task=(user_no,proc_code,param_json_str,node_code,joinup_sys,user
  * @returns {bluebird}
  */
 exports.skipNodeAndGetHandlerInfo=(user_no,proc_code,param_json_str,node_code)=>{
-    // console.log("get Skip node handler info   .......",user_no,proc_code,param_json_str,node_code);
+    console.log("get Skip node handler info   .......",user_no,proc_code,param_json_str,node_code);
     return new Promise((resolve,reject)=>{
         var params=param_json_str;
         //解析参数
@@ -3227,7 +3226,6 @@ exports.skipNodeAndGetHandlerInfo=(user_no,proc_code,param_json_str,node_code)=>
         }else{
             params={};
         }
-
         model.$ProcessDefine.find({'proc_code':proc_code},(err,res)=>{
             if(err){
                 resolve(utils.returnMsg(false, '1000', '查询流程出错', null, err));
@@ -3243,9 +3241,9 @@ exports.skipNodeAndGetHandlerInfo=(user_no,proc_code,param_json_str,node_code)=>
                     var nodes=proc_define.nodes;
                     //获取节点之间关系
                     var lines=proc_define.lines;
-                    for (let  node in nodes){
-                        console.log(nodes[node],node);
-                    }
+                    // for (let  node in nodes){
+                    //     // console.log(nodes[node],node);
+                    // }
                     //节点配置信息
                     let item_config=JSON.parse(res[0].item_config);
                     // console.log(item_config);
@@ -3267,12 +3265,9 @@ exports.skipNodeAndGetHandlerInfo=(user_no,proc_code,param_json_str,node_code)=>
                                 var next_detail=rs.data.next_detail;
                                 getSkipedNodeAndHandler(nodes[next_detail.item_code], next_detail,user_no,proc_code).then((rs)=>{
                                     resolve(rs);
-                                    console.log(rs,'aaaaaaaaaaaaaaaaa');
+                                    // console.log(rs,'aaaaaaaaaaaaaaaaa');
                                     return ;
-                                })
-                                // findNodeInfo(rs.data.next_node, rs.data.next_detail,user_no).then(function(rs){
-                                //     resolve(rs);
-                                // });
+                                });
                             }else{
                                 resolve(rs);
 
@@ -3294,7 +3289,7 @@ exports.skipNodeAndGetHandlerInfo=(user_no,proc_code,param_json_str,node_code)=>
  * 当跳过节点的时候获取跳过的节点的下一步处理人和节点信息
  */
 function getSkipedNodeAndHandler(next_node, next_detail,user_no,proc_code){
-    console.log("____________________________________________",next_detail);
+    // console.log("____________________________________________",next_detail);
     var promise=new Promise(function(resolve,reject) {
         if (next_node.type == "end  round") {
             var array = []
@@ -3305,14 +3300,14 @@ function getSkipedNodeAndHandler(next_node, next_detail,user_no,proc_code){
             resolve(utils.returnMsg(true, '0000', '查询用户org', array, null))
 
         } else {
-            console.log("@@@@@@@@@@@@@@@@@@@@@@@",next_detail);
+            // console.log("@@@@@@@@@@@@@@@@@@@@@@@",next_detail);
 
             var item_assignee_ref_task = next_detail.item_assignee_ref_task;
 
 
             var item_assignee_ref_cur_org = next_detail.item_assignee_ref_cur_org//: '1',
             var item_assignee_ref_type = next_detail.item_assignee_ref_type;//// 参照人类别 1-当前人，2-当前机构
-            console.log("next_detail   ;", next_detail)
+            // console.log("next_detail   ;", next_detail)
             var item_assignee_user = next_detail.item_assignee_user;
             var item_assignee_user_code = next_detail.item_assignee_user_code;
             var item_assignee_role = next_detail.item_assignee_role;
@@ -3334,6 +3329,7 @@ function getSkipedNodeAndHandler(next_node, next_detail,user_no,proc_code){
                 array.push(map)
                 resolve(utils.returnMsg(true, '0000', '查询用户org', array, null))
             } else if (type == 2) {
+                //角色
                 var item_assignee_org_ids = next_detail.item_assignee_org_ids;
                 var orgs = item_assignee_org_ids.split(",")
 
@@ -3344,6 +3340,7 @@ function getSkipedNodeAndHandler(next_node, next_detail,user_no,proc_code){
                 findUserByOrg(orgs, i, item_assignee_role, resolve, array, node_name, node_code);
 
             } else if (type == 3) {
+                //参照其他节点
                 // resolve(utils.returnMsg(false, '1000', '第三节点不可配置参照人', null))
                 console.log("resultsresultsresultsresultsresultsresultsresultsresultsresultsresults \n", 3);
                 //首先获取参照节点的信息
@@ -3358,15 +3355,36 @@ function getSkipedNodeAndHandler(next_node, next_detail,user_no,proc_code){
                                 if(res_task.length>0){
                                     //有效直接使用任务的处理人信息
                                     //组成数据返回
-                                    console.log(res_task);
-                                    resolve({"data":310})
+                                    model_user.$User.find({"user_no":res_task[0].proc_inst_task_assignee},function(err_user,res_user){
+                                        if(err_user){
+                                            console.log(err_user);
+                                            resolve(err_user);
+                                        }else{
+                                            var array=[];
+                                            for(let i in res_user){
+                                                let map={};
+                                                map.user_name = res_user[i].user_name;
+                                                map.user_no = res_user[i].user_no;
+                                                map.node_name = node_name;
+                                                map.node_code = node_code;
+                                                array.push(map);
+                                            }
+                                            resolve(utils.returnMsg(true, '0000', '查询用户org', array, null))
+                                        }
+
+
+                                    })
+
+                                    //
+                                    // console.log(res_task);
+                                    // resolve({"data":310})
                                 }else{
                                     //不存在使用节点配置信息
                                     getRefNodeInfo(node_code,proc_code).then((rs)=>{
                                         if(rs.success){
-                                            model_user.$User.find({"user_roles":{$in:item_assignee_role.split(",")},"user_org":{$in:[]}},(err_user,res_user)=>{
+                                            model_user.$User.find({"user_roles":{$in:item_assignee_role.split(",")},"user_org":{$in:item_assignee_org_ids.split(",")}},(err_user,res_user)=>{
                                                if(err_user){
-                                                   resolve();
+                                                   resolve(err_user);
                                                } else{
                                                     //组成数据ObJECT 返回
                                                    // console.log(res_user);
@@ -3562,26 +3580,40 @@ function getSkipedNodeAndHandler(next_node, next_detail,user_no,proc_code){
                                                                  for(let i in org_res){
                                                                      pid.push(org_res[i].org_pid);
                                                                  }
-                                                                 model_user.$User.find({"user_org":{$in:pid.concat(rs.data.item_assignee_org_ids.split(","))},"user_roles":{$in:item_assignee_role.split(",")}},function (err_pid,res_pid){
-                                                                     if(err_pid){
-                                                                         resolve(err_pid);
+                                                                 model_user.$CommonCoreOrg.find({"org_pid":{$in:pid}},function(err_org,res_org){
+                                                                     if(err_org){
+                                                                         conbsole.log(err_org);
+                                                                         resolve(err_org);
                                                                      }else{
-                                                                        if(res_pid.length>0){
-                                                                            var array=[];
-                                                                            for(let i in res_pid){
-                                                                                let map={};
-                                                                                map.user_name = res_pid[i].user_name;
-                                                                                map.user_no = res_pid[i].user_no;
-                                                                                map.node_name = node_name;
-                                                                                map.node_code = node_code;
-                                                                                array.push(map);
-                                                                            }
-                                                                            resolve(utils.returnMsg(true, '0000', '查询用户org', array, null))
-                                                                         }else{
-                                                                            resolve(utils.returnMsg(false, '1000', '查询用户shibai', null, null))
-                                                                        }
+
+                                                                         for(let i in res_org){
+                                                                             pid.push(res_org[i]._id);
+                                                                         }
+                                                                         console.log(pid);
+                                                                         model_user.$User.find({"user_org":{$in:pid},"user_roles":{$in:item_assignee_role.split(",")}},function (err_pid,res_pid){
+                                                                             if(err_pid){
+                                                                                 resolve(err_pid);
+                                                                             }else{
+                                                                                 if(res_pid.length>0){
+                                                                                     var array=[];
+                                                                                     for(let i in res_pid){
+                                                                                         let map={};
+                                                                                         map.user_name = res_pid[i].user_name;
+                                                                                         map.user_no = res_pid[i].user_no;
+                                                                                         map.node_name = node_name;
+                                                                                         map.node_code = node_code;
+                                                                                         array.push(map);
+                                                                                     }
+                                                                                     resolve(utils.returnMsg(true, '0000', '查询用户org', array, null))
+                                                                                 }else{
+                                                                                     resolve(utils.returnMsg(false, '1000', '查询用户shibai', null, null))
+                                                                                 }
+                                                                             }
+                                                                         })
+
                                                                      }
                                                                  })
+
                                                              }
                                                          }
                                                      });
@@ -4079,6 +4111,8 @@ function findNodeInfo(next_node, next_detail,user_no) {
             } else if (type == 3) {
                 // resolve(utils.returnMsg(false, '1000', '第三节点不可配置参照人', null))
                 console.log("resultsresultsresultsresultsresultsresultsresultsresultsresultsresults \n", 3)
+                console.log(item_assignee_ref_type);
+                console.log(item_assignee_ref_cur_org);
 
                 if (item_assignee_ref_type == 1) {
                     model_user.$User.find({"user_no": user_no}, function (errs, res) {
@@ -4114,7 +4148,7 @@ function findNodeInfo(next_node, next_detail,user_no) {
                                         "user_roles": {$in:item_assignee_role.indexOf(",")!=-1?item_assignee_role.split(","):[item_assignee_role]}
                                     }, function (error, result) {
                                         if (error) {
-                                            resolve(utils.returnMsg(false, '10001', '查询用户信息错误', null, errs));
+                                            resolve(utils.returnMsg(false, '10001', '查询用户信息错误qqqq', null, errs));
                                         } else {
                                             // console.log("resultsresultsresultsresultsresultsresultsresultsresultsresultsresults \n", 6,  item_assignee_ref_task, org, item_assignee_role, result);
                                             if (result.length > 0) {
