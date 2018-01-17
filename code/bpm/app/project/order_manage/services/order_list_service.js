@@ -4,6 +4,7 @@ var mistake_model = require('../models/mistake_model');
 var process_extend_model = require('../../bpm_resource/models/process_extend_model');
 var dict_model = require('../../workflow/models/dict_model');
 var process_utils = require('../../../utils/process_util');
+var ftp_util = require('../../../utils/ftp_util');
 var utils = require('../../../../lib/utils/app_utils');
 var xlsx = require('node-xlsx');
 var fs = require('fs');
@@ -352,13 +353,45 @@ exports.repareHuanghe= function(result1,proc_code,proc_inst_id,memo) {
                             //  4 = 非法文件
                             var conditions = {_id: _id};
                             var update={};
-                            if(rs.ret_code==0){
+                            var rs_json=JSON.parse(rs);
+                            if(rs_json.ret_code==0){
                                 update.status=3;
                                 update.dispatch_remark="补录成功";
                             }else{
                                 update.status=2;
-                                update.dispatch_remark="回传结果:"+rs.ret_msg;
+                                update.dispatch_remark="回传结果:"+rs_json.ret_msg;
                             }
+
+                            //获取附件信息
+                            process_extend_model.$ProcessTaskFile.find({"proc_inst_id":proc_inst_id},function(err,res){
+                                 if(err){
+                                     reject({'success':false,'code':'1000','msg':'查找附件失败',"error":err});
+                                 }else{
+                                     if(res.length > 0){
+                                         var server=config.ftp_huanghe_server;
+                                         var ftp_huanghe_put=config.ftp_huanghe_put;
+                                         ftp_util.connect(server);
+                                         //将当前工单的附件传到ftp上
+                                         for(let index=0;index < res.length;index++ ){
+                                             ftp_util.uploadFile(res[index].file_path,ftp_huanghe_put+"/"+res[index].file_name,function(err,resFile){
+                                                 var conditions = {_id: res[index]._id};
+                                                 var update={};
+                                                 if(err){
+                                                     console.log(err);
+                                                     update.status=-1;
+                                                 }else{
+                                                     update.status=1;
+                                                 }
+                                                 //修改状态
+                                                 process_extend_model.$ProcessTaskFile.update(conditions, update, {}, function (errors) {
+                                                 });
+                                             });
+                                         }
+                                         ftp_util.end()
+                                     }
+                                 }
+                            })
+
                             //修改状态
                             mistake_model.$ProcessMistake.update(conditions, update, {}, function (errors) {
                                 if(errors){
@@ -370,6 +403,7 @@ exports.repareHuanghe= function(result1,proc_code,proc_inst_id,memo) {
                         }).catch(function(err){
                             reject({'success':false,'code':'1000','msg':'回传黄河失败',"error":err});
                         });
+
                     }else{
                         reject({'success':false,'code':'1000','msg':'获取差错信息错误',"error":null});
                     }
@@ -434,6 +468,7 @@ exports.upload_images= function(files,task_id) {
                                             var datas=[];
                                             data.file_path=path+"/"+file.originalname;
                                             data.file_name=file.originalname;
+                                            data.status=0;
                                             data.insert_time=new Date();
                                             datas.push(data);
                                             //插入附件表

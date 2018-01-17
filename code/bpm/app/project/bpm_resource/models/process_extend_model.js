@@ -46,6 +46,7 @@ var commonProcessTaskFileSchema = new Schema(
         user_name:String,//文件上传人
         file_path:String,//文件路径
         file_name:String,//文件名称
+        status:Number,//是否上传，0：未上传，1：已上传，-1：上传失败
         insert_time:Date,//插入时间
     },
     {collection: "common_bpm_proc_task_file"}// mongodb集合名
