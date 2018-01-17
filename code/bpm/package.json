@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "pm2 startOrGracefulReload ./pm2.json --no-daemon"
+    "start": "pm2 startOrGracefulReload ./bin/pm2.json --no-daemon"
   },
   "dependencies": {
     "amqp": "*",
@@ -25,8 +25,7 @@
     "fast-csv": "*",
     "formidable": "*",
     "fs-extra": "*",
-    "ftp": "*",
-    "gmdp": "*",
+    "ftp": "^0.3.10",
     "hbs": "~3.1.0",
     "i18n": "*",
     "influx": "*",
@@ -53,6 +52,7 @@
     "require-directory": "^2.1.1",
     "serve-favicon": "~2.3.0",
     "soap": "*",
+    "ssh2": "^0.5.5",
     "url": "*",
     "urlencode": "^1.1.0",
     "usage": "*",

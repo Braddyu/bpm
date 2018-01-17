@@ -2756,43 +2756,48 @@ exports.getNextNodeAndHandlerInfo=function(node_code,proc_task_id,proc_inst_id,p
                                 var next_detail=data.next_detail;
                                 var next_node=data.next_node;
 
-                                if (next_detail.item_assignee_type == 1) {
-                                    var ret_map=[];
-                                    var temp={};
-                                    temp.user_no=next_detail.item_assignee_user_code;
-                                    temp.user_name=next_detail.item_show_text;
-                                    temp.node_name=next_node.name;
-                                    temp.node_code=next_detail.item_code;
-                                    ret_map.push(temp);
-                                    resolve({"data":ret_map,"msg":"查询完成","error":null,"success":true})
+                                if(next_node.type=='end  round'){
+                                    resolve(utils.returnMsg(true, '0000', '下一节点为结束节点', next_node.type, null));
+                                    return;
+                                }else{
+                                    if (next_detail.item_assignee_type == 1) {
+                                        var ret_map=[];
+                                        var temp={};
+                                        temp.user_no=next_detail.item_assignee_user_code;
+                                        temp.user_name=next_detail.item_show_text;
+                                        temp.node_name=next_node.name;
+                                        temp.node_code=next_detail.item_code;
+                                        ret_map.push(temp);
+                                        resolve({"data":ret_map,"msg":"查询完成","error":null,"success":true})
 
-                                }
-                                if (next_detail.item_assignee_type == 2||next_detail.item_assignee_type == 3||next_detail.item_assignee_type == 4) {
-                                   if(next_detail.item_assignee_role){
-                                        // console.log(data_s.user_org_id);
-                                        // console.log(next_detail.item_assignee_role);
-                                       // console.log("_____________________________+++++++++++++++++++++++++",data_s.user_org_id);
-                                       model_user.$User.find({"user_org":{$in:data_s.user_org_id},"user_roles":{$in:next_detail.item_assignee_role.indexOf(",")!=-1?next_detail.item_assignee_role.split(","):[next_detail.item_assignee_role]}},function(err,res){
-                                           if(err){
-                                               console.log(err);
-                                               resolve({"data":null,"msg":"查询完成error","error":err,"success":false});
-                                           }else{
-                                                console.log("1111111111111111111111111111111111",res);
-                                               var ret_map=[];
-                                               // console.log(res);
-                                               for(var i=0;res.length>i;i++){
-                                                   var temp={};
-                                                   temp.user_no=res[i].user_no;
-                                                   temp.user_name=res[i].user_name;
-                                                   temp.node_name=next_node.name;
-                                                   temp.node_code=next_detail.item_code;
-                                                   ret_map.push(temp);
-                                               }
+                                    }
+                                    if (next_detail.item_assignee_type == 2||next_detail.item_assignee_type == 3||next_detail.item_assignee_type == 4) {
+                                        if(next_detail.item_assignee_role){
+                                            // console.log(data_s.user_org_id);
+                                            // console.log(next_detail.item_assignee_role);
+                                            // console.log("_____________________________+++++++++++++++++++++++++",data_s.user_org_id);
+                                            model_user.$User.find({"user_org":{$in:data_s.user_org_id},"user_roles":{$in:next_detail.item_assignee_role.indexOf(",")!=-1?next_detail.item_assignee_role.split(","):[next_detail.item_assignee_role]}},function(err,res){
+                                                if(err){
+                                                    console.log(err);
+                                                    resolve({"data":null,"msg":"查询完成error","error":err,"success":false});
+                                                }else{
+                                                    console.log("1111111111111111111111111111111111",res);
+                                                    var ret_map=[];
+                                                    // console.log(res);
+                                                    for(var i=0;res.length>i;i++){
+                                                        var temp={};
+                                                        temp.user_no=res[i].user_no;
+                                                        temp.user_name=res[i].user_name;
+                                                        temp.node_name=next_node.name;
+                                                        temp.node_code=next_detail.item_code;
+                                                        ret_map.push(temp);
+                                                    }
 
-                                                resolve({"data":ret_map,"msg":"查询完成","error":null,"success":true});
-                                           }
-                                       }) ;
-                                   }
+                                                    resolve({"data":ret_map,"msg":"查询完成","error":null,"success":true});
+                                                }
+                                            }) ;
+                                        }
+                                    }
                                 }
                             })
                         }else{

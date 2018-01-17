@@ -57,10 +57,11 @@ router.route('/list').post(function(req,res){
 })
 
 //导出所有工单列表
-router.route('/export_excel').get(function (req,res) {
+/*router.route('/export_excel').get(function (req,res) {
     service.getAllOrder( )
         .then(service.createExcelOrderList)
         .then(excelBuf=>{
+            console.log('excelBuf1====>',excelBuf);
         const date = new Date();
     const filename =
         date.getFullYear() + '-' +(date.getMonth() + 1) + '-' + date.getDate();
@@ -80,7 +81,7 @@ router.route('/export_excel').get(function (req,res) {
     });
 })
 
-});
+});*/
 /**
  * 工单类型即所有流程
  */

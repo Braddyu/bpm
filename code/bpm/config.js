@@ -233,7 +233,7 @@ var config = {
         logstashPort : 18087 ,
         logstashLevel:"DEBUG",
         consoleLevel :"DEBUG",
-        path : '../logs'
+        path : './logs'
     },
     //中间表名
     res_mapping : {table_name :"common_org_major_mapping"},
@@ -352,7 +352,7 @@ var config = {
     ftp_huanghe_server:{
         host: '192.168.9.66',
         port: 21,
-        username: 'test',
+        user: 'test',
         password: '123456'
     },//差错工单ftp地址
     ftp_huanghe_get:'/upload/',//获取差错工单ftp路径

@@ -202,8 +202,6 @@ router.route("/data/info").post(function(req,res){
  *
  */
 router.route("/exampleAndTask").post(function (req,res){
-    var map ={};
-    map.flag=true;
     var  proc_code=req.body.proc_code;
     var  proc_ver = req.body.proc_ver;
     var  user_no=req.body.user_no;
@@ -232,7 +230,7 @@ router.route("/exampleAndTask").post(function (req,res){
         var user_info = rs.data;
         console.log(user_info[0].user_roles,"aaa123");
           if(rs.success){
-              nodeAnalysisService.example_task(user_no,proc_code,JSON.stringify(map),node_code,joinup_sys,user_name,proc_vars,user_info[0].user_roles,proc_title,proc_ver).then(function(rs){
+              nodeAnalysisService.example_task(user_no,proc_code,params,node_code,joinup_sys,user_name,proc_vars,user_info[0].user_roles,proc_title,proc_ver).then(function(rs){
                   if(rs.success){
                       console.log(rs,'lslkdkdo');
                       var task_id=rs.data[0]._id;
@@ -269,8 +267,6 @@ router.route("/exampleAndTask").post(function (req,res){
  */
 
 router.route("/skip/node/user/info").post(function (req,res){
-    var map ={};
-    map.flag=true;
     var  proc_code=req.body.proc_code;
     var  user_no=req.body.user_no;
     var  params=req.body.params;
@@ -288,7 +284,7 @@ router.route("/skip/node/user/info").post(function (req,res){
         return;
     }
 
-    nodeAnalysisService.skipNodeAndGetHandlerInfo(user_no,proc_code,JSON.stringify(map),node_code).then(function(rs){
+    nodeAnalysisService.skipNodeAndGetHandlerInfo(user_no,proc_code,params,node_code).then(function(rs){
         utils.respJsonData(res,rs);
     });
 });

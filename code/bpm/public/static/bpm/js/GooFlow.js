@@ -131,7 +131,9 @@ function GooFlow(property){
 			var X,Y;
 			var ev = mousePosition(e),t = getElCoordinate(this);
 			X = ev.x-t.left+this.parentNode.scrollLeft-1;
-			Y = ev.y-t.top+this.parentNode.scrollTop-1;
+			// Y = ev.y-t.top+this.parentNode.scrollTop-1;
+			Y = ev.y-t.top+this.parentNode.parentNode.parentNode.parentNode.scrollTop-1;
+			console.log('this.parentNode---',this.parentNode.parentNode.parentNode.parentNode.scrollTop);
 			e.data.inthis.addNode(e.data.inthis.$id+"_node_"+e.data.inthis.$max,{name:"node_"+e.data.inthis.$max,left:X,top:Y,type:e.data.inthis.$nowType});
 			e.data.inthis.$max++;
 		});
@@ -143,7 +145,8 @@ function GooFlow(property){
 			var ev = mousePosition(e),t = getElCoordinate(this);
 			var X,Y;
 			X = ev.x-t.left+this.parentNode.scrollLeft;
-			Y = ev.y-t.top+this.parentNode.scrollTop;
+			// Y = ev.y-t.top+this.parentNode.scrollTop;
+			Y = ev.y-t.top+this.parentNode.parentNode.parentNode.parentNode.scrollTop;
 			var line = document.getElementById("GooFlow_tmp_line");
 			if(GooFlow.prototype.useSVG != ""){
 				line.childNodes[0].setAttribute("d","M "+lineStart.x+" "+lineStart.y+" L "+X+" "+Y);
@@ -177,7 +180,7 @@ function GooFlow(property){
 			var ev = mousePosition(e),t = getElCoordinate(This.$workArea[0]);
 			var X,Y;
 			X = ev.x-t.left+This.$workArea[0].parentNode.scrollLeft;
-			Y = ev.y-t.top+This.$workArea[0].parentNode.scrollTop;
+			Y = ev.y-t.top+This.$workArea[0].parentNode.parentNode.parentNode.parentNode.scrollTop;
 			var p = This.$lineMove.position();
 			var vX = X-p.left,vY = Y-p.top;
 			var isMove = false;
@@ -186,7 +189,7 @@ function GooFlow(property){
 				var ev = mousePosition(e);
 				var ps = This.$lineMove.position();
 				X = ev.x-t.left+This.$workArea[0].parentNode.scrollLeft;
-				Y = ev.y-t.top+This.$workArea[0].parentNode.scrollTop;
+				Y = ev.y-t.top+This.$workArea[0].parentNode.parentNode.parentNode.parentNode.scrollTop;
 				if(This.$lineMove.data("type") == "lr"){
 					X = X-vX;
 					if(X<0)   X = 0;
@@ -441,7 +444,7 @@ GooFlow.prototype = {
 					width:120,
 					height:14,
 					left:t.left+x-This.$workArea[0].parentNode.scrollLeft,
-					top:t.top+y-This.$workArea[0].parentNode.scrollTop
+					top:t.top+y-This.$workArea[0].parentNode.parentNode.parentNode.parentNode.scrollTop
 				}).data("id", This.$focus).focus();
 				This.$workArea.parent().one("mousedown", function(e){
 					if(e.button  ==  2) return false;
@@ -483,11 +486,11 @@ GooFlow.prototype = {
 
 			var X,Y;
 			X = ev.x-t.left+This.$workArea[0].parentNode.scrollLeft;
-			Y = ev.y-t.top+This.$workArea[0].parentNode.scrollTop;
+			Y = ev.y-t.top+This.$workArea[0].parentNode.parentNode.parentNode.parentNode.scrollTop;
 			if(cursor != "move"){
 				This.$ghost.css({display:"block",
 					width:This.$areaData[id].width-2+"px", height:This.$areaData[id].height-2+"px",
-					top:This.$areaData[id].top+t.top-This.$workArea[0].parentNode.scrollTop+hack+"px",
+					top:This.$areaData[id].top+t.top-This.$workArea[0].parentNode.parentNode.parentNode.parentNode.scrollTop+hack+"px",
 					left:This.$areaData[id].left+t.left-This.$workArea[0].parentNode.scrollLeft+hack+"px",cursor:cursor});
 				var vX = (This.$areaData[id].left+This.$areaData[id].width)-X;
 				var vY = (This.$areaData[id].top+This.$areaData[id].height)-Y;
@@ -503,7 +506,7 @@ GooFlow.prototype = {
 				var ev = mousePosition(e);
 				if(cursor != "move"){
 					X = ev.x-t.left+This.$workArea[0].parentNode.scrollLeft-This.$areaData[id].left+vX;
-					Y = ev.y-t.top+This.$workArea[0].parentNode.scrollTop-This.$areaData[id].top+vY;
+					Y = ev.y-t.top+This.$workArea[0].parentNode.parentNode.parentNode.parentNode.scrollTop-This.$areaData[id].top+vY;
 					if(X<200)   X = 200;
 					if(Y<100)   Y = 100;
 					switch(cursor){
@@ -516,7 +519,7 @@ GooFlow.prototype = {
 					if(This.$ghost.css("display") == "none"){
 						This.$ghost.css({display:"block",
 							width:This.$areaData[id].width-2+"px", height:This.$areaData[id].height-2+"px",
-							top:This.$areaData[id].top+t.top-This.$workArea[0].parentNode.scrollTop+hack+"px",
+							top:This.$areaData[id].top+t.top-This.$workArea[0].parentNode.parentNode.parentNode.parentNode.scrollTop+hack+"px",
 							left:This.$areaData[id].left+t.left-This.$workArea[0].parentNode.scrollLeft+hack+"px",cursor:cursor});
 					}
 					X = ev.x-vX;Y = ev.y-vY;
@@ -524,10 +527,10 @@ GooFlow.prototype = {
 						X = t.left-This.$workArea[0].parentNode.scrollLeft;
 					else if(X+This.$workArea[0].parentNode.scrollLeft+This.$areaData[id].width>t.left+This.$workArea.width())
 						X = t.left+This.$workArea.width()-This.$workArea[0].parentNode.scrollLeft-This.$areaData[id].width;
-					if(Y<t.top-This.$workArea[0].parentNode.scrollTop)
-						Y = t.top-This.$workArea[0].parentNode.scrollTop;
-					else if(Y+This.$workArea[0].parentNode.scrollTop+This.$areaData[id].height>t.top+This.$workArea.height())
-						Y = t.top+This.$workArea.height()-This.$workArea[0].parentNode.scrollTop-This.$areaData[id].height;
+					if(Y<t.top-This.$workArea[0].parentNode.parentNode.parentNode.parentNode.scrollTop)
+						Y = t.top-This.$workArea[0].parentNode.parentNode.parentNode.parentNode.scrollTop;
+					else if(Y+This.$workArea[0].parentNode.parentNode.parentNode.parentNode.scrollTop+This.$areaData[id].height>t.top+This.$workArea.height())
+						Y = t.top+This.$workArea.height()-This.$workArea[0].parentNode.parentNode.parentNode.parentNode.scrollTop-This.$areaData[id].height;
 					This.$ghost.css({left:X+hack+"px",top:Y+hack+"px"});
 				}
 				isMove = true;
@@ -540,7 +543,7 @@ GooFlow.prototype = {
 				if(cursor != "move")
 					This.resizeArea(id,This.$ghost.outerWidth(),This.$ghost.outerHeight());
 				else
-					This.moveArea(id,X+This.$workArea[0].parentNode.scrollLeft-t.left,Y+This.$workArea[0].parentNode.scrollTop-t.top);
+					This.moveArea(id,X+This.$workArea[0].parentNode.scrollLeft-t.left,Y+This.$workArea[0].parentNode.parentNode.parentNode.parentNode.scrollTop-t.top);
 				return false;
 			}
 		});
@@ -554,9 +557,10 @@ GooFlow.prototype = {
 			var p = e.target.parentNode;
 			var x = parseInt(p.style.left,10)+18,y = parseInt(p.style.top,10)+1;
 			var t = getElCoordinate(This.$workArea[0]);
+
 			This.$textArea.val(oldTxt).css({display:"block",width:100,height:14,
 				left:t.left+x-This.$workArea[0].parentNode.scrollLeft,
-				top:t.top+y-This.$workArea[0].parentNode.scrollTop}).data("id",p.id).focus();
+				top:t.top+y-This.$workArea[0].parentNode.parentNode.parentNode.parentNode.scrollTop}).data("id",p.id).focus();
 			This.$workArea.parent().one("mousedown",function(e){
 				if(e.button == 2)return false;
 				if(This.$textArea.css("display") == "block"){
@@ -592,7 +596,7 @@ GooFlow.prototype = {
 				var X,Y;
 				var ev = mousePosition(e),t = getElCoordinate(this);
 				X = ev.x-t.left+this.parentNode.parentNode.scrollLeft-1;
-				Y = ev.y-t.top+this.parentNode.parentNode.scrollTop-1;
+				Y = ev.y-t.top+this.parentNode.parentNode.parentNode.parentNode.parentNode.scrollTop-1;
 				var color = ["red","yellow","blue","green"];
 				e.data.inthis.addArea(e.data.inthis.$id+"_area_"+e.data.inthis.$max,{name:"area_"+e.data.inthis.$max,left:X,top:Y,color:color[e.data.inthis.$max%4],width:200,height:100});
 				e.data.inthis.$max++;
@@ -689,7 +693,10 @@ GooFlow.prototype = {
 			Dom.children("table").clone().prependTo(This.$ghost);
 			var X,Y;
 			X = ev.x-t.left+This.$workArea[0].parentNode.scrollLeft;
-			Y = ev.y-t.top+This.$workArea[0].parentNode.scrollTop;
+			// Y = ev.y-t.top+This.$workArea[0].parentNode.scrollTop;
+			Y = ev.y-t.top+This.$workArea[0].parentNode.parentNode.parentNode.parentNode.scrollTop;
+			console.log('This.$workArea[0].parentNode.scrollTop---',This.$workArea[0].parentNode.parentNode.parentNode.parentNode.scrollTop);
+			console.log('This.$nodeData[id].top---',This.$nodeData[id]);
 			var vX = X-This.$nodeData[id].left,vY = Y-This.$nodeData[id].top;
 			var isMove = false;
 			document.onmousemove = function(e){
@@ -701,7 +708,7 @@ GooFlow.prototype = {
 				if(isMove&&This.$ghost.css("display") == "none"){
 					This.$ghost.css({display:"block",
 						width:This.$nodeData[id].width-2+"px", height:This.$nodeData[id].height-2+"px",
-						top:This.$nodeData[id].top+t.top-This.$workArea[0].parentNode.scrollTop+hack+"px",
+						top:This.$nodeData[id].top+t.top-This.$workArea[0].parentNode.parentNode.parentNode.parentNode.scrollTop+hack+"px",
 						left:This.$nodeData[id].left+t.left-This.$workArea[0].parentNode.scrollLeft+hack+"px",cursor:"move"
 					});
 				}
@@ -710,15 +717,15 @@ GooFlow.prototype = {
 					X = t.left-This.$workArea[0].parentNode.scrollLeft;
 				else if(X+This.$workArea[0].parentNode.scrollLeft+This.$nodeData[id].width>t.left+This.$workArea.width())
 					X = t.left+This.$workArea.width()-This.$workArea[0].parentNode.scrollLeft-This.$nodeData[id].width;
-				if(Y<t.top-This.$workArea[0].parentNode.scrollTop)
-					Y = t.top-This.$workArea[0].parentNode.scrollTop;
-				else if(Y+This.$workArea[0].parentNode.scrollTop+This.$nodeData[id].height>t.top+This.$workArea.height())
-					Y = t.top+This.$workArea.height()-This.$workArea[0].parentNode.scrollTop-This.$nodeData[id].height;
+				if(Y<t.top-This.$workArea[0].parentNode.parentNode.parentNode.parentNode.scrollTop)
+					Y = t.top-This.$workArea[0].parentNode.parentNode.parentNode.parentNode.scrollTop;
+				else if(Y+This.$workArea[0].parentNode.parentNode.parentNode.parentNode.scrollTop+This.$nodeData[id].height>t.top+This.$workArea.height())
+					Y = t.top+This.$workArea.height()-This.$workArea[0].parentNode.parentNode.parentNode.parentNode.scrollTop-This.$nodeData[id].height;
 				This.$ghost.css({left:X+hack+"px",top:Y+hack+"px"});
 				isMove = true;
 			}
 			document.onmouseup = function(e){
-				if(isMove)This.moveNode(id,X+This.$workArea[0].parentNode.scrollLeft-t.left,Y+This.$workArea[0].parentNode.scrollTop-t.top);
+				if(isMove)This.moveNode(id,X+This.$workArea[0].parentNode.scrollLeft-t.left,Y+This.$workArea[0].parentNode.parentNode.parentNode.parentNode.scrollTop-t.top);
 				This.$ghost.empty().hide();
 				document.onmousemove = null;
 				document.onmouseup = null;
@@ -742,7 +749,7 @@ GooFlow.prototype = {
 			var ev = mousePosition(e),t = getElCoordinate(This.$workArea[0]);
 			var X,Y;
 			X = ev.x-t.left+This.$workArea[0].parentNode.scrollLeft;
-			Y = ev.y-t.top+This.$workArea[0].parentNode.scrollTop;
+			Y = ev.y-t.top+This.$workArea[0].parentNode.parentNode.parentNode.parentNode.scrollTop;
 			This.$workArea.data("lineStart",{"x":X,"y":Y,"id":this.id}).css("cursor","crosshair");
 			var line = GooFlow.prototype.drawLine("GooFlow_tmp_line",[X,Y],[X,Y],true,true);
 			This.$draw.appendChild(line);
@@ -763,7 +770,7 @@ GooFlow.prototype = {
 			var t = getElCoordinate(This.$workArea[0]);
 			This.$textArea.val(oldTxt).css({display:"block",height:$(this).height(),width:100,
 					left:t.left+This.$nodeData[id].left-This.$workArea[0].parentNode.scrollLeft-24,
-					top:t.top+This.$nodeData[id].top-This.$workArea[0].parentNode.scrollTop+26})
+					top:t.top+This.$nodeData[id].top-This.$workArea[0].parentNode.parentNode.parentNode.parentNode.scrollTop+26})
 				.data("id",This.$focus).focus();
 			This.$workArea.parent().one("mousedown",function(e){
 				if(e.button == 2)return false;
@@ -778,7 +785,7 @@ GooFlow.prototype = {
 			var t = getElCoordinate(This.$workArea[0]);
 			This.$textArea.val(oldTxt).css({display:"block",width:$(this).width()+24,height:$(this).height(),
 					left:t.left+24+This.$nodeData[id].left-This.$workArea[0].parentNode.scrollLeft,
-					top:t.top+2+This.$nodeData[id].top-This.$workArea[0].parentNode.scrollTop})
+					top:t.top+2+This.$nodeData[id].top-This.$workArea[0].parentNode.parentNode.parentNode.parentNode.scrollTop})
 				.data("id",This.$focus).focus();
 			This.$workArea.parent().one("mousedown",function(e){
 				if(e.button == 2)return false;
@@ -808,12 +815,12 @@ GooFlow.prototype = {
 			var ev = mousePosition(e),t = getElCoordinate(This.$workArea[0]);
 			This.$ghost.css({display:"block",
 				width:This.$nodeData[id].width-2+"px", height:This.$nodeData[id].height-2+"px",
-				top:This.$nodeData[id].top+t.top-This.$workArea[0].parentNode.scrollTop+hack+"px",
+				top:This.$nodeData[id].top+t.top-This.$workArea[0].parentNode.parentNode.parentNode.parentNode.scrollTop+hack+"px",
 				left:This.$nodeData[id].left+t.left-This.$workArea[0].parentNode.scrollLeft+hack+"px",cursor:cursor
 			});
 			var X,Y;
 			X = ev.x-t.left+This.$workArea[0].parentNode.scrollLeft;
-			Y = ev.y-t.top+This.$workArea[0].parentNode.scrollTop;
+			Y = ev.y-t.top+This.$workArea[0].parentNode.parentNode.parentNode.parentNode.scrollTop;
 			var vX = (This.$nodeData[id].left+This.$nodeData[id].width)-X;
 			var vY = (This.$nodeData[id].top+This.$nodeData[id].height)-Y;
 			var isMove = false;
@@ -822,7 +829,7 @@ GooFlow.prototype = {
 				if(!e)e = window.event;
 				var ev = mousePosition(e);
 				X = ev.x-t.left+This.$workArea[0].parentNode.scrollLeft-This.$nodeData[id].left+vX;
-				Y = ev.y-t.top+This.$workArea[0].parentNode.scrollTop-This.$nodeData[id].top+vY;
+				Y = ev.y-t.top+This.$workArea[0].parentNode.parentNode.parentNode.parentNode.scrollTop-This.$nodeData[id].top+vY;
 				if(X<86)    X = 86;
 				if(Y<24)    Y = 24;
 				isMove = true;
