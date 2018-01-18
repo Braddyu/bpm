@@ -234,13 +234,13 @@ router.route('/query').post(function(req,res){
 // -------------------------------指派任务的方法的接口-------------------------------
 router.route("/assign/task").post(function(req,res){
     var task_id=req.body.task_id;//当前任务id
-    var node_code=req.body.node_code;//当前节点编号
+    var node_code=req.body.node_code;//下一节点编号
     var user_no=req.body.user_no;//当前用户编号
     var assign_user_no=req.body.assign_user_no;//下一节点处理人编号
     var proc_title=req.body.proc_title;//标题
     var biz_vars=req.body.biz_vars;//业务变量
     var proc_vars=req.body.proc_vars;//流程变量
-    var memo=req.body.memo;//流程变量
+    var memo=req.body.memo;//处理意见
     if(!assign_user_no){
         utils.respMsg(res, false, '2001', '下一节点处理人编号为空', null, null);
         return;

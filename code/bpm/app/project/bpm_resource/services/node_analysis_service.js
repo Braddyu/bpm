@@ -125,7 +125,7 @@ function getNode(process_define_id,node_id,params,flag){
                                 console.log("after delete the invalid data")
                                 console.log(node_array)
                                 if(node_array.length>1){
-                                    resolve(utils.returnMsg(false, '1000', '有效节点删除不完全，或者错误', null, null));
+                                    resolve(utils.returnMsg(false, '9999', '有效节点删除不完全，或者错误', node_array, null));
 
                                 }else if(node_array.length==0){
                                     resolve(utils.returnMsg(false, '1000', '不存在有效节点', null, null));
@@ -3211,7 +3211,7 @@ exports.example_task=(user_no,proc_code,param_json_str,node_code,joinup_sys,user
  * @param node_code
  * @returns {bluebird}
  */
-exports.skipNodeAndGetHandlerInfo=(user_no,proc_code,param_json_str,node_code)=>{
+exports.skipNodeAndGetHandlerInfo=(user_no,proc_code,param_json_str,node_code,task_id)=>{
     console.log("get Skip node handler info   .......",user_no,proc_code,param_json_str,node_code);
     return new Promise((resolve,reject)=>{
         var params=param_json_str;
@@ -3268,7 +3268,7 @@ exports.skipNodeAndGetHandlerInfo=(user_no,proc_code,param_json_str,node_code)=>
                             if(rs.success){
                                 var current_detail=rs.data.current_detail;
                                 var next_detail=rs.data.next_detail;
-                                getSkipedNodeAndHandler(nodes[next_detail.item_code], next_detail,user_no,proc_code).then((rs)=>{
+                                getSkipedNodeAndHandler(nodes[next_detail.item_code], next_detail,user_no,proc_code,task_id).then((rs)=>{
                                     resolve(rs);
                                     // console.log(rs,'aaaaaaaaaaaaaaaaa');
                                     return ;
@@ -3293,7 +3293,7 @@ exports.skipNodeAndGetHandlerInfo=(user_no,proc_code,param_json_str,node_code)=>
 /**
  * 当跳过节点的时候获取跳过的节点的下一步处理人和节点信息
  */
-function getSkipedNodeAndHandler(next_node, next_detail,user_no,proc_code){
+function getSkipedNodeAndHandler(next_node, next_detail,user_no,proc_code,task_id){
     // console.log("____________________________________________",next_detail);
     var promise=new Promise(function(resolve,reject) {
         if (next_node.type == "end  round") {
@@ -3353,7 +3353,7 @@ function getSkipedNodeAndHandler(next_node, next_detail,user_no,proc_code){
                 if(item_assignee_ref_task){
                     if (item_assignee_ref_type == 1) {
                         //参照当前人的处理方法
-                        model.$ProcessInstTask.find({"proc_code":proc_code,"proc_inst_task_code":item_assignee_ref_task},function (err_task,res_task){
+                        model.$ProcessInstTask.find({"proc_code":proc_code,"proc_inst_task_code":item_assignee_ref_task,"_id":task_id},function (err_task,res_task){
                             if(err_task){
                                 reoslve(err_task);
                             }else{
@@ -3422,7 +3422,7 @@ function getSkipedNodeAndHandler(next_node, next_detail,user_no,proc_code){
                         if (item_assignee_ref_cur_org == 1) {
                             //同级
                             //已经解决
-                            model.$ProcessInstTask.find({"proc_code":proc_code,"proc_inst_task_code":item_assignee_ref_task},function(err_task,res_task){
+                            model.$ProcessInstTask.find({"proc_code":proc_code,"proc_inst_task_code":item_assignee_ref_task,"_id":task_id},function(err_task,res_task){
                                 if(err_task){
                                     console.log(err_task);
                                     resolve(err_task)
@@ -3433,7 +3433,9 @@ function getSkipedNodeAndHandler(next_node, next_detail,user_no,proc_code){
                                                 resolve(err_user);
                                             }else{
                                                 if(res_user.length>0){
-                                                    let org=res_user[0].role_org;
+                                                    console.log(res_user[0].user_org,'aaaaaaaaaaa')
+                                                    var org=res_user[0].user_org;
+
                                                     model_user.$User.find({"user_roles":{$in:item_assignee_role.split(",")},"user_org":{$in:org}},function(errors,results){
                                                         if(errors){
                                                             console.log(errors);
@@ -3504,7 +3506,7 @@ function getSkipedNodeAndHandler(next_node, next_detail,user_no,proc_code){
                         } else if (item_assignee_ref_cur_org == 2) {
                             //已经解决
                             //上级
-                            model.$ProcessInstTask.find({"proc_code":proc_code,"proc_inst_task_code":item_assignee_ref_task},function(err_task,res_task){
+                            model.$ProcessInstTask.find({"proc_code":proc_code,"proc_inst_task_code":item_assignee_ref_task,"_id":task_id},function(err_task,res_task){
                                 if(err_task){
                                     resolve(err_task)
                                 }else{
@@ -3526,6 +3528,52 @@ function getSkipedNodeAndHandler(next_node, next_detail,user_no,proc_code){
                                                                      pid.push(res_org[i].org_pid)
                                                                  }
 
+                                                                 var app = ["5a264057c819ed2118539069","5a264057c819ed211853906a","5a264057c819ed211853906b","5a264057c819ed211853906c","5a264057c819ed2118539074","5a264057c819ed2118539075"];
+
+                                                                 var user_roles = item_assignee_role.split(",");
+                                                                 console.log(user_roles,'sssssssasa');
+                                                                for(let i in app){
+                                                                    for(let y in user_roles){
+                                                                        if(app[i]==user_roles[y]){
+                                                                            model_user.$CommonCoreOrg.find({"org_pid":pid[0]},function(err_org,res_org){
+                                                                               if(err_org){
+
+                                                                               } else{
+                                                                                   if(res_org.length>0){
+                                                                                       var pid=[];
+                                                                                       for(let i in res_org){
+                                                                                           pid.push(res_org[i]._id)
+                                                                                       }
+                                                                                       model_user.$User.find({"user_roles":{$in:item_assignee_role.split(",")},"user_org":{$in:pid.concat(res_user[0].user_org)}},function(errors,results){
+                                                                                           if(errors){
+                                                                                               resolve(errors);
+
+                                                                                           }else{
+                                                                                               //合成 最后的结果数据
+                                                                                               //组成数据ObJECT 返回
+                                                                                               // console.log(results);
+                                                                                               // resolve({"data":results})
+                                                                                               var array=[];
+                                                                                               for(let i in results){
+                                                                                                   let map={};
+                                                                                                   map.user_name = results[i].user_name;
+                                                                                                   map.user_no = results[i].user_no;
+                                                                                                   map.node_name = node_name;
+                                                                                                   map.node_code = node_code;
+                                                                                                   array.push(map);
+                                                                                               }
+                                                                                               resolve(utils.returnMsg(true, '0000', '查询用户org112', array, null))
+
+                                                                                           }
+                                                                                       })
+                                                                                   }
+                                                                               }
+                                                                            });
+                                                                        }else{
+
+                                                                        }
+                                                                    }
+                                                                }
                                                                  model_user.$User.find({"user_roles":{$in:item_assignee_role.split(",")},"user_org":{$in:pid.concat(res_user[0].user_org)}},function(errors,results){
                                                                      if(errors){
                                                                          resolve(errors);
@@ -3548,6 +3596,7 @@ function getSkipedNodeAndHandler(next_node, next_detail,user_no,proc_code){
 
                                                                      }
                                                                  })
+
                                                              }else{
                                                                  resolve(NULL)
                                                              }
@@ -3636,18 +3685,20 @@ function getSkipedNodeAndHandler(next_node, next_detail,user_no,proc_code){
                         } else if(item_assignee_ref_cur_org == 4){
                             //上上级
                             //已经解决
-                            model.$ProcessInstTask.find({"proc_code":proc_code,"proc_inst_task_code":item_assignee_ref_task},function(err_task,res_task){
+                            model.$ProcessInstTask.find({"proc_code":proc_code,"proc_inst_task_code":item_assignee_ref_task,"_id":task_id},function(err_task,res_task){
                                 if(err_task){
                                     resolve(err_task)
                                 }else{
                                     //如果参考的节点  存在数据的 时候直接说使用节点的数据
+                                    console.log(res_task,'ooooooooooooo');
                                     if(res_task.length>0){
                                         model_user.$User.find({"user_no":res_task[0].proc_inst_task_assignee},function(err_user,res_user){
                                             if(err_user){
                                                 console.log(err_user);
                                                 resolve(err_user);
                                             }else{
-                                                model_user.$CommonCoreOrg.find({"_id":{$in:res_user.user_org}},function(err_org,res_org){
+                                                console.log(res_user);
+                                                model_user.$CommonCoreOrg.find({"_id":{$in:res_user[0].user_org}},function(err_org,res_org){
                                                     if(err_org){
                                                         console.log(err_org);
                                                         resolve(err_org);
@@ -3656,9 +3707,9 @@ function getSkipedNodeAndHandler(next_node, next_detail,user_no,proc_code){
                                                             var pid=[];
                                                             //获取上级
                                                             for(let i in res_org){
-                                                                pid.push(res_org[i]);
+                                                                pid.push(res_org[i].org_pid);
                                                             }
-
+                                                            console.log(pid,"++++++++++++++++++++++++++++++++++++++++++++++++++")
                                                             model_user.$CommonCoreOrg.find({"_id":{$in:pid}},function(errors,results){
                                                                 if(errors){
                                                                     console.log(errors);
@@ -3666,29 +3717,38 @@ function getSkipedNodeAndHandler(next_node, next_detail,user_no,proc_code){
                                                                 }else{
                                                                     if(results.length>0){
                                                                         for(let i in results){
+                                                                            console.log()
                                                                             pid.push(results[i].org_pid);
                                                                         }
-                                                                        model_user.$User.find({"user_org":{$in:pid},"user_roles":item_assignee_role.split(",")},function(error_s,result_s){
-                                                                            if(error_s){
-                                                                                console.log(error_s);
-                                                                            }else{
-                                                                               if(result_s){
-                                                                                   // resolve(result_s)
-                                                                                   var array=[];
-                                                                                   for(let i in result_s){
-                                                                                       let map={};
-                                                                                       map.user_name = result_s[i].user_name;
-                                                                                       map.user_no = result_s[i].user_no;
-                                                                                       map.node_name = node_name;
-                                                                                       map.node_code = node_code;
-                                                                                       array.push(map);
-                                                                                   }
-                                                                                   resolve(utils.returnMsg(true, '0000', '查询用户org', array, null))
-                                                                               }else{
-                                                                                   resolve(null);
-                                                                               }
+                                                                        console.log(pid,"++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+                                                                        model_user.$CommonCoreOrg.find({"org_pid":{$in:pid}},function(err_or,res_or){
+                                                                            for(let i in res_or){
+                                                                                pid.push(res_or[i]._id);
                                                                             }
-                                                                        });
+
+                                                                            model_user.$User.find({"user_org":{$in:pid},"user_roles":item_assignee_role.split(",")},function(error_s,result_s){
+                                                                                if(error_s){
+                                                                                    console.log(error_s);
+                                                                                }else{
+                                                                                    if(result_s){
+                                                                                        // resolve(result_s)
+                                                                                        var array=[];
+                                                                                        for(let i in result_s){
+                                                                                            let map={};
+                                                                                            map.user_name = result_s[i].user_name;
+                                                                                            map.user_no = result_s[i].user_no;
+                                                                                            map.node_name = node_name;
+                                                                                            map.node_code = node_code;
+                                                                                            array.push(map);
+                                                                                        }
+                                                                                        resolve(utils.returnMsg(true, '0000', '查询用户org', array, null))
+                                                                                    }else{
+                                                                                        resolve(null);
+                                                                                    }
+                                                                                }
+                                                                            });
+                                                                        })
+
                                                                     }else{
                                                                         resolve(null);
                                                                     }
@@ -3805,7 +3865,7 @@ function getSkipedNodeAndHandler(next_node, next_detail,user_no,proc_code){
                         }else{
                             //下级
                             //正在处理中
-                            model.$ProcessInstTask.find({"proc_code":proc_code,"proc_inst_task_code":item_assignee_ref_task},function(err_task,res_task){
+                            model.$ProcessInstTask.find({"proc_code":proc_code,"proc_inst_task_code":item_assignee_ref_task,"_id":task_id},function(err_task,res_task){
                                 if(err_task){
                                     resolve(err_task);
                                 }else{
