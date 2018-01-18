@@ -267,6 +267,10 @@ router.route("/next/nodeAnduser").post(function(req,res){
     // if(params_str){
     //     params=JSON.parse(params_str);
     // }
+    if(!node_code){
+        utils.respMsg(res, false, '2001', '流程编号不能为空', null, null);
+        return;
+    }
     if(!proc_task_id){
         utils.respMsg(res, false, '2001', '任务编号不能为空', null, null);
         return;
