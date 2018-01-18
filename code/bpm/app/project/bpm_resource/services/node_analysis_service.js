@@ -2955,7 +2955,6 @@ exports.getNextNodeAndHandlerInfo=function(node_code,proc_task_id,proc_inst_id,p
                                     }
 
 
-
                                 }else{
 
                                     if(next_node.type=='end  round'){
@@ -3739,71 +3738,76 @@ function getSkipedNodeAndHandler(next_node, next_detail,user_no,proc_code,task_i
                                                                  var app = ["5a264057c819ed2118539069","5a264057c819ed211853906a","5a264057c819ed211853906b","5a264057c819ed211853906c","5a264057c819ed2118539074","5a264057c819ed2118539075"];
 
                                                                  var user_roles = item_assignee_role.split(",");
-                                                                 console.log(user_roles,'sssssssasa');
-                                                                for(let i in app){
-                                                                    for(let y in user_roles){
-                                                                        if(app[i]==user_roles[y]){
-                                                                            model_user.$CommonCoreOrg.find({"org_pid":pid[0]},function(err_org,res_org){
-                                                                               if(err_org){
+                                                                 console.log(user_roles[0],'sssssssasa');
+                                                                 if(user_roles[0]== app[0] || user_roles[0] == app[1]||user_roles[0]== app[2] || user_roles[0] == app[3]
+                                                                     ||user_roles[0]== app[4] || user_roles[0] == app[5]||user_roles[1]== app[0] || user_roles[1] == app[1]||user_roles[1]== app[2] || user_roles[1] == app[3]
+                                                                             ||user_roles[1]== app[4] || user_roles[1] == app[5]){
+                                                                     for(let i in app){
+                                                                         for(let y in user_roles){
+                                                                             if(app[i]==user_roles[y]){
+                                                                                 model_user.$CommonCoreOrg.find({"org_pid":pid[0]},function(err_org,res_org){
+                                                                                     if(err_org){
 
-                                                                               } else{
-                                                                                   if(res_org.length>0){
-                                                                                       var pid=[];
-                                                                                       for(let i in res_org){
-                                                                                           pid.push(res_org[i]._id)
-                                                                                       }
-                                                                                       model_user.$User.find({"user_roles":{$in:item_assignee_role.split(",")},"user_org":{$in:pid.concat(res_user[0].user_org)}},function(errors,results){
-                                                                                           if(errors){
-                                                                                               resolve(errors);
+                                                                                     } else{
+                                                                                         if(res_org.length>0){
+                                                                                             var pid=[];
+                                                                                             for(let i in res_org){
+                                                                                                 pid.push(res_org[i]._id)
+                                                                                             }
+                                                                                             model_user.$User.find({"user_roles":{$in:item_assignee_role.split(",")},"user_org":{$in:pid.concat(res_user[0].user_org)}},function(errors,results){
+                                                                                                 if(errors){
+                                                                                                     resolve(errors);
 
-                                                                                           }else{
-                                                                                               //合成 最后的结果数据
-                                                                                               //组成数据ObJECT 返回
-                                                                                               // console.log(results);
-                                                                                               // resolve({"data":results})
-                                                                                               var array=[];
-                                                                                               for(let i in results){
-                                                                                                   let map={};
-                                                                                                   map.user_name = results[i].user_name;
-                                                                                                   map.user_no = results[i].user_no;
-                                                                                                   map.node_name = node_name;
-                                                                                                   map.node_code = node_code;
-                                                                                                   array.push(map);
-                                                                                               }
-                                                                                               resolve(utils.returnMsg(true, '0000', '查询用户org112', array, null))
+                                                                                                 }else{
+                                                                                                     //合成 最后的结果数据
+                                                                                                     //组成数据ObJECT 返回
+                                                                                                     // console.log(results);
+                                                                                                     // resolve({"data":results})
+                                                                                                     var array=[];
+                                                                                                     for(let i in results){
+                                                                                                         let map={};
+                                                                                                         map.user_name = results[i].user_name;
+                                                                                                         map.user_no = results[i].user_no;
+                                                                                                         map.node_name = node_name;
+                                                                                                         map.node_code = node_code;
+                                                                                                         array.push(map);
+                                                                                                     }
+                                                                                                     resolve(utils.returnMsg(true, '0000', '查询用户org112', array, null))
 
-                                                                                           }
-                                                                                       })
-                                                                                   }
-                                                                               }
-                                                                            });
-                                                                        }else{
+                                                                                                 }
+                                                                                             })
+                                                                                         }
+                                                                                     }
+                                                                                 });
+                                                                             }else{
 
-                                                                        }
-                                                                    }
-                                                                }
-                                                                 model_user.$User.find({"user_roles":{$in:item_assignee_role.split(",")},"user_org":{$in:pid.concat(res_user[0].user_org)}},function(errors,results){
-                                                                     if(errors){
-                                                                         resolve(errors);
-
-                                                                     }else{
-                                                                         //合成 最后的结果数据
-                                                                         //组成数据ObJECT 返回
-                                                                         // console.log(results);
-                                                                         // resolve({"data":results})
-                                                                         var array=[];
-                                                                         for(let i in results){
-                                                                             let map={};
-                                                                             map.user_name = results[i].user_name;
-                                                                             map.user_no = results[i].user_no;
-                                                                             map.node_name = node_name;
-                                                                             map.node_code = node_code;
-                                                                             array.push(map);
+                                                                             }
                                                                          }
-                                                                         resolve(utils.returnMsg(true, '0000', '查询用户org11', array, null))
-
                                                                      }
-                                                                 })
+                                                                 }else{
+                                                                     model_user.$User.find({"user_roles":{$in:item_assignee_role.split(",")},"user_org":{$in:pid.concat(res_user[0].user_org)}},function(errors,results){
+                                                                         if(errors){
+                                                                             resolve(errors);
+
+                                                                         }else{
+                                                                             //合成 最后的结果数据
+                                                                             //组成数据ObJECT 返回
+                                                                             // console.log(results);
+                                                                             // resolve({"data":results})
+                                                                             var array=[];
+                                                                             for(let i in results){
+                                                                                 let map={};
+                                                                                 map.user_name = results[i].user_name;
+                                                                                 map.user_no = results[i].user_no;
+                                                                                 map.node_name = node_name;
+                                                                                 map.node_code = node_code;
+                                                                                 array.push(map);
+                                                                             }
+                                                                             resolve(utils.returnMsg(true, '0000', '查询用户org11', array, null))
+
+                                                                         }
+                                                                     })
+                                                                 }
 
                                                              }else{
                                                                  resolve(NULL)
