@@ -1231,17 +1231,25 @@ exports.getMyCompleteTaskQuery4Eui= function(page,size,userCode,paramMap,joinup_
  * @param userCode
  * @param roleArr
  */
-exports.getMyTaskList= function(userCode,roleArr,orgArr) {
+exports.getMyTaskList= function(userCode,paramMap,joinup_sys,proc_code) {
 
     var p = new Promise(function(resolve,reject){
         var userArr = [];
         userArr.push(userCode);
-        var query = model.$ProcessInstTask.find({"$or":[{'proc_inst_task_assignee':{"$in":userArr}},{'proc_inst_task_user_role':{"$in":roleArr},'proc_inst_task_user_org':{"$in":orgArr}}],'proc_inst_task_status':0});
+        var match={};
+        if(joinup_sys){
+            match.joinup_sys=joinup_sys;
+        }
+        if(proc_code){
+            match.proc_code=proc_code;
+        }
+        var query =model.$ProcessInstTask.find({'proc_inst_task_status':0,'joinup_sys':joinup_sys,'proc_inst_task_assignee':{'$in':userArr},$or:[{'proc_inst_task_user_role':{'$in':paramMap.roles}},{'proc_inst_task_user_org':{'$in':paramMap.orgs}}]});
+       // var query = model.$ProcessInstTask.find({"$or":[{'proc_inst_task_assignee':{"$in":userArr}},{'proc_inst_task_user_role':{"$in":roleArr},'proc_inst_task_user_org':{"$in":orgArr}}],'proc_inst_task_status':0});
         query.exec(function (error, rs) {
             if (error) {
                 resolve(utils.returnMsg(false, '1000', '获取我的待办信息异常', null, error));
             } else {
-                resolve(utils.returnMsg(true, '0000', '获取我的待办成功。', rs, null));
+                resolve(utils.returnMsg(true, '0000', '获取我的待办成功111。', rs, null));
             }
         });
     });
