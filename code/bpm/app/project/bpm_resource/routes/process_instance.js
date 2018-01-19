@@ -117,6 +117,7 @@ router.route('/createInstance').post(function(req,res){
         var user_code = req.body.user_no;
         var biz_vars = req.body.biz_vars;
         var proc_vars = req.body.proc_vars;
+        var joinup_sys=req.body.joinup_sys;
         if(!proc_code){
             utils.respMsg(res, false, '2001', '流程编号为空', null, null);
             return;
@@ -128,13 +129,11 @@ router.route('/createInstance').post(function(req,res){
             inst.userInfo(user_code).then(function(rs){
                 if(rs.success && rs.data.length==1){
                     // 调用
-                    inst.createInstance(proc_code,proc_ver,proc_title,user_code,"",proc_vars,biz_vars)
+                    //
+                    //                           proc_code,proc_ver,proc_title,user_code,proc_vars,biz_vars
+                    inst.create_instance_only(proc_code,proc_ver,proc_title,user_code,joinup_sys,proc_vars,biz_vars)
                         .then(function(result){
                             utils.respJsonData(res, result);
-                        }).catch(function(err){
-                            console.log('err');
-                            logger.error("route-createInstance","创建流程实例异常",err);
-                            utils.respMsg(res, false, '1000', '创建流程实例异常', null, err);
                         });
                 }else{
                     utils.respMsg(res, false, '1000', '用户不存在', null, null);
@@ -176,7 +175,7 @@ router.route('/list').post(function(req,res){
                 }else{
                     utils.respMsg(res, false, '1000', '用户不存在', null, null);
                 }
-            })
+            });
         }
         });
 /**

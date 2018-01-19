@@ -59,8 +59,8 @@ var config = {
         resave: false,
         saveUninitialized: false,
         rolling:true,
-        //   mongodb_url:'mongodb://10.196.153.11:30000/process',
-        mongodb_url:'mongodb://192.168.9.48:27017/process',
+          mongodb_url:'mongodb://10.196.153.11:30000/process',
+        // mongodb_url:'mongodb://192.168.9.48:27017/process',
         // mongodb_url:'mongodb://10.201.253.162:27017/process1',
         //mongodb_url:'mongodb://127.0.0.1:27017/ywcj',  //内网
         mongodb_collection:'common_user_session'
@@ -124,14 +124,15 @@ var config = {
             project_url_prefix + '/portal',
             project_url_prefix +'/profile',
             project_url_prefix +'/setting',
+
             project_url_prefix +'/api/workflow/*',
             // project_url_prefix + '/api/demo/*',
             // project_url_prefix+"api/workflow/*"
         ]
     },
     mongdb:{
-          url: 'mongodb://192.168.9.48:27017/process',
-        //  url: 'mongodb://10.196.153.11:30000/process',
+          // url: 'mongodb://192.168.9.48:27017/process',
+          url: 'mongodb://10.196.153.11:30000/process',
         // url:'mongodb://10.201.253.162:27017/process1',
         // url: 'mongodb://10.201.253.111:27017/Examine',
         //url: 'mongodb://127.0.0.1:27017/ywcj',   //内网
@@ -139,7 +140,8 @@ var config = {
     },
     memcached:{
         // server_locations:['117.135.196.139:11211'],  //外网
-        server_locations:['192.168.9.48:11211'],//内网
+        server_locations: ['10.196.153.5:21211'],  //内网
+        // server_locations:['192.168.9.48:11211'],//内网
         // server_locations:['127.0.0.1:11211'],//本地
 
         options:{debug: true}

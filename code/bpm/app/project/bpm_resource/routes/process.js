@@ -271,6 +271,7 @@ router.route("/skip/node/user/info").post(function (req,res){
     var  user_no=req.body.user_no;
     var  params=req.body.params;
     var  node_code=req.body.node_code;
+    var  task_id = req.body.task_id;
     if(!user_no ){
         utils.respMsg(res, false, '2001', '派单人姓名不能为空。', null, null);
         return;
@@ -284,7 +285,7 @@ router.route("/skip/node/user/info").post(function (req,res){
         return;
     }
 
-    nodeAnalysisService.skipNodeAndGetHandlerInfo(user_no,proc_code,params,node_code).then(function(rs){
+    nodeAnalysisService.skipNodeAndGetHandlerInfo(user_no,proc_code,params,node_code,task_id).then(function(rs){
         utils.respJsonData(res,rs);
     });
 });
@@ -307,6 +308,26 @@ router.route("/single/todo").post(function(req,res){
 
 });
 
+router.route("/assiant/node").post((req,res)=>{
+    var node_code=req.boyd.node_code;
+    var user_no=req.body.user_no;
+    var proc_code=req.body.proc_code;
+    var params=req.body.params;
+    var flag=req.body.flag;
+    var role_no;
+    if(flag){
+        role_no="5a264057c819ed2118539079"
 
+    }else{
+
+        utils.respMsg(res, false, '2001', 'fanzheng  jiushi cuole 。', null, null);
+
+    }
+
+    nodeAnalysisService.getAssiantMain(user_no,role_no,proc_code,params,node_code).then((rs)=>{
+        utils.respJsonData(res, rs);
+    });
+
+});
 
 module.exports = router;
