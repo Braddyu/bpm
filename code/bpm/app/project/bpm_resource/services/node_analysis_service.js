@@ -915,33 +915,15 @@ exports.findOrg=function (user_code){
     })
 }
 
-function findOrg (user_code,reject){
+async function findOrg (user_code,reject){
     var org_info={};
-    var query=model_user.$User.find({});
-    query.where("user_no",user_code);
-    query.exec(function (err,rs){
-        if(err){
-            console.log(err);
-            reject(utils.returnMsg(false, '1000', '查询用户信息错误', null, err))
-        }else{
-            org_info.user_org=rs[0].user_org;
-        }
-    }).then(function(){
-        var querys=model_user.$CommonCoreOrg.find({});
-        if(org_info.user_org){
-            querys.where("_id",org_info.user_org)
-        }
-        querys.exec(function(error,result){
-            if(error){
-                console.log(error)
-                reject(utils.returnMsg(false, '1000', '查询用户信息错误', null, error));
-
-            }else{
-                org_info.user_org_name=result[0].org_name;
-                return org_info;
-            }
-        });
-    });
+    let rs=await model_user.$User.find({"user_no":user_code});
+    if(!rs)reject(utils.returnMsg(false, '1000', '查询用户信息错误', null, null));
+    org_info.user_org=rs[0].user_org;
+    let org= await model_user.$CommonCoreOrg.find({"_id":org_info.user_org});
+    if(!org)reject(utils.returnMsg(false, '1000', '查询用户信息错误', null, null));
+    org_info.user_org_name=result[0].org_name;
+    return org_info;
 }
 //查找上级人员
 function find_up(user_code, reject, user_org_id, returnMap, resolve) {
@@ -1041,8 +1023,6 @@ function find_up_bak(user_code, user_org_id, returnMap) {
                     reject(utils.returnMsg(false, '1000', '查询用户jigou 信息错误', null, null))
                 }
             }
-
-
         })
     })
 
@@ -1052,16 +1032,21 @@ function find_up_bak(user_code, user_org_id, returnMap) {
 
 
 //找到所有的 市级公司
-function find_all_org(orgs,arr){
-    orgs.map(function(org,index,input){
-        arr.push(org._id);
-        model_user.$CommonCoreOrg.find({"org_pid":org._id},function(err,res){
-            if(res.length){
-                find_all_org(res,arr);
-            }
-        });
-    })
+  async function find_all_org(org,arr){
+      arr.push(org);
+      let t =await model_user.$CommonCoreOrg.find({"_id":org});
+      for (let i in t ){
+          console.log(t[i].org_name)
+      }
+      t.forEach((ts)=>{
+          console.log(ts.org_name);
+      })
+      let res=await model_user.$CommonCoreOrg.find({"org_pid":org});
+      for (let i in res){
+        find_all_org(res[i]._id,arr)
+      }
 }
+
 
 exports.getAssiantMain=function(user_no,role_no,proc_code,param_json_str,node_code){
     var params={};
