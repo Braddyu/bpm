@@ -309,7 +309,7 @@ router.route("/single/todo").post(function(req,res){
 });
 
 router.route("/assiant/node").post((req,res)=>{
-    var node_code=req.boyd.node_code;
+    var node_code=req.body.node_code;
     var user_no=req.body.user_no;
     var proc_code=req.body.proc_code;
     var params=req.body.params;
