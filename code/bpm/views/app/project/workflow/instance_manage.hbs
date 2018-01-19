@@ -3,13 +3,13 @@
         <div class="widget">
             <div class="widget-body">
                 <div id="processLayout" class="easyui-layout" data-options="fit:true" style="width:600px;height:666px;">
-                    <div data-options="region:'west',title:'Inst流程实例',border:true" style="width:100%;">
+                    <!--<div data-options="region:'west',title:'流程实例管理',border:true" style="width:100%;">-->
                         <div id="toolbar1" class="row tbRow">
                             <div class="col-xs-8 col-md-8">
                                 <div class="btn-group" role="group" aria-label="...">
-                                    <button type="button" class="btn btn-default" onclick="openProgressAndLogs()"><i class="glyphicon glyphicon-th-large"></i>查看进度</button>
+                                    <button id="isprologs" type="button" class="btn btn-default" onclick="openProgressAndLogs()"><i class="glyphicon glyphicon-th-large"></i>查看进度</button>
                                     <button id="isback" type="button" class="btn btn-default" onclick="procBackPrev()"><i class="glyphicon glyphicon-info-sign"></i>回退</button>
-                                    <button type="button" class="btn btn-default" onclick="procScrap()"><i class="glyphicon glyphicon-remove"></i>废弃</button>
+                                    <button id="isscrap" type="button" class="btn btn-default" onclick="procScrap()"><i class="glyphicon glyphicon-remove"></i>废弃</button>
                                 </div>
                             </div>
                             <div class="col-xs-4 col-md-4 text-right">
@@ -28,7 +28,7 @@
                         <table id="processInstDataTable">
 
                         </table>
-                    </div>
+                    <!--</div>-->
                 </div>
             </div>
         </div>
@@ -77,7 +77,7 @@
     function loadProInstDatagrid(){
         // 加载流程基本属性列表
         $('#processInstDataTable').datagrid({
-            url:'/inst/list',
+            url:'{{projcfg.appurl}}/api/workflow/instance/list',
             method:'get',
             rownumbers:true,
             striped:true,
@@ -116,20 +116,23 @@
                 {"field": "proc_start_time","title":"创建时间","width":120,formatter:function(value,row,index){
                     return new Date(value).format();
                 }},
-                {"field": "proc_start_user","title":"申请人","width":120,
-                    formatter:function(value,row,index){
-                        return '';
-                    }
-                }
+                {"field": "proc_start_user_name","title":"派单申请人","width":120}
             ]],
-            onDblClickRow:function(rowIndex, rowData){
-                window.open('{{projcfg.appurl}}/inst/show/chart?proc_inst_id='+rowData._id+'&proc_inst_status='+rowData.proc_inst_status);
-            },
+            <!--onDblClickRow:function(rowIndex, rowData){-->
+                <!--window.open('{{projcfg.appurl}}/instance/show/progressed?proc_inst_id='+rowData._id+'&proc_inst_status='+rowData.proc_inst_status);-->
+            <!--},-->
             onClickRow:function(rowIndex, rowData){
                 if(rowData.proc_inst_status != '4' && rowData.proc_inst_status != '6' ){
                     $("#isback").removeAttr("disabled");
+                    $("#isscrap").removeAttr("disabled");
+                    $("#isprologs").removeAttr("disabled");
+                }else if(rowData.proc_inst_status == '6'){
+                    $('#isscrap').attr('disabled',"true");
+                    $('#isprologs').attr('disabled',"true");
+                    $('#isback').attr('disabled',"true");
                 }else{
                     $('#isback').attr('disabled',"true");
+                    $('#isscrap').attr('disabled',"true");
                 }
             },
             onLoadSuccess:function(json) {
@@ -163,8 +166,8 @@
             msgError('提示,该流程实例数据已被废弃，无法查看进度。');
             return false;
         }
-        window.open('{{projcfg.appurl}}/process/show/progressed?proc_inst_id='+rows[0]._id);
-        <!--window.open('{{projcfg.appurl}}/process/show/progressed?proc_inst_id='+rows[0]._id+'&proc_inst_status='+rows[0].proc_inst_status);-->
+        <!--window.open('{{projcfg.appurl}}/process/show/progressed?proc_inst_id='+rows[0]._id);-->
+        window.open('{{projcfg.appurl}}/api/workflow/instance/show/progressed?proc_inst_id='+rows[0]._id+'&proc_inst_status='+rows[0].proc_inst_status+'&_csrf={{_csrfToken}}');
     }
 
     function procBackPrev(){
@@ -174,10 +177,10 @@
             msgError('提示,请先选择一条记录进行回退操作。');
             return false;
         }
-        $.messager.confirm('回退确认','确定要回退该实例数据吗？',function(r){
+        $.messager.confirm('回退确认','确定要回退该实例工单数据吗？',function(r){
             if(r){
                 $.ajax({
-                    url: '{{projcfg.appurl}}/inst/back',
+                    url: '{{projcfg.appurl}}/api/workflow/instance/back',
                     type: 'put',
                     data: {
                         proc_inst_id:rows[0]._id,
@@ -186,7 +189,7 @@
                     traditional:true,
                     success: function (data) {
                         if(data.success) {
-                            $.messager.alert("提示","流程实例回退成功","info",function(){
+                            $.messager.alert("提示","流程实例工单回退成功","info",function(){
                                 doSearch();
                             });
                         }
@@ -207,14 +210,18 @@
             return false;
         }
         if (rows[0].proc_inst_status == '6') {
-            msgError('提示,该流程实例数据已被废弃。');
+            msgError('提示,该流程实例工单数据已被废弃。');
+            return false;
+        }
+        if (rows[0].proc_inst_status == '4') {
+            msgError('提示,该流程实例工单数据已归档，不能进行废弃操作。');
             return false;
         }
 
-        $.messager.confirm('废弃确认','确定要废弃该实例数据吗？',function(r){
+        $.messager.confirm('废弃确认','确定要废弃该实例工单数据吗？',function(r){
             if(r){
                 $.ajax({
-                    url: '{{projcfg.appurl}}/inst/scrap',
+                    url: '{{projcfg.appurl}}/api/workflow/instance/scrap',
                     type: 'put',
                     data: {
                         proc_inst_id:rows[0]._id
@@ -222,7 +229,7 @@
                     traditional:true,
                     success: function (data) {
                         if(data.success) {
-                            $.messager.alert("提示","流程实例成功废弃","info",function(){
+                            $.messager.alert("提示","流程实例工单成功废弃","info",function(){
                                doSearch();
                             });
                         }
@@ -235,88 +242,9 @@
         });
     }
 
-    function openProcessChart(flag){
-        if(flag == 1){
-            // 获得选择行
-            var rows = $('#processBaseDataTable').datagrid('getChecked');
-            if (rows.length != 1) {
-                msgError('提示,请先选择流程基本属性信息再进行新增流程实例操作');
-                return false;
-            }
-            window.open('{{projcfg.appurl}}/inst/flow?flag=1&proc_code='+encodeURI(encodeURI(rows[0].proc_code))+'&proc_name='+encodeURI(encodeURI(rows[0].proc_name)));
-        }else if(flag == 2){
-            // 获得选择行
-            var rows = $('#processDefineDataTable').datagrid('getChecked');
-            if (rows.length != 1) {
-                msgError('提示,请选择一条数据再进行修改');
-                return false;
-            }
-            window.open('{{projcfg.appurl}}/inst/flow?flag=2&id='+rows[0]._id);
-        }
-    }
-
     function doSearch() {
         $('#processInstDataTable').datagrid('reload',{
             'filterParam1':$.trim($('#filterParam1').val())
-        });
-    }
-
-    function changeStatus(flag,value){
-        var rows;
-        if(flag == 1){
-            // 获得选择行
-            rows = $('#processBaseDataTable').datagrid('getChecked');
-            if (rows.length != 1) {
-                msgError('提示,请选择一条数据再进行修改');
-                return false;
-            }
-        }else if(flag == 2){
-            // 获得选择行
-            rows = $('#processDefineDataTable').datagrid('getChecked');
-            if (rows.length != 1) {
-                msgError('提示,请选择一条数据再进行修改');
-                return false;
-            }
-        }
-        $.ajax({
-            url: '{{projcfg.appurl}}/inst/instChangeStatus/'+rows[0]._id,
-            type: 'put',
-            data: {
-                flag:flag,
-                proc_status:value
-            },
-            success: function (data) {
-                if(data.success) {
-                    msgSuccess(data.msg);
-                    doSearch(flag);
-                }
-                else {
-                    msgError(data.msg+',错误代码:'+data.code);
-                }
-            }
-        });
-    }
-
-    function doAddProcessBase() {
-        // 验证表单
-        var validate = $('#processBaseForm').form('validate');
-        if(!validate) {
-            return false;
-        }
-        $.ajax({
-            url: '{{projcfg.appurl}}/inst/inst',
-            type: 'post',
-            data: $('#processBaseForm').serializeJson(),
-            success: function (data) {
-                if(data.success) {
-                    msgSuccess(data.msg);
-                    closeDialog();
-                    doSearch(1);
-                }
-                else {
-                    msgError(data.msg+',错误代码:'+data.code);
-                }
-            }
         });
     }
 
@@ -326,71 +254,5 @@
         clear();
     }
 
-    function openPage(title, value, callback) {
-        $('#processBaseModal').show();
-        $('#processBaseModal').mydialog({
-            title:title,
-            width: 600,
-            height: 400,
-            top:150,
-            modal: true,
-            myButtons:[
-                {
-                    text:'确定',
-                    btnCls:'btn btn-blue',
-                    handler:function(){
-                        callback(value);
-                    }
-                },
-                {
-                    text:'关闭',
-                    btnCls:'btn btn-danger',
-                    handler:function(){
-                        closeDialog();
-                    }
-                }
-            ]
-        });
-    }
-
-    function toEdit() {
-        // 获得选择行
-        var rows = $('#processBaseDataTable').datagrid('getChecked');
-        if (rows.length != 1) {
-            msgError('提示,请选择一条数据再进行修改');
-            return false;
-        }
-        $('#processBaseForm').form('load',rows[0]);
-        openPage("修改流程基本属性",rows[0]._id, doEdit);
-    }
-
-    function doEdit(value) {
-        // 验证表单
-        var validate = $('#processBaseForm').form('validate');
-        if(!validate) {
-            return false;
-        }
-        $.ajax({
-            url: '{{projcfg.appurl}}/inst/inst/'+value,
-            type: 'put',
-            data: $('#processBaseForm').serializeJson(),
-            success: function (data) {
-                if(data.success) {
-                    msgSuccess(data.msg);
-                    closeDialog();
-                    doSearch(1);
-                    clear();
-                }
-                else {
-                    msgError(data.msg+',错误代码:'+data.code);
-                }
-            }
-        });
-    }
-
-    // 清空新增表单数据
-    function clear() {
-        $('#processBaseForm').form('clear');
-    }
 
 </script>
