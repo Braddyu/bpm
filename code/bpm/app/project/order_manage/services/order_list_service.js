@@ -431,7 +431,7 @@ exports.upload_images= function(files,task_id) {
         let  path = "../public/files/mistake/"+date;
         ( async function(){
             //如果有上传文件
-            if(files.length>0){
+            if(files && files.length>0){
                 await ( function(){
                     //判断文件夹是否存在
                     fs.exists(path,function(exists){

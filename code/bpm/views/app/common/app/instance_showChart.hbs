@@ -57,7 +57,7 @@
                 var proc_inst_id = params.data.proc_inst_id;
                 data = {proc_inst_id:proc_inst_id};
                 $.ajax({
-                    url: '{{projcfg.appurl}}/api/bpm_resource/process/show/process',
+                    url: '{{projcfg.appurl}}/api/process/show/process',
                     type: 'get',
                     async:false,
                     data:data,
@@ -108,7 +108,7 @@
         function handlerLogs(inst_id,status){
             // 加载流程基本属性列表
             $('#handlerLogsDataTable').datagrid({
-                url:'/api/bpm_resource/process/handler/logs',
+                url:'{{projcfg.appurl}}/api/process/handler/logs',
                 method:'get',
                 queryParams:{proc_inst_id:inst_id,proc_inst_status:status},
                 rownumbers:true,
@@ -185,7 +185,7 @@
     </script>
 </head>
 <body id="layout" class="easyui-layout" data-options="fit:true">
-    <div data-options="region:'center',title:'流程进度'">
+    <div data-options="region:'center',title:'流程进度'" style="overflow: scroll">
         <div id="processDefineDiv"></div>
     </div>
     <div data-options="region:'east',title:'处理日志',width:'50%',collapsible:false">

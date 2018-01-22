@@ -5,6 +5,7 @@
 var mongoose = require('mongoose');
 var config   = require('../../../../config');
 // var logger = require('../common/logger');
+mongoose.Promise=Promise;
 var $mongoose = null;
 exports.init = function() {
     if($mongoose == null) {

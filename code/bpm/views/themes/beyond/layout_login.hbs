@@ -209,6 +209,7 @@
                 <div class="login" style="margin-left: 14%">
                     <a href="#" onclick="loadTab()">手机登录</a>
                 </div>
+                <input type='hidden' name='_csrf' value='{{ _csrfToken }}'/>
             </form>
         </div>>
     </div>
@@ -220,6 +221,7 @@
             <div class="loginbox-title" >手机登陆</div>
 
             <form class="m-t" role="form" action="{{projcfg.appurl}}/login" method="post" onsubmit="return submitForm(2);">
+
                 <div class="loginbox-textbox">
                     <input id="phonename" name='username'  value='' type="text" class="form-control" placeholder="请输入手机号" />
                     <input type="hidden" id="flag" name="flag" value="2"/>
@@ -246,8 +248,9 @@
                 <div class="login" style="margin-left: 14%">
                     <a href="#" >手机登录</a>
                 </div>
+                <input type='hidden' name='_csrf' value='{{ _csrfToken }}'/>
             </form>
-        </div>>
+        </div>
     </div>
 </div>
 
@@ -271,7 +274,11 @@
             loadTab2();
         }
     });
-</script>>
+
+
+</script>
+
+
 
 
 </body>
