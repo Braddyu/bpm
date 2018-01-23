@@ -2,10 +2,32 @@ var express = require('express');
 var router = express.Router();
 var utils = require('../../../../lib/utils/app_utils');
 var service = require('../services/mistake_list_service');
+var xss = require('xss');
 
 /**
  * 工单列表
  */
+// router.use(function (req, res, next) {
+//     console.log(req.headers);
+//
+//     console.log(req.query,req.body,req.params);
+//
+//     //反正XSS攻击，过滤html字符，处理get请求
+//     if(req.query){
+//         var query=req.query;
+//         for(let item in query){
+//             req.query[item]=xss(query[item])
+//         }
+//     }
+//     //处理post请求
+//     if(req.body){
+//         var body=req.body;
+//         for(let item in body){
+//             req.body[item]=xss(body[item])
+//         }
+//     }
+//     next();
+// });
 router.route('/list').post(function(req,res){
     console.log("开始获取所有工单列表...");
     var queryDate = req.body.queryDate;//查询时间
@@ -78,7 +100,9 @@ router.route('/dispatch_logs').post(function(req,res){
     var status = req.body.status;
     var page = req.body.page;
     var size = req.body.rows;
-
+    console.log("queryDate",req.body);
+    console.log("page",page);
+    console.log("size",size);
     var conditionMap = {}
     if(queryDate){
         conditionMap.dispatch_time = queryDate.replace(/\-/g,'') ;

@@ -30,11 +30,11 @@ server.on('error', onError);
 server.on('listening', onListening);
 
 var logUtils = require('../app/common/core/utils/log_utils');
-process.on('uncaughtException',function(err){
-    console.error('[uncaught_web_err]:'+err);
-    logUtils.helper.error('E1105','uncaught_web_err',err, '');
-    process.exit();
-});
+// process.on('uncaughtException',function(err){
+//     console.error('[uncaught_web_err]:'+err);
+//     logUtils.helper.error('E1105','uncaught_web_err',err, '');
+//     process.exit();
+// });
 
 /**
  * Normalize a port into a number, string, or false.

@@ -19,6 +19,7 @@ app.use("/"+config.project.appid+"/fileUtil",fileUtil);
 // 开发平台
 var gmdp = require('gmdp').init_gmdp;
 var mqtt_init = require('./app/common/job/utils/mqtt_init');
+var xss = require('xss');
 app.use(config.project.appurl + '/file',express.static('/opt/apps/upload'));
 
 // 路由自动挂载
@@ -34,8 +35,28 @@ var tree_utils = gmdp.core_tree_utils;
 
  //装载流水号中间件
  app.use(seqHelper.seqCreate);*/
-
-
+app.use(bodyParser.json({limit: '10mb'}));
+app.use(bodyParser.urlencoded({limit: '10mb', extended: false}));
+//防止XSS跨站漏洞
+app.use(xssFilter({ setOnOldIE: true }));
+//防止XSS 攻击
+app.use(function (req, res, next) {
+    //反正XSS攻击，过滤html字符，处理get请求
+    if(req.query){
+        var query=req.query;
+        for(let item in query){
+            req.query[item]=xss(query[item])
+        }
+    }
+    //处理post请求
+    if(req.body){
+        var body=req.body;
+        for(let item in body){
+            req.body[item]=xss(body[item])
+        }
+    }
+    next();
+});
 //将全局配置信息传入locals
 app.locals.projcfg = config.project;
 
@@ -149,8 +170,7 @@ app.use(favicon(path.join(__dirname, 'public', 'static/images/favicon.ico')));
 //app.use(logger('dev'));
 // app.use(bodyParser.json());
 // app.use(bodyParser.urlencoded({extended: false}));
-app.use(bodyParser.json({limit: '10mb'}));
-app.use(bodyParser.urlencoded({limit: '10mb', extended: false}));
+
 app.use(cookieParser());
 
 //Mongo-Session
@@ -189,8 +209,7 @@ app.use(function(req,res,next){
      next();
 });
 
-//防止XSS跨站漏洞
- app.use(xssFilter({ setOnOldIE: true }));
+
 
 //国际化支持
 app.use(i18n.init);
