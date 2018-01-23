@@ -61,6 +61,5 @@
     "x-xss-protection": "^1.0.0",
     "xml2js": "*",
     "xss": "*"
-
   }
 }

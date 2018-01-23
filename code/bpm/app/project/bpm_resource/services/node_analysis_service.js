@@ -3002,8 +3002,8 @@ function getSkipedNodeAndHandler(next_node, next_detail,user_no,proc_code,task_i
                 // var orgs = ;
                 let orgs=await model_user.$CommonCoreOrg.find({"_id":{$in:item_assignee_org_ids.split(",")}});
                 if(!orgs){resolve(utils.returnMsg(false, '1001', '查询用户org', null, null));return ;}
-                var org=
-                var level=10;
+                var org='';
+                let level=10;
                 for(let i in orgs){
                     if(level>orgs[i].level){
                         org=orgs[i]._id;
@@ -3478,8 +3478,8 @@ function findNodeInfo(next_node, next_detail,user_no) {
                 // var orgs = ;
                 let orgs=await model_user.$CommonCoreOrg.find({"_id":{$in:item_assignee_org_ids.split(",")}});
                 if(!orgs){resolve(utils.returnMsg(false, '1001', '查询用户org', null, null));return ;}
-                var org=
-                var level=10;
+                var org='';
+                let level=10;
                 for(let i in orgs){
                     if(level>orgs[i].level){
                         org=orgs[i]._id;
