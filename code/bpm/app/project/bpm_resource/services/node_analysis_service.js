@@ -4161,51 +4161,5 @@ exports.getPriateServicer=(proc_code,node_code,params,role_no)=>{
 
 
     })
-
-
 }
 
-/**
- * 获取令牌
- * @returns {bluebird}
- */
-exports.token = function(ip){
-    var p = new Promise(function(resolve,reject){
-        //随机生成令牌
-        var token=utils.randomWord(1,25,25);
-        var tokenJson={};
-        tokenJson.token=token;
-        tokenJson.ip=ip;
-        tokenJson.insert_time=new Date();
-        model.$ProcessToken.create([tokenJson],function (err,rs) {
-            if(err){
-                resolve(utils.returnMsg(false, '1000', '令牌生成失败。', null, null));
-            }else{
-                resolve(utils.returnMsg(true, '0000', '令牌生成成功。', rs, null));
-            }
-        })
-    });
-    return p;
-}
-
-
-/**
- * 验证令牌
- * @returns {bluebird}
- */
-exports.valiateToken = function(token){
-    var p = new Promise(function(resolve,reject){
-        model.$ProcessToken.find({"token":token},function (err,rs) {
-            if(err){
-                resolve(utils.returnMsg(false, '1000', '令牌验证异常。', null, null));
-            }else{
-                if(rs.length>0){
-                    resolve(utils.returnMsg(true, '0000', '令牌验证成功。', rs, null));
-                }else{
-                    resolve(utils.returnMsg(false, '1000', '错误的令牌。', rs, null));
-                }
-            }
-        })
-    });
-    return p;
-}

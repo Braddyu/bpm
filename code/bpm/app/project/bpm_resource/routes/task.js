@@ -6,7 +6,7 @@ var inst = require('../services/instance_service');
 var nodeTransferService=require("../services/node_transfer_service");
 var userService = require('../../workflow/services/user_service');
 var nodeAnalysisService=require("../services/node_analysis_service");
-
+var proc = require('../services/process_service');
 
 
     // -------------------------------查询我的待办数据接口-------------------------------
@@ -19,7 +19,7 @@ exports.task=function() {
         if (req.headers.token || req.query.token || req.body.token) {
             //优先从header中获取，其次get和post
             var token = req.headers.token ? req.headers.token : (req.query.token ? req.query.token : req.body.token);
-            nodeAnalysisService.valiateToken(token).then(function (re) {
+            proc.valiateToken(token).then(function (re) {
                 if (re.success) {
                     next();
                 } else {
@@ -65,7 +65,7 @@ exports.task=function() {
                                     utils.respMsg(res, false, '1000', '获取数据异常', null, err_inst);
                                 });
                             } else {
-                                inst.getMyTaskList(userNo, result, joinup_sys, proc_code).then(function (taskresult) {
+                                inst.getMyTaskList(userNo, result, joinup_sys).then(function (taskresult) {
                                     utils.respJsonData(res, taskresult);
                                 }).catch(function (err_inst) {
                                     // console.log(err_inst);
