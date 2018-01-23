@@ -24,7 +24,7 @@ exports.process=function() {
             if (req.headers.token || req.query.token || req.body.token) {
                 //优先从header中获取，其次get和post
                 var token = req.headers.token ? req.headers.token : (req.query.token ? req.query.token : req.body.token);
-                nodeAnalysisService.valiateToken(token).then(function (re) {
+                proc.valiateToken(token).then(function (re) {
                     if (re.success) {
                         next();
                     } else {
@@ -371,7 +371,7 @@ exports.process=function() {
             if(ip.split(',').length>0){
                 ip = ip.split(',')[0]
             }
-            nodeAnalysisService.token(ip).then(function(re){
+            proc.token(ip).then(function(re){
                 utils.respJsonData(res, re);
             });
         }else{

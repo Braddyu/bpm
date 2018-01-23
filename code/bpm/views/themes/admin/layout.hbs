@@ -49,6 +49,11 @@
     <script type="text/javascript" src="{{projcfg.appurl}}/static/js/jquery-migrate-1.4.1.min.js"></script>
     <script type="text/javascript" src="{{projcfg.appurl}}/static/js/easyui/locale/easyui-lang-zh_CN.js"></script>
     <link rel="stylesheet" type="text/css" href="{{projcfg.appurl}}/static/css/common/style.css">
+    <script>
+        $.ajaxSettings.beforeSend = function(xhr, request) {
+            xhr.setRequestHeader('csrf-token', '{{_csrfToken}}');
+        }
+    </script>
 </head>
 <body class="{{projcfg.skin}}" style="font-family:'Microsoft YaHei'" >
 {{{body}}}

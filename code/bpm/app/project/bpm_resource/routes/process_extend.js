@@ -9,6 +9,7 @@ var logger = require('../../../../lib/logHelper').helper;
 var utils = require('../../../../lib/utils/app_utils');
 var process_extend_service=require("../services/process_extend_service");
 var nodeAnalysisService=require("../services/node_analysis_service");
+var proc = require('../services/process_service');
 
 
 /**
@@ -25,7 +26,7 @@ exports.process_extend=function() {
         if (req.headers.token || req.query.token || req.body.token) {
             //优先从header中获取，其次get和post
             var token = req.headers.token ? req.headers.token : (req.query.token ? req.query.token : req.body.token);
-            nodeAnalysisService.valiateToken(token).then(function (re) {
+            proc.valiateToken(token).then(function (re) {
                 if (re.success) {
                     next();
                 } else {
