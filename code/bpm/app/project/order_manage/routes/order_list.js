@@ -172,7 +172,7 @@ router.post('/assignTask',  upload.array("images"), function(req,res, next){
                 service.upload_images(files,task_id).then(function(result){
                     utils.respJsonData(res, result);
                 }).catch(function(err){
-                    utils.respMsg(res, false, '1000', '回传黄河失败', null, err);
+                    utils.respMsg(res, false, '1000', '上传附件失败', null, err);
                 })
             }else{
                 //删除文件

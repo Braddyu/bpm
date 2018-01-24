@@ -113,7 +113,7 @@
                 </tr>
                 <tr  id="fileUpload">
                     <td align="right" class="tdLabel">附件上传:</td>
-                    <td>  <input type="file"labelPosition="top"id="images" name="images"multiple="true" data-options="prompt:'选择文件...',buttonText:'选择'" style="width:250px"/>
+                    <td>  <input type="file"labelPosition="top"id="images" name="images" multiple="true" data-options="prompt:'选择文件...',buttonText:'选择'" style="width:250px"/>
                     </td>
                 </tr>
 
@@ -125,7 +125,9 @@
                 </div>
 
             </fieldset>
-
+<!--
+            <input type='hidden' name='_csrf' value='{{ _csrfToken }}'/>
+-->
         </form>
 
 
@@ -145,7 +147,11 @@
             </table>
         </div>
     </div>
-
+<script>
+    $.ajaxSettings.beforeSend = function(xhr, request) {
+        xhr.setRequestHeader('csrf-token', '{{_csrfToken}}');
+    }
+</script>
 <script type="text/javascript">
     //是否属于归档节点
     var endFlag=false;
@@ -479,15 +485,33 @@
                 }
             }
 
+            var ajax_option= {
+                   url: "{{projcfg.appurl}}/api/order_manage/order_list/assignTask?_csrf="+'{{_csrfToken}}',//默认是form action
+                success: function (data) {
+                    if(data.success){
+                        $.messager.alert('提示','处理成功');
+                        parent.$("#dd").dialog('close');
+                        parent.$('#orderTablelist').datagrid('reload');
+
+                    }else{
+                        parent.$("#dd").dialog('close');
+                        parent.$('#orderTablelist').datagrid('reload');
+                        $.messager.alert('错误提示',data.msg);
+                    }
+                }
+            }
+                $('#orderDetailForm').ajaxSubmit(ajax_option);
 
             //中间节点处理
-           $('#orderDetailForm').form('submit', {
+          /* $('#orderDetailForm').form('submit', {
                 url:'{{projcfg.appurl}}/api/order_manage/order_list/assignTask',
                 onSubmit: function(){
+
                     // do some check
                     // return false to prevent submit;
                 },
                 success:function(data){
+                    alert(data);
                     if(data.success){
                         $.messager.alert('提示','处理成功');
                         parent.$("#dd").dialog('close');
@@ -499,7 +523,7 @@
                         $.messager.alert('错误提示',data.error);
                     }
                 }
-            });
+            });*/
         }
 
     }
@@ -547,7 +571,7 @@
         }
         $.ajaxFileUpload({
             type:'POST',
-            url : '{{projcfg.appurl}}/api/order_manage/order_list/uploadFile?id='+file_id,
+            url : '{{projcfg.appurl}}/api/order_manage/order_list/uploadFile?id='+file_id+"&_csrf="+'{{_csrfToken}}',
             secureuri : false,
             fileElementId : 'file'+file_id,     //与html代码中的input的id值对应
             dataType : 'json',

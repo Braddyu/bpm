@@ -1231,7 +1231,7 @@ exports.getMyCompleteTaskQuery4Eui= function(page,size,userCode,paramMap,joinup_
  * @param userCode
  * @param roleArr
  */
-exports.getMyTaskList= function(userCode,paramMap,joinup_sys,proc_code) {
+exports.getMyTaskList= function(userCode,paramMap,joinup_sys) {
 
     var p = new Promise(function(resolve,reject){
         var userArr = [];

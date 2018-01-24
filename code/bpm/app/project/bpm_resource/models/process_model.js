@@ -299,3 +299,17 @@ exports.$ProcessTaskHistroy = mongoose.model('CommonCoreProcessTaskHistroy', com
 //
 // // 流程流转历史信息model
 // exports.$ProcessInstTaskHistroy = mongoose.model('CommonCoreProcessInstTaskHistroy', commonProcessInstTaskHistroySchema);
+
+
+//令牌对象
+var processToken = new Schema(
+    {
+        token:String,//令牌
+        ip:String,//生成令牌的ip
+        insert_time:Date//生成令牌的时间
+    },
+    {collection: "common_bpm_proc_token"}// mongodb集合名
+);
+
+// 流程流转信息model
+exports.$ProcessToken = mongoose.model('ProcessToken ', processToken );

@@ -122,7 +122,8 @@
                 dataType:'json',
                 timeout: 100000000,
                 data: {
-                    queryDate:$('#queryDate').datebox('getValue')
+                    queryDate:$('#queryDate').datebox('getValue'),
+                    _csrf: '{{ _csrfToken }}'
                 },
                 beforeSend: ajaxLoading,
                 success: function (data) {

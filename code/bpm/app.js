@@ -5,6 +5,8 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var session = require('express-session');
 var hbs = require('hbs');
+var csrf = require('csurf');
+var xssFilter = require('x-xss-protection');
 //国际化
 var i18n = require('i18n');
 //config
@@ -17,6 +19,7 @@ app.use("/"+config.project.appid+"/fileUtil",fileUtil);
 // 开发平台
 var gmdp = require('gmdp').init_gmdp;
 var mqtt_init = require('./app/common/job/utils/mqtt_init');
+var xss = require('xss');
 app.use(config.project.appurl + '/file',express.static('/opt/apps/upload'));
 
 // 路由自动挂载
@@ -32,8 +35,28 @@ var tree_utils = gmdp.core_tree_utils;
 
  //装载流水号中间件
  app.use(seqHelper.seqCreate);*/
-
-
+app.use(bodyParser.json({limit: '10mb'}));
+app.use(bodyParser.urlencoded({limit: '10mb', extended: false}));
+//防止XSS跨站漏洞
+app.use(xssFilter({ setOnOldIE: true }));
+//防止XSS 攻击
+app.use(function (req, res, next) {
+    //反正XSS攻击，过滤html字符，处理get请求
+    if(req.query){
+        var query=req.query;
+        for(let item in query){
+            req.query[item]=xss(query[item])
+        }
+    }
+    //处理post请求
+    if(req.body){
+        var body=req.body;
+        for(let item in body){
+            req.body[item]=xss(body[item])
+        }
+    }
+    next();
+});
 //将全局配置信息传入locals
 app.locals.projcfg = config.project;
 
@@ -147,8 +170,7 @@ app.use(favicon(path.join(__dirname, 'public', 'static/images/favicon.ico')));
 //app.use(logger('dev'));
 // app.use(bodyParser.json());
 // app.use(bodyParser.urlencoded({extended: false}));
-app.use(bodyParser.json({limit: '10mb'}));
-app.use(bodyParser.urlencoded({limit: '10mb', extended: false}));
+
 app.use(cookieParser());
 
 //Mongo-Session
@@ -165,10 +187,28 @@ app.use(session({
         interval: config.session.cookie_maxAge,
         collection: config.session.mongodb_collection ? config.session.mongodb_collection : 'common_user_session',
         touchAfter: 24 * 3600
-    })
+    }),
+     cookie: {secure: false}
 }));
 
 app.use(config.project.appurl, express.static(path.join(__dirname, 'public')));
+
+//过滤对外接口不进行token验证
+app.use('/gdgl/api/process/', require('../bpm/app/project/bpm_resource/routes/process').process())
+app.use('/gdgl/api/process_instance/', require('../bpm/app/project/bpm_resource/routes/process_instance').process_instance())
+app.use('/gdgl/api/process_extend/', require('../bpm/app/project/bpm_resource/routes/process_extend').process_extend())
+app.use('/gdgl/api/task/', require('../bpm/app/project/bpm_resource/routes/task').task())
+
+
+app.use(bodyParser.urlencoded({ extended: false }))
+app.use(cookieParser())
+// //防止CSRF跨站请求伪造
+app.use(csrf({ cookie: true }));
+app.use(function(req,res,next){
+     app.locals._csrfToken=req.csrfToken();
+     next();
+});
+
 
 
 //国际化支持
@@ -192,6 +232,8 @@ app.use(function (req, res, next) {
     err.status = 404;
     next(err);
 });
+
+
 
 // error handlers
 // development error handler
