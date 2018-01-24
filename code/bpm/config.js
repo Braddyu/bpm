@@ -67,7 +67,7 @@ var config = {
     },
     routes:{
         mount_path:'*/routes/*',// 路由挂载路径
-        is_debug:true,// 是否开启调试模式
+        is_debug:false,// 是否开启调试模式
         mappings: {
             '/common/job/routes/' : project_url_prefix + '/admin/api/common/job/',//schedule路由匹配路径
             '/common/bpm/routes/': project_url_prefix + '/admin/api/common/bpm/',
@@ -132,7 +132,7 @@ var config = {
     },
     mongdb:{
            url: 'mongodb://192.168.9.48:27017/process',
-        //  url: 'mongodb://10.196.153.11:30000/process',
+         // url: 'mongodb://10.196.153.11:30000/process',
         // url:'mongodb://10.201.253.162:27017/process1',
         // url: 'mongodb://10.201.253.111:27017/Examine',
         //url: 'mongodb://127.0.0.1:27017/ywcj',   //内网

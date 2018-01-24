@@ -187,7 +187,7 @@ exports.buildEasyuiTree = function(nodes, id, text, parentid, attributes) {
             }
         }
     }
-    console.log("=========tree==========",tree);
+    // console.log("=========tree==========",tree);
     return tree;
 }
 

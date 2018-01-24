@@ -36,7 +36,7 @@ exports.uploadFile = function(req, opts, cb) {
     form.maxFieldsSize = form_opts.maxFieldsSize ? form_opts.maxFieldsSize : 20 * 1024 * 1024;   //文件大小
 
     // 创建文件夹
-    mkdirsSync(form.uploadDir,0777);
+    // mkdirsSync(form.uploadDir,0777);
 
     form.parse(req, function(err, fields, files) {
         /*console.log(fields);
