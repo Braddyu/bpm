@@ -29,7 +29,6 @@ var nodeDetail,data_define;
 //创建子流程实例
 exports.createSubjectInstance=function(data,node_array,user_code,parent_proc_inst_id,param_json_str){
     var params;
-    console.log("--------------------------------============================================");
     //判断参数 和解析参数
     if(!(param_json_str==null||param_json_str==""||param_json_str=="undefined"||param_json_str=="{}")){
         var params_json=JSON.parse(param_json_str);
@@ -204,7 +203,6 @@ function insertSubTask(result,condition,node_detail){
             //写入数据 创建任务
             model.$ProcessInstTask.create(arr,function(error,rs){
                 if(error) {
-                    console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@",error);
                     // reject('新增流程实例信息时出现异常。'+error);
                     resolve(utils.returnMsg(false, '1000', '子流程实例创建启动出现异常。', null, error));
                 }
@@ -306,7 +304,7 @@ function saveSubIns(dataMap,data,user_code,parent_proc_inst_id){
 
 }
 
-exports.create_instance_only=function(proc_code,proc_ver,proc_title,user_code,joinup_sys,proc_vars,biz_vars){
+exports.create_instance_only=function(proc_code,proc_ver,proc_title,user_code,joinup_sys,proc_vars,biz_vars,next_name){
     return new Promise(function(resolve,reject){
         var conditionMap = {};
         if(proc_code){
@@ -335,7 +333,6 @@ exports.create_instance_only=function(proc_code,proc_ver,proc_title,user_code,jo
                         if(res_user.length>0){
                             //找到开始节点
                             var firstNode = nodeAnalysisService.findFirstNode(JSON.parse(data.proc_define));
-                            console.log(data);
                             var item_config=JSON.parse(data.item_config);
                             var proc_define=JSON.parse(data.proc_define);
                             // resolve({"data":data,"success":true,"msg":"Ok "});
@@ -425,7 +422,7 @@ exports.create_instance_only=function(proc_code,proc_ver,proc_title,user_code,jo
                                             task.proc_inst_task_status=0;// : Number,// 流程当前状态 0-未处理，1-已完成
                                             task.proc_inst_task_assignee=user_code;// : String,// 流程处理人code
                                             task.proc_inst_task_assignee_name=user_name;// : String,// 流程处理人名
-                                            task.proc_inst_task_user_role=current_detail.item_assignee_role.split(",");// :  [{type: Schema.Types.ObjectId}],// 流程处理用户角色ID
+                                            task.proc_inst_task_user_role=current_detail.item_assignee_role?current_detail.item_assignee_role.split(","):[];// :  [{type: Schema.Types.ObjectId}],// 流程处理用户角色ID
                                             // proc_inst_task_handler_code:String,//实际处理人
                                             task.proc_inst_task_user_role_name=current_detail.item_assignee_role_name;////: String,// 流程处理用户角色名
                                             task.proc_inst_task_user_org=current_detail.item_assignee_org_ids?current_detail.item_assignee_org_ids.split(","):[];// :  [{type: Schema.Types.ObjectId}],// 流程处理用户组织ID
@@ -442,16 +439,27 @@ exports.create_instance_only=function(proc_code,proc_ver,proc_title,user_code,jo
                                             task.proc_inst_prev_node_code="";// : String,// 流程实例上一处理节点编号
                                             task.proc_inst_prev_node_handler_user="";// : String,// 流程实例上一节点处理人编号
                                             task.proc_task_start_user_role_names=user_roles;//:String,//流程发起人角色
-                                            task.proc_task_start_user_role_code=[user_code];//, //流程发起人id
+
+                                            if(user_code){
+
+                                                task.proc_task_start_user_role_code=[user_code];
+                                            }else{
+                                                task.proc_task_start_user_role_code=[];
+                                            }
+                                            //, //流程发起人id
                                             task.proc_task_start_name=user_name;//,//流程发起人姓名
                                             // proc_task_name:{ type: String,  required: false ,index: true },//流程名
                                             //  proc_task_work_day:Number,//天数
+
                                             task.proc_task_ver =data.version;//,//版本号
                                             task.proc_task_content="";// : String,// 流程派单内容
                                             // proc_task_code : String,// 流程编码
                                             task.proc_start_time =new Date();//,// 流程发起时间(开始时间)
                                             task.proc_vars=proc_vars;// : String,// 流程变量
                                             task.joinup_sys=joinup_sys;//:String,//所属系统编号
+                                            task.next_name = next_name;//下一节点处理人姓名
+                                            task.proc_back = 0;
+                                            task.previous_step = '';//上一节点任务id
                                             model.$ProcessInstTask.create([task],function(error_task,result_task){
                                                 if(error_task){
                                                     console.log(error_task);
@@ -491,7 +499,7 @@ exports.create_instance_only=function(proc_code,proc_ver,proc_title,user_code,jo
  */
 
 
-exports.createInstance=function(proc_code,proc_ver,proc_title,param_json_str,proc_vars_json,biz_vars_json,user_code,user_name,joinup_sys){
+exports.createInstance=function(proc_code,proc_ver,proc_title,param_json_str,proc_vars_json,biz_vars_json,user_code,user_name,joinup_sys,next_name){
     var promise = new Promise(function(resolve,reject){
         var params;
         //解析参数
@@ -538,14 +546,12 @@ exports.createInstance=function(proc_code,proc_ver,proc_title,param_json_str,pro
                     //获取节点信息
                     nodeAnalysisService.getNode(data._id,firstNode,params,true)
                         .then(function(rss){
-                            console.log("node in fo   and  note the request node_code and info");
                             // console.log(rss);
 
 
                             //获取下一节点的操作人 或者 操作角色信息
                             nodeAnalysisService.findNextHandler(user_code,data._id,firstNode,params,"").then(function(rsss){
                                 var condition={};
-                                console.log("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++???",rsss);
                                 if(rss.success&&rsss.success){
                                     // console.log(rss.data);
 
@@ -558,15 +564,12 @@ exports.createInstance=function(proc_code,proc_ver,proc_title,param_json_str,pro
                                             find(resu[0].user_roles.toString()).then(function(role){
                                                 if(role.success){
                                                     condition.proc_start_user_role_names = role.data.toString().split(',');
-                                                    console.log(condition.proc_start_user_role_names,'0000000');
                                                     condition.proc_start_user_role_code = resu[0].user_roles.toString();
                                                     condition.proc_start_user_name =user_name;
 
                                                     var node_detail=rss.data;
-                                                    console.log(rss,'node_detailnode_detail')
                                                     var orgs=rsss.data;
                                                     nodeDetail=node_detail;
-                                                    console.log(nodeDetail,'nodeDetailnodeDetail');
 
                                                     var current_detail = node_detail.current_detail;//当前节点信息
                                                     var current_node = node_detail.current_node;//当前节点code
@@ -603,16 +606,13 @@ exports.createInstance=function(proc_code,proc_ver,proc_title,param_json_str,pro
                                                     condition.proc_vars = proc_vars_json;
                                                     //新加字段所属系统编号
                                                     condition.joinup_sys = joinup_sys;
-                                                    console.log(condition);
                                                     //写入数据库 创建流程实例化方法
                                                     saveIns(condition,proc_code,proc_title,user_code).then(function(insresult){
                                                         if(insresult.success){
-                                                            console.log('创建实例成功了吗');
                                                             model.$ProcessInst.find({'_id':insresult.data},function(err,rs){
                                                                 if(err){
                                                                     console.log(err);
                                                                 }else{
-                                                                    console.log(rs);
                                                                     //新加字段所属系统编号
                                                                     condition.joinup_sys = rs[0].joinup_sys;
                                                                     condition.work_order_number = rs[0].work_order_number;
@@ -627,6 +627,8 @@ exports.createInstance=function(proc_code,proc_ver,proc_title,param_json_str,pro
                                                                     condition.proc_vars = proc_vars_json;
                                                                     condition.proc_code = rs[0].proc_code;
                                                                     condition.proc_name = rs[0].proc_name;
+                                                                    condition.next_name = next_name;
+
                                                                      if(nodeDetail.next_detail)      {
                                                                          //创建流程任务
                                                                          insertTask(insresult,condition).then(function(taskresult){
@@ -788,7 +790,9 @@ function insertTask(result,condition){
             task.proc_code=condition.proc_code;
             task.proc_name=condition.proc_name;
             task.joinup_sys = condition.joinup_sys;
-            console.log("&&&&&&&&&&&&&&&&&&&&&&&&&&",condition);
+            task.next_name = condition.next_name;
+            task.proc_back = 0;
+            task.previous_step =[];
 
             var arr=[];
             arr.push(task);
@@ -800,7 +804,6 @@ function insertTask(result,condition){
                     reject(utils.returnMsg(false, '1000', '流程实例创建启动出现异常。', null, error));
                 }
                 else {
-                    console.log(rs,'这个是什么呢');
                     resolve(utils.returnMsg(true, '0000', '流程实例创建启动成功。', rs, null));
 
 
@@ -1155,7 +1158,6 @@ exports.getMyInstList= function(userCode) {
  * @param paramMap
  */
 exports.getMyTaskQuery4Eui= function(page,size,userCode,paramMap,joinup_sys,proc_code) {
-    console.log(paramMap,'paramMapparamMap');
     var p = new Promise(function(resolve,reject){
         var userArr = [];
         userArr.push(userCode);
@@ -1171,7 +1173,6 @@ exports.getMyTaskQuery4Eui= function(page,size,userCode,paramMap,joinup_sys,proc
         conditionMap['$and'] = [match,{'proc_inst_task_assignee':{'$in':userArr}},{$or:[{'proc_inst_task_user_role':{'$in':paramMap.roles}},{'proc_inst_task_user_org':{'$in':paramMap.orgs}}]}];
         // conditionMap['$or'] = [{'proc_inst_task_assignee':{'$in':userArr}},{'proc_inst_task_user_role':{'$in':paramMap.roles},'proc_inst_task_user_org':{'$in':paramMap.orgs}}];
         conditionMap.proc_inst_task_status = 0;
-        console.log(conditionMap);
         utils.pagingQuery4Eui(model.$ProcessInstTask, page, size, conditionMap, resolve, '',  {proc_inst_task_arrive_time:-1});
     });
     return p;
@@ -1189,7 +1190,7 @@ exports.getMyTaskQuery= function(taskId,user_no) {
                     resolve({'success': true, 'code': '0000', 'msg': '查询待办任务成功','data':r[0]._doc});
 
                 }else {
-                    resolve({'success': false, 'code': '0000', 'msg': '查询待办任务成功','data':null});
+                    resolve({'success': true, 'code': '0000', 'msg': '查询待办任务成功','data':null});
                 }
             }
         })
@@ -1220,7 +1221,6 @@ exports.getMyCompleteTaskQuery4Eui= function(page,size,userCode,paramMap,joinup_
         conditionMap['$and'] = [match,{'proc_inst_task_assignee':{'$in':userArr}},{$or:[{'proc_inst_task_user_role':{'$in':paramMap.roles}},{'proc_inst_task_user_org':{'$in':paramMap.orgs}}]}];
         // conditionMap['$or'] = [{'proc_inst_task_assignee':{'$in':userArr}},{'proc_inst_task_user_role':{'$in':paramMap.roles},'proc_inst_task_user_org':{'$in':paramMap.orgs}}];
         conditionMap.proc_inst_task_status = 1;
-        console.log(conditionMap);
         utils.pagingQuery4Eui(model.$ProcessTaskHistroy, page, size, conditionMap, resolve, '',  {proc_inst_task_arrive_time:-1});
     });
     return p;
@@ -1236,7 +1236,6 @@ exports.getMyTaskList= function(userCode,paramMap,joinup_sys) {
     var p = new Promise(function(resolve,reject){
         var userArr = [];
         userArr.push(userCode);
-
         var query =model.$ProcessInstTask.find({$and:[{'proc_inst_task_status':0,'joinup_sys':joinup_sys,'proc_inst_task_assignee':{'$in':userArr}},{$or:[{'proc_inst_task_user_role':{'$in':paramMap.roles}},{'proc_inst_task_user_org':{'$in':paramMap.orgs}}]}]});
        // var query = model.$ProcessInstTask.find({"$or":[{'proc_inst_task_assignee':{"$in":userArr}},{'proc_inst_task_user_role':{"$in":roleArr},'proc_inst_task_user_org':{"$in":orgArr}}],'proc_inst_task_status':0});
         query.exec(function (error, rs) {
@@ -1397,11 +1396,8 @@ exports.completeTask= function(taskId) {
                     }else{
                         // console.log(r[0]);
                         var obj=new Object(r[0]._doc)
-                        console.log(obj._id);
                         obj.proc_task_id=obj._id;
-                        console.log(obj.proc_task_id)
                         delete obj._id;
-                        console.log(obj);
 
                         var arr_c=[];
                         arr_c.push(obj)
@@ -1597,7 +1593,6 @@ exports.procInstBack = function(inst_id,node_code){
 //回退时设置流程实例状态
 function setInstStatus(task,cb){
     var prevnode = task._doc.proc_inst_prev_node_code;
-    console.log('prevnode-----------',prevnode);
     if(!prevnode){
         cb(utils.returnMsg(false, '1000', '开始节点无法回退', null, null));
         return;
@@ -1752,7 +1747,6 @@ exports.queryCompTask = function(inst_id){
                     for(var i=0;i<rs.length;i++){
                         arr.push(rs[i].proc_inst_task_code);
                     }
-                    console.log('------',arr);
                     resolve(utils.returnMsg(true, '0000', '获取任务数据成功', arr, null));
                 }else {
                     resolve(utils.returnMsg(false, '1000', '该节点无任务数据', null, null));
@@ -1770,7 +1764,6 @@ exports.queryCompTask = function(inst_id){
  */
 
 exports.do_payout=function(proc_task_id,node_code,user_code,assign_user_code,proc_title,biz_vars,proc_vars,memo){
-    console.log(proc_task_id,node_code,user_code,assign_user_code,proc_title,biz_vars,proc_vars,memo);
     //next_detail, next_node, proc_inst_id, resolve,reject,proc_define_id,proc_inst_task_id,user_code,current_node,params
     var p = new  Promise(function(resolve,reject){
         model.$ProcessInstTask.find({"_id":proc_task_id},function(err,rs){
@@ -1787,7 +1780,6 @@ exports.do_payout=function(proc_task_id,node_code,user_code,assign_user_code,pro
                         }else{
                             if(res.length>0) {
                                 var prev_node = res[0].proc_cur_task;
-                                console.log("cuurent     ______",res);
                                 var prev_user = res[0].proc_cur_user;
                                 var proc_define = JSON.parse(res[0].proc_define);
                                 var item_config = JSON.parse(res[0].item_config);
@@ -1809,8 +1801,6 @@ exports.do_payout=function(proc_task_id,node_code,user_code,assign_user_code,pro
                                 if (!prev_user) {
                                     prev_user = user_code;
                                 }
-                                console.log("current_detail    ",current_detail,prev_node,"\n",current_node);
-                                console.log("next_detail       ",next_detail,node_code,"\n",next_node);
                                 // var proc_cur_task = current_detail.item_code;
                                 // var proc_cur_task_name = current_node.name;
                                 var proc_inst_node_vars = next_detail.item_node_var;
@@ -1851,7 +1841,6 @@ exports.do_payout=function(proc_task_id,node_code,user_code,assign_user_code,pro
                                         datas.proc_inst_task_assignee = user_code;
                                         datas.proc_inst_task_remark = memo;
                                         var updates = {$set: datas};
-                                        console.log("指派任务完成任务之时的 更新原来的任务的条件   ，" ,condition);
                                         model.$ProcessInstTask.update(condition, updates, options, function (errors, results) {
                                             if (errors) {
                                                 console.log(errors);
@@ -1862,7 +1851,6 @@ exports.do_payout=function(proc_task_id,node_code,user_code,assign_user_code,pro
                                                         console.log(e);
                                                         resolve(utils.returnMsg(false, '1000', '流程流转出现异常4。', null, e));
                                                     }else{
-                                                        console.log(r);
                                                         var obj=new Object(r[0]._doc);
                                                         obj.proc_task_id=obj._id;
                                                         delete obj._id;
@@ -1874,20 +1862,15 @@ exports.do_payout=function(proc_task_id,node_code,user_code,assign_user_code,pro
                                                                 console.log(es);
                                                                 resolve(utils.returnMsg(false, '1000', '流程流转出现异常5。', null, es));
                                                             }else{
-                                                                console.log("指派任务时候  完成指派之前的 原来任务 方法的更新结果",results);
                                                                 touchNode(current_detail, user_code, proc_task_id, false).then(function (rs) {
-                                                                    console.log(rs);
                                                                     if (rs.success) {
                                                                         async function xunhuan() {
                                                                             var users = [];
                                                                             users = assign_user_code.split(',');
-                                                                            console.log(users);
                                                                             for (var i = 0; i < users.length; i++) {
                                                                                 var user_no = users[i];
-                                                                                console.log(user_no);
                                                                                 let resultss = await  model_user.$User.find({"user_no": user_no});
                                                                                 if (resultss) {
-                                                                                    console.log(resultss,'AAAAAAAAAAAAAAAAAAAAAAAAAA');
                                                                                     var user_org = resultss[0].user_org;
                                                                                     var user_name = resultss[0].user_name;
                                                                                     var user_roles = resultss[0].user_roles.toString();
@@ -1895,11 +1878,9 @@ exports.do_payout=function(proc_task_id,node_code,user_code,assign_user_code,pro
 
                                                                                     // console.log("ksjfksadjfksdfjsdkjfsdkfjlsdjfksadfasdfj000000000000000000000000",rs.data)
                                                                                     // var org=rs.data;
-                                                                                    console.log(result_t);
                                                                                     var proc_inst_task_params = result_t.data;
                                                                                     // resolve(utils.returnMsg(true, '0000', '流转流程实例成功。', null, null));
                                                                                     //创建下一步流转任务
-                                                                                    console.log("创建下一步流转任务");
                                                                                     var condition_task = {};
                                                                                     condition_task.proc_inst_id = proc_inst_id;//: {type: Schema.Types.ObjectId, ref: 'CommonCoreProcessInst'}, // 流程流转当前信息ID
                                                                                     condition_task.proc_inst_task_code = next_detail.item_code;// : String,// 流程当前节点编码(流程任务编号)
@@ -1936,7 +1917,6 @@ exports.do_payout=function(proc_task_id,node_code,user_code,assign_user_code,pro
                                                                                     if (proc_vars) {
                                                                                         condition_task.proc_vars = proc_vars;
                                                                                     }
-                                                                                    console.error(proc_title)
                                                                                     condition_task.proc_inst_task_params = proc_inst_task_params;// : String,// 流程参数(任务参数)
                                                                                     condition_task.proc_inst_task_claim = "";//: Number,// 流程会签
                                                                                     condition_task.proc_inst_task_sign = 1;// : Number,// 流程签收(0-未认领，1-已认领)
@@ -1947,10 +1927,10 @@ exports.do_payout=function(proc_task_id,node_code,user_code,assign_user_code,pro
                                                                                     // arr.push(condition_task);
                                                                                     //创建新流转任务
                                                                                     let rs = await model.$ProcessInstTask.create(condition_task);
-                                                                                    console.log(rs);
+
 
                                                                                     let res = await touchNode(next_detail, user_code, rs._id, true);
-                                                                                    console.log(i);
+
                                                                                 }
                                                                             }
                                                                             return "end";
@@ -1999,7 +1979,6 @@ exports.do_payout=function(proc_task_id,node_code,user_code,assign_user_code,pro
  *
  */
 exports.do_batch=function(user_no,user_name,proc_inst_id){
-    console.log(user_no,user_name,proc_inst_id);
     var p = new  Promise(function(resolve,reject){
         model.$ProcessInstTask.find({proc_inst_task_status:0,proc_inst_id:proc_inst_id},function(err,data){
             if(err){
@@ -2018,7 +1997,7 @@ exports.do_batch=function(user_no,user_name,proc_inst_id){
                             };//用来保存数据
                             var update = {$set: datas};
                             var options = {};
-                            console.log("第"+i+"ci");
+                            //console.log("第"+i+"ci");
                             let step_one=await model.$ProcessInstTask.update({'_id':task._id},update,options);
                             let step_two=await  model.$ProcessInstTask.find({'_id':task._id});
                             task.proc_task_id=step_two[0].id
@@ -2029,14 +2008,12 @@ exports.do_batch=function(user_no,user_name,proc_inst_id){
                         return "end"
                     }
                     xunhuan().then(function(e){
-                        console.log(e,"jieshu")
                         //给当前处理人创建一个任务
                         model.$ProcessInst.find({'_id':proc_inst_id},function(err,result){
                             if(err){
                                 console.log(err);
                                 resolve(utils.returnMsg(false, '1000', '创建任务失败', null, err));
                             }else{
-                                console.log(result,'————————');
                                 var conductor = {};
                                 conductor.proc_inst_id=proc_inst_id;
                                 conductor.proc_task_id='';
@@ -2069,7 +2046,6 @@ exports.do_batch=function(user_no,user_name,proc_inst_id){
                                         console.log(err);
                                         resolve(utils.returnMsg(false, '1000', '创建任务失败', null, err));
                                     }else{
-                                        console.log(resultss);
                                         //resolve(utils.returnMsg(true, '0000', '创建任务成功', resultss,null ));
                                         var advance_status = {
                                             proc_inst_status : 4
@@ -2081,7 +2057,6 @@ exports.do_batch=function(user_no,user_name,proc_inst_id){
                                                 console.log(err);
                                                 resolve(utils.returnMsg(false, '1000', '改变状态失败', null, err));
                                             }else{
-                                                console.log(resultt);
                                                 resolve(utils.returnMsg(true, '0000', '归档成功', resultt, null));
                                             }
                                         });
@@ -2160,7 +2135,6 @@ exports.goPigeonhole = function(proc_inst_id){
                                console.log(err);
                                resolve(utils.returnMsg(false, '1000', '改变状态失败', null, err));
                            }else{
-                               console.log(resultt);
                                resolve(utils.returnMsg(true, '0000', '归档成功', resultt, null));
                            }
                        });
@@ -2170,6 +2144,139 @@ exports.goPigeonhole = function(proc_inst_id){
                }
            }
         })
+    });
+    return p;
+}
+
+
+
+exports.return_task = function(task_id,user_no,memo,node_code,node_name){
+    var p = new Promise(function(resolve,reject){
+         model.$ProcessInstTask.find({'_id':task_id},function(er,rs){
+            if(er){
+                resolve(utils.returnMsg(true, '0000', '查询任务错误', null, er))
+            } else{
+                if(rs.length>0){
+                    var prevnode = rs[0]._doc.proc_inst_prev_node_code;
+                    if(!prevnode){
+                        resolve(utils.returnMsg(false, '1000', '开始节点无法回退', null, null));
+                        return;
+                    }
+
+                    var up_task_id = rs[0]._doc.previous_step;
+                    model.$ProcessInstTask.find({'_id':up_task_id},function(err,rsu){
+                       if(err){
+                           resolve(utils.returnMsg(true, '0000', '查询任务错误', null, err))
+                        } else{
+                           var conditions = {_id: task_id};
+                           var data = {};
+                           data.next_name = rsu[0].proc_inst_task_assignee_name;
+                           //data.proc_inst_status = 1;
+                           data.proc_inst_task_complete_time = new Date();
+                           data.proc_inst_task_status = 1;
+                           data.proc_inst_task_remark = memo;
+                           data.proc_back = 1;
+                           var update = {$set: data};
+                           var options = {};
+                           model.$ProcessInstTask.update(conditions, update, options,function(err,result){
+                               if(err){
+                                   resolve(utils.returnMsg(true, '0000', '查询任务错误', null, err))
+                               }else{
+                                       //创建下一步流转任务
+                                       var condition_task = {};
+                                       condition_task.proc_inst_id = rsu[0].proc_inst_id;//: {type: Schema.Types.ObjectId, ref: 'CommonCoreProcessInst'}, // 流程流转当前信息ID
+                                       condition_task.proc_inst_task_code = rsu[0].proc_inst_task_code;// : String,// 流程当前节点编码(流程任务编号)
+                                       condition_task.proc_inst_task_name =rsu[0].proc_inst_task_name;//: String,// 流程当前节点名称(任务名称)
+                                       condition_task.proc_inst_task_type = rsu[0].proc_inst_task_type;//: String,// 流程当前节点类型(任务类型)
+                                       condition_task.proc_inst_task_arrive_time = new Date();//,// 流程到达时间
+                                       condition_task.proc_inst_task_handle_time = new Date();//,// 流程认领时间
+                                       condition_task.proc_inst_task_complete_time = "";// : Date,// 流程完成时间
+                                       condition_task.proc_inst_task_status = 0;// : Number,// 流程当前状态 0-未处理，1-已完成，2-拒绝
+                                       condition_task.proc_inst_task_assignee_name = rsu[0].proc_inst_task_assignee_name;//: String,// 流程处理人名
+                                       condition_task.proc_inst_task_user_role = rsu[0].proc_inst_task_user_role;// : String,// 流程处理用户角色ID
+                                       condition_task.proc_inst_task_user_org = rsu[0].proc_inst_task_user_org;
+                                       condition_task.proc_inst_task_title = rsu[0].proc_inst_task_title;
+                                       condition_task.proc_inst_biz_vars = rsu[0].proc_inst_biz_vars;
+                                       condition_task.proc_inst_prev_node_code = node_code;
+                                       condition_task.proc_inst_prev_node_handler_user = user_no;
+                                       condition_task.proc_inst_node_vars = rsu[0].proc_inst_node_vars;
+                                       condition_task.proc_vars=rsu[0].proc_vars;
+                                       condition_task.proc_inst_task_claim = "";//: Number,// 流程会签
+                                       condition_task.proc_inst_task_sign = 1;// : Number,// 流程签收(0-未认领，1-已认领)
+                                       condition_task.proc_inst_task_sms =rsu[0].proc_inst_task_sms;// Number,// 流程是否短信提醒
+                                       condition_task.proc_inst_task_remark = memo;// : String// 流程处理意见
+                                       condition_task.proc_inst_task_assignee = rsu[0].proc_inst_task_assignee;
+                                       condition_task.proc_task_start_user_role_names = rsu[0].proc_task_start_user_role_names;//流程发起人角色
+                                       condition_task.proc_task_start_user_role_code = rsu[0].proc_task_start_user_role_code;//流程发起人id
+                                       condition_task.proc_task_start_name = rsu[0].proc_task_start_name;//流程发起人姓名
+                                       condition_task.proc_name=rsu[0].proc_name;
+                                       condition_task.proc_code=rsu[0].proc_code;
+                                       condition_task.joinup_sys = rsu[0].joinup_sys;//工单所属系统编号
+                                       condition_task.next_name = '';
+                                       condition_task.proc_back = 1;
+                                       condition_task.previous_step = rsu[0].previous_step;
+                                       var arr = [];
+                                       arr.push(condition_task);
+                                       model.$ProcessInstTask(arr[0]).save(function (error, rst){
+                                           if(error){
+                                               resolve(utils.returnMsg(false, '1000', '流程流转出现异常5。', null, error));
+                                           }else{
+                                               var obj=new Object(rs[0]._doc);
+                                               obj.proc_task_id=obj._id;
+                                               delete obj._id;
+                                               var arr_c=[];
+                                               arr_c.push(obj);
+                                               //历史表里插入数据
+                                               model.$ProcessTaskHistroy.create(arr_c,function(err,rss){
+                                                  if(err){
+                                                      resolve(utils.returnMsg(false, '1000', '流程流转出现异常5。', null, error));
+                                                  }else{
+                                                          var conditions = {_id:  rsu[0].proc_inst_id};
+                                                          var data = {};
+                                                          data.proc_inst_status = 5;
+                                                          data.proc_cur_task_remark = '流转中-由节点'+node_name+'回退';
+                                                          data.proc_cur_task = rsu[0].proc_inst_task_code;
+                                                          data.proc_cur_task_name = rsu[0].proc_inst_task_name;
+                                                          var update = {$set: data};
+                                                          var options = {};
+                                                          model.$ProcessInst.update(conditions,update,options,function (error) {
+                                                              if(error) {
+                                                                  resolve(utils.returnMsg(false, '1000', '回退失败', null, error));
+                                                              }else {
+                                                                  resolve(utils.returnMsg(true, '0000', '回退成功',rst, null));
+                                                              }
+                                                          });
+                                                  }
+                                               });
+                                           }
+                                       });
+                               }
+                           });
+                       }
+                    });
+                }
+            }
+         });
+    });
+    return p;
+}
+
+exports.proving_taskId = function (task_id) {
+    var p = new Promise(function(resolve,reject){
+        model.$ProcessInstTask.find({'_id':task_id},function(err,result){
+            if(err){
+                resolve(utils.returnMsg(false, '1000', '查找任务失败', null, err));
+            }else{
+                if(result.length>0){
+                    var proc_inst_task_status = result[0].proc_inst_task_status;
+                    if(proc_inst_task_status==1){
+                        resolve(utils.returnMsg(true, '0000', '任务已完成', proc_inst_task_status, null));
+                    }else{
+                        resolve(utils.returnMsg(true, '0000', '任务未完成', proc_inst_task_status, null));
+                    }
+                }
+            }
+        });
     });
     return p;
 }

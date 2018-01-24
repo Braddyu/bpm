@@ -14,7 +14,6 @@ var nodeAnalysisService=require("../services/node_analysis_service");
  *  -------------------------------用于创建任务 直接到分配到第三节点-------------------------------
  */
 exports.process_instance=function() {
-
     //中间件
     router.use(function (req, res, next) {
 
@@ -34,6 +33,8 @@ exports.process_instance=function() {
         }
 
     });
+
+
     router.route("/createAndAcceptAssign").post(function (req, res) {
 
         // 分页条件
@@ -74,6 +75,7 @@ exports.process_instance=function() {
                                 inst.acceptTask(task_id, user_code, userName).then(function (rs) {
                                     if (rs.success) {
                                         console.log("11111111111", task_id, node_code, user_code, assign_user_no, proc_title, biz_vars, proc_vars);
+
                                         //  nodeTransferService.assign_transfer(task_id,node_code,user_code,assign_user_no,proc_title,biz_vars,proc_vars,memo).then(function(results){
                                         //批量派发
                                         nodeTransferService.do_payout(task_id, node_code, user_code, assign_user_no, proc_title, biz_vars, proc_vars, memo).then(function (results) {
@@ -94,10 +96,8 @@ exports.process_instance=function() {
                             } else {
                                 utils.respJsonData(res, result);
                             }
-
-                        }).catch(function (err) {
-                        console.log('err');
-                        logger.error("route-createInstance", "创建流程实例异常", err);
+                        }).catch(function(err){
+                        logger.error("route-createInstance","创建流程实例异常",err);
                     });
                 } else {
                     utils.respMsg(res, false, '1000', '用户不存在', null, null);
@@ -139,7 +139,8 @@ exports.process_instance=function() {
         var user_code = req.body.user_no;
         var biz_vars = req.body.biz_vars;
         var proc_vars = req.body.proc_vars;
-        var joinup_sys = req.body.joinup_sys;
+        var joinup_sys=req.body.joinup_sys;
+        var next_name = req.body.next_name;//下一节点处理人编号
         if (!proc_code) {
             utils.respMsg(res, false, '2001', '流程编号为空', null, null);
             return;
@@ -151,10 +152,8 @@ exports.process_instance=function() {
             inst.userInfo(user_code).then(function (rs) {
                 if (rs.success && rs.data.length == 1) {
                     // 调用
-                    //
-                    //                           proc_code,proc_ver,proc_title,user_code,proc_vars,biz_vars
-                    inst.create_instance_only(proc_code, proc_ver, proc_title, user_code, joinup_sys, proc_vars, biz_vars)
-                        .then(function (result) {
+                    inst.create_instance_only(proc_code,proc_ver,proc_title,user_code,joinup_sys,proc_vars,biz_vars,next_name)
+                        .then(function(result){
                             utils.respJsonData(res, result);
                         });
                 } else {
@@ -275,37 +274,38 @@ exports.process_instance=function() {
 
 
 //getNextNodeAndUser 获取下一步节点或者操作人
-    router.route("/next/nodeAnduser").post(function (req, res) {
-        var node_code = req.body.node_code;
-        var proc_task_id = req.body.proc_task_id;
-        var proc_inst_id = req.body.proc_inst_id;
-        var user_no = req.body.user_no;
-        var params_str = req.body.params;
-        var params = eval('(' + params_str + ')');
+router.route("/next/nodeAnduser").post(function (req, res) {
+    var node_code = req.body.node_code;
+    var proc_task_id = req.body.proc_task_id;
+    var proc_inst_id = req.body.proc_inst_id;
+    var user_no = req.body.user_no;
+    var params_str = req.body.params;
+    var params = eval('(' + params_str + ')');
 
-        // var params={};
-        // if(params_str){
-        //     params=JSON.parse(params_str);
-        // }
-        if (!node_code) {
-            utils.respMsg(res, false, '2001', '流程编号不能为空', null, null);
-            return;
-        }
-        if (!proc_task_id) {
-            utils.respMsg(res, false, '2001', '任务编号不能为空', null, null);
-            return;
-        }
-        if (!proc_inst_id) {
-            utils.respMsg(res, false, '2001', '实例编号不能为空', null, null);
-            return;
-        }
-        if (!user_no) {
-            utils.respMsg(res, false, '2001', '处理人编号不能为空', null, null);
-        } else {
-            //判断用户是否存在
-            inst.userInfo(user_no).then(function (rs) {
-                console.log("11111111111111111111111111111", rs)
-                if (rs.success && rs.data.length == 1) {
+    // var params={};
+    // if(params_str){
+    //     params=JSON.parse(params_str);
+    // }
+    if (!node_code) {
+        utils.respMsg(res, false, '2001', '流程编号不能为空', null, null);
+        return;
+    }
+    if (!proc_task_id) {
+        utils.respMsg(res, false, '2001', '任务编号不能为空', null, null);
+        return;
+    }
+    if (!proc_inst_id) {
+        utils.respMsg(res, false, '2001', '实例编号不能为空', null, null);
+        return;
+    }
+    if (!user_no) {
+        utils.respMsg(res, false, '2001', '处理人编号不能为空', null, null);
+    } else {
+        //判断用户是否存在
+        inst.userInfo(user_no).then(function (rs) {
+            if (rs.success && rs.data.length == 1) {
+                try{
+
                     nodeAnalysisService.getNextNodeAndHandlerInfo(node_code, proc_task_id, proc_inst_id, params, user_no).then(function (rs) {
                         // console.log(rs);
                         utils.respJsonData(res, rs);
@@ -313,12 +313,16 @@ exports.process_instance=function() {
                         logger.error("route-getNextNodeAndHandlerInfo", "获取下一节点数据异常", err_inst);
                         utils.respMsg(res, false, '1000', '获取下一节点数据异常', null, err_inst);
                     });
-                } else {
-                    utils.respMsg(res, false, '1000', '用户不存在', null, null);
+                }catch (err){
+                    utils.respMsg(res, false, '1000', '获取下一节点数据异常', null, err);
                 }
-            });
-        }
-    });
+            } else {
+                utils.respMsg(res, false, '1000', '用户不存在', null, null);
+            }
+        });
+    }
+});
+
 
 
 //获取当前节点操作人信息
