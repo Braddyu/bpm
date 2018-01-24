@@ -90,83 +90,7 @@ exports.getNode=function(process_define_id,node_id,params,flag){
     });
     return promise;
 }
-// //getNode的对内方法 注释看对外方法
-// function getNode(process_define_id,node_id,params,flag){
-//     // console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
-//     // console.log(process_define_id,node_id,params,flag)
-//     var process_define,item_config;
-//     var promise=new Promise(function(resolve,reject){
-//         model.$ProcessDefine.find({"_id":process_define_id},function(err,rs){
-//             if(err){
-//                 console.log(err)
-//                 resolve(utils.returnMsg(false, '1000', '根据流程定义Id查询时出现异常。', null, err));
-//             } else{
-//                 process_define=JSON.parse(rs[0].proc_define);
-//                 item_config=JSON.parse(rs[0].item_config);
-//                 var nodes=process_define.nodes;
-//                 if(flag){
-//                     //查找下一节点信息
-//                     console.log("查找下一节点信息");
-//                     console.log("node_id",node_id);
-//                     for (var node in nodes){
-//                         if(node==node_id){
-//                             // console.log(node_id);
-//                             var node_array=getValidNode(process_define,node_id,flag);
-//                             var  type=nodes[node].type;
-//                             console.log("type",type);
-//                             console.log("nodes  :",node_array );
-//                             //判断是不是分支节点
-//                             if(type=="chat"){
-//                                 //分支节点专用的方法区
-//                                 console.log("进入选择分支节点方法区");
-//                                 node_array=deleteInvalidNode(process_define,item_config,node_array,node_id,params,reject);
-//                                 console.log("after delete the invalid data")
-//                                 console.log(node_array)
-//                                 if(node_array.length>1){
-//                                     resolve(utils.returnMsg(false, '9999', '有效节点删除不完全，或者错误', node_array, null));
-//
-//                                 }else if(node_array.length==0){
-//                                     resolve(utils.returnMsg(false, '1000', '不存在有效节点', null, null));
-//
-//                                 }else{
-//                                     var result=choiceNode(item_config,process_define,node_id,node_array[0]);
-//                                     resolve(utils.returnMsg(true, '0000', '查询结果正常', result, null));
-//                                 }
-//
-//
-//                             }else if(type=="fork"){
-//                                 //并行分支节点开始节点
-//                                 //返回所有的下一并行节点数组
-//                                 console.log("fork")
-//                                 var result=choiceNode(item_config,process_define,node_id,node_array[0]);
-//                                 resolve(utils.returnMsg(true, '0000', '查询结果正常', result, null));
-//
-//                             }else{
-//                                 //不是分支节点的方法区
-//                                 console.log("进入单一节点方法区");
-//                                 if(node_array.length!=1){
-//                                     console.error("节点信息错误");
-//                                     resolve(utils.returnMsg(false, '1000', '有效节点删除不完全，或者错误', null, null));
-//
-//                                 }else{
-//                                     var result=choiceNode(item_config,process_define,node_id,node_array[0]);
-//                                     resolve(utils.returnMsg(true, '0000', '查询结果正常', result, null));
-//                                 }
-//                             }
-//                         }
-//                     }
-//
-//                 }else{
-//                     //查找上一节点信息
-//                     var result=findNode(item_config,process_define,node_id,flag);
-//                     resolve(utils.returnMsg(true, '0000', '查找上一节点信息正常', result, null));
-//
-//                 }
-//             }
-//         });
-//     });
-//     return promise;
-// }
+
 
 function getNode(process_define_id,node_code,params,flag){
     return new Promise(async function(resolve) {
@@ -2402,11 +2326,15 @@ exports.getNextNodeAndHandlerInfo=function(node_code,proc_task_id,proc_inst_id,p
         let rs = await model.$ProcessInst.find({"_id":proc_inst_id});
         if(!rs){ resolve(utils.returnMsg(false, '1000', '查询实例化表失败 for getNextNodeAndHandlerInfo', null,null));return ;}
         let rsss =await getNode(rs[0].proc_define_id,node_code,params,true);
-        // console.log(rs);
-        if(!rsss){ resolve(utils.returnMsg(false, '1001', '节点获取失败', null, null));return;}
-        var data_s=await findNextHandler(user_code,rs[0].proc_define_id,node_code,params,proc_inst_id);
+        if(rsss.success==false){
+            resolve(utils.returnMsg(false, '1001', '有效节点删除不完全', null, null));
+            return;
+        }
         var next_detail=rsss.data.next_detail;
         var next_node=rsss.data.next_node;
+
+        var data_s=await findNextHandler(user_code,rs[0].proc_define_id,node_code,params,proc_inst_id);
+
         if(next_node.type=='end  round'){
             let ret_map=[];
             let temp={};
@@ -2899,12 +2827,9 @@ exports.skipNodeAndGetHandlerInfo=(user_no,proc_code,param_json_str,node_code,ta
                                 });
                             }else{
                                 resolve(rs);
-
                             }
                         })
-
                     }
-
                     // resolve(utils.returnMsg(false, '1000', '查询流程出错', null, null))
                 }else{
                     resolve(utils.returnMsg(false, '1000', '查询流程出错', null, null))
@@ -3102,22 +3027,14 @@ function getSkipedNodeAndHandler(next_node, next_detail,user_no,proc_code,task_i
                                                             }
                                                             resolve({"data":array,"msg":"查询完成","error":null,"success":true,"next_node":node_code});
                                                             // resolve({"data":res_user})
-
                                                         }
                                                     });
-
-
                                                 })
-
                                             }
                                         })
-
-
                                     }
                                 }
                             })
-
-
                         } else if (item_assignee_ref_cur_org == 2) {
                             //已经解决
                             //上级
@@ -4340,9 +4257,6 @@ function findParamss(proc_inst_id,node_code){
                 resolve(utils.returnMsg(true, '0000', '，查询参数正常', allArray, null)) ;
             }
         })
-
     });
-
     return p;
-
 }

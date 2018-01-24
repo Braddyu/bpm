@@ -17,6 +17,11 @@
     <link rel="stylesheet" type="text/css" href="{{projcfg.appurl}}/static/bpm/css/default.css"/>
     <script type="text/javascript" src="{{projcfg.appurl}}/static/bpm/js/GooFlow.js"></script>
     <script>
+        $.ajaxSettings.beforeSend = function(xhr, request) {
+            xhr.setRequestHeader('csrf-token', '{{_csrfToken}}');
+        }
+    </script>
+    <script>
 
         var lineNodeDatas = [];
         var taskNodeDatas = [];
@@ -400,7 +405,6 @@
                     taskNode.item_type = obj.type;
                     taskNode.item_sms_warn = $("input[name='smsType']:checked").val();
                     taskNode.item_jump = $("input[name='jump']:checked").val()
-                    console.log(taskNode.item_message,'111');
                     taskNode.selectType = itemType;
                     taskNode.selectVal = itemText;
                     if(itemType == 1){//参与人
