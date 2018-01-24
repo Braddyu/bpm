@@ -30,7 +30,6 @@ router.route('/todo').post(function(req,res){
             //判断用户是否存在
             inst.userInfo(userNo).then(function(rs){
                if(rs.success && rs.data.length==1){
-                   console.log('rs',rs);
                    userService.getUsreRolesByUserNo(userNo).then(function(result){
                        console.log(result);
                        if(result){
@@ -88,7 +87,6 @@ router.route('/havetodo').post(function(req,res){
         inst.userInfo(userNo).then(function(rs){
             if(rs.success && rs.data.length==1){
                 userService.getUsreRolesByUserNo(userNo).then(function(result){
-                    console.log(result);
                     if(result){
                         inst.getMyCompleteTaskQuery4Eui(page,length,userNo,result,joinup_sys,proc_code).then(function(taskresult){
                             utils.respJsonData(res, taskresult);
@@ -191,37 +189,38 @@ router.route('/complete')
         if(!user_code){
             utils.respMsg(res, false, '2001', '处理人编码不能为空。', null, null);
         }else{
-            //判断用户是否存在
-            inst.userInfo(user_code).then(function(rs){
-                if(rs.success && rs.data.length == 1){
-                    console.log('success');
-                    inst.getTaskById(id).then(function(taskresult){
-                        if(taskresult.success){
-                            var node_code = taskresult.data._doc.proc_inst_task_code;
-                            //流程流转方法
-                            console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-                            console.log(id,node_code,user_code,true,memo,params,biz_vars,proc_vars);
-                            console.info(params)
-                            nodeTransferService.transfer(id,node_code,user_code,true,memo,params,biz_vars,proc_vars).then(function(result1){
-                                console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!",id,node_code,user_code,true,memo,params);
-                                console.log(result1);
-                                utils.respJsonData(res, result1);
+            inst.proving_taskId(id).then(function (rs) {
+                if(rs.data!=1){
+                    //判断用户是否存在
+                    inst.userInfo(user_code).then(function(rs){
+                        if(rs.success && rs.data.length == 1){
+                            inst.getTaskById(id).then(function(taskresult){
+                                if(taskresult.success){
+                                    var node_code = taskresult.data._doc.proc_inst_task_code;
+                                    //流程流转方法
+                                    nodeTransferService.transfer(id,node_code,user_code,true,memo,params,biz_vars,proc_vars).then(function(result1){
+                                        utils.respJsonData(res, result1);
+                                    }).catch(function(err_inst){
+                                        // console.log(err_inst);
+                                        logger.error("route-transfer","流程流转异常",err_inst);
+                                        utils.respMsg(res, false, '1000', '流程流转异常', null, err_inst);
+                                    });
+                                }else{
+                                    utils.respJsonData(res, taskresult);
+                                }
                             }).catch(function(err_inst){
-                                // console.log(err_inst);
-                                logger.error("route-transfer","流程流转异常",err_inst);
-                                utils.respMsg(res, false, '1000', '流程流转异常', null, err_inst);
+                                logger.error("route-getTaskById","获取任务异常",err_inst);
+                                utils.respMsg(res, false, '1000', '获取任务异常', null, err_inst);
                             });
                         }else{
-                            utils.respJsonData(res, taskresult);
+                            utils.respMsg(res, false, '1000', '用户不存在', null, null);
                         }
-                    }).catch(function(err_inst){
-                        logger.error("route-getTaskById","获取任务异常",err_inst);
-                        utils.respMsg(res, false, '1000', '获取任务异常', null, err_inst);
                     });
                 }else{
-                    utils.respMsg(res, false, '1000', '用户不存在', null, null);
+                    utils.respMsg(res,true, '0000', '任务已完成', null, null);
                 }
             });
+
         }
     });
 
@@ -252,6 +251,8 @@ router.route("/assign/task").post(function(req,res){
     var biz_vars=req.body.biz_vars;//业务变量
     var proc_vars=req.body.proc_vars;//流程变量
     var memo=req.body.memo;//处理意见
+    var next_name = req.body.next_name;//下一节点处理人姓名
+    var proc_back = req.body.proc_back;//回退标识1-回退 0-正常流转
     if(!assign_user_no){
         utils.respMsg(res, false, '2001', '下一节点处理人编号为空', null, null);
         return;
@@ -267,17 +268,24 @@ router.route("/assign/task").post(function(req,res){
     if(!user_no){
         utils.respMsg(res, false, '2001', '当前处理人编号为空', null, null);
     }else{
-        inst.userInfo(user_no).then(function(rs){
-            if(rs.success && rs.data.length == 1){
-                nodeTransferService.assign_transfer(task_id,node_code,user_no,assign_user_no,proc_title,biz_vars,proc_vars,memo).then(function(rs){
-                    utils.respJsonData(res,rs);
-                }).catch(function(err){
-                    logger.error("route-assign_transfer","信息异常",err_inst);
-                    utils.respMsg(res, false, '1000', 'route-assign_transfer', null, err);
+        inst.proving_taskId(task_id).then(function (rs) {
+            if(rs.data!=1){
+                inst.userInfo(user_no).then(function(rs){
+                    if(rs.success && rs.data.length == 1){
+                        nodeTransferService.assign_transfer(task_id,node_code,user_no,assign_user_no,proc_title,biz_vars,proc_vars,memo,next_name,proc_back).then(function(rs){
+                            utils.respJsonData(res,rs);
+                        }).catch(function(err){
+                            logger.error("route-assign_transfer","信息异常",err);
+                            utils.respMsg(res, false, '1000', 'route-assign_transfer', null, err);
+                        });
+                    }else{
+                        utils.respMsg(res, false, '1000', '用户不存在', null, null);
+                    }
                 });
             }else{
-                utils.respMsg(res, false, '1000', '用户不存在', null, null);
+                utils.respMsg(res,true, '0000', '任务已完成', null, null);
             }
+
         });
     }
 });
@@ -518,4 +526,56 @@ router.route("/pigeonhole").post(function(req,res){
         utils.respMsg(res, false, '2001', '实例编号不能为空', null, null);
     }
 });
+/**
+ * 任务回退接口
+ */
+router.route("/back").post(function(req,res){
+    var _id=req.body.task_id;//当前任务id
+    var user_no = req.body.user_no;//当前用户编号
+    var memo=req.body.memo;//处理意见
+    var node_code = req.body.node_code;//当前节点编码
+    var node_name = req.body.node_name;//当前节点名称
+    if(!user_no){
+        utils.respMsg(res, false, '2001', '当前节点处理人编码不能为空', null, null);
+        return;
+    }
+    if(!node_code){
+        utils.respMsg(res, false, '2001', '当前节点编码不能为空', null, null);
+        return;
+    }
+    if(!node_name){
+        utils.respMsg(res, false, '2001', '当前节点名称不能为空', null, null);
+        return;
+    }
+    if(_id){
+        inst.return_task(_id,user_no,memo,node_code,node_name).then(function(rs){
+            utils.respJsonData(res,rs);
+        }).catch(function(err_inst){
+            logger.error("return_task","任务回退异常",err_inst);
+            utils.respMsg(res, false, '1000', '任务回退异常', null, err_inst);
+        });
+    }else{
+        utils.respMsg(res, false, '2001', '任务编号不能为空', null, null);
+    }
+});
+
+/**
+ * 完成任务
+ */
+router.route("/finish/task").post(async (req,res)=>{
+    let user_no=req.body.user_no;
+    let task_id=req.body.task_id;
+    if(task_id&&user_no){
+        utils.respJsonData(res, utils.returnMsg(false, '1000', "传入参数不正确" , null, null));
+    }
+    try{
+        let rs=await nodeTransferService.finish_task(task_id,user_no);
+        utils.respJsonData(res, rs);
+    }catch(err){
+        logger.error("route-/finish/task", "完成任务失败", err);
+        utils.respMsg(res, false, '1000', '完成任务失败', null, );
+    }
+});
+
+
 module.exports = router;

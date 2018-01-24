@@ -138,7 +138,8 @@ var commonProcessInstSchema = new Schema(
         proc_start_time : Date,// 流程发起时间(开始时间)
         proc_content : String,// 流程派单内容
         proc_params : String,// 流转参数
-        proc_inst_status : Number,// 流程流转状态 1 已启用  0 已禁用,2 流转中，3子流程流转中 ,4  归档,5 回退，6 废弃
+        proc_inst_status : Number,// 流程流转状态
+        // 1 已启用  0 已禁用,2 流转中，3子流程流转中 ,4  归档,5 回退，6 废弃
         proc_attached_type : Number,// 流程附加类型(1:待办业务联系函;2:待办工单;3:待办考核;4:其他待办)
         proce_attached_params : {},// 流程附加属性
         proce_reject_params : {},// 流程驳回附加参数
@@ -163,7 +164,7 @@ var commonProcessInstSchema = new Schema(
         proc_inst_opt_user_name:String,//流程实例操作人姓名
         proc_opt_time:Date,//流程实例操作时间
         joinup_sys:String,//所属系统编号
-
+        pay_task_id:String //派单生成的任务id
 
     },
     {collection: "common_bpm_proc_inst"}// mongodb集合名
@@ -213,6 +214,9 @@ var commonProcessInstTaskSchema = new Schema(
         proc_vars : String,// 流程变量
         joinup_sys:String,//所属系统编号
         skip:Number,//是否为跳过节点任务
+        next_name:String,//下一节点处理人姓名
+        proc_back : Number,//判断为回退任务 1:为回退任务 0:为正常流转
+        previous_step : String,//上一节点任务id
     },
     {collection: "common_bpm_proc_inst_task"}// mongodb集合名
 );
@@ -262,6 +266,9 @@ var commonProcessTaskHistroySchema = new Schema(
         proc_start_time : Date,// 流程发起时间(开始时间)
         proc_vars : String,// 流程变量
         joinup_sys:String,//所属系统编号
+        next_name:String,//下一节点处理人姓名
+        proc_back : Number,//判断为回退任务 1:为回退任务 0:为正常流转
+        previous_step : String,//上一节点任务id
     },
     {collection: "common_bpm_proc_task_histroy"}// mongodb集合名
 );

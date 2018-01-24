@@ -64,7 +64,6 @@ router.route("/show/process").get(function(req,res){
  * -----------------------调用流程进度图的页面---------------------------
  */
 router.get('/show/progressed', function(req, res, next) {
-    console.log("ssssssss")
     res.render(config.project.appviewurl+'common/app/process_showChart', {
         title: '首页' ,
         subtitle: 'Hello',
@@ -126,7 +125,6 @@ router.route("/getNodeUser").post(function(req,res){
         return;
       }
     nodeAnalysisService.getNodeAndHandlerInfo(proc_code,user_no,params).then(function(rs){
-        console.log("下一节点处理人:",rs);
         utils.respJsonData(res,rs);
     }).catch(function(err_inst){
       // console.log(err_inst);
@@ -228,11 +226,9 @@ router.route("/exampleAndTask").post(function (req,res){
     }
     nodeAnalysisService.find_role(user_no).then(function (rs) {
         var user_info = rs.data;
-        console.log(user_info[0].user_roles,"aaa123");
           if(rs.success){
               nodeAnalysisService.example_task(user_no,proc_code,params,node_code,joinup_sys,user_name,proc_vars,user_info[0].user_roles,proc_title,proc_ver).then(function(rs){
                   if(rs.success){
-                      console.log(rs,'lslkdkdo');
                       var task_id=rs.data[0]._id;
                       //认领任务
                       inst.acceptTask(task_id,user_no,user_name).then(function(rs){
@@ -305,29 +301,23 @@ router.route("/single/todo").post(function(req,res){
             logger.error("route-getTaskByid","根据任务_id获取我的待办数据异常",err);
             utils.respMsg(res, false, '1000', '获取数据异常', null, err);
         })
-
 });
 
-router.route("/assiant/node").post((req,res)=>{
-    var node_code=req.body.node_code;
-    var user_no=req.body.user_no;
-    var proc_code=req.body.proc_code;
-    var params=req.body.params;
-    var flag=req.body.flag;
+router.route("/assiant/node").post((req, res) => {
+    var node_code = req.body.node_code;
+    var user_no = req.body.user_no;
+    var proc_code = req.body.proc_code;
+    var params = req.body.params;
+    var flag = req.body.flag;
     var role_no;
-    if(flag){
-        role_no="5a264057c819ed2118539079"
-
-    }else{
-
+    if (flag) {
+        role_no = "5a264057c819ed2118539079"
+    } else {
         utils.respMsg(res, false, '2001', 'fanzheng  jiushi cuole 。', null, null);
-
     }
-
-    nodeAnalysisService.getAssiantMain(user_no,role_no,proc_code,params,node_code).then((rs)=>{
+    nodeAnalysisService.getAssiantMain(user_no, role_no, proc_code, params, node_code).then((rs) => {
         utils.respJsonData(res, rs);
     });
-
 });
 
 module.exports = router;
