@@ -39,10 +39,10 @@ module.exports = function(req, res, next) {
         }
         else {
             var cas_user = req.session.cas_user;
-            console.log('car_user:' + cas_user);
+            // console.log('car_user:' + cas_user);
             if (cas_user) {
                 var login_account = JSON.parse(cas_user).login_account;
-                console.log('login_account:' + login_account);
+                // console.log('login_account:' + login_account);
                 coreService.localLogin(login_account, function (result) {
                     if (result.success) {
                         // 保存当前用户信息至session
@@ -107,7 +107,7 @@ module.exports = function(req, res, next) {
                                             if (current_user.user_sys.sys_main_url) {
                                                 //sleep(5000);
                                                 //res.end("<script>location='"+current_user.user_sys.sys_main_url+"'</script>");
-                                                console.log("local_login:" + req.url);
+                                                // console.log("local_login:" + req.url);
                                                 next();
                                                 //res.redirect(current_user.user_sys.sys_main_url);
                                             }
@@ -133,7 +133,7 @@ module.exports = function(req, res, next) {
                         });
                     }
                     else {
-                        console.log(result.code + ":" + result.msg);
+                        // console.log(result.code + ":" + result.msg);
                         res.render(config.project.theme + 'layout_login', {
                             //layout:config.project.theme + 'layout',// 设置布局页面(默认：layout)
                             message: '账号或密码错误'

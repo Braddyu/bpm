@@ -214,14 +214,18 @@ router.route("/login").get(function (a, c) {
                             }
                             coreService.getSysMenu(function (b) {
                                 b.success ? (a.session.current_user_roles = roles_codes.join(','), a.session.current_user = d, a.session.current_user_role_menus = g, a.session.current_user_role_menus_opts = h, a.session.current_user_role = e, a.session.current_sys_menus = b.data, a.session.save(function (a) {
-                                    console.log("\u767b\u9646\uff1a" + a);
+                                    //console.log("\u767b\u9646\uff1a" + a);
                                     d.user_sys.sys_main_url ? c.redirect(d.user_sys.sys_main_url) : c.status(500).send("\u9519\u8bef\uff1a\u672a\u5b9a\u4e49\u7cfb\u7edf" +
                                         d.user_sys.sys_name + "\u7684\u4e3b\u9875\u5c5e\u6027[sys_main_url]")
                                 })) : toLogin(c, "\u52a0\u8f7d\u7cfb\u7edf\u83dc\u5355\u51fa\u73b0\u5f02\u5e38\uff0c\u8bf7\u8054\u7cfb\u7ba1\u7406\u5458",1)
                             })
                         } else toLogin(c, "\u672a\u7ed9\u8d26\u53f7\u5206\u914d\u6743\u9650\uff0c\u8bf7\u8054\u7cfb\u7ba1\u7406\u5458",1)
                     })
-                } else console.log(b.code + ":" + b.msg), "1008" == b.code ? toLogin(c, b.msg) : toLogin(c, "\u8d26\u53f7\u6216\u5bc6\u7801\u9519\u8bef",1)
+                } else{
+                    //console.log(b.code + ":" + b.msg),
+                    "1008" == b.code ? toLogin(c, b.msg) : toLogin(c, "\u8d26\u53f7\u6216\u5bc6\u7801\u9519\u8bef",1)
+                }
+
             })
         } else toLogin(c, "\u5bc6\u7801\u4e0d\u80fd\u4e3a\u7a7a",1); else toLogin(c, "\u8d26\u53f7\u4e0d\u80fd\u4e3a\u7a7a\u3002",1)//账号不能为空。
 
@@ -271,14 +275,17 @@ router.route("/login").get(function (a, c) {
                             }
                             coreService.getSysMenu(function (b) {
                                 b.success ? (a.session.current_user_roles = roles_codes.join(','), a.session.current_user = d, a.session.current_user_role_menus = g, a.session.current_user_role_menus_opts = h, a.session.current_user_role = e, a.session.current_sys_menus = b.data, a.session.save(function (a) {
-                                    console.log("\u767b\u9646\uff1a" + a);
+                                    //console.log("\u767b\u9646\uff1a" + a);
                                     d.user_sys.sys_main_url ? c.redirect(d.user_sys.sys_main_url) : c.status(500).send("\u9519\u8bef\uff1a\u672a\u5b9a\u4e49\u7cfb\u7edf" +
                                         d.user_sys.sys_name + "\u7684\u4e3b\u9875\u5c5e\u6027[sys_main_url]")
                                 })) : toLogin(c, "\u52a0\u8f7d\u7cfb\u7edf\u83dc\u5355\u51fa\u73b0\u5f02\u5e38\uff0c\u8bf7\u8054\u7cfb\u7ba1\u7406\u5458",2)
                             })
                         } else toLogin(c, "\u672a\u7ed9\u8d26\u53f7\u5206\u914d\u6743\u9650\uff0c\u8bf7\u8054\u7cfb\u7ba1\u7406\u5458",2)
                     })
-                } else console.log(b.code + ":" + b.msg), "1008" == b.code ? toLogin(c, b.msg) : toLogin(c, "\u624b\u673a\u53f7\u9519\u8bef",2)
+                } else {
+                    //console.log(b.code + ":" + b.msg),
+                    "1008" == b.code ? toLogin(c, b.msg) : toLogin(c, "\u624b\u673a\u53f7\u9519\u8bef", 2)
+                }
             })
         }else toLogin(c, "\u624b\u673a\u53f7\u4e0d\u80fd\u4e3a\u7a7a",2)
     }
@@ -358,7 +365,7 @@ router.route("/captcha").get(function (a, c) {
 });
 router.route("/switchRole/:roleid").get(function (a, c) {
     var d = a.params.roleid, b = a.session.req.session.current_user_role;
-    console.log(d + "," + b._id);
+    //console.log(d + "," + b._id);
     d == b._id ? utils.respMsg(c, !0, "0001", "\u5f53\u524d\u5df2\u663e\u793a\u8be5\u89d2\u8272\u6743\u9650", null, null) : coreService.hasRoleByUser(a.session.current_user._id, d, function (b) {
         if (b.success) {
             var d = b.data;
@@ -386,11 +393,11 @@ router.route("/switchRole/:roleid").get(function (a, c) {
 });
 router.route("/:code").get(function (a, c) {
     var d = a.params.code;
-    console.log("menu_code:" + d);
+    //console.log("menu_code:" + d);
     var b = getMenuInfo(a, d), e = tree.buildSysTree(utils.getCurrentSysMenus(a)), g = utils.getCurrentUser(a), n = g.user_sys.sys_theme_layout;
-    console.log("\u5e03\u5c40\u6587\u4ef6\uff1a" + n);
+    //console.log("\u5e03\u5c40\u6587\u4ef6\uff1a" + n);
     var p = utils.getCurrentUserRole(a), k = a.param("reqparams");
-    console.log("reqparams:" + k);
+    //console.log("reqparams:" + k);
     memcached_utils.getSysParam(a, function (d) {
         memcached_utils.getDict(function (h, l) {
             if (b && 0 == b.menu_type)coreService.getPortalPageByCode(b.menu_sysid, p._id,
@@ -504,7 +511,7 @@ function getMenuInfo(a, c) {
     return b[c]
 }
 function getChildMenus(a, c) {
-    console.log(JSON.stringify(a));
+    //console.log(JSON.stringify(a));
     var d = a.menu_sysid, b = a.menu_root_id, e = {}, g = c[d];
     if (g)for (var n = 0; n < g.length; n++) {
         var p = g[n];

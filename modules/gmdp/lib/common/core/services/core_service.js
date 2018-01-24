@@ -11,7 +11,7 @@ var app_api_model = require('../models/app_model');
 
 var utils = require('../utils/app_utils');
 var tree = require('../utils/tree_utils');
-var mysql_utils = require('../utils/mysql_utils');
+// var mysql_utils = require('../utils/mysql_utils');
 var memcached_utils = require('../utils/memcached_utils');
 
 var config = require('../../../../config');
@@ -207,7 +207,7 @@ exports.getUserData = function(conditionMap,cb) {
 /*var mongoose = require('mongoose');
 var testid = mongoose.mongo.ObjectId();*/
 exports.getDictTreeData = function(dict_code, cb) {
-    console.log("dict_code:"+dict_code);
+    // console.log("dict_code:"+dict_code);
     var fields = {field_value:1, field_name:1, field_parent_value:1}; // 待返回的字段
     var options = {sort: {'field_parent_value': 1, 'field_order': 1}};
     dictModel.$.find({dict_code:dict_code, dict_status:1}, function(err, dict){
@@ -428,7 +428,7 @@ exports.userLogin = function(account, password, cb) {
                 userModel.$.find({'$or':[{'login_account':account}],user_status:1})
                                .populate(['user_org', 'user_sys', {path: 'user_roles', match: { 'role_status': { $eq: 1 }}}])
                                .exec(function(error, result){
-                                   console.log("查询用户表--》",result);
+                                   // console.log("查询用户表--》",result);
                     if(error) {
                         cb(utils.returnMsg(false, '1000', '根据账号名获取用户信息时出现异常。', null, error));
                     }
@@ -491,7 +491,7 @@ exports.userLogin = function(account, password, cb) {
 
                                                     cb(utils.returnMsg(true, '0000', '登录成功', populatedUserInfo, null));
                                                     exports.saveUserLoginLog(populatedUserInfo, function(logResult){
-                                                        console.log(logResult);
+                                                        // console.log(logResult);
                                                     });
                                                 }
                                                 else {
@@ -521,7 +521,7 @@ exports.userLogin = function(account, password, cb) {
                                                         }
                                                         cb(utils.returnMsg(true, '0000', '登录成功', populatedUserInfo, null));
                                                         exports.saveUserLoginLog(populatedUserInfo, function(logResult){
-                                                            console.log(logResult);
+                                                            // console.log(logResult);
                                                         });
                                                     });
                                                 }
@@ -560,7 +560,7 @@ exports.phoneLogin = function(account, password, cb) {
                 userModel.$.find({'$or':[{'user_phone':account}],user_status:1})
                     .populate(['user_org', 'user_sys', {path: 'user_roles', match: { 'role_status': { $eq: 1 }}}])
                     .exec(function(error, result){
-                        console.log("查询用户表--》",result);
+                        // console.log("查询用户表--》",result);
                         if(error) {
                             cb(utils.returnMsg(false, '1000', '根据手机号获取用户信息时出现异常。', null, error));
                         }
@@ -605,7 +605,7 @@ exports.phoneLogin = function(account, password, cb) {
 
                                                     cb(utils.returnMsg(true, '0000', '登录成功', populatedUserInfo, null));
                                                     exports.saveUserLoginLog(populatedUserInfo, function(logResult){
-                                                        console.log(logResult);
+                                                        // console.log(logResult);
                                                     });
                                                 }
                                                 else {
@@ -635,7 +635,7 @@ exports.phoneLogin = function(account, password, cb) {
                                                         }
                                                         cb(utils.returnMsg(true, '0000', '登录成功', populatedUserInfo, null));
                                                         exports.saveUserLoginLog(populatedUserInfo, function(logResult){
-                                                            console.log(logResult);
+                                                            // console.log(logResult);
                                                         });
                                                     });
                                                 }

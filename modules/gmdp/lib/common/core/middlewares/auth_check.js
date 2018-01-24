@@ -28,7 +28,7 @@ module.exports = function (b, e, d) {
                     var f = b.session.current_user_role_menus, c = b.url.indexOf("?"), a = b.url;
                     -1 != c && (a = a.substring(0, c));
                     a = a.replace(config.project.appurl + "/", "");
-                    console.log("\u83dc\u5355\u6743\u9650\u68c0\u67e5:" + a);
+                    // console.log("\u83dc\u5355\u6743\u9650\u68c0\u67e5:" + a);
                     f[a] ?
                         d() : exports.toRenderNoPermission(b, e)
                 }

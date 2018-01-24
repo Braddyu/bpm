@@ -118,7 +118,7 @@ function _dump(routes_folder_path) {
         [routes_folder_path + obj.file, obj.method, obj.path]
     );
   }
-  console.log(table.toString());
+  // console.log(table.toString());
 }
 
 /**
