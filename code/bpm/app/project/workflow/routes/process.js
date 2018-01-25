@@ -350,7 +350,7 @@ router.route('/version')
         var proc_name = req.body.proc_name;//流程名称
         var proc_define = req.body.proc_define;//流程图定义信息
 
-        var lineNodeDatas = JSON.parse(req.body.lineNodeDatas);//流程图连接线数据
+        var lineNodeDatas = JSON.parse(req.body.lineNodeDatas.replace('&gt;','>').replace('&lt;','<'));//流程图连接线数据
         var taskNodeDatas = JSON.parse(req.body.taskNodeDatas);//流程图任务节点数据
 
         // 验证流程编码是否为空
