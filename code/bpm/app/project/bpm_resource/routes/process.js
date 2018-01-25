@@ -303,10 +303,14 @@ router.get('/show/progressed', function(req, res, next) {
             utils.respMsg(res, false, '2001', '节点编码不能为空。', null, null);
             return;
         }
-
-        nodeAnalysisService.skipNodeAndGetHandlerInfo(user_no, proc_code, params, node_code, task_id).then(function (rs) {
-            utils.respJsonData(res, rs);
-        });
+        try{
+            nodeAnalysisService.skipNodeAndGetHandlerInfo(user_no, proc_code, params, node_code, task_id).then(function (rs) {
+                utils.respJsonData(res, rs);
+            });
+        }catch (err){
+            console.log(err);
+            utils.respJsonData(res, {"data":null,"success":false,"code":"20001","msg":"err","error":err});
+        }
     });
 
 /**

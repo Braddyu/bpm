@@ -23,74 +23,7 @@ var nodeDetail,data_define;
  * getNode("59438a49ff6eed2780eb6cb7","processDefineDiv_node_2",params,true)
  */
 //getNode的对外方法
-exports.getNode=function(process_define_id,node_id,params,flag){
-    var process_define,item_config;
-    var promise=new Promise(function(resolve,reject){
-        //先找出流程的定义文件
-        model.$ProcessDefine.find({"_id":process_define_id},function(err,rs){
-            if(err){
-                console.log(err)
-                reject(utils.returnMsg(false, '1000', '根据流程定义Id查询时出现异常。', null, err));
-            } else{
-                process_define=JSON.parse(rs[0].proc_define);
-                item_config=JSON.parse(rs[0].item_config);
-                var nodes=process_define.nodes;
-                if(flag){
-                    //查找下一节点信息
-                    for (var node in nodes){
-                        if(node==node_id){
-                            //获取所有的有效节点（下一步或者上一步所有有效节点的方法）即下一步所有能走的节点
-                            var node_array=getValidNode(process_define,node_id,flag);
-                            var  type=nodes[node].type;
-                            //判断是不是分支节点
-                            if(type=="chat"){
-                                //分支节点专用的方法区
-                                //调用删除无效节点的方法 留下有效节点的方法（判断下一节点走哪一步）
-                                node_array=deleteInvalidNode(process_define,item_config,node_array,node_id,params,reject);
-                                //对于 chat类型的任务 有效节点只能有一个
-                                if(node_array.length!=1){
-                                    resolve(utils.returnMsg(false, '1000', '有效节点删除不完全，或者错误', null, null));
-                                }else{
-                                    //获取节点详细信息的方法
-                                    var result=choiceNode(item_config,process_define,node_id,node_array[0]);
-                                    resolve(utils.returnMsg(true, '0000', '查询结果正常', result, null));
-                                }
-
-
-                            }else if(type=="fork"){
-                                //并行分支节点开始节点
-                                //返回所有的下一并行节点数组
-                                var result=choiceNode(item_config,process_define,node_id,null);
-                                resolve(utils.returnMsg(true, '0000', '查询结果正常', result, null));
-
-                            }else{
-                                //不是分支节点的方法区 单一节点
-                                //console.log("进入单一节点方法区");
-                                if(node_array.length!=1){
-                                    //有效节点的数量必须为1个
-                                    //console.error("节点信息错误");
-                                    reject(utils.returnMsg(false, '1000', '有效节点删除不完全，或者错误', null, null));
-
-                                }else{
-                                    var result=choiceNode(item_config,process_define,node_id,node_array[0]);
-                                    resolve(utils.returnMsg(true, '0000', '查询结果正常', result, null));
-                                }
-                            }
-                        }
-                    }
-
-                }else{
-                    //查找上一节点信息
-                    var result=findNode(item_config,process_define,node_id,flag);
-                    resolve(utils.returnMsg(true, '0000', '查找上一节点信息正常', result, null));
-
-                }
-            }
-        });
-    });
-    return promise;
-}
-
+exports.getNode=getNode;
 
 function getNode(process_define_id,node_code,params,flag){
     return new Promise(async function(resolve) {
@@ -2752,7 +2685,7 @@ exports.example_task=(user_no,proc_code,param_json_str,node_code,joinup_sys,user
  * @returns {bluebird}
  */
 exports.skipNodeAndGetHandlerInfo=(user_no,proc_code,param_json_str,node_code,task_id)=>{
-    return new Promise((resolve,reject)=>{
+    return new Promise(async (resolve,reject)=>{
         var params=param_json_str;
         //解析参数
         if(!(!param_json_str||param_json_str=="undefined"||param_json_str=="{}")){
@@ -2770,72 +2703,55 @@ exports.skipNodeAndGetHandlerInfo=(user_no,proc_code,param_json_str,node_code,ta
         }else{
             params={};
         }
-        model.$ProcessDefine.find({'proc_code':proc_code},(err,res)=>{
-            if(err){
-                resolve(utils.returnMsg(false, '1000', '查询流程出错', null, err));
-            }else{
-                if(res.length>0){
-                    //获取流程id
-                    var proc_define_id=res[0]._id;
-                    // var node_code;
-                    // console.log(res[0].proc_define);
-                    var proc_define=JSON.parse(res[0].proc_define);
-
-
-                    //获取节点详细信息
-                    var nodes=proc_define.nodes;
-                    //获取节点之间关系
-                    var lines=proc_define.lines;
-                    // for (let  node in nodes){
-                    //     // console.log(nodes[node],node);
-                    // }
-                    //节点配置信息
-                    let item_config=JSON.parse(res[0].item_config);
-                    // console.log(item_config);
-                    var flag=false;
-                    for(var node in item_config){
-                        // console.log(item_config[node].item_code,node_code);
-                        if(item_config[node].item_code==node_code){
-                            if(item_config[node].item_jump==1){
-                                flag=true
-                            }
-                        }
-                    }
-
-                    if(flag){
-                        //获取 跳过之后的节点信息
-                        getNode(proc_define_id,node_code,params,flag).then(function(rs){
-                            if(rs.success){
-                                var current_detail=rs.data.current_detail;
-                                var next_detail=rs.data.next_detail;
-                                var temp_node;
-                                if(next_detail){
-                                    temp_node=nodes[next_detail.item_code]
-                                }else{
-                                    for(let i in nodes){
-                                        if(nodes[i].type=="end  round"){
-                                            temp_node=nodes[i];
-                                            break;
-                                        }
-                                    }
-
-                                }
-                                getSkipedNodeAndHandler(temp_node, next_detail,user_no,proc_code,task_id).then((rs)=>{
-                                    resolve(rs);
-                                    // console.log(rs,'aaaaaaaaaaaaaaaaa');
-                                    return ;
-                                });
-                            }else{
-                                resolve(rs);
-                            }
-                        })
-                    }
-                    // resolve(utils.returnMsg(false, '1000', '查询流程出错', null, null))
-                }else{
-                    resolve(utils.returnMsg(false, '1000', '查询流程出错', null, null))
+        let res=await model.$ProcessDefine.find({'proc_code':proc_code});
+        if (!res){
+            resolve(utils.returnMsg(false, '1000', '查询流程出错', null, null));
+            return ;
+        }
+        var proc_define_id=res[0]._id;
+        var proc_define=JSON.parse(res[0].proc_define);
+        var nodes=proc_define.nodes;
+        var lines=proc_define.lines;
+        let item_config=JSON.parse(res[0].item_config);
+        // console.log(item_config);
+        var flag=false;
+        for(var node in item_config){
+            // console.log(item_config[node].item_code,node_code);
+            if(item_config[node].item_code==node_code){
+                if(item_config[node].item_jump==1){
+                    flag=true
                 }
             }
-        });
+        }
+        if(flag){
+            //获取 跳过之后的节点信息
+            getNode(proc_define_id,node_code,params,flag).then(function(rs){
+                if(rs.success){
+                    var current_detail=rs.data.current_detail;
+                    var next_detail=rs.data.next_detail;
+                    var temp_node;
+                    if(next_detail){
+                        temp_node=nodes[next_detail.item_code]
+                    }else{
+                        for(let i in nodes){
+                            if(nodes[i].type=="end  round"){
+                                temp_node=nodes[i];
+                                break;
+                            }
+                        }
+
+                    }
+                    getSkipedNodeAndHandler(temp_node, next_detail,user_no,proc_code,task_id).then((rs)=>{
+                        resolve(rs);
+                        return ;
+                    });
+                }else{
+                    resolve(rs);
+                }
+            })
+        }else{
+            resolve({"data":null,"error":null,"msg":"该节点配置为不可跳过","code":"10001","success":true});
+        }
     });
 
 }
@@ -3599,16 +3515,23 @@ exports.getNodeAndHandlerInfo=function(proc_code,user_no,param_json_str){
                     var params1;
                     //获取开始节点的下一节点，即实际派单节点的处理人
                     getNode(proc_define_id,beginNode,params1,true).then(function(rs){
-                        if(!rs.success)
-                            resolve(utils.returnMsg(false, '1003', '流程图第二节点错误', null, null));
+                        if(!rs.success){
+                            console.log(rs);
+                            resolve(rs);
+                            return ;
+                        }
                         else{
                             var data=rs.data;
                             var next_node=data.next_node;
                             node_code=data.next_detail.item_code;
                             //获取第三节点所有处理人
                             getNode(proc_define_id,node_code,params,true).then(function(rs){
-                                if(!rs.success)
-                                    resolve(utils.returnMsg(false, '1004', '流程图第三节点错误', null, null));
+                                if(!rs.success){
+                                    console.log(rs);
+                                    resolve(utils.returnMsg(false, '1004', '流程图第三节点错误', null, null))  ;
+                                    return ;
+                                }
+
                                 else{
                                     var data=rs.data;
                                     var next_node=data.next_node;

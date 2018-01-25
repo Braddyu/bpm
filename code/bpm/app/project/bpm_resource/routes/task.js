@@ -205,6 +205,7 @@ exports.task=function() {
             var params = req.body.params;//流转参数
             var biz_vars = req.body.biz_vars;//业务变量
             var proc_vars = req.body.proc_vars;//流程变量
+            var next_name = req.body.next_name;
             // 任务是否为空
             if (!id) {
                 utils.respMsg(res, false, '2001', '任务ID不能为空。', null, null);
@@ -216,17 +217,11 @@ exports.task=function() {
                 //判断用户是否存在
                 inst.userInfo(user_code).then(function (rs) {
                     if (rs.success && rs.data.length == 1) {
-                        console.log('success');
                         inst.getTaskById(id).then(function (taskresult) {
                             if (taskresult.success) {
                                 var node_code = taskresult.data._doc.proc_inst_task_code;
                                 //流程流转方法
-                                console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-                                console.log(id, node_code, user_code, true, memo, params, biz_vars, proc_vars);
-                                console.info(params)
-                                nodeTransferService.transfer(id, node_code, user_code, true, memo, params, biz_vars, proc_vars).then(function (result1) {
-                                    console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", id, node_code, user_code, true, memo, params);
-                                    console.log(result1);
+                                nodeTransferService.transfer(id, node_code, user_code, true, memo, params, biz_vars, proc_vars,next_name).then(function (result1) {
                                     utils.respJsonData(res, result1);
                                 }).catch(function (err_inst) {
                                     // console.log(err_inst);

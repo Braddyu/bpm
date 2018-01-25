@@ -281,7 +281,7 @@ function touchNode(detail,user_no,task_id,flag){
  * @param param_json_str 做分支选择节点的时候使用的参数 参数格式为json键值对字符串，当不为分支选择节点时传递空字符串
  * @param biz_vars 业务实例变量 json字符串
  */
-exports.transfer=function(proc_inst_task_id,node_code,user_code,opts,memo,param_json_str,biz_vars,proc_vars){
+exports.transfer=function(proc_inst_task_id,node_code,user_code,opts,memo,param_json_str,biz_vars,proc_vars,next_name){
 
     var p=new Promise(function(resolve,reject){
         var params = eval('(' + param_json_str + ')');
@@ -403,7 +403,8 @@ exports.transfer=function(proc_inst_task_id,node_code,user_code,opts,memo,param_
                                                         //归档
                                                         //到达最后一步 不可以流转
                                                         //往实例表中 插入数据
-                                                        overFunction(current_detail,proc_inst_id, proc_inst_task_id,user_code,memo).then(function(rs){
+                                                        console.log('dddd');
+                                                        overFunction(current_detail,proc_inst_id, proc_inst_task_id,user_code,memo,next_name).then(function(rs){
                                                             resolve(rs);
                                                         })
 
@@ -860,12 +861,13 @@ function joinFunction(proc_inst_id, resolve, reject, node_code, params, proc_ins
 }
 
 //归档function        current_detail,proc_inst_id, proc_inst_task_id,user_code,memo
-function overFunction(current_detail,proc_inst_id, proc_inst_task_id,user_code,memo) {
+function overFunction(current_detail,proc_inst_id, proc_inst_task_id,user_code,memo,next_name) {
     var data = {};
     data.proc_inst_task_status=1;
     data.proc_inst_task_complete_time=new Date();
     data.proc_inst_task_handler_code=user_code;
     data.proc_inst_task_remark=memo;
+    data.next_name = next_name;
     var conditions = {_id: proc_inst_task_id};
     var update = {$set: data};
     var options = {};
