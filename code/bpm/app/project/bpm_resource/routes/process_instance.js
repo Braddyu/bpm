@@ -305,7 +305,6 @@ router.route("/next/nodeAnduser").post(function (req, res) {
         inst.userInfo(user_no).then(function (rs) {
             if (rs.success && rs.data.length == 1) {
                 try{
-
                     nodeAnalysisService.getNextNodeAndHandlerInfo(node_code, proc_task_id, proc_inst_id, params, user_no).then(function (rs) {
                         // console.log(rs);
                         utils.respJsonData(res, rs);

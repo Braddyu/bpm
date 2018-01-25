@@ -2267,7 +2267,6 @@ exports.getNextNodeAndHandlerInfo=function(node_code,proc_task_id,proc_inst_id,p
         var next_node=rsss.data.next_node;
 
         var data_s=await findNextHandler(user_code,rs[0].proc_define_id,node_code,params,proc_inst_id);
-
         if(next_node.type=='end  round'){
             let ret_map=[];
             let temp={};
@@ -2278,6 +2277,7 @@ exports.getNextNodeAndHandlerInfo=function(node_code,proc_task_id,proc_inst_id,p
             ret_map.push(temp);
             resolve({"data":ret_map,"msg":"下一节点为结束节点","error":null,"success":true});
         }else{
+            // item_assignee_ref_type
             if (next_detail.item_assignee_type == 1) {
                 let ret_map=[];
                 let temp={};
@@ -2288,20 +2288,34 @@ exports.getNextNodeAndHandlerInfo=function(node_code,proc_task_id,proc_inst_id,p
                 ret_map.push(temp);
                 resolve({"data":ret_map,"msg":"查询完成","error":null,"success":true,"next_node":next_detail.item_code});
             }
-            if (next_detail.item_assignee_type == 2||next_detail.item_assignee_type == 3||next_detail.item_assignee_type == 4) {
-                let res=await model_user.$User.find({"user_org":{$in:data_s.data.user_org_id},"user_roles":{$in:next_detail.item_assignee_role?next_detail.item_assignee_role.split(","):[next_detail.item_assignee_role]}});
-                if(!res){ resolve({"data":null,"msg":"查询出错","error":null,"success":false});return ;}
-                var ret_map=[];
-                for(let  i in res ){
-                    let temp={};
-                    temp.user_no=res[i].user_no;
-                    temp.user_name=res[i].user_name;
-                    temp.node_name=next_node.name;
-                    temp.node_code=next_detail.item_code;
-                    ret_map.push(temp);
-                }
-                resolve({"data":ret_map,"msg":"查询完成","error":null,"success":true,"next_node":next_detail.item_code});
+            // item_assignee_ref_type : String,// 参照人类别 1-当前人，2-当前机构
+            // item_assignee_type : Number, // 参与类型1  灿如人 2： 掺入角色 3 参照
+            // item_assignee_type: 3,
+            if (next_detail.item_assignee_type == 2||next_detail.item_assignee_type == 3) {
+                    if(next_detail.item_assignee_ref_type==1){
+                        let ret_map=[];
+                        let temp={};
+                        temp.user_no=data_s.data.proc_inst_task_assignee;
+                        temp.user_name=data_s.data.proc_inst_task_assignee_name;
+                        temp.node_name=next_node.name;
+                        temp.node_code=next_detail.item_code;
+                        ret_map.push(temp);
+                        resolve({"data":ret_map,"msg":"查询完成","error":null,"success":true,"next_node":next_detail.item_code})
+                    }else{
+                        let res=await model_user.$User.find({"user_org":{$in:data_s.data.user_org_id},"user_roles":{$in:next_detail.item_assignee_role?next_detail.item_assignee_role.split(","):[next_detail.item_assignee_role]}});
+                        if(!res){ resolve({"data":null,"msg":"查询出错","error":null,"success":false});return ;}
+                        var ret_map=[];
+                        for(let  i in res ){
+                            let temp={};
+                            temp.user_no=res[i].user_no;
+                            temp.user_name=res[i].user_name;
+                            temp.node_name=next_node.name;
+                            temp.node_code=next_detail.item_code;
+                            ret_map.push(temp);
+                        }
+                        resolve({"data":ret_map,"msg":"查询完成","error":null,"success":true,"next_node":next_detail.item_code});
 
+                    }
             }
         }
     });
@@ -2759,7 +2773,7 @@ exports.skipNodeAndGetHandlerInfo=(user_no,proc_code,param_json_str,node_code,ta
  * 当跳过节点的时候获取跳过的节点的下一步处理人和节点信息
  */
 function getSkipedNodeAndHandler(next_node, next_detail,user_no,proc_code,task_id){
-    var promise=new Promise(function(resolve,reject) {
+   return  new Promise(function(resolve,reject) {
         if (next_node.type == "end  round") {
             var array = []
             let map = {};
@@ -2769,11 +2783,7 @@ function getSkipedNodeAndHandler(next_node, next_detail,user_no,proc_code,task_i
             resolve(utils.returnMsg(true, '0000', '下一节点为结束节点',array, null))
 
         } else {
-            // console.log("@@@@@@@@@@@@@@@@@@@@@@@",next_detail);
-
             var item_assignee_ref_task = next_detail.item_assignee_ref_task;
-
-
             var item_assignee_ref_cur_org = next_detail.item_assignee_ref_cur_org//: '1',
             var item_assignee_ref_type = next_detail.item_assignee_ref_type;//// 参照人类别 1-当前人，2-当前机构
             // console.log("next_detail   ;", next_detail)
@@ -2783,11 +2793,9 @@ function getSkipedNodeAndHandler(next_node, next_detail,user_no,proc_code,task_i
             var item_assignee_org_ids = next_detail.item_assignee_org_ids;
             var node_code = next_detail.item_code
             var node_name = next_node.name
-
             var type = next_detail.item_assignee_type
             if (type == 1) {
                 //单人
-
                 var array = []
                 var map = {};
                 map.user_name = next_detail.item_show_text;
