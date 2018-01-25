@@ -339,7 +339,7 @@ var config = {
         path:'/ewfs/client/ewf4store/repair.do',
         method:'POST',
         headers:{
-            'Content-Type':'application/x-www-form-urlencoded; charset=UTF-8'
+            'Content-Type':'text/plan; charset=UTF-8'
         }
     },
     //所属系统编号

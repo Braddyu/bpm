@@ -334,11 +334,11 @@ exports.repareHuanghe= function(result1,proc_code,proc_inst_id,memo) {
                     if(res.length==1){
                         var _id=res[0]._id;
                         var postData={
-                            "JobId":proc_inst_id,
-                            "orderId":res[0].staff_num,
-                            "orderCode":res[0].BOSS_NUM,
-                            "Suggestion":memo,
-                            "yearMonth":moment().format('YYYY-MM-DD HH:mm:ss')
+                            "jobId":proc_inst_id,
+                            "orderId":res[0].BOSS_NUM,
+                            "orderCode":res[0].staff_num,
+                            "suggestion":memo,
+                            "crmTradeDate":res[0].mistake_time
                         };
                         //回传地址
                         var options= config.repair_huanghe;
