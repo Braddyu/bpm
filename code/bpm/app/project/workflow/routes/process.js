@@ -510,8 +510,8 @@ router.route('/process/version/:id')
     .put(function(req,res) {
         var id = req.params.id;//流程实例id
         var proc_define = req.body.proc_define;//流程图定义信息
-
-        var lineNodeDatas = JSON.parse(req.body.lineNodeDatas);//流程图连接线数据
+        //后台为防止XSS攻击将'< >'转义，这里转回
+        var lineNodeDatas = JSON.parse(req.body.lineNodeDatas.replace('&gt;','>').replace('&lt;','<'))//流程图连接线数据
         var taskNodeDatas = JSON.parse(req.body.taskNodeDatas);//流程图任务节点数据
         var processDefineEntity = {};
         processDefineEntity.proc_define = proc_define;
