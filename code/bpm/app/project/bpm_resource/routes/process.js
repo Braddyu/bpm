@@ -346,45 +346,6 @@ router.route("/assiant/node").post((req, res) => {
         utils.respJsonData(res, rs);
     });
 });
-    /**
-     *  查询某一条待办的接口，返回这条待办的对象数据
-     *
-     */
-    router.route("/single/todo").post(function (req, res) {
-        var _id = req.body.inst_id;//实例Id
-        var user_no = req.body.user_no;//当前任务处理人
-        inst.getMyTaskQuery(_id, user_no)
-            .then(function (result) {
-                utils.respJsonData(res, result);
-            })
-            .catch(function (err) {
-                logger.error("route-getTaskByid", "根据任务_id获取我的待办数据异常", err);
-                utils.respMsg(res, false, '1000', '获取数据异常', null, err);
-            })
-
-    });
-
-    router.route("/assiant/node").post((req, res) => {
-        var node_code = req.body.node_code;
-        var user_no = req.body.user_no;
-        var proc_code = req.body.proc_code;
-        var params = req.body.params;
-        var flag = req.body.flag;
-        var role_no;
-        if (flag) {
-            role_no = "5a264057c819ed2118539079"
-
-        } else {
-
-            utils.respMsg(res, false, '2001', 'fanzheng  jiushi cuole 。', null, null);
-
-        }
-
-        nodeAnalysisService.getAssiantMain(user_no, role_no, proc_code, params, node_code).then((rs) => {
-            utils.respJsonData(res, rs);
-        });
-
-    });
 
     /**
      * 获取令牌

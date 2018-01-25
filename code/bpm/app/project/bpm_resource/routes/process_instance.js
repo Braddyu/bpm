@@ -51,7 +51,7 @@ exports.process_instance=function() {
         var memo = req.body.memo;
         var params = req.body.params;
         var joinup_sys = req.body.joinup_sys;//String,//工单所属系统编号
-
+        var next_name = req.body.next_name;
         if (!joinup_sys) {
             utils.respMsg(res, false, '2001', '工单所属系统编号不能为空。', null, null);
             return;
@@ -67,7 +67,7 @@ exports.process_instance=function() {
             inst.userInfo(user_code).then(function (rs) {
                 if (rs.success && rs.data.length == 1) {
                     //创建实例,并生成任务
-                    inst.createInstance(proc_code, proc_ver, proc_title, params, proc_vars, biz_vars, user_code, userName, joinup_sys)
+                    inst.createInstance(proc_code, proc_ver, proc_title, params, proc_vars, biz_vars, user_code, userName, joinup_sys,next_name)
                         .then(function (result) {
                             if (result.success) {
                                 var task_id = result.data[0]._id;

@@ -79,19 +79,26 @@ HOST: http://192.168.9.66:30002/gdgl/api
             }
 
 + Response 200
-   {
-    "success": true,
-    "code": "0000",
-    "msg": "查询用户org",
-    "data": [
-        {
-            "user_no": "zhangwu001",
-            "user_name": "张五",
-            "node_name": "县经理",
-            "node_code": "processDefineDiv_node_4"
-        }
-    ]
-}
+		{
+		  "data": [
+			{
+			  "user_no": "gongbenping",
+			  "user_name": "龚本平",
+			  "node_name": "部门审批",
+			  "node_code": "processDefineDiv_node_4"
+			},
+			{
+			  "user_no": "zhangping",
+			  "user_name": "张萍",
+			  "node_name": "部门审批",
+			  "node_code": "processDefineDiv_node_4"
+			}
+		  ],
+		  "msg": "查询用户org",
+		  "error": null,
+		  "success": true,
+		  "next_node": "processDefineDiv_node_4"
+		}
 
 ## 获取当前节点信息 [/process/nodeDetail]
 
@@ -553,8 +560,8 @@ HOST: http://192.168.9.66:30002/gdgl/api
 
 
 
-## 流程实例启动 [/process_instance/createInstance]
-### 流程实例启动 [POST]
+## 创建流程实例 [/process_instance/createInstance]
+### 创建流程实例 [POST]
 
 + Request
     + Body
@@ -565,12 +572,58 @@ HOST: http://192.168.9.66:30002/gdgl/api
               "title": "流程实例测试",
               "user_no": "wenganguo",
 			  "proc_vars": "",(json字符串格式-流程实例从开始到归档都不需要变动的工单参数)
-			  "biz_vars":""(json字符串格式-业务工单需要的参数)
+			  "biz_vars":"",(json字符串格式-业务工单需要的参数)
+			  "joinup_sys":"warnSys_node";//所属系统编号(warnSys_node-预警工单系统编号:errorSys_node-差错工单系统编号:auditorSys_node-稽核工单系统编号:syesightSys_node-慧眼工单系统编号)
+			  "next_name":"王浩"
             }
     
 + Response 200
 
-    {success:true, code:'0000', msg:'流程实例创建启动成功。',data:taskEntity}
+    {success:true, code:'0000', msg:'流程实例创建启动成功。',data:[
+    {
+      "__v": 0,
+      "proc_inst_id": "5a69442228f98a04b42f46e7",
+      "proc_inst_task_code": "processDefineDiv_node_2",
+      "proc_inst_task_name": "普通员工起草",
+      "proc_inst_task_type": "task",
+      "proc_inst_task_title": "普通员工起草",
+      "proc_inst_task_arrive_time": "2018-01-25T02:42:43.002Z",
+      "proc_inst_task_handle_time": "2018-01-25T02:42:43.002Z",
+      "proc_inst_task_complete_time": "2018-01-25T02:42:43.002Z",
+      "proc_inst_task_status": 0,
+      "proc_inst_task_assignee": "zhuhuimin",
+      "proc_inst_task_assignee_name": "朱慧敏",
+      "proc_inst_task_user_role_name": "分公司主任",
+      "proc_inst_task_user_org_name": "",
+      "proc_inst_task_params": "",
+      "proc_inst_task_claim": 0,
+      "proc_inst_task_sign": 1,
+      "proc_inst_task_sms": 0,
+      "proc_inst_task_remark": "",
+      "proc_inst_node_vars": "",
+      "proc_name": "",
+      "proc_code": "p-999",
+      "proc_inst_prev_node_code": "",
+      "proc_inst_prev_node_handler_user": "",
+      "proc_task_start_user_role_names": "5a264057c819ed211853906f",
+      "proc_task_start_name": "朱慧敏",
+      "proc_task_ver": 1,
+      "proc_task_content": "",
+      "proc_start_time": "2018-01-25T02:42:43.002Z",
+      "joinup_sys": "\"syesightSys_node\"",
+      "next_name": "王浩",
+      "proc_back": 0,
+      "previous_step": "",
+      "_id": "5a69442328f98a04b42f46e8",
+      "proc_task_start_user_role_code": [
+        "zhuhuimin"
+      ],
+      "proc_inst_task_user_org": [],
+      "proc_inst_task_user_role": [
+        "5a264057c819ed211853906f"
+      ]
+    }
+  ]}
 
 ## 流程实例取消 [/process_instance/cancleInstance]
 ### 流程实例取消 [POST]
@@ -672,11 +725,61 @@ HOST: http://192.168.9.66:30002/gdgl/api
 			  "biz_vars":""(json字符串格式-业务工单需要的参数)
 			  "params":{"flag":false}(flag为线上的参数，线上有就必须传没有可以传"")
 			  "joinup_sys":"warnSys_node";//所属系统编号(warnSys_node-预警工单系统编号:errorSys_node-差错工单系统编号:auditorSys_node-稽核工单系统编号:syesightSys_node-慧眼工单系统编号)
+			  "next_name":"王浩"
             }
     
 + Response 200
 
-    {success:true, code:'0000', msg:'流程实例创建启动成功。',data:taskEntity}
+    {success:true, code:'0000', msg:'流程实例创建启动成功。',data:[
+    {
+      "pay_task_id": "5a671ae9a0aa8715e0458d26",
+      "_id": "5a671ae9a0aa8715e0458d23",
+      "proc_id": "5a56fb0ec7647515e48eb573",
+      "proc_define_id": "5a56fc16c7647515e48eb574",
+      "proc_code": "p-999",
+      "parent_id": "0",
+      "parent_proc_inst_id": "",
+      "proc_name": "测试跳级",
+      "proc_ver": 1,
+      "catalog": null,
+      "proce_reject_params": "",
+      "proc_instance_code": "",
+      "proc_title": "测试流程转秘书",
+      "work_order_number": "GDBH2018123578322",
+      "proc_cur_task": "processDefineDiv_node_2",
+      "proc_cur_task_name": "普通员工起草",
+      "proc_cur_user_name": "",
+      "proc_cur_arrive_time": "2018-01-23T11:22:17.545Z",
+      "proc_cur_task_item_conf": "",
+      "proc_start_user": "zhuhuimin",
+      "proc_start_user_name": "朱慧敏",
+      "proc_start_time": "2018-01-23T11:22:17.545Z",
+      "proc_params": "",
+      "proc_inst_status": 2,
+      "proc_attached_type": null,
+      "proce_attached_params": "",
+      "proc_cur_task_code_num": "",
+      "proc_cur_task_overtime": null,
+      "proc_cur_task_remark": "",
+      "proc_city": "",
+      "proc_county": "",
+      "proc_org": "",
+      "proc_cur_task_overtime_sms": null,
+      "proc_cur_task_overtime_sms_count": null,
+      "proc_start_user_role_names": "分公司主任",
+      "proc_define": "{\"title\":\"iflow1\",\"nodes\":{\"processDefineDiv_node_1\":{\"name\":\"开始\",\"left\":110,\"top\":167,\"type\":\"start  round\",\"width\":24,\"height\":24,\"alt\":true},\"processDefineDiv_node_2\":{\"name\":\"普通员工起草\",\"left\":233,\"top\":175,\"type\":\"task\",\"width\":102,\"height\":30,\"alt\":true},\"processDefineDiv_node_3\":{\"name\":\"科室领导审批\",\"left\":482,\"top\":176,\"type\":\"chat\",\"width\":102,\"height\":30,\"alt\":true},\"processDefineDiv_node_12\":{\"name\":\"结束\",\"left\":538,\"top\":467,\"type\":\"end  round\",\"width\":24,\"height\":24,\"alt\":true}},\"lines\":{\"processDefineDiv_line_6\":{\"from\":\"processDefineDiv_node_2\",\"to\":\"processDefineDiv_node_3\",\"name\":\"\",\"type\":\"sl\",\"alt\":true},\"processDefineDiv_line_13\":{\"from\":\"processDefineDiv_node_1\",\"to\":\"processDefineDiv_node_2\",\"name\":\"\",\"type\":\"sl\",\"alt\":true},\"processDefineDiv_line_26\":{\"from\":\"processDefineDiv_node_3\",\"to\":\"processDefineDiv_node_12\",\"name\":\"\",\"type\":\"sl\",\"alt\":true}},\"areas\":{},\"initNum\":27}",
+      "item_config": "[{\"_id\":\"5a56fc69be30350e8459eb9b\",\"item_code\":\"processDefineDiv_line_14\",\"item_type\":\"sl\",\"item_el\":\"flag==true\",\"item_remark\":\"\"},{\"_id\":\"5a58676c20e51f2830a7ae19\",\"item_code\":\"processDefineDiv_line_8\",\"item_type\":\"sl\",\"item_el\":\"flag==true\",\"item_remark\":\"\"},{\"_id\":\"5a58676c20e51f2830a7ae1a\",\"item_code\":\"processDefineDiv_line_10\",\"item_type\":\"sl\",\"item_el\":\"flag\",\"item_remark\":\"\"},{\"_id\":\"5a5f4cb93ee91d2690e6e023\",\"item_code\":\"processDefineDiv_line_22\",\"item_type\":\"sl\",\"item_el\":\"flag==false\",\"item_remark\":\"\"},{\"_id\":\"5a56fc69be30350e8459eb9c\",\"item_code\":\"processDefineDiv_node_2\",\"item_type\":\"task\",\"item_sms_warn\":0,\"item_jump\":0,\"item_assignee_role\":\"5a264057c819ed211853906f\",\"item_assignee_role_code\":\"branch_director\",\"item_assignee_role_tag\":\"1\",\"item_assignee_role_level\":\"2\",\"item_assignee_role_name\":\"分公司主任\",\"item_assignee_org_ids\":\"\",\"item_assignee_org_names\":\"\",\"item_node_var\":\"\",\"item_step_code\":\"\",\"item_code_num\":\"\",\"item_overtime\":\"\",\"item_overtime_afterAction_type\":null,\"item_overtime_afterAction_info\":\"\",\"item_touchEvent_type\":null,\"item_touchEvent_info\":\"\",\"item_filePath\":\"\",\"item_funName\":\"\",\"item_remark\":\"\",\"item_assignee_user\":\"\",\"item_assignee_user_code\":\"\",\"item_assignee_ref_task\":\"\",\"item_assignee_ref_cur_org\":\"\",\"item_assignee_type\":2,\"item_show_text\":\"角色：分公司主任;\"},{\"item_code\":\"processDefineDiv_node_3\",\"item_type\":\"chat\",\"item_sms_warn\":0,\"item_jump\":1,\"item_assignee_ref_task\":\"processDefineDiv_node_2\",\"item_assignee_role\":\"5a65888749b7680fb4187c83\",\"item_assignee_role_code\":\"city_meetingSecretary\",\"item_assignee_role_tag\":\"1\",\"item_assignee_role_name\":\"分公司专题会秘书\",\"item_assignee_role_level\":\"2\",\"item_assignee_ref_cur_org\":\"2\",\"item_assignee_ref_type\":\"2\",\"item_node_var\":\"\",\"item_step_code\":\"\",\"item_code_num\":\"\",\"item_overtime\":\"\",\"item_overtime_afterAction_type\":null,\"item_overtime_afterAction_info\":\"\",\"item_touchEvent_type\":null,\"item_touchEvent_info\":\"\",\"item_filePath\":\"\",\"item_funName\":\"\",\"item_remark\":\"\",\"_id\":\"5a56fc69be30350e8459eb9d\",\"item_assignee_user\":\"\",\"item_assignee_user_code\":\"\",\"item_assignee_org_ids\":\"\",\"item_assignee_org_names\":\"\",\"item_assignee_type\":3,\"item_show_text\":\"参照节点：普通员工起草;\\n\\n参照类型：当前机构;\\n\\n当前机构：上级;\\n\\n角色：分公司专题会秘书;\"},{\"_id\":\"5a56fc69be30350e8459eb9e\",\"item_code\":\"processDefineDiv_node_4\",\"item_type\":\"chat\",\"item_sms_warn\":0,\"item_jump\":1,\"item_assignee_ref_task\":\"processDefineDiv_node_2\",\"item_assignee_role\":\"5a264057c819ed211853906b\",\"item_assignee_role_code\":\"branch_manager\",\"item_assignee_role_tag\":\"\",\"item_assignee_role_level\":\"\",\"item_assignee_role_name\":\"分公司总经理\",\"item_assignee_ref_cur_org\":\"2\",\"item_assignee_ref_type\":\"2\",\"item_node_var\":\"\",\"item_step_code\":\"\",\"item_code_num\":\"\",\"item_overtime\":\"\",\"item_overtime_afterAction_type\":null,\"item_overtime_afterAction_info\":\"\",\"item_touchEvent_type\":null,\"item_touchEvent_info\":\"\",\"item_filePath\":\"\",\"item_funName\":\"\",\"item_remark\":\"\",\"item_assignee_user\":\"\",\"item_assignee_user_code\":\"\",\"item_assignee_org_ids\":\"\",\"item_assignee_org_names\":\"\",\"item_assignee_type\":3,\"item_show_text\":\"参照节点：普通员工起草;\\n\\n参照类型：当前机构;\\n\\n当前机构：上级;\\n\\n角色：分公司总经理;\"},{\"_id\":\"5a56fc69be30350e8459eb9f\",\"item_code\":\"processDefineDiv_node_5\",\"item_type\":\"chat\",\"item_sms_warn\":0,\"item_assignee_ref_task\":\"processDefineDiv_node_4\",\"item_assignee_role\":\"5a264057c819ed211853906d\",\"item_assignee_role_code\":\"general_director\",\"item_assignee_role_tag\":\"\",\"item_assignee_role_level\":\"\",\"item_assignee_role_name\":\"省公司主任\",\"item_assignee_ref_cur_org\":\"1\",\"item_assignee_ref_type\":\"2\",\"item_node_var\":\"\",\"item_step_code\":\"\",\"item_code_num\":\"\",\"item_overtime\":\"\",\"item_overtime_afterAction_type\":null,\"item_overtime_afterAction_info\":\"\",\"item_touchEvent_type\":null,\"item_touchEvent_info\":\"\",\"item_filePath\":\"\",\"item_funName\":\"\",\"item_remark\":\"\",\"item_assignee_user\":\"\",\"item_assignee_user_code\":\"\",\"item_assignee_org_ids\":\"\",\"item_assignee_org_names\":\"\",\"item_assignee_type\":3,\"item_show_text\":\"参照节点：部门副总审批;\\n\\n参照类型：当前机构;\\n\\n当前机构：同级;\\n\\n角色：省公司主任;\"},{\"_id\":\"5a5f4cb93ee91d2690e6e024\",\"item_code\":\"processDefineDiv_node_21\",\"item_type\":\"chat\",\"item_sms_warn\":0,\"item_jump\":0,\"item_assignee_ref_task\":\"processDefineDiv_node_2\",\"item_assignee_role\":\"5a264057c819ed211853906d\",\"item_assignee_role_code\":\"general_director\",\"item_assignee_role_tag\":\"\",\"item_assignee_role_level\":\"\",\"item_assignee_role_name\":\"省公司主任\",\"item_assignee_ref_cur_org\":\"2\",\"item_assignee_ref_type\":\"2\",\"item_node_var\":\"\",\"item_step_code\":\"\",\"item_code_num\":\"\",\"item_overtime\":\"\",\"item_overtime_afterAction_type\":null,\"item_overtime_afterAction_info\":\"\",\"item_touchEvent_type\":null,\"item_touchEvent_info\":\"\",\"item_filePath\":\"\",\"item_funName\":\"\",\"item_remark\":\"\",\"item_assignee_user\":\"\",\"item_assignee_user_code\":\"\",\"item_assignee_org_ids\":\"\",\"item_assignee_org_names\":\"\",\"item_assignee_type\":3,\"item_show_text\":\"参照节点：普通员工起草;\\n\\n参照类型：当前机构;\\n\\n当前机构：上级;\\n\\n角色：省公司主任;\"}]",
+      "joinup_sys": "\"syesightSys_node\"",
+      "__v": 0,
+      "proc_start_user_role_code": [
+        "5a264057c819ed211853906f"
+      ],
+      "proc_pending_users": [],
+      "proc_task_overtime": [
+        ""
+      ]
+    }
+  ]}
 	
 
 
@@ -705,6 +808,23 @@ HOST: http://192.168.9.66:30002/gdgl/api
 + proc_inst_task_sign 流程签收(0-未认领，1-已认领)
 + proc_inst_task_sms 流程是否短信提醒
 + proc_inst_task_remark 流程处理意见
++ proc_inst_prev_node_code 流程实例上一处理节点编号
++ proc_inst_prev_node_handler_user 流程实例上一节点处理人编号
++ proc_task_start_user_role_names 流程发起人角色
++ proc_task_start_user_role_code 流程发起人id
++ proc_task_start_name 流程发起人姓名
++ proc_task_work_day 天数
++ proc_task_ver 版本号
++ proc_task_name 流程名
++ proc_task_content 流程派单内容
++ proc_task_code 流程编码
++ proc_start_time 流程发起时间(开始时间)
++ proc_vars 流程变量
++ joinup_sys 所属系统编号
++ skip 是否为跳过节点任务
++ next_name 下一节点处理人姓名
++ proc_back 判断为回退任务 1-为回退任务 0-为正常流转
++ previous_step 上一节点任务id
 
 
 
@@ -714,24 +834,49 @@ HOST: http://192.168.9.66:30002/gdgl/api
     + Body
 
             {
-                __v: 0,
-                proc_inst_task_remark: '',
-                proc_inst_task_sms: null,
-                proc_inst_task_sign: 0,
-                proc_inst_task_claim: null,
-                proc_inst_task_params: '',
-                proc_inst_task_user_role_name: '',
-                proc_inst_task_user_role: '',
-                proc_inst_task_assignee_name: '龚利',
-                proc_inst_task_assignee: 'gongli',
-                proc_inst_task_status: 0,
-                proc_inst_task_complete_time: null,
-                proc_inst_task_handle_time: null,
-                proc_inst_task_arrive_time: MonJun19201710: 40: 10GMT+0800(中国标准时间),
-                proc_inst_task_name: '采购申请',
-                proc_inst_task_code: 'processDefineDiv_node_2',
-                proc_inst_id: 5947398aba36650788eaa89a,
-                _id: 5947398aba36650788eaa89b
+			  "_id": "5a67e41ec840f8144ca5fa91",
+			  "proc_inst_id": "5a67e41dc840f8144ca5fa90",
+			  "proc_inst_task_code": "processDefineDiv_node_2",
+			  "proc_inst_task_name": "普通员工起草",
+			  "proc_inst_task_type": "task",
+			  "proc_inst_task_title": "普通员工起草",
+			  "proc_inst_task_arrive_time": "2018-01-24T01:40:46.035Z",
+			  "proc_inst_task_handle_time": "2018-01-24T01:40:46.035Z",
+			  "proc_inst_task_complete_time": "2018-01-24T01:40:46.035Z",
+			  "proc_inst_task_status": 0,
+			  "proc_inst_task_assignee": "zhuhuimin",
+			  "proc_inst_task_assignee_name": "朱慧敏",
+			  "proc_inst_task_user_role_name": "分公司主任",
+			  "proc_inst_task_user_org_name": "",
+			  "proc_inst_task_params": "",
+			  "proc_inst_task_claim": 0,
+			  "proc_inst_task_sign": 1,
+			  "proc_inst_task_sms": 0,
+			  "proc_inst_task_remark": "",
+			  "proc_inst_node_vars": "",
+			  "proc_name": "",
+			  "proc_code": "p-999",
+			  "proc_inst_prev_node_code": "",
+			  "proc_inst_prev_node_handler_user": "",
+			  "proc_task_start_user_role_names": "5a264057c819ed211853906f",
+			  "proc_task_start_name": "朱慧敏",
+			  "proc_task_ver": 1,
+			  "proc_task_content": "",
+			  "proc_start_time": "2018-01-24T01:40:46.035Z",
+			  "joinup_sys": "\"syesightSys_node\"",
+			  "next_name": "王浩",
+			  "proc_back": 0,
+			  "previous_step": "",
+			  "__v": 0,
+			  "proc_task_start_user_role_code": [
+				"zhuhuimin"
+			  ],
+			  "proc_inst_task_user_org": [],
+			  "proc_inst_task_user_role": [
+				"5a264057c819ed211853906f"
+			  ]
+			}
+		  ]
             }
 
 
@@ -889,11 +1034,13 @@ HOST: http://192.168.9.66:30002/gdgl/api
               "task_id": "5947398aba36650788eaa89b",//当前任务id
               "user_no": "70001",//当前节点处理人
 			  "memo": "处理意见",
-              "assign_user_no": "70001",//下一节点处理人
+              "assign_user_no": "zhuhuimin",//下一节点处理人
               "node_code":"processDefineDiv_node_3",//要指派到的节点编号
 			  "proc_title":"预警工单处理",
 			  "proc_vars": "",(可以为空，json字符串格式-不需变动的工单参数)
 			  "biz_vars":""(json字符串格式-业务工单需要的参数)
+			  "next_name":"朱慧敏",//下一节点处理人姓名
+			  "proc_back":0,//是否为回退任务(1-回退,0正常流转)
             }
 
 + Response 200
@@ -1033,7 +1180,80 @@ HOST: http://192.168.9.66:30002/gdgl/api
 
     {success:true, code:'0000', msg:'归档成功',data:[data]}
 	
+## 完成任务慧眼系统添加 [/task/finish/task]
+### 完成任务慧眼系统添加 [POST]
 
++ Request
+    + Body
+
+			{
+			  "user_no":"zhuhuimin",//当前任务处理人编号
+			  "task_id":"5a67ea50c840f8144ca5fa94"//当前任务id
+			}
+    
++ Response 200
+
+    {success:true, code:'0000', msg:'update the task',data:[data]}
+	
+## 任务回退接口 [/task/back]
+### 任务回退接口 [POST]
+
++ Request
+    + Body
+
+            {
+              "task_id": "5a67e41ec840f8144ca5fa91",//当前任务ID
+			  "user_no":"zhuhuimin", //当前处理人编号
+			  "memo":"处理意见",
+			  "node_code":"processDefineDiv_node_3",//当前处理节点编号
+			  "node_name":"分公司主任审批",//当前节点名
+            }
+    
++ Response 200
+
+			{
+		  "success": true,
+		  "code": "0000",
+		  "msg": "回退成功",
+		  "data": {
+			"__v": 0,
+			"proc_inst_id": "5a67e41dc840f8144ca5fa90",
+			"proc_inst_task_code": "processDefineDiv_node_2",
+			"proc_inst_task_name": "普通员工起草",
+			"proc_inst_task_type": "task",
+			"proc_inst_task_arrive_time": "2018-01-24T02:07:12.555Z",
+			"proc_inst_task_handle_time": "2018-01-24T02:07:12.555Z",
+			"proc_inst_task_complete_time": null,
+			"proc_inst_task_status": 0,
+			"proc_inst_task_assignee_name": "朱慧敏",
+			"proc_inst_task_title": "普通员工起草",
+			"proc_inst_prev_node_code": "processDefineDiv_node_3",
+			"proc_inst_prev_node_handler_user": "qiling",
+			"proc_inst_node_vars": "",
+			"proc_inst_task_claim": null,
+			"proc_inst_task_sign": 1,
+			"proc_inst_task_sms": 0,
+			"proc_inst_task_remark": "\"处理意见\"",
+			"proc_inst_task_assignee": "zhuhuimin",
+			"proc_task_start_user_role_names": "5a264057c819ed211853906f",
+			"proc_task_start_name": "朱慧敏",
+			"proc_name": "",
+			"proc_code": "p-999",
+			"joinup_sys": "\"syesightSys_node\"",
+			"next_name": "",
+			"proc_back": 1,
+			"previous_step": "",
+			"_id": "5a67ea50c840f8144ca5fa94",
+			"proc_task_start_user_role_code": [
+			  "zhuhuimin"
+			],
+			"proc_inst_task_user_org": [],
+			"proc_inst_task_user_role": [
+			  "5a264057c819ed211853906f"
+			]
+		  }
+		}
+	
 
 # Group 流程历史-修改
 
