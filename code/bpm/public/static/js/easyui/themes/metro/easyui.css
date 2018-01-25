@@ -1169,7 +1169,7 @@
 }
 .datagrid-header-rownumber,
 .datagrid-cell-rownumber {
-  width: 25px;
+  width: 80px;
   text-align: center;
   margin: 0;
   padding: 0;

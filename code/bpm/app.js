@@ -194,13 +194,12 @@ app.use(session({
 app.use(config.project.appurl, express.static(path.join(__dirname, 'public')));
 
 //过滤对外接口不进行token验证
-app.use('/gdgl/api/process/', require('../bpm/app/project/bpm_resource/routes/process').process())
-app.use('/gdgl/api/process_instance/', require('../bpm/app/project/bpm_resource/routes/process_instance').process_instance())
-app.use('/gdgl/api/process_extend/', require('../bpm/app/project/bpm_resource/routes/process_extend').process_extend())
-app.use('/gdgl/api/task/', require('../bpm/app/project/bpm_resource/routes/task').task())
+app.use('/gdgl/api/process/', require('./app/project/bpm_resource/routes/process').process())
+app.use('/gdgl/api/process_instance/', require('./app/project/bpm_resource/routes/process_instance').process_instance())
+app.use('/gdgl/api/process_extend/', require('./app/project/bpm_resource/routes/process_extend').process_extend())
+app.use('/gdgl/api/task/', require('./app/project/bpm_resource/routes/task').task())
 
 
-app.use(bodyParser.urlencoded({ extended: false }))
 app.use(cookieParser())
 // //防止CSRF跨站请求伪造
 app.use(csrf({ cookie: true }));

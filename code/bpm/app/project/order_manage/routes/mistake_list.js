@@ -7,27 +7,7 @@ var xss = require('xss');
 /**
  * 工单列表
  */
-// router.use(function (req, res, next) {
-//     console.log(req.headers);
-//
-//     console.log(req.query,req.body,req.params);
-//
-//     //反正XSS攻击，过滤html字符，处理get请求
-//     if(req.query){
-//         var query=req.query;
-//         for(let item in query){
-//             req.query[item]=xss(query[item])
-//         }
-//     }
-//     //处理post请求
-//     if(req.body){
-//         var body=req.body;
-//         for(let item in body){
-//             req.body[item]=xss(body[item])
-//         }
-//     }
-//     next();
-// });
+
 router.route('/list').post(function(req,res){
     console.log("开始获取所有工单列表...");
     var queryDate = req.body.queryDate;//查询时间

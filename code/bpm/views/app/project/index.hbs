@@ -4,21 +4,18 @@
         <div class="widget">
             <div class="widget-body">
                 <div id="processLayout" class="easyui-layout" style="height:auto;width: auto">
-                    <div id="form1" class="row tbRow" style="height:750px">
+                    <div id="form1" style="height:650px">
                         <div class="easyui-tabs" id="tabs1" data-options="fit:true" style = "...">
-                            <div title="我的待办" style = "height: 100%;width: 100%;overflow: auto">
-                                <div id="toolbar1" class="row tbRow">
-                                </div>
-                                <table id="orderTablelist"></table>
+                            <div title="我的待办"  style = "height: 100%;width: 100%;overflow: auto">
+
+                                <table id="orderTablelist" ></table>
                             </div>
                             <div title="我的已办"  style = "height: 100%;width: 100%;overflow: auto" >
-                                <div id="toolbar2" class="row tbRow">
-                                </div>
+
                                 <table id="orderTablelist2"></table>
                             </div>
                             <div title="已归档" style = "height: 100%;width: 100%;overflow: auto">
-                                <div id="toolbar3" class="row tbRow">
-                                </div>
+
                                 <table id="orderTablelist3"></table>
                             </div>
                         </div>
@@ -87,7 +84,6 @@
             fitColumns:true,
             border:false,
             fit:true,
-            toolbar: '#toolbar1',
             singleSelect:true,
             selectOnCheck:true,
             checkOnSelect:true,
@@ -158,7 +154,6 @@
             fitColumns:true,
             border:false,
             fit:true,
-            toolbar: '#toolbar2',
             singleSelect:true,
             selectOnCheck:true,
             checkOnSelect:true,
@@ -233,7 +228,6 @@
             fitColumns:true,
             border:false,
             fit:true,
-            toolbar: '#toolbar3',
             singleSelect:true,
             selectOnCheck:true,
             checkOnSelect:true,

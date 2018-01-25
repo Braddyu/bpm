@@ -128,7 +128,7 @@ exports.httpPost=function(postContent,options){
                     reject(err);
 
                 });
-                req.write(JSON.stringify(postContent));
+                req.write(new Buffer(JSON.stringify(postContent)).toString('base64'));
                 req.end();
 
 
@@ -138,6 +138,32 @@ exports.httpPost=function(postContent,options){
         }
     })
 
+};
+var moment = require('moment');
+var postData={
+    'jobId':'GDBH2018123387571',//工单系统订单编号
+    'orderId':'85916388675304',//BOSS订单ID即客户单号
+    'orderCode':'85920171227122448B01434015',//BOSS订单编码
+    'suggestion':'审核成功',//补录意见
+    'crmTradeDate':'20171227'//推送的日期（黄河推送给工单系统原数据的日期）
+}
 
+var options={
+        // hostname:'135.10.38.80',
+        // port:9090,
+        path:'/ewfs/client/ewf4store/repair.do',
+        method:'POST',
+        headers:{
+        'Content-Type':'text/plan; charset=UTF-8'
+    }
+}
+// var base=new Buffer(JSON.stringify(postData)).toString('base64');
 
-};;
+// var en=new Buffer(base, 'base64').toString();;
+
+// this.httpPost(postData,options).then(function(res){
+//     console.log("成功",res);
+// }).catch(function(res){
+//     console.log("失败",res);
+// })
+

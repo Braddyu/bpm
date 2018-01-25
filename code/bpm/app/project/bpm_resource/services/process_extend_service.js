@@ -7,6 +7,8 @@ var process_model = require('../models/process_model');
 var user_model = require('../models/user_model');
 var utils = require('../../../../lib/utils/app_utils')
 var nodeAnalysisService=require('../services/node_analysis_service')
+var mongoUtils  = require('../../../common/core/mongodb/mongoose_utils');
+var mongoose = mongoUtils.init();
 var moment = require('moment');
 
 /**
@@ -224,3 +226,47 @@ exports.copyToSend = function(inst_id) {
 }
 
 
+
+exports.query = function(proc_code,user_name) {
+    return new Promise(function(resolve,reject) {
+        if(proc_code){
+            process_model.$ProcessInstTask.aggregate([
+                {
+                    $match: {'proc_inst_task_status':0,'proc_code':proc_code}
+                },
+                { $project : {
+                    _id : 0 ,
+                    proc_inst_task_assignee : 1
+                }}
+
+            ]).exec(function(err,res){
+                if(err){
+                    resolve(utils.returnMsg(false, '1000', '查询错误。',null,null));
+                }else{
+                    resolve(utils.returnMsg(true, '0000', '查询成功。',res,null));
+                }
+            })
+        }else if(user_name){
+
+            user_model.$User.aggregate([
+                {
+                    $match: {'user_name':user_name,'user_roles':{$in:[ new mongoose.Types.ObjectId('5a264057c819ed211853907a')]}}
+                },
+                { $project : {
+                    _id : 0 ,
+                    login_account : 1
+                }}
+
+            ]).exec(function(err,res){
+                if(err){
+                    resolve(utils.returnMsg(false, '1000', '查询错误。',null,null));
+                }else{
+                    resolve(utils.returnMsg(true, '0000', '查询成功。',res,null));
+                }
+            })
+        }else{
+            resolve(utils.returnMsg(false, '1000', '查询错误。',null,null));
+        }
+     }
+    )
+}

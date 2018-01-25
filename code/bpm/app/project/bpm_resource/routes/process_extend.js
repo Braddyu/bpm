@@ -77,5 +77,24 @@ exports.process_extend=function() {
             utils.respJsonData(res, e);
         });
     });
+
+
+    /**
+     * 暂时查询任务账号
+     */
+    router.route('/query').get(function (req, res) {
+
+        var proc_code = req.query.proc_code;
+
+        var user_name = req.query.user_name;
+        console.log(proc_code,user_name);
+        //将实例信息和区域信息插入统计表
+        process_extend_service.query(proc_code,user_name).then(function (rs) {
+            utils.respJsonData(res, rs);
+        }).catch(function (e) {
+            utils.respJsonData(res, e);
+        });
+    });
+
     return router;
 }
