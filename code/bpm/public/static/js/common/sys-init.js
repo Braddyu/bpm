@@ -104,9 +104,9 @@ function openCurtUserRoleModal() {
     });
 }
 function switchRole(url, roleid) {
-    bootbox.alert('已显示您拥有角色的所有权限，无需再切换角色！', function(result){
-    });
-    /*$.ajax({
+    // bootbox.alert('已显示您拥有角色的所有权限，无需再切换角色！', function(result){
+    // });
+    $.ajax({
         url: url + '/switchRole/'+roleid,
         type: 'get',
         data: {
@@ -124,7 +124,7 @@ function switchRole(url, roleid) {
                 });
             }
         }
-    });*/
+    });
 }
 
 $.extend($.fn.dialog.methods, {
