@@ -350,7 +350,8 @@ router.route('/version')
         var proc_name = req.body.proc_name;//流程名称
         var proc_define = req.body.proc_define;//流程图定义信息
 
-        var lineNodeDatas = JSON.parse(req.body.lineNodeDatas.replace('&gt;','>').replace('&lt;','<'));//流程图连接线数据
+        var lineNodeDatas = JSON.parse(req.body.lineNodeDatas.replace(/&gt;/g,">").replace(/&lt;/g,"<").replace(/&amp;/g,"&").
+        replace(/&nbsp;/g," ").replace(/&#39;/g,"\'").replace(/&quot;/g,"\""));//流程图连接线数据
         var taskNodeDatas = JSON.parse(req.body.taskNodeDatas);//流程图任务节点数据
 
         // 验证流程编码是否为空
@@ -511,7 +512,8 @@ router.route('/process/version/:id')
         var id = req.params.id;//流程实例id
         var proc_define = req.body.proc_define;//流程图定义信息
         //后台为防止XSS攻击将'< >'转义，这里转回
-        var lineNodeDatas = JSON.parse(req.body.lineNodeDatas.replace('&gt;','>').replace('&lt;','<'))//流程图连接线数据
+        var lineNodeDatas = JSON.parse(req.body.lineNodeDatas.replace(/&gt;/g,">").replace(/&lt;/g,"<").replace(/&amp;/g,"&").
+        replace(/&nbsp;/g," ").replace(/&#39;/g,"\'").replace(/&quot;/g,"\""));
         var taskNodeDatas = JSON.parse(req.body.taskNodeDatas);//流程图任务节点数据
         var processDefineEntity = {};
         processDefineEntity.proc_define = proc_define;
