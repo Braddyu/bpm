@@ -98,7 +98,9 @@
                             <ul class="pull-right dropdown-menu dropdown-arrow dropdown-login-area">
                                 <li class="username"><a>{{currentUser.login_account}}</a></li>
                                 <li class="email"><a>{{currentUser.login_account}}</a></li>
-                                <li class="email"><a href="javascript:openCurtUserRoleModal()">(角色:{{currentUserRole.role_name}})</a></li>
+                              <!--  <li class="email"><a href="javascript:openCurtUserRoleModal()">(点击查看角色:{{currentUserRole.role_name}})</a></li>-->
+                               <li class="email"><a href="javascript:openCurtUserRoleModal()">(点击查看角色)</a></li>
+
                                 <!--Avatar Area-->
                                 <li class="hidden">
                                     <div class="avatar-area">
@@ -330,13 +332,17 @@
         <div class="tickets-container padding-0" style="background-color:#fff;padding-top: 0px;">
             <ul class="tickets-list">
                 {{#each currentUser.user_roles}}
-                <li class="ticket-item margin-10" onclick="switchRole('{{../projcfg.appurl}}','{{_id}}')" style="width:29%;float:left;cursor: pointer;">
+                   <li class="ticket-item margin-10"style="width:29%;float:left;cursor: pointer;">
+                <!--<li class="ticket-item margin-10" onclick="switchRole('{{../projcfg.appurl}}','{{_id}}')" style="width:29%;float:left;cursor: pointer;">-->
                     <div class="row">
                         <div class="ticket-type">
                             <i class="fa fa-users blue"></i>
                             <span class="type">{{role_name}}</span>
                         </div>
-                        <div class="ticket-state {{#ifCond _id ../currentUserRole._id}}bg-palegreen{{/ifCond}}">
+                        <!--<div class="ticket-state {{#ifCond _id ../currentUserRole._id}}bg-palegreen{{/ifCond}}">
+                            <i class="fa fa-check"></i>
+                        </div>-->
+                        <div class="ticket-state bg-palegreen">
                             <i class="fa fa-check"></i>
                         </div>
                     </div>

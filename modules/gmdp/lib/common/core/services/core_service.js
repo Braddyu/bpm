@@ -783,9 +783,10 @@ exports.getMenusAndOptsByRoles = function(roles, cb) {
     //console.log("role_id : %s", role_id);
     var role_ids = new Array();
     if(roles) {
+		  
         for(var i = 0; i < roles.length; i++) {
             role_ids.push(roles[i]._id);
-        }
+       }
     }
 
     roleMenuModel.$.find({'role_id':{'$in':role_ids}})
