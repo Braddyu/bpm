@@ -9,8 +9,8 @@
                                 <div class="btn-group" role="group" aria-label="...">
                                     <button type="button" class="btn btn-default" onclick="openPage('新增流程基本属性',null,doAddProcessBase)"><i class="fa fa-plus"></i>新增</button>
                                     <button type="button" class="btn btn-default" onclick="toEdit()"><i class="fa fa-edit"></i>修改</button>
-                                    <button type="button" class="btn btn-default" onclick="changeStatus(1,1)"><i class="glyphicon glyphicon-ok"></i>启用</button>
-                                    <button type="button" class="btn btn-default" onclick="changeStatus(1,2)"><i class="glyphicon glyphicon-remove"></i>禁用</button>
+                                    <!--<button type="button" class="btn btn-default" onclick="changeStatus(1,1)"><i class="glyphicon glyphicon-ok"></i>启用</button>-->
+                                    <!--<button type="button" class="btn btn-default" onclick="changeStatus(1,2)"><i class="glyphicon glyphicon-remove"></i>禁用</button>-->
                                 </div>
                             </div>
                             <div class="col-xs-4 col-md-4 text-right">
@@ -36,8 +36,9 @@
                                 <div class="btn-group" role="group" aria-label="...">
                                     <button type="button" class="btn btn-default" onclick="openProcessChart(1)"><i class="fa fa-plus"></i>新增</button>
                                     <button type="button" class="btn btn-default" onclick="openProcessChart(2)"><i class="fa fa-edit"></i>修改</button>
-                                    <button type="button" class="btn btn-default" onclick="changeStatus(2,1)"><i class="glyphicon glyphicon-ok"></i>启用</button>
-                                    <button type="button" class="btn btn-default" onclick="changeStatus(2,2)"><i class="glyphicon glyphicon-remove"></i>禁用</button>
+                                    <button type="button" class="btn btn-default" onclick="changePublish()"><i class="glyphicon glyphicon-ok"></i>发布</button>
+                                    <!--<button type="button" class="btn btn-default" onclick="changeStatus(2,1)"><i class="glyphicon glyphicon-ok"></i>启用</button>-->
+                                    <!--<button type="button" class="btn btn-default" onclick="changeStatus(2,2)"><i class="glyphicon glyphicon-remove"></i>禁用</button>-->
                                 </div>
                             </div>
                             <div class="col-xs-7 col-md-7 text-right" style="width: 40%">
@@ -183,16 +184,19 @@
                 {"field": "proc_code","title":"流程编码","width":35},
                 {"field": "proc_name","title":"流程名称","width":30},
                 {"field": "proc_latest_ver","title":"流程最后版本号","width":20},
-                {"field": "status","title":"状态","width":20,
+//                {"field": "status","title":"状态","width":20,
+//                    formatter:function(value,row,index){
+//                        if(value == '1'){
+//                            return "启用";
+//                        }else{
+//                            return "禁用";
+//                        }
+//                    }
+//                },
+                {"field": "opt_time","title":"流程创建时间","width":35,
                     formatter:function(value,row,index){
-                        if(value == '1'){
-                            return "启用";
-                        }else{
-                            return "禁用";
-                        }
-                    }
-                },
-                {"field": "opt_time",hidden:true},
+                        return  new Date(value).format("yyyy-MM-dd hh:mm:ss");
+                    }},
                 {"field": "proc_user",hidden:true}
             ]],
             onClickRow:function(rowIndex, rowData){
@@ -236,9 +240,9 @@
                 {"field": "status","title":"状态","width":20,
                     formatter:function(value,row,index){
                         if(value == '1'){
-                            return "启用";
+                            return "测试";
                         }else{
-                            return "禁用";
+                            return "发布";
                         }
                     }
                 }
@@ -269,6 +273,46 @@
             editable:false
         });
     });
+    //发布
+    function changePublish(){
+        // 获得选择行
+        var rows = $('#processDefineDataTable').datagrid('getChecked');
+        console.log(rows);
+        if (rows.length != 1) {
+            msgError('提示,请选择一条数据再进行发布');
+            return false;
+        }
+        $.messager.confirm('确认','确认发布吗,一旦发布，之前测试版本的相关数据都将被删除!',function (r) {
+         if(r){
+             var url ;
+             var type;
+             url = '{{projcfg.appurl}}/api/workflow/process/version';
+             <!--url = '{{projcfg.appurl}}/admin/api/common/bpm/process/procdefine';-->
+             type = 'post';
+             $.ajax({
+                 url:url,
+                 type:type,
+                 data:{
+                     proc_code:$('#proc_code').val(),
+                     proc_name:$('#proc_name').val(),
+                     proc_define:JSON.stringify(processDefineDiv.exportData()),
+                     lineNodeDatas:JSON.stringify(lineNodeDatas),
+                     taskNodeDatas:JSON.stringify(taskNodeDatas)
+                 },
+                 success:function (data) {
+                     if(data.success){
+                         $.messager.alert("提示","保存信息成功","info",function() {
+                             window.close();
+                         });
+                     }
+                     else {
+                         $.messager.alert('提示',data.msg+',错误代码:'+data.code,'error');
+                     }
+                 }
+             })
+         }
+        });
+    }
 
     function openProcessChart(flag){
         if(flag == 1){
