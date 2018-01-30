@@ -575,7 +575,8 @@ async function normal_process(current_detail,next_detail, next_node, proc_inst_i
         condition_task.proc_inst_task_assignee_name=org.proc_inst_task_assignee_name;
     }
            // resolve(ergodic(r,condition_task,proc_cur_task,next_detail,proc_inst_task_params,proc_inst_node_vars,biz_vars,proc_code,proc_name));
-    async function xunhuan () {
+    //给多人指派任务时循环给下一步处理人创建任务
+    async function loop () {
         if (params && 'undefined' != params.flag && !params.flag) {
             let step_first = await  model.$ProcessInstTask.find({
                 'proc_inst_id': r[0].proc_inst_id,
@@ -619,7 +620,7 @@ async function normal_process(current_detail,next_detail, next_node, proc_inst_i
         }
     }
 
-    xunhuan().then(async function(res) {
+    loop().then(async function(res) {
         var arr = [];
         condition_task.proc_code = proc_code;//流程编码
         condition_task.proc_name = proc_name;//流程名称
@@ -1110,7 +1111,7 @@ exports.do_payout=function(proc_task_id,node_code,user_code,assign_user_code,pro
                                                                     if (rs.success) {
                                                                         //循环给下一节点处理人派发任务
                                                                         var taskid='';
-                                                                        async function xunhuan() {
+                                                                        async function round_task() {
                                                                             var users = [];
                                                                             users = assign_user_code.split(',');
                                                                             for (var i = 0; i < users.length; i++) {
@@ -1191,7 +1192,7 @@ exports.do_payout=function(proc_task_id,node_code,user_code,assign_user_code,pro
                                                                             res[0].pay_task_id=taskid;
                                                                             return res;
                                                                         }
-                                                                        xunhuan().then(function(res){
+                                                                        round_task().then(function(res){
                                                                             //将任务信息返回给调用接口方
                                                                             resolve(utils.returnMsg(true, '1000', '流程流转新增任务信息正常81111。',res, null));
                                                                         }).catch(function(err){

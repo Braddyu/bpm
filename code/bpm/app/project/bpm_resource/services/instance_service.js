@@ -559,7 +559,7 @@ exports.createInstance=function(proc_code,proc_ver,proc_title,param_json_str,pro
                                             resolve({'success':false, 'code':'2001', 'msg':'发起人id错误。'});
                                         }else{
                                             //查询用户所拥有的角色
-                                            find(resu[0].user_roles.toString()).then(function(role){
+                                            find_roles(resu[0].user_roles.toString()).then(function(role){
                                                 if(role.success){
                                                     condition.proc_start_user_role_names = role.data.toString().split(',');
                                                     condition.proc_start_user_role_code = resu[0].user_roles.toString();
@@ -673,7 +673,7 @@ exports.createInstance=function(proc_code,proc_ver,proc_title,param_json_str,pro
 /*
 查询用户所拥有的角色
  */
-function find(role_code){
+function find_roles(role_code){
     var p = new Promise(function(resolve,reject){
         if(role_code){
             if(role_code.length>1){
