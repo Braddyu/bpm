@@ -530,9 +530,9 @@ exports.createInstance=function(proc_code,proc_ver,proc_title,param_json_str,pro
         conditionMap.status = 1;
         //获取流程定义信息
         proc.getProcessDefineByConditionMap(conditionMap)
-            .then(function(rs){
-                var success=rs.success;
-                var data=rs.data;
+            .then(function(result){
+                var success=result.success;
+                var data=result.data;
                 data_define=data;
                 if(success){
                     //找到开始节点
@@ -652,6 +652,8 @@ exports.createInstance=function(proc_code,proc_ver,proc_title,param_json_str,pro
                         }).catch(function(err){
                         reject('获取流程信息失败 '+err);
                     });
+                }else{
+                    resolve(result);
                 }
             })
             .catch(function(err){
@@ -2265,6 +2267,9 @@ exports.return_task = function(task_id,user_no,memo,node_code,node_name){
     return p;
 }
 
+/*
+判断任务是否完成
+ */
 exports.proving_taskId = function (task_id) {
     var p = new Promise(function(resolve,reject){
         model.$ProcessInstTask.find({'_id':task_id},function(err,result){
@@ -2278,8 +2283,84 @@ exports.proving_taskId = function (task_id) {
                     }else{
                         resolve(utils.returnMsg(true, '0000', '任务未完成', proc_inst_task_status, null));
                     }
+                }else{
+                    resolve(utils.returnMsg(false, '1000', '任务不存在', null, null));
                 }
             }
+        });
+    });
+    return p;
+}
+
+/**
+ * 查找用户参与过的流程
+ * @param
+ * @returns
+ */
+exports.find_instanceId = function (user_no,joinup_sys) {
+    var p = new Promise(function(resolve,reject){
+        console.log(user_no,joinup_sys);
+        model.$ProcessInstTask.find({'proc_inst_task_assignee':user_no,'joinup_sys':joinup_sys},function (err,rs) {
+           if(err){
+               resolve(utils.returnMsg(false, '1000', '查找任务异常', null, err));
+           } else{
+               var arr1 = [];
+               var arr2 = [];
+               if(rs.length>0){
+                 for(let item in rs){
+                     var instanceId = rs[item].proc_inst_id;
+                     instanceId = instanceId.toString();
+                     if(arr1.indexOf(instanceId)==-1){
+                         arr1.push(instanceId);
+                     }
+                 }
+                 model.$ProcessTaskHistroy.find({'proc_inst_task_assignee':user_no,'joinup_sys':joinup_sys},function (err,res) {
+                     if(err){
+                         resolve(utils.returnMsg(false, '1000', '获取数据异常', null, err));
+                     }else{
+                         if(res.length>0){
+                             for(var i in res){
+                                 var instanceId = res[i].proc_inst_id;
+                                 instanceId = instanceId.toString();
+                                 if(arr2.indexOf(instanceId)==-1){
+                                     arr2.push(instanceId);
+                                 }
+                             }
+                         }else{
+                             resolve(utils.returnMsg(true, '0000', '历史表数据不存在',null ,null ));
+                         }
+                     }
+                 });
+                   var  set = arr1.concat(arr2)
+                   var arr = [];
+                   for(var i = 0; i < set.length; i++) {
+                       if(arr.indexOf(set[i]) == -1) {
+                           arr.push(set[i]);
+                       }
+                   }
+                   resolve(utils.returnMsg(true, '0000', '获取数据成功1',arr ,null ));
+               }else{
+                   model.$ProcessTaskHistroy.find({'proc_inst_task_assignee':user_no,'joinup_sys':joinup_sys},function (err,result) {
+                       if(err){
+                           resolve(utils.returnMsg(false, '1000', '获取数据异常', null, err));
+                       }else{
+                           if(result.length>0){
+                               var arr =[];
+                               for(var i in result){
+                                   var instanceId = result[i].proc_inst_id;
+                                   instanceId = instanceId.toString();
+                                   if(arr.indexOf(instanceId)==-1){
+                                       arr.push(instanceId);
+                                   }
+                               }
+                               resolve(utils.returnMsg(true, '0000', '获取数据成功2',arr ,null ));
+                           }else{
+                               resolve(utils.returnMsg(true, '0000', '数据不存在', null,null));
+                           }
+                       }
+                   });
+               }
+           }
         });
     });
     return p;

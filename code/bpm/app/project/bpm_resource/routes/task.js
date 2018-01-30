@@ -614,7 +614,19 @@ router.route("/finish/task").post(async (req,res)=>{
     }
 });
 
-
-
+/**
+ * 用户参与过的流程
+ * gdgl/api/task/find/instanceId
+ */
+router.route("/find/instanceId").post(function(req,res){
+    let user_no=req.body.user_no;//用户编号
+    let joinup_sys=req.body.joinup_sys;//所属流程编号
+    inst.find_instanceId(user_no,joinup_sys).then(function (rs) {
+        utils.respJsonData(res,rs);
+    }).catch(function(err_inst){
+        logger.error("return_task","查询流程异常",err_inst);
+        utils.respMsg(res, false, '1000', '查询流程异常', null, err_inst);
+    });
+});
     return router;
 }

@@ -2503,7 +2503,7 @@ exports.assigntransfer=function(proc_task_id,node_code,user_code,assign_user_cod
 exports.finish_task=(task_id,user_no)=>{
     return new Promise (async(resolve ,reject )=>{
         let rs=await model.$ProcessInstTask.update({"_id":task_id},{$set:{"item_assignee_user_code":user_no,"proc_inst_task_status":1}});
-        resolve({"data":rs,"msg":"update the task ,","code":"00000","sucess":true});
+        resolve({"data":rs,"msg":"update the task ,","code":"00000","success":true});
     })
 }
 
