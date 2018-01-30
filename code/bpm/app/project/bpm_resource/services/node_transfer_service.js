@@ -780,6 +780,7 @@ exports.assign_transfer=function(proc_task_id,node_code,user_code,assign_user_co
                                                        var joinup_sys = r[0].joinup_sys;//工单所属系统编号
                                                        var proc_back = 0;
                                                        var previous_step  = proc_task_id;
+                                                       var publish_status = r[0].publish_status;
                                                        // console.log(r);3
                                                        model.$ProcessTaskHistroy.create(arr_c,function (es,ress){
                                                            if(es){
@@ -852,6 +853,7 @@ exports.assign_transfer=function(proc_task_id,node_code,user_code,assign_user_co
                                                                                        condition_task.next_name = '';
                                                                                        condition_task.proc_back = proc_back;
                                                                                        condition_task.previous_step = previous_step;
+                                                                                       condition_task.publish_status = publish_status;
                                                                                        var arr = [];
                                                                                        arr.push(condition_task);
                                                                                        //创建新流转任务
@@ -1098,6 +1100,7 @@ exports.do_payout=function(proc_task_id,node_code,user_code,assign_user_code,pro
                                                         var joinup_sys = r[0].joinup_sys;//工单所属系统编号
                                                         var proc_back = r[0].proc_back;
                                                         var previous_step = proc_task_id;
+                                                        var publish_status = r[0].publish_status;
                                                         model.$ProcessTaskHistroy.create(arr_c,function (es,ress){
                                                             if(es){
                                                                 console.log(es);
@@ -1157,6 +1160,7 @@ exports.do_payout=function(proc_task_id,node_code,user_code,assign_user_code,pro
                                                                                     condition_task.next_name = "";//下一节点处理人姓名
                                                                                     condition_task.proc_back = proc_back;//是否为回退任务
                                                                                     condition_task.previous_step = previous_step;//上一节点任务id
+                                                                                    condition_task.publish_status = publish_status;//流程版本状态1-发布 0- 测试
                                                                                     // var arr = [];
                                                                                     // arr.push(condition_task);
                                                                                     //创建新流转任务

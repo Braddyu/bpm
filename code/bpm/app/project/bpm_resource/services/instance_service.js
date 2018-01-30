@@ -324,6 +324,7 @@ exports.create_instance_only=function(proc_code,proc_ver,proc_title,user_code,jo
             var success=rs.success;
             var data=rs.data;
             data_define=data;
+            var publish = data.publish;
             if(success) {
                 model_user.$User.find({"user_no":user_code},function(err_user,res_user){
                     if(err_user){
@@ -402,6 +403,7 @@ exports.create_instance_only=function(proc_code,proc_ver,proc_title,user_code,jo
                                     condition.proc_inst_opt_user_name=user_name;//:String,//流程实例操作人姓名
                                     condition.proc_opt_time=new Date();//:Date,//流程实例操作时间
                                     condition.joinup_sys=joinup_sys;//:String,//所属系统编号
+                                    condition.publish_status = publish;
 
                                     model.$ProcessInst.create([condition],function(errors,results){
                                         if(errors){
@@ -460,6 +462,7 @@ exports.create_instance_only=function(proc_code,proc_ver,proc_title,user_code,jo
                                             task.next_name = next_name;//下一节点处理人姓名
                                             task.proc_back = 0;
                                             task.previous_step = '';//上一节点任务id
+                                            task.publish_status = publish;// 判断流程版本类型 1-发布 0-测试
                                             model.$ProcessInstTask.create([task],function(error_task,result_task){
                                                 if(error_task){
                                                     console.log(error_task);
@@ -534,6 +537,7 @@ exports.createInstance=function(proc_code,proc_ver,proc_title,param_json_str,pro
                 var success=result.success;
                 var data=result.data;
                 data_define=data;
+                var publish = data.publish;
                 if(success){
                     //找到开始节点
 
@@ -600,6 +604,7 @@ exports.createInstance=function(proc_code,proc_ver,proc_title,param_json_str,pro
                                                     condition.proc_vars = proc_vars_json;
                                                     //新加字段所属系统编号
                                                     condition.joinup_sys = joinup_sys;
+                                                    condition.publish_status = publish;
                                                     //写入数据库 创建流程实例化方法
                                                     saveIns(condition,proc_code,proc_title,user_code).then(function(insresult){
                                                         if(insresult.success){
@@ -622,6 +627,7 @@ exports.createInstance=function(proc_code,proc_ver,proc_title,param_json_str,pro
                                                                     condition.proc_code = rs[0].proc_code;
                                                                     condition.proc_name = rs[0].proc_name;
                                                                     condition.next_name = next_name;
+                                                                    condition.publish_status = rs[0].publish_status;
 
                                                                      if(nodeDetail.next_detail)      {
                                                                          //创建流程任务
@@ -2212,6 +2218,7 @@ exports.return_task = function(task_id,user_no,memo,node_code,node_name){
                                        condition_task.joinup_sys = rsu[0].joinup_sys;//工单所属系统编号
                                        condition_task.next_name = '';
                                        condition_task.proc_back = 1;
+                                       condition_task.publish_status = rsu[0].publish_status;//流程版本类型 1 发布 0 测试
                                        if(!rsu[0].previous_step){
                                            rsu[0].previous_step = rsu[0]._id;
                                        }
@@ -2297,71 +2304,68 @@ exports.proving_taskId = function (task_id) {
  * @param
  * @returns
  */
+
 exports.find_instanceId = function (user_no,joinup_sys) {
     var p = new Promise(function(resolve,reject){
-        console.log(user_no,joinup_sys);
-        model.$ProcessInstTask.find({'proc_inst_task_assignee':user_no,'joinup_sys':joinup_sys},function (err,rs) {
-           if(err){
-               resolve(utils.returnMsg(false, '1000', '查找任务异常', null, err));
-           } else{
-               var arr1 = [];
-               var arr2 = [];
-               if(rs.length>0){
-                 for(let item in rs){
-                     var instanceId = rs[item].proc_inst_id;
-                     instanceId = instanceId.toString();
-                     if(arr1.indexOf(instanceId)==-1){
-                         arr1.push(instanceId);
-                     }
-                 }
-                 model.$ProcessTaskHistroy.find({'proc_inst_task_assignee':user_no,'joinup_sys':joinup_sys},function (err,res) {
-                     if(err){
-                         resolve(utils.returnMsg(false, '1000', '获取数据异常', null, err));
-                     }else{
-                         if(res.length>0){
-                             for(var i in res){
-                                 var instanceId = res[i].proc_inst_id;
-                                 instanceId = instanceId.toString();
-                                 if(arr2.indexOf(instanceId)==-1){
-                                     arr2.push(instanceId);
-                                 }
-                             }
-                         }else{
-                             resolve(utils.returnMsg(true, '0000', '历史表数据不存在',null ,null ));
-                         }
-                     }
-                 });
-                   var  set = arr1.concat(arr2)
-                   var arr = [];
-                   for(var i = 0; i < set.length; i++) {
-                       if(arr.indexOf(set[i]) == -1) {
-                           arr.push(set[i]);
-                       }
-                   }
-                   resolve(utils.returnMsg(true, '0000', '获取数据成功1',arr ,null ));
-               }else{
-                   model.$ProcessTaskHistroy.find({'proc_inst_task_assignee':user_no,'joinup_sys':joinup_sys},function (err,result) {
-                       if(err){
-                           resolve(utils.returnMsg(false, '1000', '获取数据异常', null, err));
-                       }else{
-                           if(result.length>0){
-                               var arr =[];
-                               for(var i in result){
-                                   var instanceId = result[i].proc_inst_id;
-                                   instanceId = instanceId.toString();
-                                   if(arr.indexOf(instanceId)==-1){
-                                       arr.push(instanceId);
-                                   }
-                               }
-                               resolve(utils.returnMsg(true, '0000', '获取数据成功2',arr ,null ));
-                           }else{
-                               resolve(utils.returnMsg(true, '0000', '数据不存在', null,null));
-                           }
-                       }
-                   });
-               }
-           }
+        async function find_insId() {
+            let rs = await model.$ProcessInstTask.find({'proc_inst_task_assignee':user_no,'joinup_sys':joinup_sys});
+            var arr1 = [];var arr2 = [];
+            if(rs.length>0){
+                for(let item in rs){
+                    var instanceId = rs[item].proc_inst_id;
+                    instanceId = instanceId.toString();
+                    if(arr1.indexOf(instanceId)==-1){
+                        arr1.push(instanceId);
+                    }
+                }
+                let res = await model.$ProcessTaskHistroy.find({'proc_inst_task_assignee':user_no,'joinup_sys':joinup_sys});
+                if(res.length>0){
+                    for(var i in res){
+                        var instanceId = res[i].proc_inst_id;
+                        instanceId = instanceId.toString();
+                        if(arr2.indexOf(instanceId)==-1){
+                            arr2.push(instanceId);
+                        }
+                    }
+                }else{
+                    resolve(utils.returnMsg(true, '0000', '历史表数据不存在',null ,null ));
+                }
+                var  set = arr1.concat(arr2)
+                var arr = [];
+                for(var i = 0; i < set.length; i++) {
+                    if(arr.indexOf(set[i]) == -1) {
+                        arr.push(set[i]);
+                    }
+                }
+            }else{
+                model.$ProcessTaskHistroy.find({'proc_inst_task_assignee':user_no,'joinup_sys':joinup_sys},function (err,result) {
+                    if(err){
+                        resolve(utils.returnMsg(false, '1000', '获取数据异常', null, err));
+                    }else{
+                        if(result.length>0){
+                            var arr =[];
+                            for(var i in result){
+                                var instanceId = result[i].proc_inst_id;
+                                instanceId = instanceId.toString();
+                                if(arr.indexOf(instanceId)==-1){
+                                    arr.push(instanceId);
+                                }
+                            }
+                            // resolve(utils.returnMsg(true, '0000', '获取数据成功2',arr ,null ));
+                        }else{
+                            resolve(utils.returnMsg(true, '0000', '数据不存在', null,null));
+                        }
+                    }
+                });
+            }
+           return arr;
+        }
+        find_insId().then(function (arr) {
+            console.log(arr);
+            resolve(utils.returnMsg(true, '0000', '获取数据成功',arr ,null ));
+        }).catch(function(err){
+            console.log(err);
         });
     });
     return p;
-}
+};
