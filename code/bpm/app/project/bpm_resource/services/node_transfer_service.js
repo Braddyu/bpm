@@ -38,7 +38,7 @@ var NoFound=(resolve)=>{
       map.proc_inst_task_assignee_name=result[0].proc_inst_task_assignee_name;
       map.proc_inst_biz_vars=result[0].proc_inst_biz_vars;
       map.proc_inst_task_assignee=result[0].proc_inst_task_assignee;
-      let r = await model.$ProcessInst.find({"_id":result[0].proc_inst_id;});
+      let r = await model.$ProcessInst.find({"_id":result[0].proc_inst_id});
       if(!r.length){NoFound(resolve);return ;}
         map. proc_name=r[0].proc_name;// : "采购测试流程"
         map.proc_ver= r[0].proc_ver;//" : NumberInt(4)
@@ -241,7 +241,7 @@ exports.transfer=function(proc_inst_task_id,node_code,user_code,opts,memo,param_
                   //归档
                   //到达最后一步 不可以流转
                   //往实例表中 插入数据
-                  await rs_s = await overFunction(current_detail, proc_inst_id, proc_inst_task_id, user_code, memo, next_name);
+                  let rs_s = await overFunction(current_detail, proc_inst_id, proc_inst_task_id, user_code, memo, next_name);
                   resolve(rs_s);
               } else if (type == "join") {
                   //会签
@@ -540,6 +540,7 @@ async function normal_process(current_detail,next_detail, next_node, proc_inst_i
     var proc_inst_task_params=result_t.data;
     //创建下一步流转任务
     var condition_task = {};
+    condition_task.publish_status = r[0].publish_status;
     condition_task.proc_inst_task_sign = 0;// : Number,// 流程签收(0-未认领，1-已认领)
     condition_task.proc_inst_id = proc_inst_id;//: {type: Schema.Types.ObjectId, ref: 'CommonCoreProcessInst'}, // 流程流转当前信息ID
     condition_task.proc_inst_task_code = proc_cur_task;// : String,// 流程当前节点编码(流程任务编号)

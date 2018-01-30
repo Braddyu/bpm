@@ -284,21 +284,17 @@
         }
         $.messager.confirm('确认','是否确认发布吗,一旦发布，之前测试版本的相关数据都将被删除!',function (r) {
          if(r){
-             var url ;
-             var type;
-             url = '{{projcfg.appurl}}/api/workflow/process/publish';
+             var url = '{{projcfg.appurl}}/api/workflow/process/publish_test';
              <!--url = '{{projcfg.appurl}}/admin/api/common/bpm/process/procdefine';-->
-             type = 'post';
              $.ajax({
                  url:url,
-                 type:type,
+                 type:'post',
                  data:{
-                     proc_code:rows.proc_code,
+                     proc_code:rows[0].proc_code,
                  },
                  success:function (data) {
                      if(data.success){
                          $.messager.alert("提示","保存信息成功","info",function() {
-
                              window.close();
                          });
                      }
