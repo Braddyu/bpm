@@ -5,27 +5,21 @@ const config = require('../../../../config');
 const fs=require('fs');
 const path=require('path');
 const iconv = require('iconv-lite');
-const schedule = require("node-schedule");
-
-//
-// var server = config.ftp_huanghe_server;
-//
-// var rule     = new schedule.RecurrenceRule();
-// rule.dayOfWeek = [0, new schedule.Range(1, 6)];
-// rule.hour =9;
-// rule.minute = 0;
-// var times2    = [1,31];
-// rule.second  = times2;
-// rule1.second  = times1;
-// rule1.hour  = times3;
-// rule1.minute = 0;
 
 
-// var rule1     = new schedule.RecurrenceRule();
-// var times1    = [1,6,11,16,21,26,31,36,41,46,51,56];
-// rule1.second  = times1;
+var server = config.ftp_huanghe_server;
 
+ftp_util.connect(server);
 
+ftp_util.list(function(err,res){
+    var data=res.data;
+    //获取服务器文件
+    for(let i in data){
+        ftp_util.downloadFileList('content',data[i].name,function (err,res) {
+            console.log(data[i].name);
+            readFile(data[i].name);
+
+<<<<<<< HEAD
 
 
 //定时任务
@@ -50,84 +44,98 @@ function ftp() {
                 }
 
             }
+=======
+>>>>>>> 9743cdd85abe209c5d3e5eb1d2ff3b1dc2aefb90
         });
-    })
+    }
 
-    ftp_util.end();
-}
-
+})
 
 
+
+ftp_util.end();
 
 function readFile(fileName) {
     var  filrPath = path.join(__dirname,'content/'+fileName);
     fs.readFile(filrPath,function (err,result) {
         var data = iconv.decode(result, 'gbk');
+        console.log("data==>",data);
         let datas=data.split("\n");
         var arr = [];
         var condition = {};
-        var items;
+
         !async function () {
-            for (let item in datas) {
-                items = item;
+            for (var item in datas) {
                 let lineData = datas[item].split('|');
                 if (lineData.length > 1) {
+
                     if (lineData[0].match(/\s/) != null || !lineData[0]) {
                         errorLog(fileName,item);
+                        console.log("第"+item+1+"行出错:"+lineData[0]);
                         return;
                     }
                     if (lineData[1].match(/\s/) != null || !lineData[1]) {
                         errorLog(fileName,item);
+                        console.log("第"+item+1+"行出错:"+lineData[1]);
                         return;
                     }
                     if (lineData[2].match(/\s/) != null || !lineData[2]) {
                         errorLog(fileName,item);
+                        console.log("第"+item+1+"行出错:"+lineData[2]);
+                        return;
+                    }
+                    if (lineData[3].match(/\s/) != null || !lineData[3]) {
+                        errorLog(fileName,item);
+                        console.log("第"+item+1+"行出错:"+lineData[3]);
                         return;
                     }
                     if (lineData[4].match(/\s/) != null || !lineData[4]) {
                         errorLog(fileName,item);
+                        console.log("第"+item+1+"行出错:"+lineData[4]);
                         return;
                     }
                     if (lineData[5].match(/\s/) != null || !lineData[5]) {
                         errorLog(fileName,item);
+                        console.log("第"+item+1+"行出错:"+lineData[5]);
                         return;
                     }
                     if (lineData[6].match(/\s/) != null || !lineData[6]) {
                         errorLog(fileName,item);
+                        console.log("第"+item+1+"行出错:"+lineData[6]);
                         return;
                     }
                     if (lineData[7].match(/\s/) != null || !lineData[7]) {
                         errorLog(fileName,item);
+                        console.log("第"+item+1+"行出错:"+lineData[7]);
                         return;
                     }
                     if (lineData[8].match(/\s/) != null || !lineData[8]) {
                         errorLog(fileName,item);
+                        console.log("第"+item+1+"行出错:"+lineData[8]);
                         return;
                     }
                     if (lineData[9].match(/\s/) != null || !lineData[9]) {
                         errorLog(fileName,item);
+                        console.log("第"+item+1+"行出错:"+lineData[9]);
                         return;
                     }
                     if (lineData[10].match(/\s/) != null || !lineData[10]) {
                         errorLog(fileName,item);
-                        return;
-                    }
-                    if (lineData[11].match(/\s/) != null || !lineData[11]) {
-                        errorLog(fileName,item);
+                        console.log("第"+item+1+"行出错:"+lineData[10]);
                         return;
                     }
                     var condition_task = {};
                     condition_task.BOSS_NUM = lineData[0];//BOSS订单编码
                     condition_task.customer_number = lineData[1];//客户单号
                     condition_task.acceptance_number = lineData[2];//受理人员工号
-                    condition_task.accept_business_type_code = lineData[4];//受理业务类型编码
-                    condition_task.accept_business_type_name = lineData[5];//受理业务类型名称
-                    condition_task.city_code = lineData[6];//地市
-                    condition_task.country_code = lineData[7];//区县
-                    condition_task.institutions = lineData[8];//机构
-                    condition_task.channel_code = lineData[9];//渠道编码
-                    condition_task.work_order_status = lineData[10];//工单状态
-                    condition_task.remark = lineData[11];//状态描述
+                    condition_task.accept_business_type_code = lineData[3];//受理业务类型编码
+                    condition_task.accept_business_type_name = lineData[4];//受理业务类型名称
+                    condition_task.city_code = lineData[5];//地市
+                    condition_task.country_code = lineData[6];//区县
+                    condition_task.institutions = lineData[7];//机构
+                    condition_task.channel_code = lineData[8];//渠道编码
+                    condition_task.work_order_status = lineData[9];//工单状态
+                    condition_task.remark = lineData[10];//状态描述
                     condition_task.status = 0;//派单状态
                     condition_task.dispatch_remark = '';//派单说明
                     condition_task.insert_time = new Date();//插入时间it
@@ -140,11 +148,11 @@ function readFile(fileName) {
                     if (error) {
                         resolve(utils.returnMsg(false, '1000', '插入数据异常。', null, error));
                     } else {
-                        console.log("数据插入到数据库成功", items);
+                        console.log("数据插入到数据库成功", item);
                         var arr1 = [];
                         //将插入成功的文件记录到日志表中
                         condition.insert_time = new Date();//插入时间
-                        condition.file_no = items;//文件行数
+                        condition.file_no = item;//文件行数
                         condition.file_name = fileName;//文件名
                         condition.Success_failure = 1;//是否成功 0表示:失败。1表示：成功'
                         condition.Remarks = "文件数据插入成功";

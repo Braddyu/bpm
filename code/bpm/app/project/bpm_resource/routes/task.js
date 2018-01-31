@@ -52,7 +52,9 @@ exports.task=function() {
             //判断用户是否存在
             inst.userInfo(userNo).then(function (rs) {
                 if (rs.success && rs.data.length == 1) {
+                    console.log('rs', rs);
                     userService.getUsreRolesByUserNo(userNo).then(function (result) {
+                        console.log(result);
                         if (result) {
                             if (page && length) {
                                 inst.getMyTaskQuery4Eui(page, length, userNo, result, joinup_sys, proc_code).then(function (taskresult) {

@@ -282,15 +282,22 @@
             msgError('提示,请选择一条数据再进行发布');
             return false;
         }
-        $.messager.confirm('确认','是否确认发布吗,一旦发布，之前测试版本的相关数据都将被删除!',function (r) {
+        $.messager.confirm('确认','确认发布吗,一旦发布，之前测试版本的相关数据都将被删除!',function (r) {
          if(r){
-             var url = '{{projcfg.appurl}}/api/workflow/process/publish_test';
+             var url ;
+             var type;
+             url = '{{projcfg.appurl}}/api/workflow/process/version';
              <!--url = '{{projcfg.appurl}}/admin/api/common/bpm/process/procdefine';-->
+             type = 'post';
              $.ajax({
                  url:url,
-                 type:'post',
+                 type:type,
                  data:{
-                     proc_code:rows[0].proc_code,
+                     proc_code:$('#proc_code').val(),
+                     proc_name:$('#proc_name').val(),
+                     proc_define:JSON.stringify(processDefineDiv.exportData()),
+                     lineNodeDatas:JSON.stringify(lineNodeDatas),
+                     taskNodeDatas:JSON.stringify(taskNodeDatas)
                  },
                  success:function (data) {
                      console.log(data,'55555555')
