@@ -841,9 +841,24 @@ router.route("/information").post(function(req,res){
     var _id = req.body.user_id;
     user.getInfo(tag,_id).then(function(rs){
         utils.respJsonData(res,rs);
-    }).catch(function(err){
-        console.log('err');
-        console.log(err);
-    });
+}).catch(function(err){
+    console.log('err');
+    console.log(err);
+});
+});
+
+router.route("/publish_test").post(function (req,res) {
+    var proc_code = req.body.proc_code;
+    console.log(proc_code,'llllllllllll');
+    if(proc_code){
+          proc.delet_procCode(proc_code).then(function (rs) {
+              utils.respJsonData(res,rs);
+          }).catch(function(err){
+              console.log(err);
+              utils.respMsg(res, false, '1000', '删除异常', null, );
+          });
+    }else{
+        utils.respMsg(res, false, '1000', '流程编码不能为空', null, null);
+    }
 });
 module.exports = router;

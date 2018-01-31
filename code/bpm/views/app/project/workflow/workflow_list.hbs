@@ -237,10 +237,10 @@
                 {"field": "proc_code",hidden:true},
                 {"field": "proc_name",hidden:true},
                 {"field": "version","title":"流程版本号","width":20},
-                {"field": "status","title":"状态","width":20,
+                {"field": "publish","title":"状态","width":20,
                     formatter:function(value,row,index){
                         if(value == '1'){
-                            return "测试";
+                            return "未发布";
                         }else{
                             return "发布";
                         }
@@ -293,9 +293,10 @@
                      proc_code:rows[0].proc_code,
                  },
                  success:function (data) {
+                     console.log(data,'55555555')
                      if(data.success){
                          $.messager.alert("提示","保存信息成功","info",function() {
-                             window.close();
+
                          });
                      }
                      else {

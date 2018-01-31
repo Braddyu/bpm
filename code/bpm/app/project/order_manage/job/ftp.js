@@ -29,9 +29,9 @@ const schedule = require("node-schedule");
 
 
 //定时任务
-schedule.scheduleJob(rule1, function(){
-        ftp();
- });
+// schedule.scheduleJob(rule1, function(){
+//         ftp();
+//  });
 
 function ftp() {
     ftp_util.connect(server);
