@@ -35,8 +35,8 @@
                             <div class="col-xs-5 col-md-5"  style="width: 59%">
                                 <div class="btn-group" role="group" aria-label="...">
                                     <button type="button" class="btn btn-default" onclick="openProcessChart(1)"><i class="fa fa-plus"></i>新增</button>
-                                    <button type="button" class="btn btn-default" onclick="openProcessChart(2)"><i class="fa fa-edit"></i>修改</button>
-                                    <button type="button" class="btn btn-default" onclick="changePublish()"><i class="glyphicon glyphicon-ok"></i>发布</button>
+                                    <button type="button" class="btn btn-default" onclick="openProcessChart(2)" id="change"><i class="fa fa-edit"></i>修改</button>
+                                    <button type="button" class="btn btn-default" onclick="changePublish()" id="publish"><i class="glyphicon glyphicon-ok"></i>发布</button>
                                     <!--<button type="button" class="btn btn-default" onclick="changeStatus(2,1)"><i class="glyphicon glyphicon-ok"></i>启用</button>-->
                                     <!--<button type="button" class="btn btn-default" onclick="changeStatus(2,2)"><i class="glyphicon glyphicon-remove"></i>禁用</button>-->
                                 </div>
@@ -239,14 +239,23 @@
                 {"field": "version","title":"流程版本号","width":20},
                 {"field": "publish","title":"状态","width":20,
                     formatter:function(value,row,index){
-                        if(value == '1'){
+                        if(value == '0'){
                             return "未发布";
-                        }else{
+                        }else if(value == '1'){
                             return "发布";
                         }
                     }
                 }
             ]],
+            onClickRow:function(rowIndex, rowData){
+                if(rowData.publish == '0'){
+                    $("#publish").attr("disabled",false);
+                    $("#change").attr("disabled",false);
+                }else if(rowData.publish == '1'){
+                    $("#publish").attr("disabled",true);
+                    $("#change").attr("disabled",true);
+                }
+            },
             onLoadSuccess:function(json) {
                 if(!json.success) {
                     msgError(json.msg + ',错误代码:' + json.code);
@@ -285,25 +294,20 @@
         $.messager.confirm('确认','确认发布吗,一旦发布，之前测试版本的相关数据都将被删除!',function (r) {
          if(r){
              var url ;
-             var type;
-             url = '{{projcfg.appurl}}/api/workflow/process/version';
-             <!--url = '{{projcfg.appurl}}/admin/api/common/bpm/process/procdefine';-->
-             type = 'post';
+             url = '{{projcfg.appurl}}/api/workflow/process/publish_test';
              $.ajax({
                  url:url,
-                 type:type,
+                 type:'post',
                  data:{
-                     proc_code:$('#proc_code').val(),
-                     proc_name:$('#proc_name').val(),
-                     proc_define:JSON.stringify(processDefineDiv.exportData()),
-                     lineNodeDatas:JSON.stringify(lineNodeDatas),
-                     taskNodeDatas:JSON.stringify(taskNodeDatas)
+                    proc_code:rows[0].proc_code
                  },
                  success:function (data) {
-                     console.log(data,'55555555')
                      if(data.success){
                          $.messager.alert("提示","保存信息成功","info",function() {
-
+                            rows[0].publish = 1;
+                             $("#publish").attr("disabled",true);
+                             $("#change").attr("disabled",true);
+                             loadProDefineDatagrid();
                          });
                      }
                      else {

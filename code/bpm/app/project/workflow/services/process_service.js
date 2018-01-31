@@ -685,37 +685,36 @@ proc_code 流程编码
  */
 exports.delet_procCode=function(proc_code){
     var p = new Promise(function(resolve,reject){
-       model.$ProcessInst.remove({'proc_code':proc_code,'publish_status':0},function (err,rs) {
-        if(err){
-               resolve(utils.returnMsg(false, '1000', '删除实例表数据异常', null, err));
-           }else{
-               model.$ProcessInstTask.remove({'proc_code':proc_code,'publish_status':0},function (error) {
-                   if(error){
-                       resolve(utils.returnMsg(false, '1000', '删除任务表数据异常', null, error));
-                   }else{
-                       model.$ProcessTaskHistroy.remove({'proc_code':proc_code,'publish_status':0},function(eror){
-                           if(eror){
-                               resolve(utils.returnMsg(false, '1000', '删除历史任务表数据异常', null, error));
-                           }else{
-                             var update ={
-                                 publish : 1
-                             }
-                               var conditions = {proc_code: proc_code};
-                               var options = {};
-                               model.$ProcessDefine.update(conditions,update,options,function (errs,rs) {
-                                  if(errs){
-                                      resolve(utils.returnMsg(false, '1000', '更新流程定义异常', null, err));
-                                  }else{
-                                     console.log(rs,'ssss')
-                                     resolve(utils.returnMsg(true, '0000', '更新流程定义成功', '1', null));
-                                  }
-                               });
-                           }
-                       });
-                   }
-               });
-           }
-       });
+        var update ={
+            publish : 1
+        }
+        var conditions = {proc_code: proc_code};
+        var options = {};
+        model.$ProcessDefine.update(conditions,update,options,function (errs,rs) {
+            if(errs){
+                resolve(utils.returnMsg(false, '1000', '更新流程定义异常', null, err));
+            }else{
+                model.$ProcessInst.remove({'proc_code':proc_code,'publish_status':0},function (err) {
+                    if(err){
+                        resolve(utils.returnMsg(false, '1000', '删除实例表数据异常', null, err));
+                    }else{
+                        model.$ProcessInstTask.remove({'proc_code':proc_code,'publish_status':0},function (error) {
+                            if(error){
+                                resolve(utils.returnMsg(false, '1000', '删除任务表数据异常', null, error));
+                            }else{
+                                model.$ProcessTaskHistroy.remove({'proc_code':proc_code,'publish_status':0},function(eror){
+                                    if(eror){
+                                        resolve(utils.returnMsg(false, '1000', '删除历史任务表数据异常', null, error));
+                                    }else{
+                                        resolve(utils.returnMsg(true, '0000', '更新流程定义成功', rs, null));
+                                    }
+                                });
+                            }
+                        });
+                    }
+                });
+            }
+        });
     });
     return p;
 };

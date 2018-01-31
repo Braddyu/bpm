@@ -528,6 +528,7 @@ exports.createInstance=function(proc_code,proc_ver,proc_title,param_json_str,pro
              resolve(utils.returnMsg(false, '1000', '创建失败，无法找到下一节点',null));
          }
     });
+    return promise;
 }
 
 /*

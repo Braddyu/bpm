@@ -376,6 +376,7 @@ router.route('/version')
             processDefineEntity.opt_time = new Date();
             processDefineEntity.opt_user = '';//req.session.current_user.user_name;
             processDefineEntity.status = 1;
+            processDefineEntity.publish = 0;
             var itemArray = [];
             processDefineEntity.item_config = JSON.stringify(itemArray);
             //保存流程定义信息
