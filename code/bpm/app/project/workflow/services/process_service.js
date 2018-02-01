@@ -683,12 +683,15 @@ exports.getProcHandlerLogsList=function(page,size,condition){
 proc_code 流程编码
 删除实例表，任务表，历史任务表相关数据，并更新流程定义
  */
-exports.delet_procCode=function(proc_code){
+exports.delet_procCode=function(proc_code,version){
     var p = new Promise(function(resolve,reject){
         var update ={
             publish : 1
         }
-        var conditions = {proc_code: proc_code};
+        var conditions = {
+            proc_code: proc_code,
+            version : version
+        };
         var options = {};
         model.$ProcessDefine.update(conditions,update,options,function (errs,rs) {
             if(errs){

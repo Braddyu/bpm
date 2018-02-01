@@ -849,9 +849,9 @@ router.route("/information").post(function(req,res){
 
 router.route("/publish_test").post(function (req,res) {
     var proc_code = req.body.proc_code;
-    console.log(proc_code,'llllllllllll');
+    var version = req.body.version;
     if(proc_code){
-          proc.delet_procCode(proc_code).then(function (rs) {
+          proc.delet_procCode(proc_code,version).then(function (rs) {
               utils.respJsonData(res,rs);
           }).catch(function(err){
               console.log(err);

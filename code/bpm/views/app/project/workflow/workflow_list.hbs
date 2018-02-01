@@ -299,7 +299,8 @@
                  url:url,
                  type:'post',
                  data:{
-                    proc_code:rows[0].proc_code
+                    proc_code:rows[0].proc_code,
+                    version:rows[0].version
                  },
                  success:function (data) {
                      if(data.success){
