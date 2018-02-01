@@ -315,6 +315,7 @@ exports.create_instance_only=function(proc_code,proc_ver,proc_title,user_code,jo
             var day = myDate.getDate();
             var randomNumber = parseInt(((Math.random()*9+1)*100000));
             condition.work_order_number="GDBH"+year+month+day+randomNumber;//工单编号
+            condition.proc_ver = proc_ver;
             condition.publish_status = publish;
             condition.proce_reject_params="";// : String,//是否驳回
             condition.proc_instance_code="";//:String,//实例编码
@@ -395,7 +396,7 @@ exports.create_instance_only=function(proc_code,proc_ver,proc_title,user_code,jo
             }
             //, //流程发起人id
             task.proc_task_start_name=user_name;//,//流程发起人姓名
-            task.proc_task_ver =data.version;//,//版本号
+            task.proc_task_ver =proc_ver;//,//版本号
             task.proc_task_content="";// : String,// 流程派单内容
             task.proc_start_time =new Date();//,// 流程发起时间(开始时间)
             task.proc_vars=proc_vars;// : String,// 流程变量
@@ -527,6 +528,7 @@ exports.createInstance=function(proc_code,proc_ver,proc_title,param_json_str,pro
         condition.proc_code = rs_s[0].proc_code;
         condition.proc_name = rs_s[0].proc_name;
         condition.next_name = next_name;
+        condition.proc_task_ver = proc_ver;
          if(nodeDetail.next_detail)      {
              //创建流程任务
              let taskresult=await insertTask(insresult,condition);
@@ -654,6 +656,7 @@ function insertTask(result,condition){
         task.proc_back = 0;
         task.previous_step =[];
         task.publish_status = condition.publish_status;
+        task.proc_task_ver = condition.proc_task_ver;
         var arr=[];
         arr.push(task);
         //写入数据库创建流程任务表
@@ -1897,6 +1900,7 @@ exports.return_task = function(task_id,user_no,memo,node_code,node_name){
                                }else{
                                        //创建下一步流转任务
                                        var condition_task = {};
+                                       condition_task.proc_task_ver = rsu[0].proc_task_ver;
                                        condition_task.work_order_number = rsu[0].work_order_number;
                                        condition_task.publish_status = rsu[0].publish_status;//1-发布 0- 未发布
                                        condition_task.proc_inst_id = rsu[0].proc_inst_id;//: {type: Schema.Types.ObjectId, ref: 'CommonCoreProcessInst'}, // 流程流转当前信息ID

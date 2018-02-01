@@ -697,15 +697,15 @@ exports.delet_procCode=function(proc_code,version){
             if(errs){
                 resolve(utils.returnMsg(false, '1000', '更新流程定义异常', null, err));
             }else{
-                model.$ProcessInst.remove({'proc_code':proc_code,'publish_status':0},function (err) {
+                model.$ProcessInst.remove({'proc_code':proc_code,'publish_status':0,'proc_ver':version},function (err) {
                     if(err){
                         resolve(utils.returnMsg(false, '1000', '删除实例表数据异常', null, err));
                     }else{
-                        model.$ProcessInstTask.remove({'proc_code':proc_code,'publish_status':0},function (error) {
+                        model.$ProcessInstTask.remove({'proc_code':proc_code,'publish_status':0,'proc_task_ver':version},function (error) {
                             if(error){
                                 resolve(utils.returnMsg(false, '1000', '删除任务表数据异常', null, error));
                             }else{
-                                model.$ProcessTaskHistroy.remove({'proc_code':proc_code,'publish_status':0},function(eror){
+                                model.$ProcessTaskHistroy.remove({'proc_code':proc_code,'publish_status':0,'proc_task_ver':version},function(eror){
                                     if(eror){
                                         resolve(utils.returnMsg(false, '1000', '删除历史任务表数据异常', null, error));
                                     }else{

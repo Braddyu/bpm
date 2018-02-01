@@ -808,6 +808,7 @@ exports.assign_transfer=function(proc_task_id,node_code,user_code,assign_user_co
        var previous_step  = proc_task_id;
        var publish_status = r[0].publish_status;
        var work_order_number = r[0].work_order_number;
+       var proc_task_ver = r[0].proc_task_ver;
        await model.$ProcessTaskHistroy.create(arr_c);
        let rs_s=await touchNode(current_detail, user_code, proc_task_id, false);
        if (!rs_s.success) {resolve(rs_s);return ;}
@@ -820,6 +821,7 @@ exports.assign_transfer=function(proc_task_id,node_code,user_code,assign_user_co
        var proc_inst_task_params = result_t.data;
        //创建下一步流转任务
        var condition_task = {};
+       condition_task.proc_task_ver = proc_task_ver;
        condition_task.publish_status =publish_status;
        condition_task.work_order_number = work_order_number;
        condition_task.proc_inst_id = proc_inst_id;//: {type: Schema.Types.ObjectId, ref: 'CommonCoreProcessInst'}, // 流程流转当前信息ID
@@ -1043,6 +1045,7 @@ exports.do_payout=function(proc_task_id,node_code,user_code,assign_user_code,pro
         var previous_step = proc_task_id;
         var publish_status = r[0].publish_status;
         var work_order_number = r[0].work_order_number;
+        var proc_task_ver = r[0].proc_task_ver;
         await model.$ProcessTaskHistroy.create(arr_c);
         let rs_s=await touchNode(current_detail, user_code, proc_task_id, false);
         if(!rs_s.success){resolve(rs_s);return ;}
@@ -1103,6 +1106,7 @@ exports.do_payout=function(proc_task_id,node_code,user_code,assign_user_code,pro
                 condition_task.previous_step = previous_step;//上一节点任务id
                 condition_task.publish_status = publish_status;
                 condition_task.work_order_number = work_order_number;
+                condition_task.proc_task_ver = proc_task_ver;
                 //创建新流转任务
                 let rs = await model.$ProcessInstTask.create(condition_task);
                 taskid = rs._id;
