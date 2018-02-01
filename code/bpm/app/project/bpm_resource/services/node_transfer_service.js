@@ -479,17 +479,18 @@ async function joinFunction(proc_inst_id, resolve, reject, node_code, params, pr
  * @desc 用于流程归档；
  */
 function overFunction(current_detail,proc_inst_id, proc_inst_task_id,user_code,memo,next_name) {
-    var data = {};
-    data.proc_inst_task_status=1;
-    data.proc_inst_task_complete_time=new Date();
-    data.proc_inst_task_handler_code=user_code;
-    data.proc_inst_task_remark=memo;
-    data.next_name = next_name;
-    data.proc_back = 0;
-    var conditions = {_id: proc_inst_task_id};
-    var update = {$set: data};
-    var options = {};
+
     return new Promise(async function(resolve,reject){
+        var data = {};
+        data.proc_inst_task_status=1;
+        data.proc_inst_task_complete_time=new Date();
+        data.proc_inst_task_handler_code=user_code;
+        data.proc_inst_task_remark=memo;
+        data.next_name = next_name;
+        data.proc_back = 0;
+        var conditions = {_id: proc_inst_task_id};
+        var update = {$set: data};
+        var options = {};
        // 更新当前任务的状态
         await model.$ProcessInstTask.update(conditions, update, options);
         let rest=await touchNode(current_detail,user_code,proc_inst_task_id,false);
@@ -509,12 +510,12 @@ function overFunction(current_detail,proc_inst_id, proc_inst_task_id,user_code,m
         let rs=await model.$ProcessInstTask.find(cd).sort({proc_inst_task_complete_time: -1});
         if(!rs.length){NoFound(resolve);return ;}
         var proc_task_history = JSON.stringify(rs);
-        var data = {proc_inst_status: 4, proc_task_history: proc_task_history};
-        var conditions = {_id: proc_inst_id};
-        var update = {$set: data};
-        var options = {};
+        var data1 = {proc_inst_status: 4, proc_task_history: proc_task_history};
+        var conditions1 = {_id: proc_inst_id};
+        var update1 = {$set: data1};
+        var options1 = {};
         //吧所有的任务过程写入流程实例化的历史中去  同时更新状态
-        await model.$ProcessInst.update(conditions, update, options);
+        await model.$ProcessInst.update(conditions1, update1, options1);
         await model.$ProcessInstTask.remove({"proc_inst_id":proc_inst_id});
         resolve(utils.returnMsg(true, '0000', '归档流程实例成功。', null, null));
     });
