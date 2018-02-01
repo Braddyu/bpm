@@ -861,7 +861,8 @@ exports.assign_transfer=function(proc_task_id,node_code,user_code,assign_user_co
        var arr = [];
        arr.push(condition_task);
        //创建新流转任务
-       await model.$ProcessInstTask.create(arr[0]);
+       let result =  await model.$ProcessInstTask.create(arr[0]);
+       console.log(result)
        //如果是发短信
        if(rs && item_sm_warn=='1' && resultss[0].user_phone){
            var process_utils = require('../../../utils/process_util');
@@ -876,7 +877,7 @@ exports.assign_transfer=function(proc_task_id,node_code,user_code,assign_user_co
                console.log("短信发送失败",err);
            });
        }
-       var conditions = {_id:  result.proc_inst_id};
+       var conditions = {_id: result.proc_inst_id};
        var data = {};
        data.proc_cur_task = next_detail.item_code;
        data.proc_cur_task_name = next_node.name;
@@ -884,7 +885,8 @@ exports.assign_transfer=function(proc_task_id,node_code,user_code,assign_user_co
        var options = {};
        await model.$ProcessInst.update(conditions,update,options);
        let res_s=await touchNode(next_detail,user_code,proc_task_id,true);
-       resolve(res_s);
+       //resolve(res_s);
+       resolve({'success': true, 'code': '0000', 'msg': '任务流转正常','data':result});
    });
 }
 /**
