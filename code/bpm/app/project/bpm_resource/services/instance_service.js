@@ -284,6 +284,7 @@ exports.create_instance_only=function(proc_code,proc_ver,proc_title,user_code,jo
         var success=rs.success;
         var data=rs.data;
         data_define=data;
+        var publish = data.publish;
         if(success) {
             let res_user = await model_user.$User.find({"user_no": user_code});
             if(!res_user.length){NoFound(resolve);return ;}
@@ -314,6 +315,7 @@ exports.create_instance_only=function(proc_code,proc_ver,proc_title,user_code,jo
             var day = myDate.getDate();
             var randomNumber = parseInt(((Math.random()*9+1)*100000));
             condition.work_order_number="GDBH"+year+month+day+randomNumber;//工单编号
+            condition.publish_status = publish;
             condition.proce_reject_params="";// : String,//是否驳回
             condition.proc_instance_code="";//:String,//实例编码
             condition.proc_title=data.proc_name;// :  { type: String,  required: true ,index: true },//流程标题
@@ -357,6 +359,8 @@ exports.create_instance_only=function(proc_code,proc_ver,proc_title,user_code,jo
             var task={};
             task.proc_inst_id=results[0]._id ;//: {type: Schema.Types.ObjectId, ref: 'CommonCoreProcessInst'}, // 流程流转当前信息ID
             // task.proc_task_id:String,//task_id
+            task.publish_status = results[0].publish_status;
+            task.work_order_number = results[0].work_order_number;
             task.proc_inst_task_code=current_detail.item_code;// : String,// 流程当前节点编码(流程任务编号)
             task.proc_inst_task_name=current_node.name;// : String,// 流程当前节点名称(任务名称)
             task.proc_inst_task_type=current_detail.item_type;// : String,// 流程当前节点类型(任务类型)
@@ -453,6 +457,7 @@ exports.createInstance=function(proc_code,proc_ver,proc_title,param_json_str,pro
         if(!rs.success){resolve(rs);return ;}
         var data=rs.data;
         data_define=data;
+        var publish = data.publish;
         //找到开始节点
         var firstNode=await nodeAnalysisService.findFirstNode(JSON.parse(data.proc_define));
         //获取节点信息
@@ -500,16 +505,18 @@ exports.createInstance=function(proc_code,proc_ver,proc_title,param_json_str,pro
         condition.proc_vars = proc_vars_json;
         //新加字段所属系统编号
         condition.joinup_sys = joinup_sys;
+        condition.publish_status = publish;
         //写入数据库 创建流程实例化方法
         let insresult=await saveIns(condition,proc_code,proc_title,user_code);
         if(!insresult.success){resolve(insresult);return ;}
-        let rs_s=model.$ProcessInst.find({'_id':insresult.data});
+        let rs_s= await model.$ProcessInst.find({'_id':insresult.data});
         if(!rs_s.length){NoFound(resolve);return ;}
         //新加字段所属系统编号
-        condition.joinup_sys = rs[0].joinup_sys;
-        condition.work_order_number = rs[0].work_order_number;
-        condition.proc_task_start_user_role_code = rs[0].proc_start_user_role_code;
-        condition.proc_task_start_user_role_names = rs[0].proc_start_user_role_names;
+        condition.publish_status = rs_s[0].publish_status;
+        condition.joinup_sys = rs_s[0].joinup_sys;
+        condition.work_order_number = rs_s[0].work_order_number;
+        condition.proc_task_start_user_role_code = rs_s[0].proc_start_user_role_code;
+        condition.proc_task_start_user_role_names = rs_s[0].proc_start_user_role_names;
         condition.proc_task_start_name = user_name;
         condition.proc_inst_task_title = proc_title;
         condition.proc_inst_biz_vars = biz_vars_json;
@@ -517,8 +524,8 @@ exports.createInstance=function(proc_code,proc_ver,proc_title,param_json_str,pro
         condition.proc_inst_task_title = proc_title;
         condition.proc_inst_biz_vars = biz_vars_json;
         condition.proc_vars = proc_vars_json;
-        condition.proc_code = rs[0].proc_code;
-        condition.proc_name = rs[0].proc_name;
+        condition.proc_code = rs_s[0].proc_code;
+        condition.proc_name = rs_s[0].proc_name;
         condition.next_name = next_name;
          if(nodeDetail.next_detail)      {
              //创建流程任务
@@ -646,6 +653,7 @@ function insertTask(result,condition){
         task.next_name = condition.next_name;
         task.proc_back = 0;
         task.previous_step =[];
+        task.publish_status = condition.publish_status;
         var arr=[];
         arr.push(task);
         //写入数据库创建流程任务表
@@ -720,6 +728,7 @@ function saveIns(dataMap,proc_code,proc_title,user_code){
             inst.item_config=data_define.item_config;//流程节点信息
             inst.proc_vars=dataMap.proc_vars;//流程变量
             inst.joinup_sys = dataMap.joinup_sys;//工单所属系统编号
+            inst.publish_status = dataMap.publish_status;
             var arr = [];
             arr.push(inst);
             //写入数据库创建流程
@@ -1848,6 +1857,9 @@ exports.goPigeonhole = function(proc_inst_id){
 }
 
 
+/*
+任务回退
+ */
 
 exports.return_task = function(task_id,user_no,memo,node_code,node_name){
     var p = new Promise(function(resolve,reject){
@@ -1885,6 +1897,8 @@ exports.return_task = function(task_id,user_no,memo,node_code,node_name){
                                }else{
                                        //创建下一步流转任务
                                        var condition_task = {};
+                                       condition_task.work_order_number = rsu[0].work_order_number;
+                                       condition_task.publish_status = rsu[0].publish_status;//1-发布 0- 未发布
                                        condition_task.proc_inst_id = rsu[0].proc_inst_id;//: {type: Schema.Types.ObjectId, ref: 'CommonCoreProcessInst'}, // 流程流转当前信息ID
                                        condition_task.proc_inst_task_code = rsu[0].proc_inst_task_code;// : String,// 流程当前节点编码(流程任务编号)
                                        condition_task.proc_inst_task_name =rsu[0].proc_inst_task_name;//: String,// 流程当前节点名称(任务名称)
@@ -1970,6 +1984,9 @@ exports.return_task = function(task_id,user_no,memo,node_code,node_name){
     return p;
 }
 
+/*
+判断任务是否已经被处理
+ */
 exports.proving_taskId = function (task_id) {
     var p = new Promise(function(resolve,reject){
         model.$ProcessInstTask.find({'_id':task_id},function(err,result){

@@ -485,6 +485,7 @@ function overFunction(current_detail,proc_inst_id, proc_inst_task_id,user_code,m
     data.proc_inst_task_handler_code=user_code;
     data.proc_inst_task_remark=memo;
     data.next_name = next_name;
+    data.proc_back = 0;
     var conditions = {_id: proc_inst_task_id};
     var update = {$set: data};
     var options = {};
@@ -588,6 +589,8 @@ async function normal_process(current_detail,next_detail, next_node, proc_inst_i
     var name = r[0].proc_task_start_name;//流程发起人
     var proc_code = r[0].proc_code;//流程编码
     var proc_name = r[0].proc_name;//流程名称
+    var publish_status = r[0].publish_status;
+    var work_order_number   = r[0].work_order_number;
     let results=await model.$ProcessTaskHistroy.create(arr_c);
     //建立下一步流程任务
     //查找下一步执行人的角色或者参入人 等等信息
@@ -628,7 +631,7 @@ async function normal_process(current_detail,next_detail, next_node, proc_inst_i
         condition_task.proc_inst_task_assignee_name=org.proc_inst_task_assignee_name;
     }
            // resolve(ergodic(r,condition_task,proc_cur_task,next_detail,proc_inst_task_params,proc_inst_node_vars,biz_vars,proc_code,proc_name));
-    async function xunhuan () {
+    async function loop () {
         if (params && 'undefined' != params.flag && !params.flag) {
             let step_first = await  model.$ProcessInstTask.find({
                 'proc_inst_id': r[0].proc_inst_id,
@@ -672,13 +675,15 @@ async function normal_process(current_detail,next_detail, next_node, proc_inst_i
         }
     }
 
-    xunhuan().then(async function(res) {
+    loop().then(async function(res) {
         var arr = [];
         condition_task.proc_code = proc_code;//流程编码
         condition_task.proc_name = proc_name;//流程名称
         condition_task.proc_task_start_user_role_names = role_name;//流程发起人角色
         condition_task.proc_task_start_user_role_code = role_code;//流程发起人id
         condition_task.proc_task_start_name = name;//流程发起人角色
+        condition_task.publish_status = publish_status;
+        condition_task.work_order_number = work_order_number;
         arr.push(condition_task);
         //创建新流转任务
         let rs = await model.$ProcessInstTask.create(arr);
@@ -801,6 +806,8 @@ exports.assign_transfer=function(proc_task_id,node_code,user_code,assign_user_co
        var joinup_sys = r[0].joinup_sys;//工单所属系统编号
        var proc_back = 0;
        var previous_step  = proc_task_id;
+       var publish_status = r[0].publish_status;
+       var work_order_number = r[0].work_order_number;
        await model.$ProcessTaskHistroy.create(arr_c);
        let rs_s=await touchNode(current_detail, user_code, proc_task_id, false);
        if (!rs_s.success) {resolve(rs_s);return ;}
@@ -813,6 +820,8 @@ exports.assign_transfer=function(proc_task_id,node_code,user_code,assign_user_co
        var proc_inst_task_params = result_t.data;
        //创建下一步流转任务
        var condition_task = {};
+       condition_task.publish_status =publish_status;
+       condition_task.work_order_number = work_order_number;
        condition_task.proc_inst_id = proc_inst_id;//: {type: Schema.Types.ObjectId, ref: 'CommonCoreProcessInst'}, // 流程流转当前信息ID
        condition_task.proc_inst_task_code = next_detail.item_code;// : String,// 流程当前节点编码(流程任务编号)
        condition_task.proc_inst_task_name = next_node.name;//: String,// 流程当前节点名称(任务名称)
@@ -1032,12 +1041,14 @@ exports.do_payout=function(proc_task_id,node_code,user_code,assign_user_code,pro
         var joinup_sys = r[0].joinup_sys;//工单所属系统编号
         var proc_back = r[0].proc_back;
         var previous_step = proc_task_id;
+        var publish_status = r[0].publish_status;
+        var work_order_number = r[0].work_order_number;
         await model.$ProcessTaskHistroy.create(arr_c);
         let rs_s=await touchNode(current_detail, user_code, proc_task_id, false);
         if(!rs_s.success){resolve(rs_s);return ;}
         //循环给下一节点处理人派发任务
         var taskid = '';
-        async function xunhuan() {
+        async function round_task() {
             var users = [];
             users = assign_user_code.split(',');
             for (var i = 0; i < users.length; i++) {
@@ -1090,6 +1101,8 @@ exports.do_payout=function(proc_task_id,node_code,user_code,assign_user_code,pro
                 condition_task.next_name = "";//下一节点处理人姓名
                 condition_task.proc_back = proc_back;//是否为回退任务
                 condition_task.previous_step = previous_step;//上一节点任务id
+                condition_task.publish_status = publish_status;
+                condition_task.work_order_number = work_order_number;
                 //创建新流转任务
                 let rs = await model.$ProcessInstTask.create(condition_task);
                 taskid = rs._id;
@@ -1118,7 +1131,7 @@ exports.do_payout=function(proc_task_id,node_code,user_code,assign_user_code,pro
             res[0].pay_task_id = taskid;
             return res;
         }
-        xunhuan().then(function (res) {
+        round_task().then(function (res) {
             //将任务信息返回给调用接口方
             resolve(utils.returnMsg(true, '1000', '流程流转新增任务信息正常81111。', res, null));
         }).catch(function (err) {
