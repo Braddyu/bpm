@@ -469,7 +469,8 @@ exports.createInstance=function(proc_code,proc_ver,proc_title,param_json_str,pro
         var condition={};
         let resu=await model_user.$User.find({'user_no':user_code});
         if(!resu.length){NoFound(resolve);return ;}
-        let role=await find(resu[0].user_roles.toString());
+        //找出用户所拥有的角色
+        let role=await find_roles(resu[0].user_roles.toString());
         if(!role.success){resolve(role);return ;}
         condition.proc_start_user_role_names = role.data.toString().split(',');
         condition.proc_start_user_role_code = resu[0].user_roles.toString();
@@ -543,7 +544,7 @@ exports.createInstance=function(proc_code,proc_ver,proc_title,param_json_str,pro
 /*
 查询用户所拥有的角色
  */
-function find(role_code){
+function find_roles(role_code){
     return new Promise(async function(resolve,reject){
         if(role_code){
             if(role_code.length>1){
