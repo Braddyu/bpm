@@ -862,7 +862,7 @@ exports.assign_transfer=function(proc_task_id,node_code,user_code,assign_user_co
        arr.push(condition_task);
        //创建新流转任务
        let result =  await model.$ProcessInstTask.create(arr[0]);
-       console.log(result)
+       if(!result){NoFound(resolve);return ;};
        //如果是发短信
        if(rs && item_sm_warn=='1' && resultss[0].user_phone){
            var process_utils = require('../../../utils/process_util');
