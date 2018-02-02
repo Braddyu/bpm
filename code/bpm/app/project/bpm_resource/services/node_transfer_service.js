@@ -191,7 +191,7 @@ exports.transfer=function(proc_inst_task_id,node_code,user_code,opts,memo,param_
               return;
           }
           let resultss = await touchNode(results.data.next_detail, user_code, proc_inst_task_id, true);
-          if (resultss.success) {
+          if (!resultss.success) {
               resolve(resultss);
               return;
           }
@@ -243,9 +243,9 @@ exports.transfer=function(proc_inst_task_id,node_code,user_code,opts,memo,param_
               await forkTaskCreate(item_config, proc_define, node_Array, k, user_code, proc_define_id, params, proc_inst_id, resolve, task_id_array, biz_vars, prev_node, prev_user, proc_vars);
               resolve(utils.returnMsg(true, '1000', '流程流转新增任务信息时出现异常。', task_id_array, null));
           } else {
-              var next_node = rs.data.next_node;
-              var next_detail = rs.data.next_detail;
-              var current_detail = rs.data.current_detail;
+              var next_node = results.data.next_node;
+              var next_detail = results.data.next_detail;
+              var current_detail = results.data.current_detail;
               var type = next_node.type;
               if (type == "end  round") {//归档//到达最后一步 不可以流转 //往实例表中 插入数据
                  let rs_s = await overFunction(current_detail, proc_inst_id, proc_inst_task_id, user_code, memo, next_name);
