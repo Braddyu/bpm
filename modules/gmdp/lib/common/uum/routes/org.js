@@ -102,7 +102,7 @@ router.route('/tree')
     .get(function(req, res){
         var org_id = req.query.id;
         if(org_id == null){
-            org_id = "1";
+            org_id = "0";
         }
         service.getOrgTree(org_id,function (result) {
             if(result && result.length){
