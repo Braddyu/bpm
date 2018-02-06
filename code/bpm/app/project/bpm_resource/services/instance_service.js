@@ -1579,7 +1579,7 @@ exports.do_payout=function(proc_task_id,node_code,user_code,assign_user_code,pro
                                                             }else{
                                                                 touchNode(current_detail, user_code, proc_task_id, false).then(function (rs) {
                                                                     if (rs.success) {
-                                                                        async function xunhuan() {
+                                                                        async function rounds() {
                                                                             var users = [];
                                                                             users = assign_user_code.split(',');
                                                                             for (var i = 0; i < users.length; i++) {
@@ -1650,7 +1650,7 @@ exports.do_payout=function(proc_task_id,node_code,user_code,assign_user_code,pro
                                                                             }
                                                                             return "end";
                                                                         }
-                                                                        xunhuan().then(function(res){
+                                                                        rounds().then(function(res){
                                                                                 resolve(utils.returnMsg(true, '1000', '流程流转新增任务信息正常8。',res, null));
                                                                             }).catch(function(err){
                                                                                 console.log(err);
@@ -1702,7 +1702,7 @@ exports.do_batch=function(user_no,user_name,proc_inst_id){
             }
             else {
                 if(data){
-                    async function xunhuan(){
+                    async function loops(){
                         for(var i=0;i<data.length;i++){
                             var task = data[i];
                             var datas = {
@@ -1722,7 +1722,7 @@ exports.do_batch=function(user_no,user_name,proc_inst_id){
                         }
                         return "end"
                     }
-                    xunhuan().then(function(e){
+                    loops().then(function(e){
                         //给当前处理人创建一个任务
                         model.$ProcessInst.find({'_id':proc_inst_id},function(err,result){
                             if(err){
@@ -2077,7 +2077,6 @@ exports.find_instanceId = function (user_no,joinup_sys) {
            return arr;
         }
         find_insId().then(function (arr) {
-            console.log(arr);
             resolve(utils.returnMsg(true, '0000', '获取数据成功',arr ,null ));
         }).catch(function(err){
             console.log(err);
