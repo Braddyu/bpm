@@ -920,7 +920,8 @@ exports.getMyTaskQuery4Eui= function(page,size,userCode,paramMap,joinup_sys,proc
         if(proc_code){
             match.proc_code=proc_code;
         }
-        conditionMap['$and'] = [match,{'proc_inst_task_assignee':{'$in':userArr}},{$or:[{'proc_inst_task_user_role':{'$in':paramMap.roles}},{'proc_inst_task_user_org':{'$in':paramMap.orgs}}]}];
+        conditionMap['$and'] = [match,{'proc_inst_task_assignee':{'$in':userArr}}];
+        //conditionMap['$and'] = [match,{'proc_inst_task_assignee':{'$in':userArr}},{$or:[{'proc_inst_task_user_role':{'$in':paramMap.roles}},{'proc_inst_task_user_org':{'$in':paramMap.orgs}}]}];
         // conditionMap['$or'] = [{'proc_inst_task_assignee':{'$in':userArr}},{'proc_inst_task_user_role':{'$in':paramMap.roles},'proc_inst_task_user_org':{'$in':paramMap.orgs}}];
         conditionMap.proc_inst_task_status = 0;
         utils.pagingQuery4Eui(model.$ProcessInstTask, page, size, conditionMap, resolve, '',  {proc_inst_task_arrive_time:-1});
@@ -980,7 +981,9 @@ exports.getMyTaskList= function(userCode,paramMap,joinup_sys) {
    return new Promise(function(resolve,reject){
         var userArr = [];
         userArr.push(userCode);
-        var query =model.$ProcessInstTask.find({$and:[{'proc_inst_task_status':0,'joinup_sys':joinup_sys,'proc_inst_task_assignee':{'$in':userArr}},{$or:[{'proc_inst_task_user_role':{'$in':paramMap.roles}},{'proc_inst_task_user_org':{'$in':paramMap.orgs}}]}]});
+        var query =model.$ProcessInstTask.find({$and:[{'proc_inst_task_status':0,'joinup_sys':joinup_sys,'proc_inst_task_assignee':{'$in':userArr}}]});
+        //var query =model.$ProcessInstTask.find({$and:[{'proc_inst_task_status':0,'joinup_sys':joinup_sys,'proc_inst_task_assignee':{'$in':userArr}},{$or:[{'proc_inst_task_user_role':{'$in':paramMap.roles}},{'proc_inst_task_user_org':{'$in':paramMap.orgs}}]}]});
+
        // var query = model.$ProcessInstTask.find({"$or":[{'proc_inst_task_assignee':{"$in":userArr}},{'proc_inst_task_user_role':{"$in":roleArr},'proc_inst_task_user_org':{"$in":orgArr}}],'proc_inst_task_status':0});
         query.exec(function (error, rs) {
             if (error) {
