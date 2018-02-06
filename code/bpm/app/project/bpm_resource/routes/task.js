@@ -570,6 +570,10 @@ router.route("/back").post(function(req,res){
     var memo=req.body.memo;//处理意见
     var node_code = req.body.node_code;//当前节点编码
     var node_name = req.body.node_name;//当前节点名称
+    if(!_id){
+        utils.respMsg(res, false, '2001', '任务编号不能为空', null, null);
+        return;
+    }
     if(!user_no){
         utils.respMsg(res, false, '2001', '当前节点处理人编码不能为空', null, null);
         return;
@@ -582,16 +586,18 @@ router.route("/back").post(function(req,res){
         utils.respMsg(res, false, '2001', '当前节点名称不能为空', null, null);
         return;
     }
-    if(_id){
-        inst.return_task(_id,user_no,memo,node_code,node_name).then(function(rs){
-            utils.respJsonData(res,rs);
-        }).catch(function(err_inst){
-            logger.error("return_task","任务回退异常",err_inst);
-            utils.respMsg(res, false, '1000', '任务回退异常', null, err_inst);
-        });
-    }else{
-        utils.respMsg(res, false, '2001', '任务编号不能为空', null, null);
-    }
+    inst.proving_taskId(_id).then(function (rs){
+        if(rs.data!=1){
+            inst.return_task(_id,user_no,memo,node_code,node_name).then(function(rs){
+                utils.respJsonData(res,rs);
+            }).catch(function(err_inst){
+                logger.error("return_task","任务回退异常",err_inst);
+                utils.respMsg(res, false, '1000', '任务回退异常', null, err_inst);
+            });
+        }else{
+            utils.respMsg(res,true, '0000', '任务已完成', null, null);
+        }
+    });
 });
 
 /**
