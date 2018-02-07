@@ -127,7 +127,7 @@ router.route("/getVerificationcode").post(function (req, res) {
             if(result.length==0){
                 utils.respJsonData(res, utils.returnMsg(false, '1000', '手机号不存在!', null, null));
             }else {
-                var randomNumber = parseInt(((Math.random()*9+1)*1000));
+                var randomNumber = parseInt(((Math.random()*9+1)*100000));
                 req.session['verificationcode']={randomNumber:randomNumber,time:new Date().getTime()};
                 console.log("获取验证码时：",req.session.verificationcode.randomNumber);
                 var params={
@@ -140,7 +140,6 @@ router.route("/getVerificationcode").post(function (req, res) {
 
         }
     });
-
 });
 function toLogin(a, c,flag) {
     if(flag==1){
@@ -232,7 +231,9 @@ router.route("/login").get(function (a, c) {
     } else {
         var d = a.body.username, b = a.body.password,y=a.body.verificationCode, e = a.body.captcha;
         var timeDifference = new Date().getTime()-a.session.verificationcode.time;
-        if(a.session.verificationcode.randomNumber!=y&&(timeDifference/1000)>60){
+        y = utils.decryption(y, config.AES_KEY,"");
+        console.log('解密后的验证码：',y);
+        if(a.session.verificationcode.randomNumber==y&&(timeDifference/1000)>60){
             toLogin(c,"\u9a8c\u8bc1\u7801\u5df2\u5931\u6548",2);
             return;
         }
@@ -322,7 +323,7 @@ router.route("/public/orgRootTreeData").get(function (a, c) {
 router.route("/public/orgRootTreeDataAsyn").get(function (a, c) {
     var org_id = a.query.id;
     if(org_id == null){
-        org_id = "0";
+        org_id = "1";
     }
     coreService.getOrgRootTreeDataAsyn(org_id,function (a) {
         if(a && a.length){
@@ -533,4 +534,25 @@ router.route("/public/shortcutMenu").get(function (a, c) {
         utils.respJsonData(c, a)
     })
 });
+
+//验证码加密
+router.route("/encverfcode").post(function (req, res) {
+    console.log("加密验证码方法-------------------");
+    var verfcode = req.body.verfcode;
+    var ecncode='';
+    try{
+        ecncode =  utils.encryption(verfcode,config.AES_KEY,"");
+    }catch(e){
+        console.log("验证码加密异常：",e);
+        utils.respJsonData(res, utils.returnMsg(false, '1000', '验证码加密异常!', null, e));
+        return;
+    }
+    if(ecncode){
+        utils.respJsonData(res, utils.returnMsg(true, '0000', '验证码加密成功!', ecncode, null));
+    }else{
+        utils.respJsonData(res, utils.returnMsg(false, '1000', '验证码加密失败!', null, null));
+    }
+
+});
+
 module.exports = router;

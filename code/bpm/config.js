@@ -111,6 +111,7 @@ var config = {
             project_url_prefix + '/login',
             project_url_prefix + '/captcha',
             project_url_prefix +'/getVerificationcode',
+            project_url_prefix +'/encverfcode',
             project_url_prefix + '/test/*',
             project_url_prefix +'/static/*',
             project_url_prefix + '/api/*',
@@ -326,11 +327,8 @@ var config = {
                     OptCode: "111",
                     Port: "10086"
                 }
-
-            },
-
+            }
         }
-
     },
     //差错工单归档时回传黄河地址
     repair_huanghe:{
@@ -349,7 +347,9 @@ var config = {
         auditor_node: 'auditorSys_node',//稽核工单系统编号
         eyesight_node: 'syesightSys_node',//慧眼工单系统编号
     },
+    AES_KEY:'1234567890ABCDEFGHIJKLMNOPQRSTUV',
     SMS_TEMPLET_ORDER:"渠道工单系统有一张需要您处理的工单，《procName》，工单号：orderNo，请及时登陆认真处理。",
+    VALIDATION:"工单系统手机号登录验证码为：randomNumber，请不要透露他人。",
     OPEN_SMS:false,
     ftp_huanghe_server:{
         host: '192.168.9.66',

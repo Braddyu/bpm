@@ -200,7 +200,7 @@ app.use('/gdgl/api/process_extend/', require('./app/project/bpm_resource/routes/
 app.use('/gdgl/api/task/', require('./app/project/bpm_resource/routes/task').task())
 
 
-app.use(cookieParser())
+// app.use(cookieParser());
 // //防止CSRF跨站请求伪造
 app.use(csrf({ cookie: true }));
 app.use(function(req,res,next){
