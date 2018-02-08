@@ -60,48 +60,52 @@ exports.process_instance=function() {
             utils.respMsg(res, false, '2001', '下一节点处理人编号为空', null, null);
             return;
         }
-        if (!user_code) {
-            utils.respMsg(res, false, '2001', '当前处理人编号为空', null, null);
-        } else {
-            //判断用户是否存在
-            inst.userInfo(user_code).then(function (rs) {
-                if (rs.success && rs.data.length == 1) {
-                    //创建实例,并生成任务
-                    inst.createInstance(proc_code, proc_ver, proc_title, params, proc_vars, biz_vars, user_code, userName, joinup_sys,next_name)
-                        .then(function (result) {
-                            if (result.success) {
-                                var task_id = result.data[0]._id;
-                                //认领任务
-                                inst.acceptTask(task_id, user_code, userName).then(function (rs) {
-                                    if (rs.success) {
+        try{
+            if (!user_code) {
+                utils.respMsg(res, false, '2001', '当前处理人编号为空', null, null);
+            } else {
+                //判断用户是否存在
+                inst.userInfo(user_code).then(function (rs) {
+                    if (rs.success && rs.data.length == 1) {
+                        //创建实例,并生成任务
+                        inst.createInstance(proc_code, proc_ver, proc_title, params, proc_vars, biz_vars, user_code, userName, joinup_sys,next_name)
+                            .then(function (result) {
+                                if (result.success) {
+                                    var task_id = result.data[0]._id;
+                                    //认领任务
+                                    inst.acceptTask(task_id, user_code, userName).then(function (rs) {
+                                        if (rs.success) {
 
-                                        //  nodeTransferService.assign_transfer(task_id,node_code,user_code,assign_user_no,proc_title,biz_vars,proc_vars,memo).then(function(results){
-                                        //批量派发
-                                        nodeTransferService.do_payout(task_id, node_code, user_code, assign_user_no, proc_title, biz_vars, proc_vars, memo).then(function (results) {
-                                            utils.respJsonData(res, results);
-                                        }).catch(function (err_inst) {
-                                            // console.log(err_inst);
-                                            logger.error("route-do_payout", "派发任务异常", err_inst);
-                                            utils.respMsg(res, false, '1000', '派发任务异常', null, err_inst);
-                                        });
-                                    } else {
-                                        utils.respJsonData(res, rs);
-                                    }
-                                }).catch(function (err_inst) {
-                                    // console.log(err_inst);
-                                    logger.error("route-acceptTask", "认领任务异常", err_inst);
-                                    utils.respMsg(res, false, '1000', '认领任务异常', null, err_inst);
-                                });
-                            } else {
-                                utils.respJsonData(res, result);
-                            }
-                        }).catch(function(err){
-                        logger.error("route-createInstance","创建流程实例异常",err);
-                    });
-                } else {
-                    utils.respMsg(res, false, '1000', '用户不存在', null, null);
-                }
-            });
+                                            //  nodeTransferService.assign_transfer(task_id,node_code,user_code,assign_user_no,proc_title,biz_vars,proc_vars,memo).then(function(results){
+                                            //批量派发
+                                            nodeTransferService.do_payout(task_id, node_code, user_code, assign_user_no, proc_title, biz_vars, proc_vars, memo).then(function (results) {
+                                                utils.respJsonData(res, results);
+                                            }).catch(function (err_inst) {
+                                                // console.log(err_inst);
+                                                logger.error("route-do_payout", "派发任务异常", err_inst);
+                                                utils.respMsg(res, false, '1000', '派发任务异常', null, err_inst);
+                                            });
+                                        } else {
+                                            utils.respJsonData(res, rs);
+                                        }
+                                    }).catch(function (err_inst) {
+                                        // console.log(err_inst);
+                                        logger.error("route-acceptTask", "认领任务异常", err_inst);
+                                        utils.respMsg(res, false, '1000', '认领任务异常', null, err_inst);
+                                    });
+                                } else {
+                                    utils.respJsonData(res, result);
+                                }
+                            }).catch(function(err){
+                            logger.error("route-createInstance","创建流程实例异常",err);
+                        });
+                    } else {
+                        utils.respMsg(res, false, '1000', '用户不存在', null, null);
+                    }
+                });
+            }
+        }catch (e){
+            utils.respMsg(res, false, '1000', '查询错误', null, e);
         }
     });
 
@@ -144,22 +148,26 @@ exports.process_instance=function() {
             utils.respMsg(res, false, '2001', '流程编号为空', null, null);
             return;
         }
-        if (!user_code) {
-            utils.respMsg(res, false, '1000', '当前处理人编号为空', null, null);
-        } else {
-            //判断用户是否存在
-            inst.userInfo(user_code).then(function (rs) {
-                if (rs.success && rs.data.length == 1) {
-                    // 调用
-                    inst.create_instance_only(proc_code,proc_ver,proc_title,user_code,joinup_sys,proc_vars,biz_vars,next_name)
-                        .then(function(result){
-                            utils.respJsonData(res, result);
-                        });
-                } else {
-                    utils.respMsg(res, false, '1000', '用户不存在', null, null);
-                }
-            });
-        }
+       try{
+           if (!user_code) {
+               utils.respMsg(res, false, '1000', '当前处理人编号为空', null, null);
+           } else {
+               //判断用户是否存在
+               inst.userInfo(user_code).then(function (rs) {
+                   if (rs.success && rs.data.length == 1) {
+                       // 调用
+                       inst.create_instance_only(proc_code,proc_ver,proc_title,user_code,joinup_sys,proc_vars,biz_vars,next_name)
+                           .then(function(result){
+                               utils.respJsonData(res, result);
+                           });
+                   } else {
+                       utils.respMsg(res, false, '1000', '用户不存在', null, null);
+                   }
+               });
+           }
+       }catch (e){
+           utils.respMsg(res, false, '1000', '查询错误', null, e);
+       }
     });
     /**
      *  -------------------------------查询流程实例接口-------------------------------
@@ -297,27 +305,31 @@ router.route("/next/nodeAnduser").post(function (req, res) {
         utils.respMsg(res, false, '2001', '实例编号不能为空', null, null);
         return;
     }
-    if (!user_no) {
-        utils.respMsg(res, false, '2001', '处理人编号不能为空', null, null);
-    } else {
-        //判断用户是否存在
-        inst.userInfo(user_no).then(function (rs) {
-            if (rs.success && rs.data.length == 1) {
-                try{
-                    nodeAnalysisService.getNextNodeAndHandlerInfo(node_code, proc_task_id, proc_inst_id, params, user_no).then(function (rs) {
-                        // console.log(rs);
-                        utils.respJsonData(res, rs);
-                    }).catch(function (err_inst) {
-                        logger.error("route-getNextNodeAndHandlerInfo", "获取下一节点数据异常", err_inst);
-                        utils.respMsg(res, false, '1000', '获取下一节点数据异常', null, err_inst);
-                    });
-                }catch (err){
-                    utils.respMsg(res, false, '1000', '获取下一节点数据异常', null, err);
+    try{
+        if (!user_no) {
+            utils.respMsg(res, false, '2001', '处理人编号不能为空', null, null);
+        } else {
+            //判断用户是否存在
+            inst.userInfo(user_no).then(function (rs) {
+                if (rs.success && rs.data.length == 1) {
+                    try{
+                        nodeAnalysisService.getNextNodeAndHandlerInfo(node_code, proc_task_id, proc_inst_id, params, user_no).then(function (rs) {
+                            // console.log(rs);
+                            utils.respJsonData(res, rs);
+                        }).catch(function (err_inst) {
+                            logger.error("route-getNextNodeAndHandlerInfo", "获取下一节点数据异常", err_inst);
+                            utils.respMsg(res, false, '1000', '获取下一节点数据异常', null, err_inst);
+                        });
+                    }catch (err){
+                        utils.respMsg(res, false, '1000', '获取下一节点数据异常', null, err);
+                    }
+                } else {
+                    utils.respMsg(res, false, '1000', '用户不存在', null, null);
                 }
-            } else {
-                utils.respMsg(res, false, '1000', '用户不存在', null, null);
-            }
-        });
+            });
+        }
+    }catch (e){
+        utils.respMsg(res, false, '1000', '查询错误', null, e);
     }
 });
 

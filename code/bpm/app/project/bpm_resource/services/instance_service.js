@@ -782,18 +782,12 @@ exports.cancleInstance= function(inst_id) {
  * @returns {bluebird|exports|module.exports}
  */
 exports.changeInstance= function(id,data) {
-    return new Promise(function(resolve,reject){
+    return new Promise(async function(resolve){
         var conditions = {_id: id};
         var update = {$set: data};
         var options = {};
-        model.$ProcessInst.update(conditions, update, options, function (error) {
-            if(error) {
-                console.log(error);
-                reject(utils.returnMsg(false, '1000', '修改流程实例时出现异常。', null, error));
-            }else {
-                resolve(utils.returnMsg(true, '0000', '修改流程实例成功。', null, null));
-            }
-        });
+        await  model.$ProcessInst.update(conditions, update, options,{});
+        resolve(utils.returnMsg(true, '0000', '修改流程实例成功。', null, null));
     });
 };
 
@@ -804,19 +798,13 @@ exports.changeInstance= function(id,data) {
  * @returns {bluebird|exports|module.exports}
  */
 exports.completeInstance= function(id) {
-    return new Promise(function(resolve,reject){
+    return new Promise(async function(resolve){
         var data = {proc_inst_status:4};//完成流程归档
         var conditions = {_id: id};
         var update = {$set: data};
         var options = {};
-        model.$ProcessInst.update(conditions, update, options, function (error) {
-            if(error) {
-                console.log(error);
-                resolve(utils.returnMsg(false, '1000', '流程实例归档时出现异常。', null, error));
-            }else {
-                resolve(utils.returnMsg(true, '0000', '流程实例归档成功。', null, null));
-            }
-        });
+        await model.$ProcessInst.update(conditions, update, options,{});
+        resolve(utils.returnMsg(true, '0000', '流程实例归档成功。', null, null));
     });
 };
 
@@ -826,19 +814,15 @@ exports.completeInstance= function(id) {
  * @param users
  */
 exports.updateProcInstPendingtUsers = function(proc_inst_id,users){
-    return new Promise(function(resolve,reject){
+    return new Promise(async function(resolve){
         var udata = {
             proc_pending_users:users
         }
         var update = {$set: udata};
         var options = {};
-        model.$ProcessInst.update({'_id':proc_inst_id}, update, options, function (error) {
-            if(error) {
-                resolve({'success': false, 'code': '1000', 'msg': '刷流程待处理人数据出现异常'});
-            }else {
-                resolve({'success': true, 'code': '0000', 'msg': '刷流程待处理人数据成功'});
-            }
-        });
+        await model.$ProcessInst.update({'_id':proc_inst_id}, update, options, {});
+        resolve({'success': true, 'code': '0000', 'msg': '刷流程待处理人数据成功'});
+
     });
 }
 
@@ -1023,7 +1007,7 @@ exports.getMyCompleteTaskList= function(userCode,roleArr,orgArr) {
  * @param userJson
  */
 exports.acceptTask= function(taskId,userNo,userName) {
-    var p = new Promise(function(resolve,reject){
+    return new Promise(async function(resolve){
         var udata = {
             proc_inst_task_sign:1,
             proc_inst_task_handle_time : new Date(),
@@ -1032,15 +1016,10 @@ exports.acceptTask= function(taskId,userNo,userName) {
         }
         var update = {$set: udata};
         var options = {};
-        model.$ProcessInstTask.update({'_id':taskId}, update, options, function (error) {
-            if(error) {
-                resolve({'success': false, 'code': '1000', 'msg': '任务认领出现异常'});
-            }else {
-                resolve({'success': true, 'code': '0000', 'msg': '任务认领成功'});
-            }
-        });
+        await model.$ProcessInstTask.update({'_id':taskId}, update, options, {});
+        resolve({'success': true, 'code': '0000', 'msg': '任务认领成功'});
+
     });
-    return p;
 };
 /**
  * 批量认领任务
@@ -2054,25 +2033,20 @@ exports.find_instanceId = function (user_no,joinup_sys) {
                     }
                 }
             }else{
-                model.$ProcessTaskHistroy.find({'proc_inst_task_assignee':user_no,'joinup_sys':joinup_sys},function (err,result) {
-                    if(err){
-                        resolve(utils.returnMsg(false, '1000', '获取数据异常', null, err));
-                    }else{
-                        if(result.length>0){
-                            var arr =[];
-                            for(var i in result){
-                                var instanceId = result[i].proc_inst_id;
-                                instanceId = instanceId.toString();
-                                if(arr.indexOf(instanceId)==-1){
-                                    arr.push(instanceId);
-                                }
-                            }
-                            // resolve(utils.returnMsg(true, '0000', '获取数据成功2',arr ,null ));
-                        }else{
-                            resolve(utils.returnMsg(true, '0000', '数据不存在', null,null));
-                        }
+               let result = await model.$ProcessTaskHistroy.find({'proc_inst_task_assignee':user_no,'joinup_sys':joinup_sys});
+               if(result.length>0){
+                var arr =[];
+                for(var i in result){
+                    var instanceId = result[i].proc_inst_id;
+                    instanceId = instanceId.toString();
+                    if(arr.indexOf(instanceId)==-1){
+                        arr.push(instanceId);
                     }
-                });
+                }
+                // resolve(utils.returnMsg(true, '0000', '获取数据成功2',arr ,null ));
+            }else{
+                resolve(utils.returnMsg(true, '0000', '数据不存在', null,null));
+             }
             }
            return arr;
         }

@@ -209,35 +209,39 @@ exports.task=function() {
                 utils.respMsg(res, false, '2001', '任务ID不能为空。', null, null);
                 return;
             }
-            if (!user_code) {
-                utils.respMsg(res, false, '2001', '处理人编码不能为空。', null, null);
-            } else {
-                //判断用户是否存在
-                inst.userInfo(user_code).then(function (rs) {
-                    if (rs.success && rs.data.length == 1) {
-                        inst.getTaskById(id).then(function (taskresult) {
-                            if (taskresult.success) {
-                                var node_code = taskresult.data._doc.proc_inst_task_code;
-                                //流程流转方法
-                                nodeTransferService.transfer(id, node_code, user_code, true, memo, params, biz_vars, proc_vars,next_name).then(function (result1) {
-                                    utils.respJsonData(res, result1);
-                                }).catch(function (err_inst) {
-                                    // console.log(err_inst);
-                                    logger.error("route-transfer", "流程流转异常", err_inst);
-                                    utils.respMsg(res, false, '1000', '流程流转异常', null, err_inst);
-                                });
-                            } else {
-                                utils.respJsonData(res, taskresult);
-                            }
-                        }).catch(function (err_inst) {
-                            logger.error("route-getTaskById", "获取任务异常", err_inst);
-                            utils.respMsg(res, false, '1000', '获取任务异常', null, err_inst);
-                        });
-                    } else {
-                        utils.respMsg(res, false, '1000', '用户不存在', null, null);
-                    }
-                });
-            }
+           try{
+               if (!user_code) {
+                   utils.respMsg(res, false, '2001', '处理人编码不能为空。', null, null);
+               } else {
+                   //判断用户是否存在
+                   inst.userInfo(user_code).then(function (rs) {
+                       if (rs.success && rs.data.length == 1) {
+                           inst.getTaskById(id).then(function (taskresult) {
+                               if (taskresult.success) {
+                                   var node_code = taskresult.data._doc.proc_inst_task_code;
+                                   //流程流转方法
+                                   nodeTransferService.transfer(id, node_code, user_code, true, memo, params, biz_vars, proc_vars,next_name).then(function (result1) {
+                                       utils.respJsonData(res, result1);
+                                   }).catch(function (err_inst) {
+                                       // console.log(err_inst);
+                                       logger.error("route-transfer", "流程流转异常", err_inst);
+                                       utils.respMsg(res, false, '1000', '流程流转异常', null, err_inst);
+                                   });
+                               } else {
+                                   utils.respJsonData(res, taskresult);
+                               }
+                           }).catch(function (err_inst) {
+                               logger.error("route-getTaskById", "获取任务异常", err_inst);
+                               utils.respMsg(res, false, '1000', '获取任务异常', null, err_inst);
+                           });
+                       } else {
+                           utils.respMsg(res, false, '1000', '用户不存在', null, null);
+                       }
+                   });
+               }
+           }catch(e){
+               utils.respMsg(res, false, '1000', '查询错误', null, e);
+           }
         });
 
 // -------------------------------获取指定任务接口-------------------------------
@@ -299,28 +303,31 @@ router.route("/assign/task").post(function(req,res){
         utils.respMsg(res, false, '2001', '任务ID为空', null, null);
         return;
     }
-    if(!user_no){
-        utils.respMsg(res, false, '2001', '当前处理人编号为空', null, null);
-    }else{
-        inst.proving_taskId(task_id).then(function (rs) {
-            if(rs.data!=1){
-                inst.userInfo(user_no).then(function(rs){
-                    if(rs.success && rs.data.length == 1){
-                        nodeTransferService.assign_transfer(task_id,node_code,user_no,assign_user_no,proc_title,biz_vars,proc_vars,memo,next_name,proc_back).then(function(rs){
-                            utils.respJsonData(res,rs);
-                        }).catch(function(err){
-                            logger.error("route-assign_transfer","信息异常",err);
-                            utils.respMsg(res, false, '1000', 'route-assign_transfer', null, err);
-                        });
-                    }else{
-                        utils.respMsg(res, false, '1000', '用户不存在', null, null);
-                    }
-                });
-            }else{
-                utils.respMsg(res,true, '0000', '任务已完成', null, null);
-            }
-
-        });
+    try{
+        if(!user_no){
+            utils.respMsg(res, false, '2001', '当前处理人编号为空', null, null);
+        }else{
+            inst.proving_taskId(task_id).then(function (rs) {
+                if(rs.data!=1){
+                    inst.userInfo(user_no).then(function(rs){
+                        if(rs.success && rs.data.length == 1){
+                            nodeTransferService.assign_transfer(task_id,node_code,user_no,assign_user_no,proc_title,biz_vars,proc_vars,memo,next_name,proc_back).then(function(rs){
+                                utils.respJsonData(res,rs);
+                            }).catch(function(err){
+                                logger.error("route-assign_transfer","信息异常",err);
+                                utils.respMsg(res, false, '1000', 'route-assign_transfer', null, err);
+                            });
+                        }else{
+                            utils.respMsg(res, false, '1000', '用户不存在', null, null);
+                        }
+                    });
+                }else{
+                    utils.respMsg(res,true, '0000', '任务已完成', null, null);
+                }
+            });
+        }
+    }catch(e){
+        utils.respMsg(res, false, '1000', '查询错误', null, e);
     }
 });
 
@@ -586,18 +593,22 @@ router.route("/back").post(function(req,res){
         utils.respMsg(res, false, '2001', '当前节点名称不能为空', null, null);
         return;
     }
-    inst.proving_taskId(_id).then(function (rs){
-        if(rs.data!=1){
-            inst.return_task(_id,user_no,memo,node_code,node_name).then(function(rs){
-                utils.respJsonData(res,rs);
-            }).catch(function(err_inst){
-                logger.error("return_task","任务回退异常",err_inst);
-                utils.respMsg(res, false, '1000', '任务回退异常', null, err_inst);
-            });
-        }else{
-            utils.respMsg(res,true, '0000', '任务已完成', null, null);
-        }
-    });
+    try{
+        inst.proving_taskId(_id).then(function (rs){
+            if(rs.data!=1){
+                inst.return_task(_id,user_no,memo,node_code,node_name).then(function(rs){
+                    utils.respJsonData(res,rs);
+                }).catch(function(err_inst){
+                    logger.error("return_task","任务回退异常",err_inst);
+                    utils.respMsg(res, false, '1000', '任务回退异常', null, err_inst);
+                });
+            }else{
+                utils.respMsg(res,true, '0000', '任务已完成', null, null);
+            }
+        });
+    }catch(e){
+        utils.respMsg(res,true, '1000', '查询错误', null, e);
+    }
 });
 
 /**
@@ -625,12 +636,16 @@ router.route("/finish/task").post(async (req,res)=>{
 router.route("/find/instanceId").post(function(req,res){
     let user_no=req.body.user_no;//用户编号
     let joinup_sys=req.body.joinup_sys;//所属流程编号
-    inst.find_instanceId(user_no,joinup_sys).then(function (rs) {
-        utils.respJsonData(res,rs);
-    }).catch(function(err_inst){
-        logger.error("return_task","查询流程异常",err_inst);
-        utils.respMsg(res, false, '1000', '查询流程异常', null, err_inst);
-    });
-});
+        try{
+           inst.find_instanceId(user_no,joinup_sys).then(function (rs) {
+               utils.respJsonData(res,rs);
+           }).catch(function(err_inst){
+               logger.error("return_task","查询流程异常",err_inst);
+               utils.respMsg(res, false, '1000', '查询流程异常', null, err_inst);
+           });
+        }catch(e){
+           utils.respMsg(res, false, '1000', '查询流程异常', null, e);
+         }
+        });
     return router;
 }

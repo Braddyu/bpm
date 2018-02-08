@@ -143,14 +143,18 @@ router.get('/show/progressed', function(req, res, next) {
             utils.respMsg(res, false, '2001', '流程编码不能为空。', null, null);
             return;
         }
-        nodeAnalysisService.getNodeAndHandlerInfo(proc_code, user_no, params).then(function (rs) {
-            // console.log("下一节点处理人:", rs);
-            utils.respJsonData(res, rs);
-        }).catch(function (err_inst) {
-            // console.log(err_inst);
-            logger.error("route-getProcHandlerLogsList", "获取第三节点处理人数据异常", err_inst);
-            utils.respMsg(res, false, '1000', '获取第三节点处理人数据异常', null, err_inst);
-        });
+        try{
+            nodeAnalysisService.getNodeAndHandlerInfo(proc_code, user_no, params).then(function (rs) {
+                // console.log("下一节点处理人:", rs);
+                utils.respJsonData(res, rs);
+            }).catch(function (err_inst) {
+                // console.log(err_inst);
+                logger.error("route-getProcHandlerLogsList", "获取第三节点处理人数据异常", err_inst);
+                utils.respMsg(res, false, '1000', '获取第三节点处理人数据异常', null, err_inst);
+            });
+        }catch(e){
+            utils.respMsg(res, false, '1000', '查询错误', null, e);
+        }
     });
 
     /**
@@ -281,7 +285,7 @@ router.get('/show/progressed', function(req, res, next) {
     });
 
     /**
-     *  跳过节点的任务新建和下下节点任务的指派
+     *  获取跳过节点信息,处理人信息
      *
      */
 
