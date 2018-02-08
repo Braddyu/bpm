@@ -327,89 +327,91 @@ exports.repareHuanghe= function(result1,proc_code,proc_inst_id,memo) {
         console.log(result1);
         //如果是差错工单归档则进行回传黄河数据
         if( result1.success && proc_code=='p-201'){
-            mistake_model.$ProcessMistake.find({"proc_inst_id":proc_inst_id},function(err,res){
+            //获取附件信息
+            process_extend_model.$ProcessTaskFile.find({"proc_inst_id":proc_inst_id},function(err,fileRes){
                 if(err){
-                    reject({'success':false,'code':'1000','msg':'获取差错信息失败',"error":err});
+                    reject({'success':false,'code':'1000','msg':'查找附件失败',"error":err});
                 }else{
-                    if(res.length==1){
-                        var _id=res[0]._id;
-                        var postData={
-                            "jobId":proc_inst_id,
-                            "orderId":res[0].BOSS_NUM,
-                            "orderCode":res[0].staff_num,
-                            "suggestion":memo,
-                            "crmTradeDate":res[0].mistake_time
-                        };
-                        //回传地址
-                        var options= config.repair_huanghe;
-                        //开始回传
-                        process_utils.httpPost(postData,options).then(function(rs){
-                            // ret_code 对应关系：
-                            // -1 = 服务器异常
-                            //  0 = 补录成功
-                            //  1 = 补录失败
-                            //  2 = BOSS订单编码为空
-                            //  3 = 附件为空
-                            //  4 = 非法文件
-                            var conditions = {_id: _id};
-                            var update={};
-                            var rs_json=JSON.parse(rs);
-                            if(rs_json.ret_code==0){
-                                update.status=3;
-                                update.dispatch_remark="补录成功";
-                            }else{
-                                update.status=2;
-                                update.dispatch_remark="回传结果:"+rs_json.ret_msg;
-                            }
+                    //获取差错工单信息
+                    mistake_model.$ProcessMistake.find({"proc_inst_id":proc_inst_id},function(err,mistakeRes) {
+                        if (err) {
+                            reject({'success': false, 'code': '1000', 'msg': '获取差错信息失败', "error": err});
+                        } else {
+                            //获取实例的订单编号
+                            model.$ProcessInst.find({"_id":proc_inst_id},function(err,res) {
+                                if (err) {
+                                    reject({'success': false, 'code': '1000', 'msg': '获取实例信息失败', "error": err});
+                                } else {
+                                    if (res.length > 0) {
+                                        var order_num = res[0].work_order_number;
+                                        if(mistakeRes.length > 0){
+                                            if (fileRes.length > 0) {
+                                                var server = config.ftp_huanghe_server;
+                                                var ftp_huanghe_put = config.ftp_huanghe_put;
+                                                ftp_util.connect(server);
+                                                var mistake_time=mistakeRes[0].mistake_time;
+                                                var path=config.ftp_huanghe_put+"/"+mistake_time.substring(0,4)+"/"+mistake_time.substring(4,6)+"/"+mistake_time.substring(6,8)+"/"+order_num;
+                                                ftp_util.mkdirs(path,function(err,res){
+                                                    if(err){
+                                                        reject({'success': false, 'code': '1000', 'msg': 'ftp创建文件夹失败', "error": err});
+                                                    }else{
+                                                        var count = 0;
+                                                        //将当前工单的附件传到ftp上
+                                                        for (let index = 0; index < fileRes.length; index++) {
+                                                            ftp_util.uploadFile(res[index].file_path, ftp_huanghe_put + "/" + fileRes[index].file_name, function (err, resFile) {
+                                                                var conditions = {_id: res[index]._id};
+                                                                var update = {};
+                                                                if (err) {
+                                                                    console.log(err);
+                                                                    update.status = -1;
+                                                                } else {
+                                                                    count++;
+                                                                    update.status = 1;
+                                                                    //全部上传成功则回调黄河接口
+                                                                    if (count == fileRes.length - 1) {
+                                                                        postHuanghe(proc_inst_id,mistakeRes,memo,order_num).then(function (res) {
+                                                                            resolve(res);
+                                                                        }).catch(function (err) {
+                                                                            reject(res);
+                                                                        })
+                                                                    }
+                                                                }
+                                                                //修改状态
+                                                                process_extend_model.$ProcessTaskFile.update(conditions, update, {}, function (errors) {
+                                                                });
+                                                            });
+                                                        }
+                                                    }
+                                                })
 
-                            //获取附件信息
-                            process_extend_model.$ProcessTaskFile.find({"proc_inst_id":proc_inst_id},function(err,res){
-                                 if(err){
-                                     reject({'success':false,'code':'1000','msg':'查找附件失败',"error":err});
-                                 }else{
-                                     if(res.length > 0){
-                                         var server=config.ftp_huanghe_server;
-                                         var ftp_huanghe_put=config.ftp_huanghe_put;
-                                         ftp_util.connect(server);
-                                         //将当前工单的附件传到ftp上
-                                         for(let index=0;index < res.length;index++ ){
-                                             ftp_util.uploadFile(res[index].file_path,ftp_huanghe_put+"/"+res[index].file_name,function(err,resFile){
-                                                 var conditions = {_id: res[index]._id};
-                                                 var update={};
-                                                 if(err){
-                                                     console.log(err);
-                                                     update.status=-1;
-                                                 }else{
-                                                     update.status=1;
-                                                 }
-                                                 //修改状态
-                                                 process_extend_model.$ProcessTaskFile.update(conditions, update, {}, function (errors) {
-                                                 });
-                                             });
-                                         }
-                                         ftp_util.end()
-                                     }
-                                 }
-                            })
+                                                ftp_util.end()
+                                            }else{
+                                                postHuanghe(proc_inst_id,mistakeRes,memo,order_num).then(function(res){
+                                                    resolve(res);
+                                                }).catch(function(err){
+                                                    reject(res);
+                                                })
+                                            }
 
-                            //修改状态
-                            mistake_model.$ProcessMistake.update(conditions, update, {}, function (errors) {
-                                if(errors){
-                                    reject({'success':false,'code':'1000','msg':'修改回传黄河状态失败',"error":err});
-                                }else{
-                                    resolve({'success':true,'code':'2000','msg':'回传黄河成功',"error":null});
+                                        }else{
+                                            reject({'success': false, 'code': '1000', 'msg': '不存在的差错工单', "error": null});
+                                        }
+                                    }else {
+                                        reject({'success': false, 'code': '1000', 'msg': '不存在的实例', "error": null});
+                                    }
                                 }
                             });
-                        }).catch(function(err){
-                            reject({'success':false,'code':'1000','msg':'回传黄河失败',"error":err});
-                        });
 
-                    }else{
-                        reject({'success':false,'code':'1000','msg':'获取差错信息错误',"error":null});
-                    }
+                        }
+                    })
 
                 }
             })
+
+
+
+        }else{
+            resolve(result1);
         }
 
 
@@ -417,6 +419,60 @@ exports.repareHuanghe= function(result1,proc_code,proc_inst_id,memo) {
 
     return p;
 };
+
+/**
+ * 调用黄河接口
+ */
+function postHuanghe(proc_inst_id,mistakeRes,memo,order_num){
+    return new Promise(function(resolve,reject){
+
+            var _id=mistakeRes[0]._id;
+            var postData={
+                "jobId":order_num,
+                "orderId":mistakeRes[0].BOSS_NUM,
+                "orderCode":mistakeRes[0].staff_num,
+                "suggestion":memo,
+                "crmTradeDate":mistakeRes[0].mistake_time
+            };
+            //回传地址
+            var options= config.repair_huanghe;
+            //开始回传
+            process_utils.httpPost(postData,options).then(function(rs){
+                // ret_code 对应关系：
+                // -1 = 服务器异常
+                //  0 = 补录成功
+                //  1 = 补录失败
+                //  2 = BOSS订单编码为空
+                //  3 = 附件为空
+                //  4 = 非法文件
+                var conditions = {_id: _id};
+                var update={};
+                var rs_json=JSON.parse(rs);
+                if(rs_json.ret_code==0){
+                    update.status=3;
+                    update.dispatch_remark="补录成功";
+                }else{
+                    update.status=2;
+                    update.dispatch_remark="回传结果:"+rs_json.ret_msg;
+                }
+
+                //修改状态
+                mistake_model.$ProcessMistake.update(conditions, update, {}, function (errors) {
+                    if(errors){
+                        reject({'success':false,'code':'1000','msg':'修改回传黄河状态失败',"error":err});
+                    }else{
+                        resolve({'success':true,'code':'2000','msg':'回传黄河成功',"error":null});
+                    }
+                });
+            }).catch(function(err){
+                reject({'success':false,'code':'1000','msg':'回传黄河失败',"error":err});
+            });
+
+    })
+}
+
+
+
 
 /**
  * 上传文件
@@ -575,3 +631,6 @@ exports.update_images= function(files,fileID) {
 
     return p;
 }
+
+
+

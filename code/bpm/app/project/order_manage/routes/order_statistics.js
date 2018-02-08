@@ -138,8 +138,8 @@ router.route('/channel_detail_list').post(function(req,res){
     var org_id;
     var level;
     if(user_no=='admin'){
-        level='2';
-        org_id='5a275c0377ec2e1e844878dd';
+        // level='2';
+        // org_id='5a275c0377ec2e1e844878dd';
     }else{
         //判断登录账号是否为网格经理
         for(let item in user_roles){
