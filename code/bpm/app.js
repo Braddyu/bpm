@@ -188,7 +188,7 @@ app.use(session({
         collection: config.session.mongodb_collection ? config.session.mongodb_collection : 'common_user_session',
         touchAfter: 24 * 3600
     }),
-     cookie: {secure: false}
+     cookie: {secure: true}
 }));
 
 app.use(config.project.appurl, express.static(path.join(__dirname, 'public')));

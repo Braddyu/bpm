@@ -323,7 +323,7 @@ router.route("/public/orgRootTreeData").get(function (a, c) {
 router.route("/public/orgRootTreeDataAsyn").get(function (a, c) {
     var org_id = a.query.id;
     if(org_id == null){
-        org_id = "1";
+        org_id = "0";
     }
     coreService.getOrgRootTreeDataAsyn(org_id,function (a) {
         if(a && a.length){
