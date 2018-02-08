@@ -210,6 +210,7 @@ exports.transfer=function(proc_inst_task_id,node_code,user_code,opts,memo,param_
                   proc_vars = rss[0].proc_vars;
               }
               var conditions = {_id: proc_inst_id};
+              data.proc_cur_arrive_time=new Date();
               var update = {$set: data};
               var options = {};
               await model.$ProcessInst.update(conditions, update, options);//更新原主流程实例化的 状态 进入子流程流转状态
@@ -769,6 +770,7 @@ exports.assign_transfer=function(proc_task_id,node_code,user_code,assign_user_co
        data.proc_cur_user = proc_cur_user;
        data.proc_cur_user_name = proc_cur_user_name;
        data.proc_inst_status = 2;
+       data.proc_cur_arrive_time=new Date();
        if(proc_vars){
            data.proc_vars=proc_vars;
        }else{
