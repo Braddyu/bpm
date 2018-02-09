@@ -576,7 +576,7 @@ async function normal_process(current_detail,next_detail, next_node, proc_inst_i
     data_original.proc_back = 0;
     var update_original={$set:data_original}
     await model.$ProcessInstTask.update(conditions_original, update_original, options);
-    // let rest=await touchNode(current_detail,user_code,proc_inst_task_id,false);
+    //let rest=await touchNode(current_detail,user_code,proc_inst_task_id,false);
     // if(rest.success){resolve(rest);return ;}
     let r=await model.$ProcessInstTask.find({'_id':proc_inst_task_id});
     if(!r.length){NoFound(resolve);return ;}

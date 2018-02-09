@@ -872,7 +872,11 @@ async function find_all_org(org,arr){
     let t =await model_user.$CommonCoreOrg.find({"_id":org});
     let res=await model_user.$CommonCoreOrg.find({"org_pid":org});
     for (let i in res){
-        find_all_org(res[i]._id,arr)
+        let level=res[i].level;
+        if(!level){
+            level=5
+        }
+        if(level<6)find_all_org(res[i]._id,arr);
     }
 }
 
