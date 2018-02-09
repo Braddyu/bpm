@@ -2105,8 +2105,8 @@ function findInfo(next_node, resolve, next_detail, proc_inst_id) {
 function findNextHandler(user_code,proc_define_id,node_code,params,proc_inst_id) {
     return new Promise(async function(resolve) {
         let result = await model.$ProcessDefine.find({"_id": proc_define_id});
-        if (!result) {
-            resolve(utils.returnMsg(false, '1000', '查询用户信息错误', null, null));
+        if (result!=1) {
+            resolve(utils.returnMsg(false, '1000', '查询流程定义信息错误', null, null));
             return ;
         }
         var rs = await getNode(proc_define_id, node_code, params, true);
@@ -2119,8 +2119,7 @@ function findNextHandler(user_code,proc_define_id,node_code,params,proc_inst_id)
         var data= rs.data;
         if (next_node.type == "end  round") {
             let rs = await model_user.$User.find({"user_no": user_code});
-            if (!rs) {
-
+            if (rs.length!=1) {
                 resolve(utils.returnMsg(false, '10001', '查询用户信息错误', null, null));
                 return;
             }
@@ -2141,7 +2140,7 @@ function findNextHandler(user_code,proc_define_id,node_code,params,proc_inst_id)
             if (type == 1) {
                 //单人
                 let result =await  model_user.$User.find({"user_no": item_assignee_user_code});
-                if(!result){resolve(utils.returnMsg(false, '10001', '查询用户信息错误', null, null));return ;}
+                if(result.length!=1){resolve(utils.returnMsg(false, '10001', '查询用户信息错误', null, null));return ;}
                 let returnMap = {};
                 returnMap.user_org_id = result[0].user_org;
                 returnMap.proc_inst_task_assignee = item_assignee_user_code;
@@ -2157,23 +2156,22 @@ function findNextHandler(user_code,proc_define_id,node_code,params,proc_inst_id)
                 resolve(utils.returnMsg(true, '10000', '查询用户org', returnMap, null))
 
             } else if (type == 3) {
-                console.log(item_assignee_ref_type)
 
                 if (item_assignee_ref_type == 1) {
                     //当前人  1
                     //1. 提取参照节点
                     //2.去任务表 根据节点和proc_define_id 找到相对应的任务执行完成人（操作人）
                     //3.提取操作人的信息（user_no,org_no）
-                    let results = await model.$ProcessInstTask.find({
-                        "proc_inst_id": proc_inst_id,
-                        "proc_inst_task_code": item_assignee_ref_task
-                    });
-                    if (!results) {
-                        resolve(utils.returnMsg(false, '10001', '查询用户信息错误', null, null));
-                        return;
-                    }
-                    let user = await model_user.$User.find({"user_no": results[0].proc_inst_task_assignee});
-                    if (!user) {
+                    // let results = await model.$ProcessInstTask.find({
+                    //     "proc_inst_id": proc_inst_id,
+                    //     "proc_inst_task_code": item_assignee_ref_task,
+                    // });
+                    // if (!results) {
+                    //     resolve(utils.returnMsg(false, '10001', '查询用户信息错误', null, null));
+                    //     return;
+                    // }
+                    let user = await model_user.$User.find({"user_no": user_code});
+                    if (user.length!=1) {
                         resolve(utils.returnMsg(false, '10000', '查询用户org', null, null))
                     }
                     let returnMap = {};
@@ -2191,23 +2189,28 @@ function findNextHandler(user_code,proc_define_id,node_code,params,proc_inst_id)
                         //     "proc_inst_task_code": item_assignee_ref_task
                         // });
                         // if (results.length>0) {
-                            let user = await model_user.$User.find({"user_no": user_code});
-                            if (!user) {
-                                resolve(utils.returnMsg(false, '10001', '查询用户信息错误', null, null));
-                                return;
-                            }
-                            let but_org = await model_user.$CommonCoreOrg.find({"_id": {$in: user[0].user_org}});
-                            if (!but_org) {
-                                resolve(utils.returnMsg(false, '10001', '查询用户信息错误', null, null));
-                                return;
-                            }
-                            var arr = new Array();
-                            await find_all_org(but_org[0]._id, arr);
-                            let returnMap = {};
-                            returnMap.proc_inst_task_assignee = "";
-                            returnMap.proc_inst_task_assignee_name = "";
-                            returnMap.user_org_id = arr;
-                            resolve(utils.returnMsg(true, '10000', '查询用户org', returnMap, null));
+                        //     let user = await model_user.$User.find({"user_no": results[0].proc_inst_task_assignee});
+                        //     if (!user) {
+                        //         resolve(utils.returnMsg(false, '10001', '查询用户信息错误', null, null));
+                        //         return;
+                        //     }
+                        let user = await model_user.$User.find({"user_no":user_code});
+                        if(user.length!=1){
+                            resolve(utils.returnMsg(false, '10001', '查询用户信息错误2', null, null));
+                            return;
+                        }
+                        let but_org = await model_user.$CommonCoreOrg.find({"_id": {$in: user[0].user_org}});
+                        if (but_org.length==0) {
+                            resolve(utils.returnMsg(false, '10001', '机构信息错误5', null, null));
+                            return;
+                        }
+                        var arr = new Array();
+                        await find_all_org(but_org[0]._id, arr);
+                        let returnMap = {};
+                        returnMap.proc_inst_task_assignee = "";
+                        returnMap.proc_inst_task_assignee_name = "";
+                        returnMap.user_org_id = arr;
+                        resolve(utils.returnMsg(true, '10000', '查询用户org', returnMap, null));
 
                         // }else{
                         //     resolve(utils.returnMsg(false, '10001', '查询用户信息错误', null, null));
@@ -2226,19 +2229,20 @@ function findNextHandler(user_code,proc_define_id,node_code,params,proc_inst_id)
                         //     resolve(utils.returnMsg(false, '10001', '查询用户信息错误', null, null));
                         //     return;
                         // }
+
                         let user = await model_user.$User.find({"user_no": user_code});
-                        if (!user) {
-                            resolve(utils.returnMsg(false, '10001', '查询用户信息错误', null, null));
+                        if (user.length!=1) {
+                            resolve(utils.returnMsg(false, '10001', '查询用户信息错误1', null, null));
                             return;
                         }
                         let but_org = await model_user.$CommonCoreOrg.find({"_id": {$in: user[0].user_org}});
-                        if (!but_org) {
-                            resolve(utils.returnMsg(false, '10001', '查询用户信息错误', null, null));
+                        if (but_org.length==0) {
+                            resolve(utils.returnMsg(false, '10001', '查询机构信息错误3', null, null));
                             return;
                         }
                         let up_org = await model_user.$CommonCoreOrg.find({"_id": but_org[0].org_pid});
-                        if (!up_org) {
-                            resolve(utils.returnMsg(false, '10001', '查询用户信息错误', null, null));
+                        if (up_org.length==0) {
+                            resolve(utils.returnMsg(false, '10001', '查询机构信息错误', null, null));
                             return;
                         }
                         var arr = new Array();
@@ -2261,23 +2265,23 @@ function findNextHandler(user_code,proc_define_id,node_code,params,proc_inst_id)
                         //     return;
                         // }
                         let user = await model_user.$User.find({"user_no": user_code});
-                        if (!user) {
+                        if (user.length!=1) {
                             resolve(utils.returnMsg(false, '1000', '查询用户信息错误', null, error));
                             return;
                         }
                         let but_org = await model_user.$CommonCoreOrg.find({"_id": {$in: user[0].user_org}});
-                        if (!but_org) {
-                            resolve(utils.returnMsg(false, '1000', '查询用户信息错误', null, error));
+                        if (but_org.length==0) {
+                            resolve(utils.returnMsg(false, '1000', '查询机构信息错误', null, error));
                             return;
                         }
                         let up_org = await model_user.$CommonCoreOrg.find({"_id": but_org[0].org_pid});
-                        if (!up_org) {
-                            resolve(utils.returnMsg(false, '1000', '查询用户信息错误', null, error));
+                        if (up_org.length==0) {
+                            resolve(utils.returnMsg(false, '1000', '查询机构信息错误1', null, error));
                             return;
                         }
                         let up_up_org = await model_user.$CommonCoreOrg.find({"_id": up_org[0].org_pid});
-                        if (!up_up_org) {
-                            resolve(utils.returnMsg(false, '1000', '查询用户信息错误', null, error));
+                        if (up_up_org.length==0) {
+                            resolve(utils.returnMsg(false, '1000', '查询机构信息错误2', null, error));
                             return;
                         }
                         var arr = new Array();

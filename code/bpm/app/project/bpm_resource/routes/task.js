@@ -108,7 +108,6 @@ exports.task=function() {
             inst.userInfo(userNo).then(function (rs) {
                 if (rs.success && rs.data.length == 1) {
                     userService.getUsreRolesByUserNo(userNo).then(function (result) {
-                        console.log(result);
                         if (result) {
                             inst.getMyCompleteTaskQuery4Eui(page, length, userNo, result, joinup_sys, proc_code).then(function (taskresult) {
                                 utils.respJsonData(res, taskresult);
