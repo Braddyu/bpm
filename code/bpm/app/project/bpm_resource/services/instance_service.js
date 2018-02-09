@@ -1007,7 +1007,7 @@ exports.getMyCompleteTaskList= function(userCode,roleArr,orgArr) {
  * @param userJson
  */
 exports.acceptTask= function(taskId,userNo,userName) {
-    return new Promise(async function(resolve){
+    var p = new Promise(function(resolve,reject){
         var udata = {
             proc_inst_task_sign:1,
             proc_inst_task_handle_time : new Date(),
@@ -1016,10 +1016,15 @@ exports.acceptTask= function(taskId,userNo,userName) {
         }
         var update = {$set: udata};
         var options = {};
-        await model.$ProcessInstTask.update({'_id':taskId}, update, options, {});
-        resolve({'success': true, 'code': '0000', 'msg': '任务认领成功'});
-
+        model.$ProcessInstTask.update({'_id':taskId}, update, options, function (error) {
+            if(error) {
+                resolve({'success': false, 'code': '1000', 'msg': '任务认领出现异常'});
+            }else {
+                resolve({'success': true, 'code': '0000', 'msg': '任务认领成功'});
+            }
+        });
     });
+    return p;
 };
 /**
  * 批量认领任务
@@ -1129,15 +1134,22 @@ exports.completeTask= function(taskId) {
  * @param taskIdArr
  */
 exports.completeTaskList= function(taskIdArr) {
-    return new Promise(async function(resolve,reject){
+    var p = new Promise(function(resolve,reject){
         var udata = {
             proc_inst_task_status:1,
             proc_inst_task_complete_time : new Date()
         }
         var update = {$set: udata};
-        await model.$ProcessInstTask.update({'_id':{'$in':taskIdArr}}, update, {});
-        resolve({'success': true, 'code': '0000', 'msg': '批量完成任务成功'});
+        var options = {};
+        model.$ProcessInstTask.update({'_id':{'$in':taskIdArr}}, update, options, function (error) {
+            if(error) {
+                resolve({'success': false, 'code': '1000', 'msg': '批量完成任务出现异常'});
+            }else {
+                resolve({'success': true, 'code': '0000', 'msg': '批量完成任务成功'});
+            }
+        });
     });
+    return p;
 };
 
 /**

@@ -75,7 +75,6 @@ exports.process_instance=function() {
                                     //认领任务
                                     inst.acceptTask(task_id, user_code, userName).then(function (rs) {
                                         if (rs.success) {
-
                                             //  nodeTransferService.assign_transfer(task_id,node_code,user_code,assign_user_no,proc_title,biz_vars,proc_vars,memo).then(function(results){
                                             //批量派发
                                             nodeTransferService.do_payout(task_id, node_code, user_code, assign_user_no, proc_title, biz_vars, proc_vars, memo).then(function (results) {
