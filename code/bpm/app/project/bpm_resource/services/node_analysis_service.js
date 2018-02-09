@@ -34,8 +34,8 @@ exports.getNode=getNode;
 function getNode(process_define_id,node_code,params,flag){
     return new Promise(async function(resolve) {
         let rs = await model.$ProcessDefine.find({"_id": process_define_id});
-        if (rs.length!=1) {
-            resolve(utils.returnMsg(false, '9999', 'chaxun ，或者错误', null, null));
+        if (rs.length==0) {
+            resolve(utils.returnMsg(false, '1001', '没有查询流程定义', null, null));
             return ;
         }
         var process_define = JSON.parse(rs[0].proc_define);
