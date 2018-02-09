@@ -227,6 +227,7 @@ router.route('/complete') .post(function(req,res) {
             console.log(id,node_code,user_code,true,memo,params,biz_vars,proc_vars);
             console.info(params)
             nodeTransferService.transfer(id,node_code,user_code,true,memo,params,biz_vars,proc_vars).then(function(result1){
+                console.log(result1);
                 console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!",id,node_code,user_code,true,memo,params)
                 //归档时,回传黄河数据
                 if(handle==1){

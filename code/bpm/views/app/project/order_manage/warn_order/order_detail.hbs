@@ -397,6 +397,7 @@
                 dataType:'json',
                 data: formData,
                 success: function (data) {
+
                     if(data.success){
                         parent.$("#dd").dialog('close');
                         parent.$('#orderTablelist').datagrid('reload');

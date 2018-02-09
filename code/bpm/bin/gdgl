@@ -7,19 +7,28 @@
 var app = require('../app');
 var debug = require('debug')('gmdp_demo:server');
 var http = require('http');
+var path = require('path');
+var fs = require('fs');
+var https = require('https');
 
 /**
  * Get port from environment and store in Express.
  */
+//根据项目的路径导入生成的证书文件
+var privateKey  = fs.readFileSync(path.join(__dirname, '../ssl/private.pem'), 'utf8');
+var certificate = fs.readFileSync(path.join(__dirname, '../ssl/file.crt'), 'utf8');
+var credentials = {key: privateKey, cert: certificate};
+
 
 var port = normalizePort(process.env.PORT || '30002');
-app.set('port', port);
+// app.set('port', port);
 
 /**
  * Create HTTP server.
  */
 
-var server = http.createServer(app);
+// var server = http.createServer(app);
+var server = https.createServer(credentials, app);
 
 /**
  * Listen on provided port, on all network interfaces.
