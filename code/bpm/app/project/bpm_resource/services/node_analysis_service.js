@@ -2186,12 +2186,12 @@ function findNextHandler(user_code,proc_define_id,node_code,params,proc_inst_id)
                     //参照人
                     if (item_assignee_ref_cur_org == 1 || item_assignee_ref_cur_org == 3) {
                         //同级  下级  使用 同一个模块
-                        let results = await model.$ProcessInstTask.find({
-                            "proc_inst_id": proc_inst_id,
-                            "proc_inst_task_code": item_assignee_ref_task
-                        });
-                        if (results.length>0) {
-                            let user = await model_user.$User.find({"user_no": results[0].proc_inst_task_assignee});
+                        // let results = await model.$ProcessInstTask.find({
+                        //     "proc_inst_id": proc_inst_id,
+                        //     "proc_inst_task_code": item_assignee_ref_task
+                        // });
+                        // if (results.length>0) {
+                            let user = await model_user.$User.find({"user_no": user_code});
                             if (!user) {
                                 resolve(utils.returnMsg(false, '10001', '查询用户信息错误', null, null));
                                 return;
@@ -2209,24 +2209,24 @@ function findNextHandler(user_code,proc_define_id,node_code,params,proc_inst_id)
                             returnMap.user_org_id = arr;
                             resolve(utils.returnMsg(true, '10000', '查询用户org', returnMap, null));
 
-                        }else{
-                            resolve(utils.returnMsg(false, '10001', '查询用户信息错误', null, null));
-                            return;
-
-                        }
+                        // }else{
+                        //     resolve(utils.returnMsg(false, '10001', '查询用户信息错误', null, null));
+                        //     return;
+                        //
+                        // }
 
 
                     } else if (item_assignee_ref_cur_org == 2) {
                         //上级
-                        let results = await model.$ProcessInstTask.find({
-                            "proc_inst_id": proc_inst_id,
-                            "proc_inst_task_code": item_assignee_ref_task
-                        });
-                        if (!results) {
-                            resolve(utils.returnMsg(false, '10001', '查询用户信息错误', null, null));
-                            return;
-                        }
-                        let user = await model_user.$User.find({"user_no": results[0].proc_inst_task_assignee});
+                        // let results = await model.$ProcessInstTask.find({
+                        //     "proc_inst_id": proc_inst_id,
+                        //     "proc_inst_task_code": item_assignee_ref_task
+                        // });
+                        // if (!results) {
+                        //     resolve(utils.returnMsg(false, '10001', '查询用户信息错误', null, null));
+                        //     return;
+                        // }
+                        let user = await model_user.$User.find({"user_no": user_code});
                         if (!user) {
                             resolve(utils.returnMsg(false, '10001', '查询用户信息错误', null, null));
                             return;
@@ -2252,15 +2252,15 @@ function findNextHandler(user_code,proc_define_id,node_code,params,proc_inst_id)
                     } else if (item_assignee_ref_cur_org == 4) {
                         //上上级
                         //user_code, reject, user_org_id, returnMap, resolve
-                        let result = await model.$ProcessInstTask.find({
-                            "proc_inst_id": proc_inst_id,
-                            "proc_inst_task_code": item_assignee_ref_task
-                        });
-                        if (!result) {
-                            resolve(utils.returnMsg(false, '1000', '查询用户信息错误', null, null));
-                            return;
-                        }
-                        let user = await model_user.$User.find({"user_no": result[0].proc_inst_task_assignee});
+                        // let result = await model.$ProcessInstTask.find({
+                        //     "proc_inst_id": proc_inst_id,
+                        //     "proc_inst_task_code": item_assignee_ref_task
+                        // });
+                        // if (!result) {
+                        //     resolve(utils.returnMsg(false, '1000', '查询用户信息错误', null, null));
+                        //     return;
+                        // }
+                        let user = await model_user.$User.find({"user_no": user_code});
                         if (!user) {
                             resolve(utils.returnMsg(false, '1000', '查询用户信息错误', null, error));
                             return;
