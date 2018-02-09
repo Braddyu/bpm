@@ -35,7 +35,7 @@ var NoFound=(resolve)=>{
     var map={};
     return new Promise(async function(resolve,reject){
       let result = await  model.$ProcessInstTask.find({"_id":task_id});
-      if(!result.length){
+      if(result.length==0){
         NoFound(resolve);
         return ;
       }
@@ -44,7 +44,7 @@ var NoFound=(resolve)=>{
       map.proc_inst_biz_vars=result[0].proc_inst_biz_vars;
       map.proc_inst_task_assignee=result[0].proc_inst_task_assignee;
       let r = await model.$ProcessInst.find({"_id":result[0].proc_inst_id});
-      if(!r.length){NoFound(resolve);return ;}
+      if(r.length==0){NoFound(resolve);return ;}
         map. proc_name=r[0].proc_name;// : "采购测试流程"
         map.proc_ver= r[0].proc_ver;//" : NumberInt(4)
         map.proc_title=r[0].proc_title;//" : "采购测试流程"
@@ -166,14 +166,14 @@ exports.transfer=function(proc_inst_task_id,node_code,user_code,opts,memo,param_
       if(opts) {        //同意流转       //查询当前节点的下一节点信息
           var task_id_array = [];
           let rs = await model.$ProcessInstTask.find({"_id": proc_inst_task_id});
-          if (!rs.length) {
+          if (rs.length==0) {
               NoFound(resolve);
               return;
           }
           var proc_inst_id=rs[0].proc_inst_id;
 
           let rss = await model.$ProcessInst.find({"_id": rs[0].proc_inst_id});
-          if (!rss.length) {
+          if (rss.length==0) {
               NoFound(resolve);
               return;
           }
@@ -229,7 +229,7 @@ exports.transfer=function(proc_inst_task_id,node_code,user_code,opts,memo,param_
                   return;
               }
               let r = await model.$ProcessInstTask.find({'_id': proc_inst_task_id});
-              if (!r.length) {
+              if (r.length==0) {
                   NoFound(resolve);
                   return;
               }
@@ -354,10 +354,10 @@ function forkTaskCreate(item_config, proc_define, node_Array, k, user_code, proc
 async function rejectFunction(proc_inst_task_id, node_code, params, reject, resolve, memo,org) {
 //驳回
     let rs_s=await model.$ProcessInstTask.find({"_id": proc_inst_task_id});
-    if(!rs_s.length){NoFound(resolve);return ; }
+    if(rs_s.length==0){NoFound(resolve);return ; }
     var proc_inst_id = rs_s[0].proc_inst_id;
     let rss=await model.$ProcessInst.find({"_id": proc_inst_id});
-    if(!rss.length){NoFound(resolve);return ;}
+    if(rss.length==0){NoFound(resolve);return ;}
     var proc_define_id = rss[0].proc_define_id;
     let rs=await nodeAnalysisService.getNode(proc_define_id, node_code, params, false);
     if(!rs.success){resolve(rs);return ;}
@@ -453,9 +453,9 @@ async function joinFunction(proc_inst_id, resolve, reject, node_code, params, pr
     }
     cd.proc_inst_task_status=0;
     let rs=await model.$ProcessInstTask.find(cd);
-    if(!rs.length){NoFound(resolve);return ;}
+    if(rs.length==0){NoFound(resolve);return ;}
     let result=await model.$ProcessInst.find({_id:proc_inst_id});
-    if(!result.length){NoFound(resolve);return ;}
+    if(result.length==0){NoFound(resolve);return ;}
     var proc_define_id=result[0].proc_define_id;
     let results=await nodeAnalysisService.getNode(proc_define_id, node_code, params, true);
     if(!results.success){resolve(results);return ;}
@@ -497,7 +497,7 @@ function overFunction(current_detail,proc_inst_id, proc_inst_task_id,user_code,m
         let rest=await touchNode(current_detail,user_code,proc_inst_task_id,false);
         if(!rest.success){resolve(rest);return ;}
         let r=await model.$ProcessInstTask.find({'_id':proc_inst_task_id});
-        if(!r.length){NoFound(resolve);return ;}
+        if(r.length==0){NoFound(resolve);return ;}
         var obj=new Object(r[0]._doc)
         obj.proc_task_id=obj._id;
         delete obj._id;
@@ -509,7 +509,7 @@ function overFunction(current_detail,proc_inst_id, proc_inst_task_id,user_code,m
             cd.proc_inst_id=proc_inst_id;
         }
         let rs=await model.$ProcessInstTask.find(cd).sort({proc_inst_task_complete_time: -1});
-        if(!rs.length){NoFound(resolve);return ;}
+        if(rs.length==0){NoFound(resolve);return ;}
         var proc_task_history = JSON.stringify(rs);
         var data1 = {proc_inst_status: 4, proc_task_history: proc_task_history};
         var conditions1 = {_id: proc_inst_id};
@@ -580,7 +580,7 @@ async function normal_process(current_detail,next_detail, next_node, proc_inst_i
     //let rest=await touchNode(current_detail,user_code,proc_inst_task_id,false);
     // if(rest.success){resolve(rest);return ;}
     let r=await model.$ProcessInstTask.find({'_id':proc_inst_task_id});
-    if(!r.length){NoFound(resolve);return ;}
+    if(r.length==0){NoFound(resolve);return ;}
     var obj=new Object(r[0]._doc)
     obj.proc_task_id=obj._id;
     delete obj._id;
@@ -725,10 +725,10 @@ async function normal_process(current_detail,next_detail, next_node, proc_inst_i
 exports.assign_transfer=function(proc_task_id,node_code,user_code,assign_user_code,proc_title,biz_vars,proc_vars,memo,next_name,proc_back){
    return new  Promise(async function(resolve,reject){
        let rs= await  model.$ProcessInstTask.find({"_id":proc_task_id});
-       if(!rs.length){NoFound(resolve);return ;}
+       if(rs.length==0){NoFound(resolve);return ;}
        var proc_inst_id= rs[0].proc_inst_id;
        let res=await model.$ProcessInst.find({"_id":proc_inst_id});
-       if(!res.length){NoFound(resolve);return ;}
+       if(res.length==0){NoFound(resolve);return ;}
        var prev_node = rs[0].proc_inst_task_code;
        var proc_code=res[0].proc_code;
        var proc_name=res[0].proc_name;
@@ -795,7 +795,7 @@ exports.assign_transfer=function(proc_task_id,node_code,user_code,assign_user_co
        var updates = {$set: datas};
        await model.$ProcessInstTask.update(condition, updates, options);
        let r = await model.$ProcessInstTask.find({"_id": proc_task_id});
-       if(!r.length){NoFound(resolve);return ;}
+       if(r.length==0){NoFound(resolve);return ;}
        var obj=new Object(r[0]._doc);
        obj.proc_task_id=obj._id;
        delete obj._id;
@@ -816,7 +816,7 @@ exports.assign_transfer=function(proc_task_id,node_code,user_code,assign_user_co
        let rs_s=await touchNode(current_detail, user_code, proc_task_id, false);
        if (!rs_s.success) {resolve(rs_s);return ;}
        let resultss=await model_user.$User.find({"user_no": assign_user_code});
-       if(!resultss.length){NoFound(resolve);return ;}
+       if(resultss.length==0){NoFound(resolve);return ;}
        var user_org = resultss[0].user_org;
        var user_name = resultss[0].user_name;
        var user_roles = resultss[0].user_roles;
@@ -908,7 +908,7 @@ exports.find_log=function(inst_id,user_no,page, size){
             cd._id=inst_id;
         }
         let res=await model.$ProcessInst.find(cd);
-        if(!res.length){NoFound(resolve);return ;}
+        if(res.length==0){NoFound(resolve);return ;}
 
         var mod = model.$ProcessInstTask;
         var conditionMap = {};
@@ -977,10 +977,10 @@ exports.do_payout=function(proc_task_id,node_code,user_code,assign_user_code,pro
     //next_detail, next_node, proc_inst_id, resolve,reject,proc_define_id,proc_inst_task_id,user_code,current_node,params
     return new Promise(async function(resolve,reject){
         let rs=await model.$ProcessInstTask.find({"_id":proc_task_id});
-        if(!rs.length){NoFound(resolve);return ;}
+        if(rs.length==0){NoFound(resolve);return ;}
         var proc_inst_id= rs[0].proc_inst_id;//z在查询出来的任务中获取实例id
         let res=await model.$ProcessInst.find({"_id":proc_inst_id});
-        if(!res.length){NoFound(resolve);return ;}
+        if(res.length==0){NoFound(resolve);return ;}
         var prev_node = res[0].proc_cur_task;
         var proc_name=res[0].proc_name;
         var inst_id=res[0]._id;
@@ -1169,7 +1169,7 @@ exports.interim_completeTask= function(taskId,memo) {
         //根据任务id更新需要完成的任务状态
         await model.$ProcessInstTask.update({'_id':taskId}, update, options);
         let r= await model.$ProcessInstTask.find({'_id':taskId});
-        if(!r.length){NoFound(resolve);return ;}
+        if(r.length==0){NoFound(resolve);return ;}
         //将任务id赋值给历史表中的任务id
         var obj=new Object(r[0]._doc)
         obj.proc_task_id=obj._id;
@@ -1189,7 +1189,7 @@ exports.process_infomation=function(proc_code){
    return new Promise(async function(resolve,reject){
         //根据流程编码查询流程信息
         let result=await model.$ProcessBase.find({'proc_code':proc_code});
-        if(!result.length){NoFound(resolve);return ;}
+        if(!result.length==0){NoFound(resolve);return ;}
         resolve({'success': true, 'code': '0000', 'msg': '查询流程信息成功','data':result});
     });
 };
@@ -1208,10 +1208,10 @@ exports.process_infomation=function(proc_code){
 exports.assigntransfer=function(proc_task_id,node_code,user_code,assign_user_code,proc_title,biz_vars,proc_vars,memo){
     return new  Promise(async function(resolve,reject){
         let rs=await model.$ProcessInstTask.find({"_id":proc_task_id});
-        if(!rs.length){NoFound(resolve);return ;}
+        if(rs.length==0){NoFound(resolve);return ;}
         var proc_inst_id= rs[0].proc_inst_id;
         let res=await model.$ProcessInst.find({"_id":proc_inst_id});
-        if(!res.length) {NoFound(resolve);return ;}
+        if(res.length==0) {NoFound(resolve);return ;}
         var prev_node = res[0].proc_cur_task;
         var inst_id=res[0]._id;
         var prev_user = res[0].proc_cur_user;
@@ -1269,7 +1269,7 @@ exports.assigntransfer=function(proc_task_id,node_code,user_code,assign_user_cod
         var updates = {$set: datas};
         await model.$ProcessInstTask.update(condition, updates, options);
         let r=await  model.$ProcessInstTask.find({"_id": proc_task_id});
-        if(!r.length){NoFound(resolve);return ;}
+        if(r.length==0){NoFound(resolve);return ;}
         var obj=new Object(r[0]._doc);
         obj.proc_task_id=obj._id;
         delete obj._id;
@@ -1285,7 +1285,7 @@ exports.assigntransfer=function(proc_task_id,node_code,user_code,assign_user_cod
         let rs_s=await touchNode(current_detail, user_code, proc_task_id, false);
         if(!rs_s.success){resolve(rs_s);return ;}
         let resultss=await model_user.$User.find({"user_no": assign_user_code});
-        if (!resultss.length) {NoFound(resolve);return ;}
+        if (resultss.length==0) {NoFound(resolve);return ;}
         var user_org = resultss[0].user_org;
         var user_name = resultss[0].user_name;
         var user_roles = resultss[0].user_roles;

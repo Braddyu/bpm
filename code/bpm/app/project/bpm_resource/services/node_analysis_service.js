@@ -34,7 +34,7 @@ exports.getNode=getNode;
 function getNode(process_define_id,node_code,params,flag){
     return new Promise(async function(resolve) {
         let rs = await model.$ProcessDefine.find({"_id": process_define_id});
-        if (!rs) {
+        if (rs.length!=1) {
             resolve(utils.returnMsg(false, '9999', 'chaxun ，或者错误', null, null));
             return ;
         }
@@ -339,7 +339,7 @@ function findEval(line,item_config){
 exports.findParams=function (proc_inst_id,node_code){
     return new Promise(async function(resolve,reject){
        let result=await model.$ProcessInst.find({"_id":proc_inst_id});
-       if(!result.length){NoFound(resolve);return ;}
+       if(result.length==0){NoFound(resolve);return ;}
         var allArray=[]
         var item_config=JSON.parse(result[0].item_config);
         var proc_define=JSON.parse(result[0].proc_define);
@@ -747,10 +747,10 @@ exports.findOrg=findOrg
 var findOrg=async(user_code,reject)=>{
     var org_info={};
     let rs=await model_user.$User.find({"user_no":user_code});
-    if(!rs)reject(utils.returnMsg(false, '1000', '查询用户信息错误', null, null));
+    if(rs.length!=1)reject(utils.returnMsg(false, '1000', '查询用户信息错误', null, null));
     org_info.user_org=rs[0].user_org;
     let org= await model_user.$CommonCoreOrg.find({"_id":org_info.user_org});
-    if(!org)reject(utils.returnMsg(false, '1000', '查询用户信息错误', null, null));
+    if(org.length==0)reject(utils.returnMsg(false, '1000', '查询机构信息错误', null, null));
     org_info.user_org_name=result[0].org_name;
     return org_info;
 }
@@ -2105,7 +2105,7 @@ function findInfo(next_node, resolve, next_detail, proc_inst_id) {
 function findNextHandler(user_code,proc_define_id,node_code,params,proc_inst_id) {
     return new Promise(async function(resolve) {
         let result = await model.$ProcessDefine.find({"_id": proc_define_id});
-        if (result!=1) {
+        if (result.length==0) {
             resolve(utils.returnMsg(false, '1000', '查询流程定义信息错误', null, null));
             return ;
         }
@@ -2201,7 +2201,7 @@ function findNextHandler(user_code,proc_define_id,node_code,params,proc_inst_id)
                         }
                         let but_org = await model_user.$CommonCoreOrg.find({"_id": {$in: user[0].user_org}});
                         if (but_org.length==0) {
-                            resolve(utils.returnMsg(false, '10001', '机构信息错误5', null, null));
+                            resolve(utils.returnMsg(false, '10001', '查询机构信息错误5', null, null));
                             return;
                         }
                         var arr = new Array();
@@ -2304,7 +2304,7 @@ function findNextHandler(user_code,proc_define_id,node_code,params,proc_inst_id)
 exports.getNextNodeAndHandlerInfo=function(node_code,proc_task_id,proc_inst_id,params,user_code){
     return new Promise(async function(resolve,reject){
         let rs = await model.$ProcessInst.find({"_id":proc_inst_id});
-        if(!rs){ resolve(utils.returnMsg(false, '1000', '查询实例化表失败 for getNextNodeAndHandlerInfo', null,null));return ;}
+        if(rs.length==0){ resolve(utils.returnMsg(false, '1000', '查询实例化表失败 for getNextNodeAndHandlerInfo', null,null));return ;}
         let rsss =await getNode(rs[0].proc_define_id,node_code,params,true);
         if(rsss.success==false){
             resolve(utils.returnMsg(false, '1001', '有效节点删除不完全', null, null));
@@ -2350,7 +2350,7 @@ exports.getNextNodeAndHandlerInfo=function(node_code,proc_task_id,proc_inst_id,p
                         resolve({"data":ret_map,"msg":"查询完成","error":null,"success":true,"next_node":next_detail.item_code})
                     }else{
                         let res=await model_user.$User.find({"user_org":{$in:data_s.data.user_org_id},"user_roles":{$in:next_detail.item_assignee_role?next_detail.item_assignee_role.split(","):[next_detail.item_assignee_role]}});
-                        if(!res){ resolve({"data":null,"msg":"查询出错","error":null,"success":false});return ;}
+                        if(res.length==0){ resolve({"data":null,"msg":"查询出错","error":null,"success":false});return ;}
                         var ret_map=[];
                         for(let  i in res ){
                             let temp={};
@@ -2375,9 +2375,9 @@ exports.getAllNextNodeAndInfo=function(proc_inst_task_id,node_code){
     return  new  Promise(async function(resolve){
         var maps={};
         let rs=await model.$ProcessInstTask.find({"_id":proc_inst_task_id});
-        if(!rs){resolve(utils.returnMsg(false, '1000', '查询实例化表失败 for getNextNodeAndHandlerInfo', null,null));}
+        if(rs.length==0){resolve(utils.returnMsg(false, '1000', '查询实例化表失败 for getNextNodeAndHandlerInfo', null,null));}
         let res=await model.$ProcessInst.find({"_id":rs[0].proc_inst_id});
-        if(!res){resolve(utils.returnMsg(false, '1000', '查询实例化表失败 for getNextNodeAndHandlerInfo', null,null));}
+        if(res.length==0){resolve(utils.returnMsg(false, '1000', '查询实例化表失败 for getNextNodeAndHandlerInfo', null,null));}
         var proc_define=JSON.parse(res[0].proc_define);
         var item_config=JSON.parse(res[0].item_config);
         var lines=proc_define.lines;
@@ -2424,9 +2424,9 @@ exports.getAllNextNodeAndInfo=function(proc_inst_task_id,node_code){
 exports.findCurrentHandlers=function(proc_task_id,node_code){
     return new Promise(async function(resolve,reject){
         let rs= await model.$ProcessInstTask.find({"_id":proc_task_id});
-        if(!rs){ resolve(utils.returnMsg(false, '1000', '查询任务表失败', null,null));return ;}
+        if(rs.length==0){ resolve(utils.returnMsg(false, '1000', '查询任务表失败', null,null));return ;}
         let res= await model.$ProcessInst.find({"_id":rs[0].proc_inst_id});
-        if(!res){ resolve(utils.returnMsg(false, '1000', '查询任务表失败', null,null));return ;}
+        if(res.length==0){ resolve(utils.returnMsg(false, '1000', '查询任务表失败', null,null));return ;}
         var proc_define=JSON.parse(res[0].proc_define);
         var item_config=JSON.parse(res[0].item_config);
         var nodes=proc_define.nodes;
@@ -2765,7 +2765,7 @@ exports.skipNodeAndGetHandlerInfo=(user_no,proc_code,param_json_str,node_code,ta
             params={};
         }
         let res=await model.$ProcessDefine.find({'proc_code':proc_code});
-        if (!res){
+        if (res.length==0){
             resolve(utils.returnMsg(false, '1000', '查询流程出错', null, null));
             return ;
         }

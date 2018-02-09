@@ -90,7 +90,7 @@ function createSubInst(data,node,user_code,parent_proc_inst_id,params){
         var next_node=node_detail.current_node;
         //查询主流程的实例化
         let resultss=await model.$ProcessInst.find({"_id":parent_proc_inst_id});
-        if(!resultss.length){NoFound(resolve);return ;}
+        if(resultss.length==0){NoFound(resolve);return ;}
         var proc_define_id=resultss[0].proc_define_id;
         //查询下一节点的执行人或者执行角色信息
         let rs=await nodeAnalysisService.findNextHandler(user_code,proc_define_id,node,params,parent_proc_inst_id);
@@ -287,7 +287,7 @@ exports.create_instance_only=function(proc_code,proc_ver,proc_title,user_code,jo
         var publish = data.publish;
         if(success) {
             let res_user = await model_user.$User.find({"user_no": user_code});
-            if(!res_user.length){NoFound(resolve);return ;}
+            if(res_user.length==0){NoFound(resolve);return ;}
             var firstNode = nodeAnalysisService.findFirstNode(JSON.parse(data.proc_define));
             var item_config=JSON.parse(data.item_config);
             var proc_define=JSON.parse(data.proc_define);
@@ -296,7 +296,7 @@ exports.create_instance_only=function(proc_code,proc_ver,proc_title,user_code,jo
             var current_detail=result.current_detail;
             var current_node=result.current_node;
             let res=await model_user.$User.find({"user_no":user_code});
-            if(!res.length){NoFound(resolve);return ;}
+            if(res.length==0){NoFound(resolve);return ;}
             var user_name=res[0].user_name;
             var user_roles=res[0].user_roles;
 
@@ -468,7 +468,7 @@ exports.createInstance=function(proc_code,proc_ver,proc_title,param_json_str,pro
         if(!rsss.success){resolve(rsss);return ;}
         var condition={};
         let resu=await model_user.$User.find({'user_no':user_code});
-        if(!resu.length){NoFound(resolve);return ;}
+        if(resu.length==0){NoFound(resolve);return ;}
         //找出用户所拥有的角色
         let role=await find_roles(resu[0].user_roles.toString());
         if(!role.success){resolve(role);return ;}
@@ -512,7 +512,7 @@ exports.createInstance=function(proc_code,proc_ver,proc_title,param_json_str,pro
         let insresult=await saveIns(condition,proc_code,proc_title,user_code);
         if(!insresult.success){resolve(insresult);return ;}
         let rs_s= await model.$ProcessInst.find({'_id':insresult.data});
-        if(!rs_s.length){NoFound(resolve);return ;}
+        if(rs_s.length==0){NoFound(resolve);return ;}
         //新加字段所属系统编号
         condition.publish_status = rs_s[0].publish_status;
         condition.joinup_sys = rs_s[0].joinup_sys;
@@ -549,7 +549,7 @@ function find_roles(role_code){
         if(role_code){
             if(role_code.length>1){
                 let rs=await model_user.$Role.find({'_id':{$in:role_code.split(",")}});
-                if(!rs.length){NoFound(resolve);return ;}
+                if(rs.length==0){NoFound(resolve);return ;}
                 var roleNames = '';
                 if(rs.length>0){
                     for(var i=0;i<rs.length;i++){
@@ -561,7 +561,7 @@ function find_roles(role_code){
                 }
             }else {
                 let rs = await model_user.$Role.find({'_id': role_code});
-                if (!rs.length) {
+                if (rs.length==0) {
                     NoFound(resolve);
                     return;
                 }
@@ -858,7 +858,7 @@ exports.getInstByID = function(id) {
 exports.getnstanceList= function(conditionMap) {
     return new Promise(async function(resolve,reject){
         let rs= await model.$ProcessInst.find(conditionMap);
-        if(!rs.length){
+        if(rs.length==0){
             NoFound(resolve);return ;
         }
         resolve(utils.returnMsg(true, '0000', '查询流程实例成功。', rs, null));
@@ -882,7 +882,7 @@ exports.getInstanceQuery4EuiList= function(page,size,conditionMap) {
 exports.getMyInstList= function(userCode) {
      return new Promise(async function(resolve,reject){
         let rs= await model.$ProcessInst.find({'proc_start_user': userCode});
-        if(!rs.length){NoFound(resolve);return ;}
+        if(rs.length==0){NoFound(resolve);return ;}
         resolve(utils.returnMsg(true, '0000', '获取流程实例列表成功。', rs, null));
     });
 };
@@ -1118,7 +1118,7 @@ exports.completeTask= function(taskId) {
 
         await model.$ProcessInstTask.update({'_id':taskId}, update, options);
         let r= await model.$ProcessInstTask.find({'_id':taskId});
-        if(!r.length){NoFound(resolve);return ;}
+        if(r.length==0){NoFound(resolve);return ;}
         var obj=new Object(r[0]._doc)
         obj.proc_task_id=obj._id;
         delete obj._id;
