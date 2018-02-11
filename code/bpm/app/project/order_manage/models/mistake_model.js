@@ -11,18 +11,21 @@ var Schema = mongoose.Schema;
 var commonCoreProcessMistake = new Schema(
     {
         mistake_time : String,// 时间
-        BOSS_NUM : String,// BOSS订单编码
+        BOSS_CODE : String,// BOSS订单编码
         city_code : String,// 地市编码
         country_code : String,// 区县编码
-        staff_num : String,// 营业员工号
-        channel_type:String,//渠道类型
-        channel_org :  String,//渠道组织
-        business_num : String,//业务编码
+        salesperson_code : String,// 营业员工号
+        customer_code:String,//客户单号
+        org:String,//机构
+        channel_code :  String,//渠道组织
+        channel_id : String,//渠道id
+        business_code : String,//业务编码
         business_name : String,//业务名称
         check_status : String,//稽核状态
         remark : String,//稽核说明
         proc_inst_id: Schema.Types.ObjectId,//实例编码
-        status:Number,//派单状态-1:派单失败，0:未派单 1:已派单 ，2：回传失败 3：回传成功
+        status:Number,//派单状态,-2:派单失败-1:派单失败，0:未派单 1:已派单 ，2：回传失败 3：回传成功
+        insert_time:Date,
         dispatch_remark:String//派单说明
 
     },
@@ -66,29 +69,7 @@ var commonCoreProcessMistakeReadlogs = new Schema(
 
 // 读取差错工单文件日志model
 exports.$ProcessMistakeReadlogs = mongoose.model('CommonCoreProcessMistakeReadlogs', commonCoreProcessMistakeReadlogs);
-//构造流程实例流转当前信息Schema对象
-var commonFtpCoreProcessMistake = new Schema(
-    {
-        BOSS_NUM : String,// BOSS订单编码
-        customer_number : String,// 客户单号
-        acceptance_number : String,// 受理人员工号
-        accept_business_type_code : String,// 受理业务类型编码
-        accept_business_type_name:String,//受理业务类型名称
-        city_code :  String,//地市
-        country_code : String,//区县
-        institutions : String,//机构
-        channel_code : String,//渠道编码
-        work_order_status : String,//工单状态
-        remark: String,//状态描述
-        status:Number,//派单状态
-        dispatch_remark:String,//派单说明
-        insert_time:String,//插入时间
-    },
-    {collection: "common_bpm_ftp_mistake"}// mongodb集合名
-);
 
-// 差错工单model
-exports.$ProcessFtpMistake = mongoose.model('CommonFtpCoreProcessMistake', commonFtpCoreProcessMistake);
 
 var commonFtpCoreProcessMistakeReadlogs = new Schema(
     {

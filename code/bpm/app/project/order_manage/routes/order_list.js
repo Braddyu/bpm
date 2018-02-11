@@ -21,6 +21,8 @@ router.route('/list').post(function(req,res){
     var userNo = req.session.current_user.user_no;//用户编号
     var page = req.body.page;
     var size = req.body.rows;
+    var work_order_number = req.body.work_order_number;
+
     var proc_code = req.body.proc_code;//流程编码
     var startDate = req.body.startDate;//创建时间
     var endDate = req.body.endDate;//创建时间
@@ -28,7 +30,9 @@ router.route('/list').post(function(req,res){
     if(proc_code){
         conditionMap.proc_code=proc_code;
     }
-
+    if(work_order_number){
+        conditionMap.work_order_number=work_order_number;
+    }
     var compare={};
     //开始时间
     if(startDate){
@@ -43,6 +47,7 @@ router.route('/list').post(function(req,res){
     if(!isEmptyObject(compare)){
         conditionMap['proc_start_time']=compare;
     }
+
 
     // 调用分页
     service.getOrderListPage(page,size,conditionMap)

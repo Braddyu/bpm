@@ -358,8 +358,8 @@ exports.repareHuanghe= function(result1,proc_code,proc_inst_id,memo) {
                                                         var count = 0;
                                                         //将当前工单的附件传到ftp上
                                                         for (let index = 0; index < fileRes.length; index++) {
-                                                            ftp_util.uploadFile(res[index].file_path, ftp_huanghe_put + "/" + fileRes[index].file_name, function (err, resFile) {
-                                                                var conditions = {_id: res[index]._id};
+                                                            ftp_util.uploadFile(fileRes[index].file_path, ftp_huanghe_put + "/" + fileRes[index].file_name, function (err, resFile) {
+                                                                var conditions = {_id: fileRes[index]._id};
                                                                 var update = {};
                                                                 if (err) {
                                                                     console.log(err);

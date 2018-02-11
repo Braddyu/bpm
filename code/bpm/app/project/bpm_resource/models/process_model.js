@@ -6,7 +6,7 @@ var mongoUtils  = require('../../../common/core/mongodb/mongoose_utils');
 var mongoose = mongoUtils.init();
 mongoose.set("debug",false)
 var Schema = mongoose.Schema;
-
+mongoose.Promise=Promise;
 //构造触发事件，访问接口基本属性Schema对象
 var commonProcessTouchedInfoSchema = new Schema(
     {
@@ -166,8 +166,8 @@ var commonProcessInstSchema = new Schema(
         proc_opt_time:Date,//流程实例操作时间
         joinup_sys:String,//所属系统编号
         pay_task_id:String ,//派单生成的任务id
-        publish_status : Number//1 发布 0-未发布
-
+        publish_status : Number,//1 发布 0-未发布
+        is_overtime:Number//是否超时，0-未超时，1-超时
     },
     {collection: "common_bpm_proc_inst"}// mongodb集合名
 );
@@ -221,6 +221,7 @@ var commonProcessInstTaskSchema = new Schema(
         previous_step : String,//上一节点任务id
         publish_status : Number,//1 发布 0-未发布
         work_order_number:String,//工单编号
+        is_overtime:Number//是否超时，0-未超时，1-超时
     },
     {collection: "common_bpm_proc_inst_task"}// mongodb集合名
 );

@@ -15,12 +15,21 @@
                                     </select>
                                 </div>
                                 <div class="btn-group" role="group" aria-label="...">
+                                    <!--<button type="button" class="btn btn-default" onclick="addNewOrder()"><i class="fa fa-plus"></i>新增</button>-->
+                                    <label for="filterParam3">工单状态：</label>
+                                    <select class="easyui-combobox"id="proc_inst_task_type"  style="width: 100px;height:31px;">
+                                        <option value="">==全部==</option>
+                                        <option value="厅店处理回复">厅店处理回复</option>
+                                        <option value="网格经理审核">网格经理审核</option>
+                                    </select>
+                                </div>
+                                <div class="btn-group" role="group" aria-label="...">
                                     <label for="filterParam3">开始时间：</label>
-                                    <input id="startDate" class="easyui-datebox" label="Start Date:" labelPosition="top" style="width:130px;height:30px">
+                                    <input id="startDate" class="easyui-datebox" label="Start Date:" labelPosition="top" style="width:120px;height:30px">
                                 </div>
                                 <div class="btn-group" role="group" aria-label="...">
                                     <label for="filterParam3">结束时间：</label>
-                                    <input id="endDate" class="easyui-datebox" label="Start Date:" labelPosition="top" style="width:130px;height:30px">
+                                    <input id="endDate" class="easyui-datebox" label="Start Date:" labelPosition="top" style="width:120px;height:30px">
                                 </div>
                                 <span style="color:red;font-size:13px">提示:双击查看工单</span>
                             </div>
@@ -33,6 +42,9 @@
                                         <span class="input-group-btn">
                                                 <button class="btn btn-default" type="button" onclick="doSearch()"><i class="fa fa-search"></i>查询</button>
                                             </span>
+                                        <span class="input-group-btn">
+                                            <button class="btn btn-default" type="button" id="exportDataDetail"><i class="glyphicon glyphicon-open"></i>导出</button>
+                                       </span>
                                     </div>
                                 </div>
                             </form>
@@ -126,7 +138,7 @@
             checkOnSelect:true,
             columns:[[
                 {"field":"_id",checkbox:true},
-                {"field": "proc_inst_id","title":"工单ID","width":"150px"},
+                {"field": "work_order_number","title":"工单编号","width":"150px"},
                 {"field": "proc_title","title":"标题","width":"300px",
                     formatter:function(value,row,index){
                         return "<span title='" +value + "'>" + value + "</span>";
@@ -164,7 +176,7 @@
 
 
                     }},
-                {"field": "proc_cur_arrive_time","title":"创建时间","width":"150px",
+                {"field": "proc_start_time","title":"创建时间","width":"150px",
                     formatter:function(value,row,index){
                         return new Date(value).Format("yyyy-MM-dd hh:mm:ss");
 
@@ -205,7 +217,29 @@
         });
     }
 
+    //导出详细资料
+    $("#exportDataDetail").click(function () {
+        $.messager.confirm('导出', '确定要导出吗?', function(r) {
+            if (r) {
+                downloadExcelDetail();
+            }
+        });
+    });
+    /**
+     * 是否在下载中 防止重复点击
+     */
+    var downloadExcelIng = false;
+    function downloadExcelDetail() {
+        if (downloadExcelIng) {
+            return;
+        }
+        downloadExcelIng = true;
+        var downloadUrl = '{{projcfg.appurl}}/api/order_manage/order_statistics/export_excel_detail?status=3&todo=1'
+                +'&proc_code='+$("#proc_task_code").combobox('getValue')+'&startDate='+$("#startDate").datebox('getValue')+'&endDate='+$("#endDate").datebox('getValue')+'&proc_inst_task_type='+$("#proc_inst_task_type").combobox('getValue');
 
+        window.location.href=downloadUrl;
+        downloadExcelIng = false;
+    }
 
     /**
      * 初始化工单类型下拉框
@@ -222,11 +256,13 @@
 
     //查询
     function  doSearch(){
+
         $('#detailTable').datagrid({
             url: '{{projcfg.appurl}}/api/order_manage/order_statistics/channel_detail_list',
             queryParams: {
                 status: '3',
                 proc_code: $("#proc_task_code").combobox('getValue'),
+                proc_inst_task_type: $("#proc_inst_task_type").combobox('getValue'),
                 startDate: $("#startDate").datebox('getValue'),
                 endDate: $("#endDate").datebox('getValue'),
 

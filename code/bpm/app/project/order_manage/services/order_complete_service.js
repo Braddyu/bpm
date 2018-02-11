@@ -10,7 +10,7 @@ var logger = require('../../../../lib/logHelper').helper;
  * @param userCode
  * @param paramMap
  */
-exports.getMyCompleteTaskQuery4Eui= function(page,size,userCode,paramMap,proc_code,startDate,endDate) {
+exports.getMyCompleteTaskQuery4Eui= function(page,size,userCode,paramMap,proc_code,startDate,endDate,work_order_number) {
 
     var p = new Promise(function(resolve,reject){
         var userArr = [];
@@ -23,7 +23,9 @@ exports.getMyCompleteTaskQuery4Eui= function(page,size,userCode,paramMap,proc_co
         if(proc_code){
             conditionMap.proc_code=proc_code;
         }
-
+        if(work_order_number){
+            conditionMap.work_order_number=work_order_number;
+        }
         var compare={};
         //开始时间
         if(startDate){
@@ -53,11 +55,13 @@ exports.getMyCompleteTaskQuery4Eui= function(page,size,userCode,paramMap,proc_co
  * @param conditionMap
  * @returns {Promise}
  */
-exports.getMyArchiveTaskQuery4Eui= function(page,size,userNo) {
+exports.getMyArchiveTaskQuery4Eui= function(page,size,userNo,work_order_number) {
 
     var p = new Promise(function(resolve,reject){
         var match={'proc_inst_task_assignee':userNo};
-
+        if(work_order_number){
+            match.work_order_number=work_order_number;
+        }
         model.$ProcessTaskHistroy.aggregate([
             {
                 $match: match
@@ -86,6 +90,7 @@ exports.getMyArchiveTaskQuery4Eui= function(page,size,userNo) {
                     proc_ver:{$first:"$inst.proc_ver"},
                     proc_start_user_name:{$first:"$inst.proc_start_user_name"},
                     proc_cur_arrive_time:{$first:"$inst.proc_cur_arrive_time"},
+                    work_order_number:{$first:"$inst.work_order_number"},
                 }
             }
         ]).exec(function(err,res){

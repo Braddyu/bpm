@@ -88,7 +88,7 @@
             selectOnCheck:true,
             checkOnSelect:true,
             columns:[[
-
+                {"field": "work_order_number","title":"工单编号","width":55},
                 {"field": "proc_inst_task_title","title":"工单标题","width":100,
                     formatter:function(value,row,index){
                         return "<span title='" + value + "'>" + value + "</span>";
@@ -159,6 +159,7 @@
             checkOnSelect:true,
             columns:[[
                 {"field":"proc_inst_id",hidden:true},
+                {"field": "work_order_number","title":"工单编号","width":55},
                 {"field": "proc_inst_task_title","title":"工单标题","width":50,
                     formatter:function(value,row,index){
                         return "<span title='" + value + "'>" + value + "</span>";
@@ -233,6 +234,7 @@
             checkOnSelect:true,
             columns:[[
                 {"field":"_id",hidden:true},
+                {"field": "work_order_number","title":"工单编号","width":55},
                 {"field": "proc_title","title":"工单标题","width":100,
                     formatter:function(value,row,index){
                         return "<span title='" + value + "'>" + value + "</span>";

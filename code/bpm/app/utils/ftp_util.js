@@ -73,7 +73,6 @@ exports.downloadFile=function(path,zcomp,cb){
  * @param cb
  */
 exports.downloadFileList=function(path,zcomp,cb){
-
     c.list(function(err, list) {
         if (err){
             cb(err);
@@ -86,11 +85,18 @@ exports.downloadFileList=function(path,zcomp,cb){
                             if (err){
                                 cb(err);
                             }else{
-                                stream.once('close', function() { c.end(); });
+                                stream.once('close', function() {
+                                    console.log('close')
+                                    c.end(); });
+
                                 stream.pipe(fs.createWriteStream(path+"/"+list[item].name));
-                                if(item == list.length-1){
-                                    cb(null,{success:true,data:zcomp+' 下载至 '+path+' 成功'});
-                                }
+                                stream.on('end', function() {
+                                    if(item == list.length-1){
+
+                                        cb(null,{success:true,data:zcomp+' 下载至 '+path+' 成功'});
+                                    }
+                                });
+
                             }
                         });
                     }

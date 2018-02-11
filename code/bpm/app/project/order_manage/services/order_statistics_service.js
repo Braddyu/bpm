@@ -110,8 +110,9 @@ exports.getStatisticsListPage= function(org_id,proc_code,level,status,dispatch_t
                     _id : "$_id",
                     org_fullname:{ $first: "$org_fullname" },
                     org_id:{ $first: "$_id" },
+                    total:{$sum: { $cond: { if:  { $in: [ "$inst.proc_inst_status", [1,2,3,4] ] }, then:{ $sum: 1 } , else: 0 }}},
                     success:{$sum: { $cond: { if:  { $in: [ "$inst.proc_inst_status", [4] ] }, then:{ $sum: 1 } , else: 0 }}},
-                    fail:{$sum: { $cond: { if:  { $in: [ "$inst.proc_inst_status", [1,2,3]]}, then:{ $sum: 1 } , else: 0 }}},
+                    overtime:{$sum: { $cond: { if:  {$and:[{ $in: [ "$inst.is_overtime", [0] ]},{$in: [ "$inst.proc_inst_status", [4] ]}]}, then:{ $sum: 1 } , else: 0 }}},
                 }
             }
 
@@ -235,8 +236,9 @@ exports.exportStatisticsList= function(org_id,proc_code,level,status,dispatch_ti
                     _id : "$_id",
                     org_fullname:{ $first: "$org_fullname" },
                     org_id:{ $first: "$_id" },
+                    total:{$sum: { $cond: { if:  { $in: [ "$inst.proc_inst_status", [1,2,3,4] ] }, then:{ $sum: 1 } , else: 0 }}},
                     success:{$sum: { $cond: { if:  { $in: [ "$inst.proc_inst_status", [4] ] }, then:{ $sum: 1 } , else: 0 }}},
-                    fail:{$sum: { $cond: { if:  { $in: [ "$inst.proc_inst_status", [1,2,3]]}, then:{ $sum: 1 } , else: 0 }}},
+                    overtime:{$sum: { $cond: { if:  {$and:[{ $in: [ "$inst.is_overtime", [0] ]},{$in: [ "$inst.proc_inst_status", [4] ]}]}, then:{ $sum: 1 } , else: 0 }}},
                 }
             }
 
@@ -256,6 +258,144 @@ exports.exportStatisticsList= function(org_id,proc_code,level,status,dispatch_ti
     return p;
 };
 
+
+/**
+ * 工单列表
+ * @param org_id
+ * @param proc_code
+ * @param level
+ * @param status
+ * @param dispatch_time
+ * @param startDate
+ * @param endDate
+ * @returns {Promise}
+ */
+exports.exportDetailList= function(org_id,proc_code,level,status,dispatch_time,startDate,endDate,proc_inst_task_type) {
+
+    var p = new Promise(function(resolve,reject){
+
+        //查询统计表
+        var statistics={};
+        if(level==2){
+            statistics['province_id']=new mongoose.Types.ObjectId(org_id);
+        } else if(level==3){
+            //地市
+            statistics['city_id']=new mongoose.Types.ObjectId(org_id);
+        } else if(level==4){
+            //区县
+            statistics['county_id']=new mongoose.Types.ObjectId(org_id);
+        } else if(level==5){
+            //网格
+            statistics['grid_id']=new mongoose.Types.ObjectId(org_id);
+        }else if(level==6){
+            //渠道
+            statistics['channel_id']=new mongoose.Types.ObjectId(org_id);
+        }
+        //流程编码
+        if(proc_code){
+            statistics['proc_code']=proc_code;
+        }
+        //派单时间
+        if(dispatch_time){
+            statistics['dispatch_time']=dispatch_time.replace(/\-/g,'');
+        }
+        var compare={};
+        //开始时间
+        if(startDate){
+            compare['$gte']=new Date(startDate);
+        }
+        //结束时间
+        if(endDate){
+            //结束时间追加至当天的最后时间
+            compare['$lte']=new Date(endDate+' 23:59:59');
+        }
+        //时间查询
+        if(!isEmptyObject(compare)){
+            statistics['insert_time']=compare;
+        }
+
+        //查询实例
+        var inst_match={};
+        //总数
+        if(status==1){
+            inst_match={"inst.proc_inst_status":{$in:[1,2,3,4]}};
+        }
+        //归档数
+        if(status==2){
+            inst_match={"inst.proc_inst_status":{$in:[4]}};
+        }
+        //未超时档数
+        if(status==3){
+            inst_match={"inst.is_overtime":0,"inst.proc_inst_status":4};
+        }
+
+        var task_search={"proc_inst_task_status":0}
+        if(proc_inst_task_type){
+            task_search.proc_inst_task_type=proc_inst_task_type;
+        }
+        console.log("task_search",task_search);
+        console.log("statistics",statistics);
+        //依机构表为主表，关联统计表和实例表
+        process_extend_model.$ProcessTaskStatistics.aggregate([
+            {
+                $match: statistics
+            },
+            {
+                $lookup: {
+                    from: "common_bpm_proc_inst",
+                    localField: 'proc_inst_id',
+                    foreignField: "_id",
+                    as: "inst"
+                }
+            },
+            {
+                $match: inst_match
+            },
+
+            {
+                $unwind : { path: "$inst", preserveNullAndEmptyArrays: true }
+            },
+            {
+                $graphLookup: {
+                    from: "common_bpm_proc_inst_task",
+                    startWith: "$proc_inst_id",
+                    connectFromField: "proc_inst_id",
+                    connectToField: "proc_inst_id",
+                    as: "task",
+                    restrictSearchWithMatch: task_search
+                }
+            },
+            {
+                $unwind : { path: "$task", preserveNullAndEmptyArrays: true }
+            },
+            {
+                $addFields: {
+                    proc_title:  "$inst.proc_title",
+                    proc_name: "$inst.proc_name",
+                    proc_vars: "$inst.proc_vars",
+                    proc_start_time: "$inst.proc_start_time",
+                    proc_start_user_name: "$inst.proc_start_user_name",
+                    proc_inst_task_type: "$task.proc_inst_task_type",
+                    work_order_number: "$inst.work_order_number",
+                    proc_inst_task_assignee_name:  "$task.proc_inst_task_assignee_name",
+                    proc_inst_status:  "$inst.proc_inst_status",
+                }
+            }
+        ]).exec(function(err,res){
+            if(err){
+                reject(utils.returnMsg(false, '1000', '查询统计失败。',null,err));
+            }else{
+
+                resolve(res);
+            }
+        })
+
+    });
+
+    return p;
+};
+
+
 /**
  * 创建excel文件
  */
@@ -264,7 +404,7 @@ function createExcelOrderList(list) {
         '区域名称',
         '工单数',
         '归档工单数',
-        '未处理工单数',
+        '未超时归档工单数',
     ];
 
     var data = [headers];
@@ -272,9 +412,9 @@ function createExcelOrderList(list) {
     list.map(c=>{
         const tmp = [
             c.org_fullname,
-            c.success+ c.fail,
+            c.total,
             c.success,
-            c.fail,
+            c.overtime,
         ]
 
         data.push(tmp);
@@ -284,13 +424,63 @@ function createExcelOrderList(list) {
             "!row" : [{wpx: 67}]
         }
     };
-    ws['!cols']= [{wpx: 100},{wpx: 100},{wpx: 100},{wpx: 100}];
+    ws['!cols']= [{wpx: 300},{wpx: 100},{wpx: 100},{wpx: 100}];
 
 
     return xlsx.build([{name:'Sheet1',data:data}],ws);
 }
 
 exports.createExcelOrderList = createExcelOrderList;
+
+
+function createExcelOrderDetail(list) {
+    const headers = [
+        '工单编号',
+        '标题',
+        '派单内容',
+        '类型',
+        '当前处理人',
+        '当前状态',
+        '创建时间',
+        '工单发起人',
+        '渠道ID',
+        '渠道名称',
+        '渠道负责人',
+        '渠道负责人手机号码'
+    ];
+
+    var data = [headers];
+
+    list.map(c=>{
+        const tmp = [
+            c.work_order_number,
+            c.proc_title,
+            JSON.parse(c.proc_vars).remark,
+            c.proc_name,
+            !c.proc_inst_task_assignee_name?"已归档":c.proc_inst_task_assignee_name,
+            !c.proc_inst_task_type?"已归档":c.proc_inst_task_type,
+            c.proc_start_time,
+            c.proc_start_user_name,
+            c.channel_code,
+            c.channel_name,
+            c.user_name,
+            c.user_phone
+        ]
+
+        data.push(tmp);
+    });
+    var ws = {
+        s:{
+            "!row" : [{wpx: 67}]
+        }
+    };
+    ws['!cols']= [{wpx: 130},{wpx: 400},{wpx: 600},{wpx: 100},{wpx: 100},{wpx: 100},{wpx: 100},{wpx: 150},{wpx: 100},{wpx: 400},{wpx: 100},{wpx: 100}];
+
+
+    return xlsx.build([{name:'Sheet1',data:data}],ws);
+}
+
+exports.createExcelOrderDetail = createExcelOrderDetail;
 
 
 /**
@@ -326,7 +516,7 @@ exports.pre_org= function(org_id) {
  * @param endDate
  * @returns {Promise}
  */
-exports.detail_list= function(page,size,org_id,level,status,proc_code,dispatch_time,startDate,endDate) {
+exports.detail_list= function(page,size,org_id,level,status,proc_code,dispatch_time,startDate,endDate,proc_inst_task_type) {
 
     var p = new Promise(function(resolve,reject){
         page=parseInt(page);
@@ -384,10 +574,16 @@ exports.detail_list= function(page,size,org_id,level,status,proc_code,dispatch_t
         if(status==2){
             inst_match={"inst.proc_inst_status":{$in:[4]}};
         }
-        //未档数
+        //未超时归档数
         if(status==3){
-            inst_match={"inst.proc_inst_status":{$in:[1,2,3]}};
+            inst_match={"inst.is_overtime":0,"inst.proc_inst_status":4};
         }
+
+        var task_search={"proc_inst_task_status":0}
+        if(proc_inst_task_type){
+            task_search.proc_inst_task_type=proc_inst_task_type;
+        }
+        console.log("task_search",task_search);
         console.log("statistics",statistics);
         //依机构表为主表，关联统计表和实例表
         process_extend_model.$ProcessTaskStatistics.aggregate([
@@ -416,7 +612,7 @@ exports.detail_list= function(page,size,org_id,level,status,proc_code,dispatch_t
                     connectFromField: "proc_inst_id",
                     connectToField: "proc_inst_id",
                     as: "task",
-                    restrictSearchWithMatch: {"proc_inst_task_status":0}
+                    restrictSearchWithMatch: task_search
                 }
             },
             {
@@ -427,9 +623,10 @@ exports.detail_list= function(page,size,org_id,level,status,proc_code,dispatch_t
                     proc_title:  "$inst.proc_title",
                     proc_name: "$inst.proc_name",
                     proc_vars: "$inst.proc_vars",
-                    proc_cur_arrive_time: "$inst.proc_cur_arrive_time",
+                    proc_start_time: "$inst.proc_start_time",
                     proc_start_user_name: "$inst.proc_start_user_name",
                     proc_inst_task_type: "$task.proc_inst_task_type",
+                    work_order_number: "$inst.work_order_number",
                     proc_inst_task_assignee_name:  "$task.proc_inst_task_assignee_name",
                     proc_inst_status:  "$inst.proc_inst_status",
             }
@@ -444,7 +641,7 @@ exports.detail_list= function(page,size,org_id,level,status,proc_code,dispatch_t
             if(err){
                 reject(utils.returnMsg(false, '1000', '查询统计失败。',null,err));
             }else{
-                console.log(res);
+
                 var result={rows:res,success:true};
                 //计算总数
                 process_extend_model.$ProcessTaskStatistics.aggregate([
@@ -472,7 +669,7 @@ exports.detail_list= function(page,size,org_id,level,status,proc_code,dispatch_t
                             connectFromField: "proc_inst_id",
                             connectToField: "proc_inst_id",
                             as: "task",
-                            restrictSearchWithMatch: {"proc_inst_task_status":0}
+                            restrictSearchWithMatch: task_search
                         }
                     },
                     {
@@ -483,7 +680,8 @@ exports.detail_list= function(page,size,org_id,level,status,proc_code,dispatch_t
                             proc_title:  "$inst.proc_title",
                             proc_name: "$inst.proc_name",
                             proc_vars: "$inst.proc_vars",
-                            proc_cur_arrive_time: "$inst.proc_cur_arrive_time",
+                            work_order_number: "$inst.work_order_number",
+                            proc_start_time: "$inst.proc_start_time",
                             proc_start_user_name: "$inst.proc_start_user_name",
                             proc_inst_task_type: "$task.proc_inst_task_type",
                             proc_inst_task_assignee_name:  "$task.proc_inst_task_assignee_name",

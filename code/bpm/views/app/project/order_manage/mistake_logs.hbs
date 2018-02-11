@@ -45,7 +45,6 @@
 </div>
 <div id="dd"></div>
 
-<input id="test"></input>
 
 <script type="text/javascript">
 
@@ -121,8 +120,8 @@
              {   url:'{{projcfg.appurl}}/api/order_manage/mistake_list/dispatch_logs',
                  queryParams:{
                      queryDate:$('#queryDate').datebox('getValue'),
-                    // status: $("#status").combobox('getValue')
-                     status: $("#test").val()
+                     status: $("#status").combobox('getValue')
+
 
                  }
              }

@@ -132,9 +132,9 @@ var config = {
         ]
     },
     mongdb:{
-           url: 'mongodb://192.168.9.48:27017/process',
+       url: 'mongodb://192.168.9.48:27017/process',
          // url: 'mongodb://10.196.153.11:30000/process',
-        // url:'mongodb://10.201.253.162:27017/process1',
+        //url:'mongodb://10.201.253.162:27017/process1',
         // url: 'mongodb://10.201.253.111:27017/Examine',
         //url: 'mongodb://127.0.0.1:27017/ywcj',   //内网
         poolsize:20
@@ -142,7 +142,7 @@ var config = {
     memcached:{
         // server_locations:['117.135.196.139:11211'],  //外网
         //server_locations: ['10.196.153.5:21211'],  //内网
-         server_locations:['192.168.9.48:11211'],//内网
+        server_locations:['192.168.9.48:11211'],//内网
         // server_locations:['127.0.0.1:11211'],//本地
 
         options:{debug: true}
@@ -358,7 +358,8 @@ var config = {
         password: '123456'
     },//差错工单ftp地址
     ftp_huanghe_get:'/upload/',//获取差错工单ftp路径
-    ftp_huanghe_put:'/upload/'//上传差错工单附件路径
+    ftp_huanghe_put:'/upload/',//上传差错工单附件路径
+    local_haunghe_path:'E:/test/'//本地存储黄河数据
 
 }
 module.exports = config;

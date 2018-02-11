@@ -17,6 +17,7 @@ router.route('/list').post(function(req,res){
     var proc_code = req.body.proc_code;//流程编码
     var startDate = req.body.startDate;//创建时间
     var endDate = req.body.endDate;//创建时间
+    var work_order_number = req.body.work_order_number;
     console.log("开始获取我的已办集合,用户编号",userNo)
 
     // 验证流程名是否为空
@@ -28,7 +29,7 @@ router.route('/list').post(function(req,res){
     userService.getUsreRolesByUserNo(userNo).then(function(result){
         console.log(result);
         if(result){
-            completeService.getMyCompleteTaskQuery4Eui(page,length,userNo,result,proc_code,startDate,endDate).then(function(taskresult){
+            completeService.getMyCompleteTaskQuery4Eui(page,length,userNo,result,proc_code,startDate,endDate,work_order_number).then(function(taskresult){
 
                 utils.respJsonData(res, taskresult);
             }).catch(function(err_inst){
@@ -75,9 +76,10 @@ router.route('/file_list').post(function(req,res){
     console.log("开始获取已归档集合...")
 
     var userNo = req.session.current_user.user_no;//用户编号
+    var work_order_number = req.body.work_order_number;
     var page = req.body.page;//页码
     var length = req.body.rows;//每页条数
-    console.log("开始获取我的已归档集合,用户编号",userNo)
+    console.log("开始获取我的已归档集合,用户编号",userNo,work_order_number)
 
     // 验证流程名是否为空
     if(!userNo) {
@@ -88,7 +90,7 @@ router.route('/file_list').post(function(req,res){
     userService.getUsreRolesByUserNo(userNo).then(function(result){
         console.log(result);
         if(result){
-            completeService.getMyArchiveTaskQuery4Eui(page,length,userNo).then(function(taskresult){
+            completeService.getMyArchiveTaskQuery4Eui(page,length,userNo,work_order_number).then(function(taskresult){
                 utils.respJsonData(res, taskresult);
             }).catch(function(err_inst){
                 // console.log(err_inst);

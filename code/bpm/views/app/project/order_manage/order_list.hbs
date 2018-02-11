@@ -14,6 +14,13 @@
                                     </select>
                                 </div>
                                 <div class="btn-group" role="group" aria-label="...">
+
+                                    <label for="filterParam3">工单编号：</label>
+                                    <input class="easyui-textbox"id="work_order_number"  style="width: 180px;height:31px;">
+                                    </input>
+                                </div>
+
+                                <div class="btn-group" role="group" aria-label="...">
                                     <label for="filterParam3">开始时间：</label>
                                     <input id="startDate" class="easyui-datebox" label="Start Date:" labelPosition="top" style="width:130px;height:30px">
                                 </div>
@@ -117,6 +124,7 @@
             checkOnSelect:true,
             columns:[[
                 {"field":"_id",checkbox:true},
+                {"field": "work_order_number","title":"工单编号","width":55},
                 {"field": "proc_title","title":"工单标题","width":100,
                     formatter:function(value,row,index){
                         return "<span title='" + value + "'>" + value + "</span>";
@@ -408,13 +416,13 @@
 
     //查询
    function  doSearch(){
-
        $('#orderTablelist').datagrid({
            url: '{{projcfg.appurl}}/api/order_manage/order_list/list',
            queryParams: {
                proc_code: $("#proc_task_code").combobox('getValue'),
                startDate: $("#startDate").datebox('getValue'),
                endDate: $("#endDate").datebox('getValue'),
+               work_order_number:$("#work_order_number").val(),
 
            }
        });

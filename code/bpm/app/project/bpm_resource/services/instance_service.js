@@ -733,8 +733,10 @@ function saveIns(dataMap,proc_code,proc_title,user_code){
             inst.proc_vars=dataMap.proc_vars;//流程变量
             inst.joinup_sys = dataMap.joinup_sys;//工单所属系统编号
             inst.publish_status = dataMap.publish_status;
+            inst.is_overtime = 0;//是否超时
             var arr = [];
             arr.push(inst);
+
             //写入数据库创建流程
             let rs=await model.$ProcessInst.create(arr);
             resolve(utils.returnMsg(true, '0000', '新增流程实例信息成功。', rs[0]._doc._id, null));

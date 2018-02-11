@@ -16,6 +16,7 @@ router.route('/list').post(function(req,res){
     var page = req.body.page;//页码
     var length = req.body.rows;//
     var proc_code = req.body.proc_code;//所属流程
+    var work_order_number = req.body.work_order_number;
 
     console.log("用户编号",userNo)
     // 验证用户编号是否为空
@@ -27,7 +28,7 @@ router.route('/list').post(function(req,res){
     userService.getUsreRolesByUserNo(userNo).then(function(result){
         console.log(result);
         if(result){
-            inst.getMyTaskQuery4Eui(page,length,userNo,result,"",proc_code).then(function(taskresult){
+            inst.getMyTaskQuery4Eui(page,length,userNo,result,"",proc_code,work_order_number).then(function(taskresult){
                // console.log(taskresult)
                 utils.respJsonData(res, taskresult);
             }).catch(function(err_inst){

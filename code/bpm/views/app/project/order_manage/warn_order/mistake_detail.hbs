@@ -35,7 +35,6 @@
                                id="end_time" name="end_time"></input></td>
                     <td colspan="2"></td>
 
-
                 </tr>
                 <tr>
                     <td align="right" class="tdLabel">发起人角色:</td>
@@ -48,7 +47,12 @@
 
                 </tr>
 
+                <tr>
+                    <td align="right" class="tdLabel">营业员手机号:</td>
+                    <td> <input disabled class="easyui-textbox" name="user_phone" id="user_phone"  style="width: 280px"></td>
 
+
+                </tr>
                 <tr>
                     <td align="right" class="tdLabel">派单内容:</td>
                     <td colspan="3"><input disabled
@@ -267,7 +271,7 @@
                         queryParams: {
                             inst_id: inst_id
                         },
-                        rownumbers:true,
+
                         method:'post',
                         columns:[[
                             {field:'_id',hidden:true},
@@ -277,9 +281,29 @@
                                     return "<a href='{{projcfg.appurl}}/api/order_manage/order_list/download/"+row._id+"'>" + value + "</a>";
 
                                 }},
-                            {field:'proc_inst_task_type',title:'上传节点',width:150, halign:'center'},
-                            {field:'user_name',title:'上传人',width:100, halign:'center'},
-                            {field:'insert_time',title:'上传时间',width:160, halign:'center',
+                            {field:'file_path',title:'预览',width:130, halign:'center',height:130,
+                                formatter:function(value,row,index){
+                                    var extStart=row.file_name.lastIndexOf(".");
+                                    var ext=row.file_name.substring(extStart,row.file_name.length).toUpperCase();
+
+
+                                    var html='';
+                                    if(ext=='.JPG' || ext=='.PNG'){
+                                        html= '<div id="innerdiv" >'+
+                                                '<img  style="height:130px;width:130px"  src="{{projcfg.appurl}}/api/order_manage/order_list/download/'+row._id+'" />'+
+                                                '</div>'
+                                    }else if(ext=='.MP3' || ext=='.WAV'|| ext=='.WMA'){
+                                        html= '<div id="innerdiv" >'+
+                                                '<audio    src="{{projcfg.appurl}}/api/order_manage/order_list/download/'+row._id+'"  controls="controls"></audio>'+
+                                                '</div>'
+                                    }
+
+                                    return html;
+
+                                }},
+                            {field:'proc_inst_task_type',title:'上传节点',width:120, halign:'center'},
+                            {field:'user_name',title:'上传人',width:60, halign:'center'},
+                            {field:'insert_time',title:'上传时间',width:150, halign:'center',
                                 formatter:function(value,row,index){
                                     if(value!=null){
                                         var isoDateStr = value;
@@ -315,7 +339,9 @@
 
 
     });
-    function GetQueryString(name) {
+
+
+function GetQueryString(name) {
         var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
         var r = window.location.search.substr(1).match(reg);
         if(r!=null)
@@ -474,13 +500,13 @@
                 var extStart=temp.lastIndexOf(".");
                 var ext=temp.substring(extStart,temp.length).toUpperCase();
 
-                if(ext!=".JPG" && ext!=".PNG"){
-                    $.messager.alert('提示','文件:'+temp+' 限于jpg与png格式');
+                if(ext!=".JPG" && ext!=".PNG" && ext!=".MP3"&& ext!=".WAV"&& ext!=".WMA"){
+                    $.messager.alert('提示','文件:'+temp+' 限于jpg,png,MP3,WAV,WMA格式');
                     return;
                 }
 
-                if(size > 1024 * 200){
-                    $.messager.alert('提示','文件:'+temp+'必须小于200KB');
+                if(size > 1024 * 600){
+                    $.messager.alert('提示','文件:'+temp+'必须小于600KB');
                     return;
                 }
             }
@@ -565,8 +591,13 @@
         var extStart=filepath.lastIndexOf(".");
         var ext=filepath.substring(extStart,filepath.length).toUpperCase();
 
-        if(ext!=".JPG" && ext!=".PNG"){
-            $.messager.alert('提示','文件限于jpg与png格式');
+        if(ext!=".JPG" && ext!=".PNG" && ext!=".MP3"&& ext!=".WAV"&& ext!=".WMA"){
+            $.messager.alert('提示','文件限于jpg,png,MP3,WAV,WMA格式');
+            return;
+        }
+
+        if(  document.getElementById("#file"+file_id).fileSize > 1024 * 600){
+            $.messager.alert('提示','文件:'+temp+'必须小于600KB');
             return;
         }
         $.ajaxFileUpload({

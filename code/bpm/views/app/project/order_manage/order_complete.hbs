@@ -8,6 +8,12 @@
                     <div id="toolbar1" class="row tbRow">
                         <div class="col-xs-8 col-md-8">
                             <div class="btn-group" role="group" aria-label="...">
+
+                                <label for="filterParam3">工单编号：</label>
+                                <input class="easyui-textbox"id="work_order_number"  style="width: 180px;height:31px;">
+                                </input>
+                            </div>
+                            <div class="btn-group" role="group" aria-label="...">
                                 <label for="filterParam3">工单类型：</label>
                                 <select class="easyui-combobox"id="proc_task_code"  style="width: 180px;height:31px;">
                                 </select>
@@ -86,6 +92,7 @@
             checkOnSelect:true,
             columns:[[
                 {"field":"_id",checkbox:true},
+                {"field": "work_order_number","title":"工单编号","width":55},
                 {"field": "proc_inst_task_title","title":"工单标题","width":100,
                     formatter:function(value,row,index){
                         return "<span title='" + value + "'>" + value + "</span>";
@@ -148,8 +155,8 @@
         $('#orderTablelist').datagrid({
             url: '{{projcfg.appurl}}/api/order_manage/order_complete/list',
             queryParams: {
-                proc_code: $("#proc_task_code").combobox('getValue')
-
+                proc_code: $("#proc_task_code").combobox('getValue'),
+                work_order_number:$("#work_order_number").val(),
             }
         });
     }

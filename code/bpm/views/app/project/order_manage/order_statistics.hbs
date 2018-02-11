@@ -23,7 +23,7 @@
                                     <a href="javascript:void(0);" class="easyui-linkbutton" onclick="return_pre_org()" data-options="iconCls:'icon-back'" style="width:80px">返回上级</a>
 
                                 </div>
-                                <div class="btn-group" role="group" aria-label="..." style="margin-left: 100%;margin-top:-52px">
+                                <div class="btn-group" role="group" aria-label="..." style="margin-left: 78%;margin-top:-52px">
                                     <a href="javascript:void(0);" class="easyui-linkbutton" onclick="return_first_org()" data-options="iconCls:'icon-back'" style="width:80px">返回顶级</a>
 
                                 </div>
@@ -53,8 +53,11 @@
                             </div>
 
                         </div>
-                    <div id="toolbar2" class="row tbRow">
+                    <div id="toolbar2" class="row tbRow" style="display:none">
                         <div class="col-xs-8 col-md-8">
+                            <div class="btn-group" role="group" aria-label="...">
+                                <button class="btn btn-default" type="button" id="exportDataDetail"><i class="glyphicon glyphicon-open"></i>导出</button>
+                            </div>
                             <div class="btn-group" role="group" aria-label="...">
                                 <span style="color:red;font-size:13px">提示:双击查看工单</span>
                             </div>
@@ -184,7 +187,7 @@
             columns:[[
                 {"field":"_id",checkbox:true},
                 {"field":"fail",hidden:true},
-                {"field": "org_fullname","title":"区域名称","width":"450px",
+                {"field": "org_fullname","title":"区域名称","width":"400px",
                     formatter:function(value,row,index){
                         //大于6表示已经下砖到渠道层级
                         if(level+1>6){
@@ -195,24 +198,22 @@
                         }
 
                     }},
-                {"field": "t","title":"工单数","width":"220px",
+                {"field": "total","title":"工单数","width":"190px",
                     formatter:function(value,row,index){
 
-                        var total=(parseInt(row.success)+parseInt(row.fail));
-                       if(total>0){
-                            return '<a href="javascript:void(0)" onclick="openDetail(1,\''+row._id+'\')">'+(parseInt(row.success)+parseInt(row.fail))+'</a>';
+                       if(value>0){
+                            return '<a href="javascript:void(0)" onclick="openDetail(1,\''+row._id+'\')">'+(value)+'</a>';
 
                         }else{
-                            return '<a href="javascript:void(0)">'+(total)+'</a>';
+                            return '<a href="javascript:void(0)">'+(value)+'</a>';
 
                         }
 
                     }
                     },
 
-                {"field": "success","title":"归档工单数","width":"220px",
+                {"field": "success","title":"归档工单数","width":"210px",
                     formatter:function(value,row,index){
-
                         if(parseInt(row.success)>0){
                             return '<a href="javascript:void(0)" onclick="openDetail(2,\''+row._id+'\')">'+row.success+'</a>';
 
@@ -220,34 +221,29 @@
                             return '<a href="javascript:void(0)" )">'+row.success+'</a>';
 
                         }
-
-
-
                     }},
-                {"field": "t3","title":"未处理工单数","width":"220px",
+
+              {"field": "overtime","title":"未超时归档工单数","width":160 , formatter:function(value,row,index){
+                  //大于6表示已经下砖到渠道层级
+
+                  if(level+1>6){
+                      return value;
+                  }else if(value>0){
+                      return '<a href="javascript:void(0)" onclick="openDetail(3,\''+row._id+'\')">'+value+'</a>';
+
+                  }else{
+                      return '<a href="javascript:void(0)">'+(value)+'</a>';
+
+                  }
+
+              }},
+                {"field": "t2","title":"工单归档率","width":"160px",
                     formatter:function(value,row,index){
-                        //大于6表示已经下砖到渠道层级
-                        var total=parseInt(row.fail);
-                        if(level+1>6){
-                            return total;
-                        }else if(total>0){
-                            return '<a href="javascript:void(0)" onclick="openDetail(3,\''+row._id+'\')">'+total+'</a>';
 
-                        }else{
-                            return '<a href="javascript:void(0)">'+(total)+'</a>';
-
-                        }
-
-                    }
-                },
-               // {"field": "proc_inst_status","title":"未超时归档工单数","width":50},
-                {"field": "t2","title":"工单归档率","width":"150px",
-                    formatter:function(value,row,index){
-                    var total=(parseInt(row.success)+parseInt(row.fail));
-                    if(total==0){
+                    if(row.success==0|| row.total==0){
                         return "0%";
                     }else{
-                        var re=((parseInt(row.success)/total).toFixed(5)*100).toFixed(3);
+                        var re=((parseInt(row.success)/row.total).toFixed(5)*100).toFixed(3);
                         if(re==0){
                             return"0%";
                         }else{
@@ -258,7 +254,23 @@
 
 
                 }},
-               // {"field": "proc_start_time","title":"工单及时归档率","width":80}
+              {"field": "proc_start_time","title":"工单及时归档率","width":160,
+                  formatter:function(value,row,index){
+
+                  if(row.overtime==0 || row.total==0){
+                      return "0%";
+                  }else{
+                      var re=((parseInt(row.overtime)/row.total).toFixed(5)*100).toFixed(3);
+                      if(re==0){
+                          return"0%";
+                      }else{
+                          return re+"%";
+                      }
+
+                  }
+
+
+              }}
             ]],
 
             onLoadSuccess:function(json) {
@@ -346,6 +358,15 @@
             }
         });
     });
+
+    //导出详细资料
+    $("#exportDataDetail").click(function () {
+        $.messager.confirm('导出', '确定要导出吗?', function(r) {
+            if (r) {
+                downloadExcelDetail();
+            }
+        });
+    });
     /**
      * 是否在下载中 防止重复点击
      */
@@ -364,12 +385,31 @@
                 +'&startDate='+$("#startDate").datebox('getValue')+'&endDate='+$("#endDate").datebox('getValue');
 
 
-        window.open(downloadUrl);
+        window.location.href=downloadUrl;
         downloadExcelIng = false;
     }
 
+
+    function downloadExcelDetail() {
+        if (downloadExcelIng) {
+            return;
+        }
+        downloadExcelIng = true;
+
+        var downloadUrl = '{{projcfg.appurl}}/api/order_manage/order_statistics/export_excel_detail?status='
+                +export_status+'&level='+level+'&org_id='+export_org_id+'&proc_code='+$("#proc_code").combobox('getValue')+'&dispatch_time='+$("#dispatchDate").datebox('getValue')
+                +'&startDate='+$("#startDate").datebox('getValue')+'&endDate='+$("#endDate").datebox('getValue');
+
+
+        window.location.href=downloadUrl;
+        downloadExcelIng = false;
+    }
+    var export_org_id;
+    var export_status;
     //打开明细
     function openDetail(status,org_id_){
+        export_org_id=org_id_;
+        export_status=status;
         $('#detailTable').datagrid({
             url:'{{projcfg.appurl}}/api/order_manage/order_statistics/detail_list',
             method:'post',
@@ -393,7 +433,7 @@
             checkOnSelect:true,
             columns:[[
                 {"field":"_id",checkbox:true},
-                {"field": "proc_inst_id","title":"工单ID","width":"150px"},
+                {"field": "work_order_number","title":"工单编号","width":"160px"},
                 {"field": "proc_title","title":"标题","width":"300px",
                     formatter:function(value,row,index){
                         return "<span title='" +value + "'>" + value + "</span>";
@@ -420,7 +460,6 @@
                 {"field": "proc_name","title":"类型","width":"150px"},
                 {"field": "proc_inst_task_assignee_name","title":"当前处理人","width":"150px",
                     formatter:function(value,row,index){
-
                         if(row.proc_inst_status==4){
                             return  '<span style="color:green">已归档</span>';
                         }else{
@@ -439,7 +478,7 @@
 
 
                     }},
-                {"field": "proc_cur_arrive_time","title":"创建时间","width":"150px",
+                {"field": "proc_start_time","title":"创建时间","width":"150px",
                     formatter:function(value,row,index){
                         return new Date(value).Format("yyyy-MM-dd hh:mm:ss");
 
@@ -447,10 +486,10 @@
 
 
                 {"field": "proc_start_user_name","title":"工单发起人","width":"150px"},
-                {"field": "channel_code","title":"被派单渠道ID","width":"100px"},
-                {"field": "channel_name","title":"被派单渠道名称","width":"300px"},
-                {"field": "user_name","title":"被派单渠道负责人","width":"150px"},
-                {"field": "user_phone","title":"被派单渠道负责人手机号码","width":"150px"},
+                {"field": "channel_code","title":"渠道ID","width":"100px"},
+                {"field": "channel_name","title":"渠道名称","width":"300px"},
+                {"field": "user_name","title":"渠道负责人","width":"150px"},
+                {"field": "user_phone","title":"渠道负责人手机号码","width":"150px"},
             ]],
             onDblClickRow:function(rowIndex, rowData){
                 var url='{{projcfg.appurl}}/api/order_manage/order_list/showDetailView?proc_code='+rowData.proc_code+'&change_id='+rowData.proc_inst_id+'&status=3';
