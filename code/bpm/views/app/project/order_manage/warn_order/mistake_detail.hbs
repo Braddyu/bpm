@@ -97,7 +97,7 @@
 
                     </td>
                 </tr>
-                <tr id="tr_5">
+               <!-- <tr id="tr_5">
                     <td align="right" class="tdLabel">下一节点处理人:</td>
                     <td colspan="3"><select class="easyui-combobox"
                                             id="nextJobHandler" name="assign_user_no"  style="width: 180px;">
@@ -105,7 +105,7 @@
                     </select> </td>
 
 
-                </tr>
+                </tr>-->
 
 
                 <tr>
@@ -125,7 +125,7 @@
             </table>
 
                 <div style="padding:5px 0;" align="center" id="button_group">
-                    <a href="javascript:void(0);" class="easyui-linkbutton" onclick="submitTask()" style="width: 100px;">提交</a>
+                    <a id="submitButton" href="javascript:void(0);" class="easyui-linkbutton" onclick="submitTask()" style="width: 100px;">提交</a>
                 </div>
 
             </fieldset>
@@ -380,7 +380,7 @@ function GetQueryString(name) {
     /**
      * 获取下一节点处理人
      */
-    function getNextNodeUser(node_code,proc_task_id,proc_inst_id){
+   /* function getNextNodeUser(node_code,proc_task_id,proc_inst_id){
         $.ajax({
             url: '{{projcfg.appurl}}/api/order_manage/order_list/nextNodeUser',
             type: 'post',
@@ -411,7 +411,7 @@ function GetQueryString(name) {
         });
 
 
-    }
+    }*/
 
     //判断当前节点是否是归档节点
     function isEndNode(proc_code,node_code,task_id,inst_id){
@@ -438,16 +438,16 @@ function GetQueryString(name) {
 
                     }else{
                         //获取下一节点处理人
-                        getNextNodeUser(node_code,task_id,inst_id);
-                        $("#tr_5").show();
-                        comboboxData.push({ value: '1', text: '通过' })  ;
+                     /*   getNextNodeUser(node_code,task_id,inst_id);
+                        $("#tr_5").show();*/
+                        comboboxData.push({ value: '2', text: '通过' })  ;
                     }
                     if(data.data.haveRefuse){
                     //是否存在拒绝节点
                         comboboxData.push({ value: '0', text: '拒绝' })  ;
                     }
                     $("#handle") .combobox('loadData',comboboxData) ;
-                    $("#handle") .combobox('setValue','1') ;
+                    $("#handle") .combobox('select',comboboxData[0].value)
                 }else{
                     $.messager.alert('错误提示',data.error);
                 }
@@ -463,12 +463,12 @@ function GetQueryString(name) {
         if(!validate) {
             return false;
         }
-        var nextNodeUser= $('#nextJobHandler').combobox('getValue');
+   /*     var nextNodeUser= $('#nextJobHandler').combobox('getValue');
         if(!nextNodeUser && !endFlag){
             $.messager.alert('提示','请选择下一节点处理人');
             return false;
 
-        }
+        }*/
 
         //归档
         if(endFlag){
@@ -512,7 +512,7 @@ function GetQueryString(name) {
             }
 
             var ajax_option= {
-                   url: "{{projcfg.appurl}}/api/order_manage/order_list/assignTask?_csrf="+'{{_csrfToken}}',//默认是form action
+                   url: "{{projcfg.appurl}}/api/order_manage/order_list/complete?_csrf="+'{{_csrfToken}}',//默认是form action
                 success: function (data) {
                     if(data.success){
                         $.messager.alert('提示','处理成功');

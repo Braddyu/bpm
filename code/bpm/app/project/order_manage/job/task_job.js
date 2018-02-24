@@ -37,7 +37,7 @@ async function task() {
                         if(taskList.length>0){
                             let userList=await user_model.$User.find({"user_no":taskList[0].proc_inst_task_assignee});
                             //发送短信通知当前节点处理人
-                            if (userList.length>0) {
+                  /*          if (userList.length>0) {
                                 var process_utils = require('../../../utils/process_util');
                                 var mobile = userList[0].user_phone;
 
@@ -50,7 +50,7 @@ async function task() {
                                 }).catch(function (err) {
                                     console.log("短信发送失败", err);
                                 });
-                            }
+                            }*/
                         }
                     }
                 });

@@ -896,8 +896,7 @@ exports.getMyInstList= function(userCode) {
  */
 exports.getMyTaskQuery4Eui= function(page,size,userCode,paramMap,joinup_sys,proc_code) {
     return new Promise(function(resolve,reject){
-        var userArr = [];
-        userArr.push(userCode);
+
         var conditionMap = {};
         var match={};
         if(joinup_sys){
@@ -906,11 +905,34 @@ exports.getMyTaskQuery4Eui= function(page,size,userCode,paramMap,joinup_sys,proc
         if(proc_code){
             match.proc_code=proc_code;
         }
-        conditionMap['$and'] = [match,{'proc_inst_task_assignee':{'$in':userArr}}];
-        //conditionMap['$and'] = [match,{'proc_inst_task_assignee':{'$in':userArr}},{$or:[{'proc_inst_task_user_role':{'$in':paramMap.roles}},{'proc_inst_task_user_org':{'$in':paramMap.orgs}}]}];
-        // conditionMap['$or'] = [{'proc_inst_task_assignee':{'$in':userArr}},{'proc_inst_task_user_role':{'$in':paramMap.roles},'proc_inst_task_user_org':{'$in':paramMap.orgs}}];
-        conditionMap.proc_inst_task_status = 0;
-        utils.pagingQuery4Eui(model.$ProcessInstTask, page, size, conditionMap, resolve, '',  {proc_inst_task_arrive_time:-1});
+
+        //查询用户所在机构和角色
+        model_user.$User.find({"user_no":userCode},function(err,res){
+            if(err){
+                utils.returnMsg(false, '1000', '获取用户失败。', err, null);
+            }else{
+                var roles_match={};
+                var orgs_match={};
+                var match2={};
+                var match3={};
+                if(res[0].user_roles){
+                    roles_match.proc_inst_task_user_role={$in:res[0].user_roles};
+                }
+                if(res[0].user_org){
+                    orgs_match.proc_inst_task_user_org={$in:res[0].user_org};
+                }
+                match2['$or']=[roles_match,orgs_match];
+                match3['$and']=[match2,{"proc_inst_task_sign":0,"proc_inst_task_status":0}];
+
+                match.proc_inst_task_assignee=userCode;
+                match.proc_inst_task_status=0;
+                conditionMap['$or'] = [match,match3];
+                utils.pagingQuery4Eui(model.$ProcessInstTask, page, size, conditionMap, resolve, '',  {proc_inst_task_arrive_time:-1});
+            }
+
+
+        })
+
     });
 };
 /**

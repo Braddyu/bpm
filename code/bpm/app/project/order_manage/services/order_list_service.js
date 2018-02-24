@@ -484,7 +484,7 @@ exports.upload_images= function(files,task_id) {
 
     var p = new Promise(function(resolve,reject){
         var date=moment().format('YYYYMMDDHHmmss');
-        let  path = "../public/files/mistake/"+date;
+        let  path = "../bpm/public/files/mistake/"+date;
         ( async function(){
             //如果有上传文件
             if(files && files.length>0){
@@ -585,7 +585,7 @@ exports.fileLogs= function(inst_id) {
 exports.update_images= function(files,fileID) {
     var p = new Promise(function(resolve,reject){
         var date=moment().format('YYYYMMDDHHmmss');
-        let  path = "../public/files/mistake/"+date;
+        let  path = "../bpm/public/files/mistake/"+date;
         ( async function(){
             //如果有上传文件
             if(files.length>0){

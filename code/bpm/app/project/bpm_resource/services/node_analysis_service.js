@@ -67,6 +67,54 @@ function getNode(process_define_id,node_code,params,flag){
                     resolve(utils.returnMsg(false, '1000', '有效节点删除不完全，或者错误', null, null));
                 } else {
                     var result = choiceNode(item_config, process_define, node_code, node_array[0]);
+
+                    resolve(utils.returnMsg(true, '0000', '查询结果正常', result, null));
+                }
+            }
+        } else {
+            var result = findNode(item_config, process_define, node_code, flag);
+            resolve(utils.returnMsg(true, '0000', '查找上一节点信息正常', result, null));
+        }
+    });
+}
+
+
+/**
+ * 获取实例中的节点配置
+ * @type {getInstNode}
+ */
+exports.getInstNode=getInstNode;
+function getInstNode(rs,node_code,params,flag){
+    return new Promise(async function(resolve) {
+        var process_define = JSON.parse(rs[0].proc_define);
+        var item_config = JSON.parse(rs[0].item_config);
+        var nodes = process_define.nodes;
+        if (flag) {
+            var node_detail;
+            for (let node in nodes) {
+                if (node == node_code) {
+                    node_detail = nodes[node];
+                }
+            }
+            let type = node_detail.type;
+            var node_array = await getValidNode(process_define, node_code, flag);
+            if (type == "chat") {
+                var valid_node = await deleteInvalidNode(process_define, item_config, node_array, node_code, params,)
+                if (valid_node.length != 1) {
+                    resolve(utils.returnMsg(false, '9999', '有效节点删除不完全，或者错误', valid_node, null));
+                } else {
+                    var result = choiceNode(item_config, process_define, node_code, valid_node[0]);
+                    resolve(utils.returnMsg(true, '0000', '查询结果正常', result, null));
+                }
+            } else if (type == "fork") {
+                var result = choiceNode(item_config, process_define, node_code, node_array[0]);
+                resolve(utils.returnMsg(true, '0000', '查询结果正常', result, null));
+            } else {
+                if (node_array.length != 1) {
+                    // console.error("节点信息错误");
+                    resolve(utils.returnMsg(false, '1000', '有效节点删除不完全，或者错误', null, null));
+                } else {
+                    var result = choiceNode(item_config, process_define, node_code, node_array[0]);
                     resolve(utils.returnMsg(true, '0000', '查询结果正常', result, null));
                 }
             }
@@ -1079,9 +1127,10 @@ exports.findNextHandler=function(user_code,proc_define_id,node_code,params,proc_
 
                         }else{
                             var next_detail=data.next_detail;
-                            var item_assignee_ref_task=next_detail.item_assignee_ref_task;
-                            var results=choiceNode(item_config,proc_define,item_assignee_ref_task,null);
-                            // console.log("result   ",results);
+                            // var item_assignee_ref_task=next_detail.item_assignee_ref_task;
+                            // var results=choiceNode(item_config,proc_define,item_assignee_ref_task,null);
+                            var results=choiceNode(item_config,proc_define,next_detail.item_code,node_code);
+                             console.log("result   ",results);
                             var ref_node_detail=results.current_detail;
                             // var ref_item_assignee_type=ref_node_detail.item_assignee_type
                             // if()
@@ -1113,6 +1162,7 @@ exports.findNextHandler=function(user_code,proc_define_id,node_code,params,proc_
                                     }
                                 })
                             }else if(type==2){
+
                                 // 角色
                                 var item_assignee_org_ids;
                                 if(next_detail.item_assignee_org_ids){
@@ -1121,7 +1171,16 @@ exports.findNextHandler=function(user_code,proc_define_id,node_code,params,proc_
                                     }else{
                                         item_assignee_org_ids = [next_detail.item_assignee_org_ids];
                                     }
+                                    returnMap.user_org_id=item_assignee_org_ids;
+                                    returnMap.proc_inst_task_assignee="";
+                                    returnMap.proc_inst_task_assignee_name="";
+                                    resolve(utils.returnMsg(true, '00000', '查询用户org', returnMap, null))
                                 }else{
+                                    returnMap.user_org_id="";
+                                    returnMap.proc_inst_task_assignee="";
+                                    returnMap.proc_inst_task_assignee_name="";
+                                    resolve(utils.returnMsg(true, '00000', '查询用户org', returnMap, null))
+                                }/*else{
                                     model_user.$User.find({"user_no":user_code},function(err,result){
                                         if(err){
                                             console.log(err);
@@ -1137,7 +1196,7 @@ exports.findNextHandler=function(user_code,proc_define_id,node_code,params,proc_
                                             }
                                         }
                                     })
-                                }
+                                }*/
 
 
 
@@ -2305,13 +2364,14 @@ exports.getNextNodeAndHandlerInfo=function(node_code,proc_task_id,proc_inst_id,p
     return new Promise(async function(resolve,reject){
         let rs = await model.$ProcessInst.find({"_id":proc_inst_id});
         if(rs.length==0){ resolve(utils.returnMsg(false, '1000', '查询实例化表失败 for getNextNodeAndHandlerInfo', null,null));return ;}
-        let rsss =await getNode(rs[0].proc_define_id,node_code,params,true);
+        let rsss =await getInstNode(rs,node_code,params,true);
         if(rsss.success==false){
             resolve(utils.returnMsg(false, '1001', '有效节点删除不完全', null, null));
             return;
         }
         var next_detail=rsss.data.next_detail;
         var next_node=rsss.data.next_node;
+
 
         var data_s=await findNextHandler(user_code,rs[0].proc_define_id,node_code,params,proc_inst_id);
         if(next_node.type=='end  round'){
@@ -2349,7 +2409,15 @@ exports.getNextNodeAndHandlerInfo=function(node_code,proc_task_id,proc_inst_id,p
                         ret_map.push(temp);
                         resolve({"data":ret_map,"msg":"查询完成","error":null,"success":true,"next_node":next_detail.item_code})
                     }else{
-                        let res=await model_user.$User.find({"user_org":{$in:data_s.data.user_org_id},"user_roles":{$in:next_detail.item_assignee_role?next_detail.item_assignee_role.split(","):[next_detail.item_assignee_role]}});
+
+                        let match={};
+                        if(next_detail.item_assignee_org_ids){
+                            match.user_org={$in:data_s.data.user_org_id};
+                        }
+                        if(next_detail.item_assignee_role){
+                            match.user_roles={$in:next_detail.item_assignee_role?next_detail.item_assignee_role.split(","):[next_detail.item_assignee_role]};
+                        }
+                        let res=await model_user.$User.find(match);
                         if(res.length==0){ resolve({"data":null,"msg":"查询出错","error":null,"success":false});return ;}
                         var ret_map=[];
                         for(let  i in res ){

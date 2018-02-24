@@ -205,12 +205,12 @@ router.route('/complete') .post(function(req,res) {
     var memo = req.body.memo;//处理意见
     var user_code = req.session.current_user.user_no;//处理人编码
     var handle = req.body.handle;//操作
-    var params={};//流转参数
+    var params="";//流转参数
     //通过或者归档
     if(handle=='1'){
         params='{\"flag\":true}';
         // params.flag=true;
-    }else{
+    }else if(handle=='0'){
         params='{\"flag\":false}';
         //params.flag=false;
     }
