@@ -847,6 +847,9 @@ router.route("/information").post(function(req,res){
 });
 });
 
+/**
+ * 流程列表页面发布方法
+ */
 router.route("/publish_test").post(function (req,res) {
     var proc_code = req.body.proc_code;
     var version = req.body.version;

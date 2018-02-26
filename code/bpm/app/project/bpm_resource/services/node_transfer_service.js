@@ -188,7 +188,7 @@ exports.transfer=function(proc_inst_task_id,node_code,user_code,opts,memo,param_
           if (!prev_user) {
               prev_user = user_code;
           }
-          let results = await nodeAnalysisService.getNode(proc_define_id, node_code, params, true);
+          let results = await nodeAnalysisService.getNextnode(rs[0].proc_inst_id, node_code, params, true);
           if (!results.success) {
               resolve(results);
               return;
@@ -363,7 +363,7 @@ async function rejectFunction(proc_inst_task_id, node_code, params, reject, reso
     let rss=await model.$ProcessInst.find({"_id": proc_inst_id});
     if(rss.length==0){NoFound(resolve);return ;}
     var proc_define_id = rss[0].proc_define_id;
-    let rs=await nodeAnalysisService.getNode(proc_define_id, node_code, params, false);
+    let rs=await nodeAnalysisService.getNextnode(proc_inst_id, node_code, params, false);
     if(!rs.success){resolve(rs);return ;}
     var last_node = rs.data.last_node;
     var last_detail = rs.data.last_datail;
@@ -461,7 +461,7 @@ async function joinFunction(proc_inst_id, resolve, reject, node_code, params, pr
     let result=await model.$ProcessInst.find({_id:proc_inst_id});
     if(result.length==0){NoFound(resolve);return ;}
     var proc_define_id=result[0].proc_define_id;
-    let results=await nodeAnalysisService.getNode(proc_define_id, node_code, params, true);
+    let results=await nodeAnalysisService.getNextnode(proc_inst_id, node_code, params, true);
     if(!results.success){resolve(results);return ;}
     var next_detail = results.data.next_detail;
     var current_detail=results.data.current_detail;
