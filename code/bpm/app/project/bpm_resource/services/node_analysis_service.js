@@ -78,7 +78,57 @@ function getNode(process_define_id,node_code,params,flag){
     });
 }
 
+/**
+ * 流程流转中查找下一节点
+ * @type {getNode}
+ */
+exports.getNextnode=getNextnode;
+function getNextnode(inst_id,node_code,params,flag){
+    return new Promise(async function(resolve) {
+        let rs = await model.$ProcessInst.find({"_id":inst_id})
+        if (rs.length==0) {
+            resolve(utils.returnMsg(false, '1001', '没有到流程实例', null, null));
+            return ;
+        }
+        var process_define = JSON.parse(rs[0].proc_define);
+        var item_config = JSON.parse(rs[0].item_config);
+        var nodes = process_define.nodes;
+        if (flag) {
+            var node_detail;
+            for (let node in nodes) {
+                if (node == node_code) {
+                    node_detail = nodes[node];
+                }
+            }
+            let type = node_detail.type;
+            var node_array = await getValidNode(process_define, node_code, flag);
+            if (type == "chat") {
+                var valid_node = await deleteInvalidNode(process_define, item_config, node_array, node_code, params,)
+                if (valid_node.length != 1) {
+                    resolve(utils.returnMsg(false, '9999', '有效节点删除不完全，或者错误', valid_node, null));
+                } else {
+                    var result = choiceNode(item_config, process_define, node_code, valid_node[0]);
+                    resolve(utils.returnMsg(true, '0000', '查询结果正常', result, null));
+                }
+            } else if (type == "fork") {
+                var result = choiceNode(item_config, process_define, node_code, node_array[0]);
+                resolve(utils.returnMsg(true, '0000', '查询结果正常', result, null));
+            } else {
+                if (node_array.length != 1) {
+                    // console.error("节点信息错误");
+                    resolve(utils.returnMsg(false, '1000', '有效节点删除不完全，或者错误', null, null));
+                } else {
+                    var result = choiceNode(item_config, process_define, node_code, node_array[0]);
 
+                    resolve(utils.returnMsg(true, '0000', '查询结果正常', result, null));
+                }
+            }
+        } else {
+            var result = findNode(item_config, process_define, node_code, flag);
+            resolve(utils.returnMsg(true, '0000', '查找上一节点信息正常', result, null));
+        }
+    });
+}
 /**
  * 获取实例中的节点配置
  * @type {getInstNode}
@@ -927,7 +977,15 @@ async function find_all_org(org,arr){
         if(level<6)find_all_org(res[i]._id,arr);
     }
 }
-
+//
+// async function find_all_Sameorg(org,arr){
+//     arr.push(org);
+//     let t =await model_user.$CommonCoreOrg.find({"_id":org});
+//     let res=await model_user.$CommonCoreOrg.find({"org_pid":org});
+//     for (let i in res){
+//         find_all_org(res[i]._id,arr)
+//     }
+// }
 
 // exports.getAssiantMain=function(user_no,role_no,proc_code,param_json_str,node_code){
 //     var params={};
@@ -1095,7 +1153,8 @@ exports.findNextHandler=function(user_code,proc_define_id,node_code,params,proc_
 
                     // var proc_define_id=result[0].proc_define_id;
 
-                    getNode(proc_define_id,node_code,params,true).then(function(rs){
+                    getNextnode(proc_inst_id,node_code,params,true).then(function(rs){
+
 
                         if(!rs.success){
                             resolve(utils.returnMsg(false, '1001', '节点获取失败', null, rs));
@@ -1514,7 +1573,7 @@ exports.findCurrentHandler=function(user_code,proc_define_id,node_code,params,pr
 
                     // var proc_define_id=result[0].proc_define_id;
 
-                    getNode(proc_define_id,node_code,params,true).then(function(rs){
+                    getNextnode(proc_inst_id,node_code,params,true).then(function(rs){
 
                         // console.log("kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk",)
                         // console.log(rs)
@@ -2168,7 +2227,7 @@ function findNextHandler(user_code,proc_define_id,node_code,params,proc_inst_id)
             resolve(utils.returnMsg(false, '1000', '查询流程定义信息错误', null, null));
             return ;
         }
-        var rs = await getNode(proc_define_id, node_code, params, true);
+        var rs = await getNextnode(proc_inst_id, node_code, params, true);
         if (!rs.success) {
             resolve(rs);
             return;
