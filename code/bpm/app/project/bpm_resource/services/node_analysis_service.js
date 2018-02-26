@@ -1130,7 +1130,7 @@ exports.findNextHandler=function(user_code,proc_define_id,node_code,params,proc_
                             // var item_assignee_ref_task=next_detail.item_assignee_ref_task;
                             // var results=choiceNode(item_config,proc_define,item_assignee_ref_task,null);
                             var results=choiceNode(item_config,proc_define,next_detail.item_code,node_code);
-                             console.log("result   ",results);
+                             //console.log("result   ",results);
                             var ref_node_detail=results.current_detail;
                             // var ref_item_assignee_type=ref_node_detail.item_assignee_type
                             // if()
@@ -1162,7 +1162,6 @@ exports.findNextHandler=function(user_code,proc_define_id,node_code,params,proc_
                                     }
                                 })
                             }else if(type==2){
-
                                 // 角色
                                 var item_assignee_org_ids;
                                 if(next_detail.item_assignee_org_ids){
@@ -1176,7 +1175,7 @@ exports.findNextHandler=function(user_code,proc_define_id,node_code,params,proc_
                                     returnMap.proc_inst_task_assignee_name="";
                                     resolve(utils.returnMsg(true, '00000', '查询用户org', returnMap, null))
                                 }else{
-                                    returnMap.user_org_id="";
+                                    returnMap.user_org_id=[];
                                     returnMap.proc_inst_task_assignee="";
                                     returnMap.proc_inst_task_assignee_name="";
                                     resolve(utils.returnMsg(true, '00000', '查询用户org', returnMap, null))
@@ -2411,7 +2410,8 @@ exports.getNextNodeAndHandlerInfo=function(node_code,proc_task_id,proc_inst_id,p
                     }else{
 
                         let match={};
-                        if(next_detail.item_assignee_org_ids){
+
+                        if(data_s.data.user_org_id){
                             match.user_org={$in:data_s.data.user_org_id};
                         }
                         if(next_detail.item_assignee_role){

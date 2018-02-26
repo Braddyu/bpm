@@ -28,8 +28,8 @@ router.route('/list').post(function(req,res){
     userService.getUsreRolesByUserNo(userNo).then(function(result){
         console.log(result);
         if(result){
-            inst.getMyTaskQuery4Eui(page,length,userNo,result,"",proc_code,work_order_number).then(function(taskresult){
-               // console.log(taskresult)
+            inst.getMyTaskQuery4Eui(page,length,userNo,proc_code,"",work_order_number).then(function(taskresult){
+                console.log(taskresult)
                 utils.respJsonData(res, taskresult);
             }).catch(function(err_inst){
                 // console.log(err_inst);

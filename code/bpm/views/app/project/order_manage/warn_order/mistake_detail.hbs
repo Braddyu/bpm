@@ -124,14 +124,13 @@
 
             </table>
 
-                <div style="padding:5px 0;" align="center" id="button_group">
-                    <a id="submitButton" href="javascript:void(0);" class="easyui-linkbutton" onclick="submitTask()" style="width: 100px;">提交</a>
-                </div>
+
 
             </fieldset>
-<!--
-            <input type='hidden' name='_csrf' value='{{ _csrfToken }}'/>
--->
+            <div style="padding:5px 0;" align="center" id="button_group">
+                <a id="submitButton" href="javascript:void(0);" class="easyui-linkbutton" onclick="submitTask()" style="width: 100px;">提交</a>
+            </div>
+
         </form>
 
 
@@ -159,6 +158,7 @@
 <script type="text/javascript">
     //是否属于归档节点
     var endFlag=false;
+    var proc_inst_task_sign=1;
     $(document).ready(function () {
 
         //状态1:已发起的工单,2：我的待办,3:我的已办，4：新增操作
@@ -182,14 +182,22 @@
             },
             success: function (data) {
                 if(data.success){
+                    console.log(JSON.stringify(data.data));
                     //业务数据
                     var proc_vars=data.data.proc_vars;
                     //工单标题
                     var proc_title='';
                     //实例id
                     var inst_id;
-                    console.log(proc_vars);
+
                     var proc_vars_json=JSON.parse(proc_vars);
+                    //状态为0表示需要认领
+                    if(data.data.proc_inst_task_sign==0){
+                        proc_inst_task_sign=0;
+                        $("#submitButton").text('认领');
+                        $("#detail").hide();
+                    }
+
                     //待办标题字段不同
                     if(status==2){
                         proc_title=  data.data.proc_inst_task_title;
@@ -377,41 +385,7 @@ function GetQueryString(name) {
         return fmt;
     }
 
-    /**
-     * 获取下一节点处理人
-     */
-   /* function getNextNodeUser(node_code,proc_task_id,proc_inst_id){
-        $.ajax({
-            url: '{{projcfg.appurl}}/api/order_manage/order_list/nextNodeUser',
-            type: 'post',
-            dataType:'json',
-            data: {
-                node_code:node_code,
-                proc_task_id:proc_task_id,
-                proc_inst_id:proc_inst_id
-            },
-            success: function (data) {
-                if(data.success){
-                    //初始化加载
-                    $("#nextJobHandler").combobox({
-                        method: 'get',
-                        valueField:'user_no',
-                        textField:'user_name',
-                        onSelect:function(record){
-                            //下一节点处理编码赋值
-                            $("#next_code").val(record.node_code);
 
-                        }
-                    });
-                    $("#nextJobHandler").combobox("loadData",data.data);
-                }else{
-                    $.messager.alert('错误提示','获取下一节点处理人失败，请联系管理员');
-                }
-            }
-        });
-
-
-    }*/
 
     //判断当前节点是否是归档节点
     function isEndNode(proc_code,node_code,task_id,inst_id){
@@ -463,15 +437,9 @@ function GetQueryString(name) {
         if(!validate) {
             return false;
         }
-   /*     var nextNodeUser= $('#nextJobHandler').combobox('getValue');
-        if(!nextNodeUser && !endFlag){
-            $.messager.alert('提示','请选择下一节点处理人');
-            return false;
-
-        }*/
 
         //归档
-        if(endFlag){
+        if(endFlag && proc_inst_task_sign == 1){
             var formData=$('#orderDetailForm').serializeArray();
             $.ajax({
                 url: '{{projcfg.appurl}}/api/order_manage/order_list/complete',
@@ -483,6 +451,24 @@ function GetQueryString(name) {
                         parent.$("#dd").dialog('close');
                         parent.$('#orderTablelist').datagrid('reload');
                         $.messager.alert('提示','归档成功');
+                    }else{
+                        $.messager.alert('错误提示',data.error);
+                    }
+                }
+            });
+        }else if( proc_inst_task_sign == 0){
+            //开始认领
+            $.ajax({
+                url: '{{projcfg.appurl}}/api/order_manage/order_list/accept',
+                type: 'post',
+                dataType:'json',
+                data: {
+                   "id":$("#proc_task_id").val()
+                },
+                success: function (data) {
+                    if(data.success){
+                       var href= parent.$("#dd").dialog('options').href;
+                        parent.$("#dd").dialog({href:href});
                     }else{
                         $.messager.alert('错误提示',data.error);
                     }
@@ -513,7 +499,7 @@ function GetQueryString(name) {
 
             var ajax_option= {
                    url: "{{projcfg.appurl}}/api/order_manage/order_list/complete?_csrf="+'{{_csrfToken}}',//默认是form action
-                success: function (data) {
+                   success: function (data) {
                     if(data.success){
                         $.messager.alert('提示','处理成功');
                         parent.$("#dd").dialog('close');
@@ -527,29 +513,6 @@ function GetQueryString(name) {
                 }
             }
                 $('#orderDetailForm').ajaxSubmit(ajax_option);
-
-            //中间节点处理
-          /* $('#orderDetailForm').form('submit', {
-                url:'{{projcfg.appurl}}/api/order_manage/order_list/assignTask',
-                onSubmit: function(){
-
-                    // do some check
-                    // return false to prevent submit;
-                },
-                success:function(data){
-                    alert(data);
-                    if(data.success){
-                        $.messager.alert('提示','处理成功');
-                        parent.$("#dd").dialog('close');
-                        parent.$('#orderTablelist').datagrid('reload');
-
-                    }else{
-                        parent.$("#dd").dialog('close');
-                        parent.$('#orderTablelist').datagrid('reload');
-                        $.messager.alert('错误提示',data.error);
-                    }
-                }
-            });*/
         }
 
     }

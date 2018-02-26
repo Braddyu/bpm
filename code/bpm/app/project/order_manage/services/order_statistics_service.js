@@ -329,11 +329,18 @@ exports.exportDetailList= function(org_id,proc_code,level,status,dispatch_time,s
             inst_match={"inst.is_overtime":0,"inst.proc_inst_status":4};
         }
 
+        var task_flag=true;
         var task_search={"proc_inst_task_status":0}
         if(proc_inst_task_type){
-            task_search.proc_inst_task_type=proc_inst_task_type;
+            if(proc_inst_task_type=='complete'){
+                inst_match={"inst.proc_inst_status":{$in:[4]}};
+            }else{
+                task_search.proc_inst_task_type=proc_inst_task_type;
+                task_flag=false;
+            }
+
         }
-        console.log("task_search",task_search);
+        console.log("task_search",task_search,proc_inst_task_type=='complete');
         console.log("statistics",statistics);
         //依机构表为主表，关联统计表和实例表
         process_extend_model.$ProcessTaskStatistics.aggregate([
@@ -366,7 +373,7 @@ exports.exportDetailList= function(org_id,proc_code,level,status,dispatch_time,s
                 }
             },
             {
-                $unwind : { path: "$task", preserveNullAndEmptyArrays: true }
+                $unwind : { path: "$task", preserveNullAndEmptyArrays: task_flag }
             },
             {
                 $addFields: {
@@ -563,7 +570,7 @@ exports.detail_list= function(page,size,org_id,level,status,proc_code,dispatch_t
         if(!isEmptyObject(compare)){
             statistics['insert_time']=compare;
         }
-
+        var task_flag=true;
         //查询实例
         var inst_match={};
         //总数
@@ -577,11 +584,17 @@ exports.detail_list= function(page,size,org_id,level,status,proc_code,dispatch_t
         //未超时归档数
         if(status==3){
             inst_match={"inst.is_overtime":0,"inst.proc_inst_status":4};
+
         }
 
         var task_search={"proc_inst_task_status":0}
         if(proc_inst_task_type){
-            task_search.proc_inst_task_type=proc_inst_task_type;
+            if(proc_inst_task_type=='complete'){
+                inst_match={"inst.proc_inst_status":{$in:[4]}};
+            }else{
+                task_search.proc_inst_task_type=proc_inst_task_type;
+                task_flag=false;
+            }
         }
         console.log("task_search",task_search);
         console.log("statistics",statistics);
@@ -616,7 +629,7 @@ exports.detail_list= function(page,size,org_id,level,status,proc_code,dispatch_t
                 }
             },
             {
-                $unwind : { path: "$task", preserveNullAndEmptyArrays: true }
+                $unwind : { path: "$task", preserveNullAndEmptyArrays: task_flag }
             },
             {
                 $addFields: {
@@ -673,7 +686,7 @@ exports.detail_list= function(page,size,org_id,level,status,proc_code,dispatch_t
                         }
                     },
                     {
-                        $unwind : { path: "$task", preserveNullAndEmptyArrays: true }
+                        $unwind : { path: "$task", preserveNullAndEmptyArrays: task_flag }
                     },
                     {
                         $addFields: {

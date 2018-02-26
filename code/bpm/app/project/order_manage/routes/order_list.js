@@ -4,6 +4,7 @@ var utils = require('../../../../lib/utils/app_utils');
 var service = require('../services/order_list_service');
 var inst = require('../../bpm_resource/services/instance_service');
 var nodeTransferService=require("../../bpm_resource/services/node_transfer_service");
+var userService = require('../../workflow/services/user_service');
 var nodeAnalysisService=require("../../bpm_resource/services/node_analysis_service");
 var config = require('../../../../config');
 var multer = require('multer')
@@ -199,8 +200,9 @@ router.post('/assignTask',  upload.array("images"), function(req,res, next){
 /**
  * 完成任务
  */
-router.route('/complete') .post(function(req,res) {
-    console.log("开始完成任务...");
+router.post('/complete',  upload.array("images"), function(req,res, next){
+    console.log("开始完成任务...", req.body);
+    var files=req.files;
     var id = req.body.proc_task_id;//任务id
     var memo = req.body.memo;//处理意见
     var user_code = req.session.current_user.user_no;//处理人编码
@@ -218,7 +220,7 @@ router.route('/complete') .post(function(req,res) {
     var proc_vars;
     // 任务是否为空
     if(!id) {
-        utils.respMsg(res, false, '2001', '任务ID不能为空。', null, null);
+        utils.respJsonData(res, false, '2001', '任务ID不能为空。', null, null);
         return;
     }
     inst.getTaskById(id).then(function(taskresult){
@@ -228,7 +230,7 @@ router.route('/complete') .post(function(req,res) {
             var proc_inst_id =taskresult.data.proc_inst_id;
             var proc_code =taskresult.data.proc_code;
                 //流程流转方法
-            console.log("!!!!!!!!!!!!!$$$$$$$$$$",taskresult);
+
             console.log(id,node_code,user_code,true,memo,params,biz_vars,proc_vars);
             console.info(params)
             nodeTransferService.transfer(id,node_code,user_code,true,memo,params,biz_vars,proc_vars).then(function(result1){
@@ -242,7 +244,21 @@ router.route('/complete') .post(function(req,res) {
                         utils.respMsg(res, false, '1000', '回传黄河失败', null, err);
                     })
                 }else{
-                    utils.respJsonData(res, result1);
+                    if(result1.success){
+                        service.upload_images(files,id).then(function(result){
+                            utils.respJsonData(res, result);
+                        }).catch(function(err){
+                            utils.respMsg(res, false, '1000', '上传附件失败', null, err);
+                        })
+                    }else{
+                        //删除文件
+                        for(let item in files){
+                            let file=files[item];
+                            fs.unlinkSync(file.path);
+                        }
+                        utils.respJsonData(res, result1);
+                    }
+
                 }
 
             }).catch(function(err_inst){
@@ -390,7 +406,63 @@ router.post('/deleteFile', function(req, res) {
     });
 
 });
+router.route('/accept')
+// -------------------------------任务认领接口-------------------------------
+    .post(function (req, res) {
+        var id = req.body.id;//任务id
+        var userNo = req.session.current_user.user_no;;//任务userJson
 
+        // 任务是否为空
+        if (!id) {
+            utils.respMsg(res, false, '2001', 'id不能为空。', null, null);
+            return;
+        }
+        if (!userNo) {
+            utils.respMsg(res, false, '2001', '用户编号不能为空。', null, null);
+        } else {
+            //判断用户是否存在
+            inst.userInfo(userNo).then(function (rs) {
+                if (rs.success && rs.data.length == 1) {
+                    //防止同时操作情况，先查询该任务是否已经被认领
+                    inst.getTaskById(id).then(function (resulttask) {
+                        if (resulttask.success) {
+                            //如果未认领就调用认领操作方法
+                            if (resulttask.data._doc.proc_inst_task_sign == 0) {
+                                //根据用户编号，查询用户名
+                                userService.getUsreNameByUserNo(userNo).then(function (nameresult) {
+                                    //调用任务认领方式
+                                    inst.acceptTask(id, userNo, nameresult)
+                                        .then(function (result) {
+                                            utils.respJsonData(res, result);
+                                        })
+                                        .catch(function (err_inst) {
+                                            // console.log(err_inst);
+                                            logger.error("route-acceptTask", "任务认领异常", err_inst);
+                                            utils.respMsg(res, false, '1000', '认领任务异常', null, err_inst);
+                                        });
+                                });
+                            } else {
+                                utils.respMsg(res, false, '1002', '任务已被其他人员认领。', null, null);
+                            }
+                        } else {
+                            utils.respJsonData(res, resulttask);
+                        }
+                    }).catch(function (err_inst) {
+                        // console.log(err_inst);
+                        logger.error("route-getTaskById", "获取任务异常", err_inst);
+                        utils.respMsg(res, false, '1000', '获取任务异常', null, err_inst);
+                    });
+                } else {
+                    utils.respMsg(res, false, '1000', '用户不存在', null, null);
+                }
+            }).catch(function (err_inst) {
+                // console.log(err_inst);
+                logger.error("route-getUserInfo", "获取用户信息异常", err_inst);
+                utils.respMsg(res, false, '1000', '获取用户信息异常', null, err_inst);
+            });
+        }
+
+    });
 function isEmptyObject(e) {
     var t;
     for (t in e)

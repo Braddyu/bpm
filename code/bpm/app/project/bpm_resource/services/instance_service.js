@@ -894,7 +894,7 @@ exports.getMyInstList= function(userCode) {
  * @param userCode
  * @param paramMap
  */
-exports.getMyTaskQuery4Eui= function(page,size,userCode,paramMap,joinup_sys,proc_code) {
+exports.getMyTaskQuery4Eui= function(page,size,userCode,joinup_sys,proc_code,work_order_number) {
     return new Promise(function(resolve,reject){
 
         var conditionMap = {};
@@ -905,29 +905,104 @@ exports.getMyTaskQuery4Eui= function(page,size,userCode,paramMap,joinup_sys,proc
         if(proc_code){
             match.proc_code=proc_code;
         }
+        if(work_order_number){
+            match.work_order_number=work_order_number;
+        }
 
         //查询用户所在机构和角色
         model_user.$User.find({"user_no":userCode},function(err,res){
             if(err){
                 utils.returnMsg(false, '1000', '获取用户失败。', err, null);
             }else{
+                let user_roles=res[0].user_roles;
+                let user_org=res[0].user_org;
+
                 var roles_match={};
                 var orgs_match={};
                 var match2={};
                 var match3={};
+                var match4={};
+                var match5={};
                 if(res[0].user_roles){
-                    roles_match.proc_inst_task_user_role={$in:res[0].user_roles};
+                    roles_match.proc_inst_task_user_role={$in:user_roles};
                 }
                 if(res[0].user_org){
-                    orgs_match.proc_inst_task_user_org={$in:res[0].user_org};
+                    orgs_match.proc_inst_task_user_org={$in:user_org};
                 }
                 match2['$or']=[roles_match,orgs_match];
                 match3['$and']=[match2,{"proc_inst_task_sign":0,"proc_inst_task_status":0}];
 
-                match.proc_inst_task_assignee=userCode;
-                match.proc_inst_task_status=0;
-                conditionMap['$or'] = [match,match3];
-                utils.pagingQuery4Eui(model.$ProcessInstTask, page, size, conditionMap, resolve, '',  {proc_inst_task_arrive_time:-1});
+                match4.proc_inst_task_assignee=userCode;
+                match4.proc_inst_task_status=0;
+                match5['$or'] = [match3,match4];
+                conditionMap['$and'] = [match,match5];
+
+                //查询当前用户所有的待办任务和需要认领的任务
+               model.$ProcessInstTask.find(conditionMap,function(err,res){
+                   if(err){
+                       resolve(utils.returnMsg(false, '1000', '获取待办任务失败。', err, null));
+                   }else{
+                        let data={};
+                        let all_task_arr=[];
+                        for(let item in res){
+                           let task= res[item];
+                           //如果有处理人则不做筛选
+                           if(!task.proc_inst_task_assignee_name){
+                               //从需认领的任务中筛选出符合当前用户条件的认领任务
+                               //获取任务机构和用户机构的交集
+                               var org_intersection = task.proc_inst_task_user_org.filter(function(v){
+                                   return user_org.indexOf(v)!==-1
+                               })
+                               //获取任务角色和用户角色的交集
+                               var role_intersection = task.proc_inst_task_user_role.filter(function(v){
+                                   return user_roles.indexOf(v)!==-1
+                               })
+                                //如果当前任务存在结构和角色
+                               if(task.proc_inst_task_user_org.length > 0 && task.proc_inst_task_user_role.length > 0){
+                                   if(org_intersection.length > 0 && role_intersection.length > 0)
+                                       all_task_arr.push(task);
+                               }else if(task.proc_inst_task_user_org.length > 0){
+                                   //当前任务只存在机构
+                                   if(org_intersection.length > 0 )
+                                       all_task_arr.push(task);
+                               }else if(task.proc_inst_task_user_role.length > 0){
+                                   //当前任务只存在角色
+                                   if(role_intersection.length > 0)
+                                       all_task_arr.push(task);
+                               }
+
+                           }else{
+                               all_task_arr.push(task);
+                           }
+                        }
+                        //如果有传页码
+                        if(page && size ){
+                            let start = (parseInt(page) - 1) * parseInt(size) ;
+                            let end =   (start + parseInt(size)) > all_task_arr.length ? all_task_arr.length  : (start + parseInt(size));
+
+                            let task_arr=[];
+
+                            //分页查询
+                            for(let i = start ;i < end;i++){
+                                task_arr.push(all_task_arr[i]);
+                            }
+                            data.rows=task_arr;
+                            data.total=all_task_arr.length;
+                            data.success=true;
+                            data.code="0000";
+                            resolve(data);
+                        }else{
+                            data.rows=all_task_arr;
+                            data.total=all_task_arr.length;
+                            data.success=true;
+                            data.code="0000";
+                            resolve(data);
+                        }
+
+                   }
+                })
+
+                //utils.pagingQuery4Eui(model.$ProcessInstTask, page, size, conditionMap, resolve, '',  {proc_inst_task_arrive_time:-1});
             }
 
 
@@ -1031,24 +1106,24 @@ exports.getMyCompleteTaskList= function(userCode,roleArr,orgArr) {
  * @param userJson
  */
 exports.acceptTask= function(taskId,userNo,userName) {
-    var p = new Promise(function(resolve,reject){
-        var udata = {
-            proc_inst_task_sign:1,
-            proc_inst_task_handle_time : new Date(),
-            proc_inst_task_assignee : userNo,
-            proc_inst_task_assignee_name : userName
-        }
-        var update = {$set: udata};
-        var options = {};
-        model.$ProcessInstTask.update({'_id':taskId}, update, options, function (error) {
-            if(error) {
-                resolve({'success': false, 'code': '1000', 'msg': '任务认领出现异常'});
-            }else {
-                resolve({'success': true, 'code': '0000', 'msg': '任务认领成功'});
+    return new Promise( function(resolve,reject){
+        var updata = {
+                proc_inst_task_sign:1,
+                proc_inst_task_handle_time : new Date(),
+                proc_inst_task_assignee : userNo,
+                proc_inst_task_assignee_name : userName
             }
-        });
+            var updata = {$set: updata};
+            var options = {};
+            model.$ProcessInstTask.update({'_id':taskId}, updata, options, function (error) {
+                if(error) {
+                    resolve({'success': false, 'code': '1000', 'msg': '任务认领出现异常'});
+                }else {
+                    resolve({'success': true, 'code': '0000', 'msg': '任务认领成功'});
+                }
+            });
     });
-    return p;
+
 };
 /**
  * 批量认领任务

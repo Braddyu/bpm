@@ -494,6 +494,17 @@ exports.overtimeList= function(page,size,conditionMap,work_order_number) {
             {
                 $unwind : { path: "$org", preserveNullAndEmptyArrays: true }
             },
+            {
+                $graphLookup: {
+                    from: "common_bpm_proc_task_histroy",
+                    startWith: "$_id",
+                    connectFromField: "_id",
+                    connectToField: "proc_inst_id",
+                    as: "history",
+                    restrictSearchWithMatch: {"proc_inst_task_type" : "厅店处理回复"}
+                }
+            },
+
           {
                 $addFields: {
                     city_code:  "$mistake.city_code",
@@ -503,6 +514,7 @@ exports.overtimeList= function(page,size,conditionMap,work_order_number) {
                     salesperson_code: "$mistake.salesperson_code",
                     business_name: "$mistake.business_name",
                     remark:  "$mistake.remark",
+
 
                 }
             } ,
@@ -517,7 +529,7 @@ exports.overtimeList= function(page,size,conditionMap,work_order_number) {
                 reject(utils.returnMsg(false, '1000', '查询统计失败。',null,err));
             }else{
 
-
+                    console.log(res);
                     var result={rows:res,success:true};
                     process_model.$ProcessInst.aggregate([
                         {

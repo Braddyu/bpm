@@ -164,7 +164,7 @@ exports.transfer=function(proc_inst_task_id,node_code,user_code,opts,memo,param_
       if(param_json_str)
           var params = eval('(' + param_json_str + ')');
       else
-          var params ={};
+          var params ="";
       var org={};
       if(opts) {        //同意流转       //查询当前节点的下一节点信息
           var task_id_array = [];
@@ -515,7 +515,7 @@ function overFunction(current_detail,proc_inst_id, proc_inst_task_id,user_code,m
         let rs=await model.$ProcessInstTask.find(cd).sort({proc_inst_task_complete_time: -1});
         if(rs.length==0){NoFound(resolve);return ;}
         var proc_task_history = JSON.stringify(rs);
-        var data1 = {proc_inst_status: 4, proc_task_history: proc_task_history};
+        var data1 = {proc_inst_status: 4, proc_task_history: proc_task_history,proc_inst_task_complete_time:new Date()};
         var conditions1 = {_id: proc_inst_id};
         var update1 = {$set: data1};
         var options1 = {};
@@ -606,6 +606,7 @@ async function normal_process(current_detail,next_detail, next_node, proc_inst_i
     let result_t=await nodeAnalysisService.findParams(proc_inst_id,current_node);
 
     var org=rs.data;
+    console.log(org);
     var proc_inst_task_params=result_t.data;
     //创建下一步流转任务
     var condition_task = {};
@@ -643,15 +644,15 @@ async function normal_process(current_detail,next_detail, next_node, proc_inst_i
         if (params && 'undefined' != params.flag && !params.flag) {
             let step_first = await  model.$ProcessInstTask.find({
                 'proc_inst_id': r[0].proc_inst_id,
-                'proc_inst_task_code': current_node
+                'proc_inst_task_code': proc_cur_task
 
             });
             condition_task.next_name = step_first[0].next_name;
             condition_task.proc_back = 1;
             condition_task.joinup_sys = step_first[0].joinup_sys;//工单所属编号
             condition_task.proc_inst_id = step_first[0].proc_inst_id;
-            // condition_task.proc_inst_task_assignee = step_first[0].proc_inst_task_assignee;
-            // condition_task.proc_inst_task_assignee_name = step_first[0].proc_inst_task_assignee_name;
+            condition_task.proc_inst_task_assignee = step_first[0].proc_inst_task_assignee;
+            condition_task.proc_inst_task_assignee_name = step_first[0].proc_inst_task_assignee_name;
 
             // condition_task.proc_inst_task_user_role = (next_detail.item_assignee_role).indexOf(",")?(next_detail.item_assignee_role).split(","):[next_detail.item_assignee_role];
             condition_task.proc_inst_task_user_role_name = next_detail.item_assignee_role_name;
@@ -664,11 +665,12 @@ async function normal_process(current_detail,next_detail, next_node, proc_inst_i
             condition_task.proc_vars =r[0].proc_vars;// 流程变量
             condition_task.proc_inst_task_claim = "";//: Number,// 流程会签
             condition_task.proc_inst_task_sms = next_detail.item_sms_warn;// Number,// 流程是否短信提醒
-            condition_task.proc_inst_task_sign =0 ;//是否有人认领
+            condition_task.proc_inst_task_sign =1 ;//是否有人认领
             condition_task.proc_inst_task_remark = "";
             //condition_task.proc_inst_task_remark = r[0].proc_inst_task_remark;// : String// 流程处理意见
         }
         else{
+            condition_task.proc_inst_task_title = r[0].proc_inst_task_title;
             condition_task.next_name = r[0].next_name;
             condition_task.proc_back = 1;
             condition_task.joinup_sys = r[0].joinup_sys;//工单所属编号
@@ -695,6 +697,7 @@ async function normal_process(current_detail,next_detail, next_node, proc_inst_i
         condition_task.publish_status = publish_status;
         condition_task.work_order_number = work_order_number;
         arr.push(condition_task);
+
         //创建新流转任务
         let rs = await model.$ProcessInstTask.create(arr);
         //如果是发短信,目前库的user_no即电话号码，所以直接使用user_no
@@ -882,7 +885,7 @@ exports.assign_transfer=function(proc_task_id,node_code,user_code,assign_user_co
            var mobile=resultss[0].user_phone;
            var params= {
                "procName":proc_name,
-               "orderNo":result[0].work_order_number
+               "orderNo":work_order_number
            }
            await process_utils.sendSMS(mobile,params,"SMS_TEMPLET_ORDER").then(function(rs){
                console.log("短信发送成功");
