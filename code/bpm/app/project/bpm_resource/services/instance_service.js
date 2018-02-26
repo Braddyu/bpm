@@ -986,15 +986,17 @@ exports.getMyTaskQuery4Eui= function(page,size,userCode,joinup_sys,proc_code,wor
                             for(let i = start ;i < end;i++){
                                 task_arr.push(all_task_arr[i]);
                             }
-                            data.rows=task_arr;
+                            data.data=task_arr;
                             data.total=all_task_arr.length;
                             data.success=true;
+                            data.msg="获取待办成功";
                             data.code="0000";
                             resolve(data);
                         }else{
-                            data.rows=all_task_arr;
+                            data.data=all_task_arr;
                             data.total=all_task_arr.length;
                             data.success=true;
+                            data.msg="获取待办成功";
                             data.code="0000";
                             resolve(data);
                         }
