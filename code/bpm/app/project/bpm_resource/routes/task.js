@@ -54,8 +54,10 @@ exports.task=function() {
                 if (rs.success && rs.data.length == 1) {
                     userService.getUsreRolesByUserNo(userNo).then(function (result) {
                         if (result) {
+
+
                             if (page && length) {
-                                inst.getMyTaskQuery4Eui(page, length, userNo, result, joinup_sys, proc_code,"").then(function (taskresult) {
+                                inst.getMyTaskQuery4Eui(page, length, userNo, joinup_sys, proc_code,"").then(function (taskresult) {
                                     utils.respJsonData(res, taskresult);
                                 }).catch(function (err_inst) {
                                     // console.log(err_inst);
@@ -71,6 +73,8 @@ exports.task=function() {
                                     utils.respMsg(res, false, '1000', '获取数据异常', null, err_inst);
                                 });
                             }
+
+
                         } else {
                             utils.respMsg(res, false, '1000', '无用户数据', null, null);
                         }
