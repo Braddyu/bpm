@@ -894,7 +894,7 @@ exports.getMyInstList= function(userCode) {
  * @param userCode
  * @param paramMap
  */
-exports.getMyTaskQuery4Eui= function(page,size,userCode,joinup_sys,proc_code,work_order_number) {
+exports.getMyTaskQuery4Eui= function(page,size,userCode,joinup_sys,proc_code,work_order_number,proc_inst_task_sign) {
     return new Promise(function(resolve,reject){
 
         var conditionMap = {};
@@ -923,25 +923,46 @@ exports.getMyTaskQuery4Eui= function(page,size,userCode,joinup_sys,proc_code,wor
                 var match3={};
                 var match4={};
                 var match5={};
-                if(res[0].user_roles){
-                    roles_match.proc_inst_task_user_role={$in:user_roles};
-                }
-                if(res[0].user_org){
-                    orgs_match.proc_inst_task_user_org={$in:user_org};
-                }
-                match2['$or']=[roles_match,orgs_match];
-                match3['$and']=[match2,{"proc_inst_task_sign":0,"proc_inst_task_status":0}];
+                //只获取待认领任务
+                if(proc_inst_task_sign && proc_inst_task_sign==0){
+                    if(res[0].user_roles){
+                        roles_match.proc_inst_task_user_role={$in:user_roles};
+                    }
+                    if(res[0].user_org){
+                        orgs_match.proc_inst_task_user_org={$in:user_org};
+                    }
+                    match2['$or']=[roles_match,orgs_match];
+                    match3['$and']=[match2,{"proc_inst_task_sign":0,"proc_inst_task_status":0}];
+                    match5['$or'] = [match3];
+                }else if(proc_inst_task_sign && proc_inst_task_sign==1){
+                    //只获取待处理任务
+                    match4.proc_inst_task_assignee=userCode;
+                    match4.proc_inst_task_status=0;
+                    match5['$or'] = [match4];
+                }else{
+                    //获取所有待办任务
+                    if(res[0].user_roles){
+                        roles_match.proc_inst_task_user_role={$in:user_roles};
+                    }
+                    if(res[0].user_org){
+                        orgs_match.proc_inst_task_user_org={$in:user_org};
+                    }
+                    match2['$or']=[roles_match,orgs_match];
+                    match3['$and']=[match2,{"proc_inst_task_sign":0,"proc_inst_task_status":0}];
 
-                match4.proc_inst_task_assignee=userCode;
-                match4.proc_inst_task_status=0;
-                match5['$or'] = [match3,match4];
+                    match4.proc_inst_task_assignee=userCode;
+                    match4.proc_inst_task_status=0;
+
+                    match5['$or'] = [match3,match4];
+                }
+
                 conditionMap['$and'] = [match,match5];
-
                 //查询当前用户所有的待办任务和需要认领的任务
                model.$ProcessInstTask.find(conditionMap,function(err,res){
                    if(err){
                        resolve(utils.returnMsg(false, '1000', '获取待办任务失败。', err, null));
                    }else{
+
                         let data={};
                         let all_task_arr=[];
                         for(let item in res){
@@ -977,6 +998,8 @@ exports.getMyTaskQuery4Eui= function(page,size,userCode,joinup_sys,proc_code,wor
                         }
                         //如果有传页码
                         if(page && size ){
+                            page= page=='0' ? '1' :page;
+
                             let start = (parseInt(page) - 1) * parseInt(size) ;
                             let end =   (start + parseInt(size)) > all_task_arr.length ? all_task_arr.length  : (start + parseInt(size));
 
@@ -986,11 +1009,12 @@ exports.getMyTaskQuery4Eui= function(page,size,userCode,joinup_sys,proc_code,wor
                             for(let i = start ;i < end;i++){
                                 task_arr.push(all_task_arr[i]);
                             }
-                            data.data=task_arr;
+                            data.rows=task_arr;
                             data.total=all_task_arr.length;
                             data.success=true;
                             data.msg="获取待办成功";
                             data.code="0000";
+
                             resolve(data);
                         }else{
                             data.data=all_task_arr;
@@ -1004,7 +1028,7 @@ exports.getMyTaskQuery4Eui= function(page,size,userCode,joinup_sys,proc_code,wor
                    }
                 })
 
-                //utils.pagingQuery4Eui(model.$ProcessInstTask, page, size, conditionMap, resolve, '',  {proc_inst_task_arrive_time:-1});
+
             }
 
 

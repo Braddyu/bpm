@@ -1153,7 +1153,7 @@ exports.findNextHandler=function(user_code,proc_define_id,node_code,params,proc_
 
                     // var proc_define_id=result[0].proc_define_id;
 
-                    getNextnode(proc_inst_id,node_code,params,true).then(function(rs){
+                    getNode(proc_define_id,node_code,params,true).then(function(rs){
 
 
                         if(!rs.success){

@@ -168,6 +168,7 @@
         if(status==1 ||status==3){
             //隐藏处理操作
             $("#detail").hide();
+            $("#submitButton").hide();
         }else if(status==2){
             //待办操作
 
@@ -459,7 +460,7 @@ function GetQueryString(name) {
         }else if( proc_inst_task_sign == 0){
             //开始认领
             $.ajax({
-                url: '{{projcfg.appurl}}/api/order_manage/order_list/accept',
+                url: '{{projcfg.appurl}}/api/order_manage/order_todo/accept',
                 type: 'post',
                 dataType:'json',
                 data: {

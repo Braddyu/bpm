@@ -406,63 +406,7 @@ router.post('/deleteFile', function(req, res) {
     });
 
 });
-router.route('/accept')
-// -------------------------------任务认领接口-------------------------------
-    .post(function (req, res) {
-        var id = req.body.id;//任务id
-        var userNo = req.session.current_user.user_no;;//任务userJson
 
-        // 任务是否为空
-        if (!id) {
-            utils.respMsg(res, false, '2001', 'id不能为空。', null, null);
-            return;
-        }
-        if (!userNo) {
-            utils.respMsg(res, false, '2001', '用户编号不能为空。', null, null);
-        } else {
-            //判断用户是否存在
-            inst.userInfo(userNo).then(function (rs) {
-                if (rs.success && rs.data.length == 1) {
-                    //防止同时操作情况，先查询该任务是否已经被认领
-                    inst.getTaskById(id).then(function (resulttask) {
-                        if (resulttask.success) {
-                            //如果未认领就调用认领操作方法
-                            if (resulttask.data._doc.proc_inst_task_sign == 0) {
-                                //根据用户编号，查询用户名
-                                userService.getUsreNameByUserNo(userNo).then(function (nameresult) {
-                                    //调用任务认领方式
-                                    inst.acceptTask(id, userNo, nameresult)
-                                        .then(function (result) {
-                                            utils.respJsonData(res, result);
-                                        })
-                                        .catch(function (err_inst) {
-                                            // console.log(err_inst);
-                                            logger.error("route-acceptTask", "任务认领异常", err_inst);
-                                            utils.respMsg(res, false, '1000', '认领任务异常', null, err_inst);
-                                        });
-                                });
-                            } else {
-                                utils.respMsg(res, false, '1002', '任务已被其他人员认领。', null, null);
-                            }
-                        } else {
-                            utils.respJsonData(res, resulttask);
-                        }
-                    }).catch(function (err_inst) {
-                        // console.log(err_inst);
-                        logger.error("route-getTaskById", "获取任务异常", err_inst);
-                        utils.respMsg(res, false, '1000', '获取任务异常', null, err_inst);
-                    });
-                } else {
-                    utils.respMsg(res, false, '1000', '用户不存在', null, null);
-                }
-            }).catch(function (err_inst) {
-                // console.log(err_inst);
-                logger.error("route-getUserInfo", "获取用户信息异常", err_inst);
-                utils.respMsg(res, false, '1000', '获取用户信息异常', null, err_inst);
-            });
-        }
-
-    });
 function isEmptyObject(e) {
     var t;
     for (t in e)
