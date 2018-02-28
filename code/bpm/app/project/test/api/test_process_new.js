@@ -147,7 +147,7 @@ function getTaskquery(taskId){
                 resolve(JSON.parse(res));
             },
             REQ_HEADERS,
-            {taskId:taskId},
+            {taskId:taskId,a:""},
             'utf8').on('error', function (e) {
             console.log("Got error: " + e.message);
             resolve({'success':false,'code':'1000','msg':'获取指定任务信息数据异常'});
@@ -414,22 +414,22 @@ function getHistory(user_no,page,rows){
  //        //    });
  //        //});
  //
- //        var taskid= "";
- //        var pro_inst_id="";
- //        //创建流程实例  ok
- //        it("createAndAcceptAssign", function() {
- //            console.log("********************************   创建流程实例https-post开始   *************************************");
- //            var map= {}
- //            map.flag="";
- //            return createAndAcceptAssign('p-999',1,'完整测试流程测试','admin','系统管理员','processDefineDiv_node_2','admin','处理内容测试','','',JSON.stringify(map),'warnSys_node',"系统管理员").then(function(result){
- //                console.log(result);
- //                 taskid=result.data[0].pay_task_id;
- //                 pro_inst_id=result.data[0]._id;
- //                console.log("********************************  创建流程实例https-post结束   *************************************");
- //                //assert.equal(result.success, true);
- //                process = result;
- //            });
- //        });
+ //        //var taskid= "";
+ //        //var pro_inst_id="";
+ //        ////创建流程实例  ok
+ //        //it("createAndAcceptAssign", function() {
+ //        //    console.log("********************************   创建流程实例https-post开始   *************************************");
+ //        //    var map= {}
+ //        //    map.flag="";
+ //        //    return createAndAcceptAssign('p-999',1,'完整测试流程测试','admin','系统管理员','processDefineDiv_node_2','admin','处理内容测试','','',JSON.stringify(map),'warnSys_node',"系统管理员").then(function(result){
+ //        //        console.log(result);
+ //        //         taskid=result.data[0].pay_task_id;
+ //        //         pro_inst_id=result.data[0]._id;
+ //        //        console.log("********************************  创建流程实例https-post结束   *************************************");
+ //        //        //assert.equal(result.success, true);
+ //        //        process = result;
+ //        //    });
+ //        //});
  //
  //        //流程实例下一节点名称和处理人信息  ok
  //        //it("getnodeAnduser", function() {
@@ -457,6 +457,17 @@ function getHistory(user_no,page,rows){
  //        //});
  //        //
  //
+ //        ////获取指定任务 ok
+ //        //it("getTaskquery", function() {
+ //        //    console.log("********************************   获取指定任务https-post开始   *************************************");
+ //        //    return getTaskquery(taskid).then(function(result){
+ //        //        console.log(result);
+ //        //        console.log("********************************   获取指定任务https-post结束   *************************************");
+ //        //        //assert.equal(result.success, true);
+ //        //        process = result;
+ //        //    });
+ //        //});
+ //
  //        //
  //        ////流程实例当前节点处理信息   报错
  //        //it("getCurrent_users", function() {
@@ -473,26 +484,17 @@ function getHistory(user_no,page,rows){
  //        ////查询某一条待办的详细信息
  //        //it("getSingleTodo", function() {
  //        //    console.log("********************************   查询某一条待办的详细信息https-post开始   *************************************");
- //        //    return getSingleTodo('admin','5a3c5fe72f5a2810909fab1d').then(function(result){
+ //        //    return getSingleTodo('admin',taskid).then(function(result){
  //        //        console.log(result);
  //        //        console.log("********************************  查询某一条待办的详细信息https-post结束   *************************************");
  //        //        //assert.equal(result.success, true);
  //        //        process = result;
  //        //    });
  //        //});
- //        //
  //
  //
- //        ////获取指定任务
- //        //it("getTaskquery", function() {
- //        //    console.log("********************************   获取指定任务https-post开始   *************************************");
- //        //    return getTaskquery("5a7fe09de4cae91f2c9ed897").then(function(result){
- //        //        console.log(result);
- //        //        console.log("********************************   获取指定任务https-post结束   *************************************");
- //        //        //assert.equal(result.success, true);
- //        //        process = result;
- //        //    });
- //        //});
+ //
+ //
  //        //
  //        //
  //        ////认领任务
