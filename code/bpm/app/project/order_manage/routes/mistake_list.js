@@ -24,10 +24,13 @@ router.route('/list').post(function(req,res){
         conditionMap.mistake_time =queryDate.replace(/\-/g,'');
     }
     if(status){
-        status=status.split(",");
-        conditionMap.status={$in:status};
+        var dataIntArr=[]
+        status=status.split(",").forEach(function(data,index,arr){
+            dataIntArr.push(+data);
+        });  ;
+        conditionMap.status={$in:dataIntArr};
     }else{
-        conditionMap.status={$nin:-2};
+        conditionMap.status={$nin:[-2]};
     }
     if(city_code){
         conditionMap.city_code=city_code;

@@ -640,6 +640,9 @@ async function normal_process(current_detail,next_detail, next_node, proc_inst_i
         condition_task.proc_inst_task_assignee_name=org.proc_inst_task_assignee_name;
     }
            // resolve(ergodic(r,condition_task,proc_cur_task,next_detail,proc_inst_task_params,proc_inst_node_vars,biz_vars,proc_code,proc_name));
+    //是否为拒绝
+    let is_refuse=false;
+
     async function loop () {
         if (params && 'undefined' != params.flag && !params.flag) {
             let step_first = await  model.$ProcessInstTask.find({
@@ -668,6 +671,9 @@ async function normal_process(current_detail,next_detail, next_node, proc_inst_i
             condition_task.proc_inst_task_sign =1 ;//是否有人认领
             condition_task.proc_inst_task_remark = "";
             //condition_task.proc_inst_task_remark = r[0].proc_inst_task_remark;// : String// 流程处理意见
+
+
+            is_refuse = true;
         }
         else{
             condition_task.proc_inst_task_title = r[0].proc_inst_task_title;
@@ -700,6 +706,13 @@ async function normal_process(current_detail,next_detail, next_node, proc_inst_i
 
         //创建新流转任务
         let rs = await model.$ProcessInstTask.create(arr);
+        console.log(rs);
+        if(rs && is_refuse){
+            conditions ={_id: proc_inst_id};
+            update={$inc: {refuse_number: 1}};
+            options={};
+            await model.$ProcessInst.update(conditions, update, options);
+        }
         //如果是发短信,目前库的user_no即电话号码，所以直接使用user_no
         if (condition_task.proc_inst_task_assignee && condition_task.proc_inst_task_sms == '1') {
             var process_utils = require('../../../utils/process_util');
@@ -1135,7 +1148,7 @@ exports.do_payout=function(proc_task_id,node_code,user_code,assign_user_code,pro
 
                     var params = {
                         "procName": proc_name,
-                        "orderNo": rs[0].work_order_number
+                        "orderNo": work_order_number
                     }
                     process_utils.sendSMS(mobile, params, "SMS_TEMPLET_ORDER").then(function (rs) {
                         console.log("短信发送成功");

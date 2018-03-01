@@ -530,7 +530,7 @@ exports.createInstance=function(proc_code,proc_ver,proc_title,param_json_str,pro
         condition.proc_name = rs_s[0].proc_name;
         condition.next_name = next_name;
         condition.proc_task_ver = proc_ver;
-         if(nodeDetail.next_detail)      {
+         if(nodeDetail.next_detail){
              //创建流程任务
              let taskresult=await insertTask(insresult,condition);
              resolve(taskresult);
@@ -658,6 +658,7 @@ function insertTask(result,condition){
         task.previous_step =[];
         task.publish_status = condition.publish_status;
         task.proc_task_ver = condition.proc_task_ver;
+
         var arr=[];
         arr.push(task);
         //写入数据库创建流程任务表
@@ -734,6 +735,7 @@ function saveIns(dataMap,proc_code,proc_title,user_code){
             inst.joinup_sys = dataMap.joinup_sys;//工单所属系统编号
             inst.publish_status = dataMap.publish_status;
             inst.is_overtime = 0;//是否超时
+            inst.refuse_number = 0;
             var arr = [];
             arr.push(inst);
 

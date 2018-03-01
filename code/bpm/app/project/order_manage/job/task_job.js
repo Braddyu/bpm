@@ -20,7 +20,7 @@ var rule = new schedule.RecurrenceRule();
 async function task() {
     try{
         //查询未归档未超时的差错工单和预警工单
-        let instList=await process_model.$ProcessInst.find({"proc_inst_status":{$nin:4},"proc_code":{$in:['p-109','p-201']},"is_overtime":'0'});
+        let instList=await process_model.$ProcessInst.find({"proc_inst_status":{$nin:4},"proc_code":{$in:['p-201'],"proc_cur_task_name" : "厅店处理回复"},"is_overtime":'0'});
         let now=new Date().getTime();
         for(let item in instList){
             let proc_vars=JSON.parse(instList[item].proc_vars);

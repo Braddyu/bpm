@@ -20,7 +20,59 @@ var xlsx = require('node-xlsx');
 exports.getMistakeListPage= function(page, size, conditionMap) {
 
     var p = new Promise(function(resolve,reject){
-        utils.pagingQuery4Eui(mistake_model.$ProcessMistake, page, size, conditionMap, resolve, '',  {});
+        page = (page=='0') ? 1 : parseInt(page);
+        size = parseInt(size);
+
+        mistake_model.$ProcessMistake.aggregate([
+            {
+                $match: conditionMap
+            },
+            {
+                $lookup: {
+                    from: "common_bpm_org_info",
+                    localField: 'channel_id',
+                    foreignField: "company_code",
+                    as: "org"
+                }
+            },
+            {
+                $unwind : { path: "$org", preserveNullAndEmptyArrays: true }
+            },
+            {
+                $addFields: {
+                    channel_name:  "$org.org_name"
+                }
+            } ,
+            {
+                $skip : (page - 1) * size
+            },
+            {
+                $limit : size
+            },
+            ]).exec(function(err,res){
+
+               var result={rows:res,success:true};
+               mistake_model.$ProcessMistake.aggregate([
+                {
+                    $match: conditionMap
+                },
+                {
+                    $group: {
+                        _id : null,
+                        count:{$sum:1}
+                    }
+                }
+            ]).exec(function(err,res){
+                if(res.length==0){
+                    result.total=0;
+                }else{
+                    result.total=res[0].count;
+                }
+                resolve(result);
+
+            })
+           })
+    //    utils.pagingQuery4Eui(mistake_model.$ProcessMistake, page, size, conditionMap, resolve, '',  {});
 
     });
 
@@ -235,7 +287,7 @@ function insertMistake(mistake,three_node_config,proc_code,user_name,role_name,q
        //工号和业务名称必须存在
        if(mistake.salesperson_code && mistake.business_name) {
            //查找用户
-           user_model.$User.find({"salesperson_code":mistake.salesperson_code}, function (err, res) {
+           user_model.$User.find({"work_id":mistake.salesperson_code}, function (err, res) {
                if (err) {
                    reject({'success': false, 'code': '1000', 'msg': '找用户系统错误', "error": err});
                } else {
@@ -494,16 +546,7 @@ exports.overtimeList= function(page,size,conditionMap,work_order_number) {
             {
                 $unwind : { path: "$org", preserveNullAndEmptyArrays: true }
             },
-            {
-                $graphLookup: {
-                    from: "common_bpm_proc_task_histroy",
-                    startWith: "$_id",
-                    connectFromField: "_id",
-                    connectToField: "proc_inst_id",
-                    as: "history",
-                    restrictSearchWithMatch: {"proc_inst_task_type" : "厅店处理回复"}
-                }
-            },
+
 
           {
                 $addFields: {
@@ -670,6 +713,7 @@ function createExcelOvertimeList(list) {
         '受理业务',
         '稽核说明',
         '超时时间',
+        '未归档次数',
         '是否归档'
     ];
 
@@ -680,7 +724,16 @@ function createExcelOvertimeList(list) {
         var json=JSON.parse(c.proc_vars)
         var end_time=new Date(json.end_time).getTime();
         var now=new Date().getTime();
-
+        var time;
+        if(c.proc_inst_status==4){
+            var json=JSON.parse(value)
+            var end_time=new Date(json.end_time).getTime();
+            var complete_time=new Date(row.proc_inst_task_complete_time).getTime();
+            time= formatDuring(complete_time - end_time);
+        }else{
+            var now=new Date().getTime();
+            time= formatDuring(now - end_time);
+        }
         const tmp = [
             c.city_code,
             c.country_code,
@@ -691,7 +744,8 @@ function createExcelOvertimeList(list) {
             c.work_order_number,
             c.business_name,
             c.remark,
-            formatDuring(now-end_time),
+            time,
+            c.refuse_number,
             c.proc_inst_status=='4'?'归档':'未归档'
         ]
 

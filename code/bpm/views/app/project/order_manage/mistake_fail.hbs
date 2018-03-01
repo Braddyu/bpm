@@ -78,6 +78,7 @@
             queryParams:{
                 status:-1,
             },
+            pageSize: 20,
             striped:true,
             fitColumns:true,
             border:false,
@@ -90,13 +91,20 @@
                 {"field":"_id",checkbox:true},
                 {"field": "mistake_time","title":"日期","width":30},
                 {"field": "city_code","title":"地市编码","width":30},
-                {"field": "BOSS_NUM","title":"BOSS订单编码","width":80},
-                {"field": "staff_num","title":"营业员工号","width":45},
-                {"field": "channel_type","title":"渠道类型","width":30},
-                {"field": "channel_org","title":"渠道组织","width":30},
-                {"field": "business_num","title":"业务编码","width":50},
+                {"field": "channel_id","title":"渠道编码","width":30},
+                {"field": "channel_name","title":"渠道名称","width":100,
+                    formatter:function(value,row,index){
+                        if(!value)
+                            return "<span style='color:red'>不存在的渠道</span>";
+                        else
+                            return value;
+
+                    }},
+                {"field": "BOSS_CODE","title":"BOSS订单编码","width":80},
+                {"field": "salesperson_code","title":"营业员工号","width":50},
+                {"field": "channel_code","title":"渠道类型","width":30},
+                {"field": "business_code","title":"业务编码","width":50},
                 {"field": "business_name","title":"业务名称","width":50},
-                {"field": "check_status","title":"稽核状态","width":25},
                 {"field": "remark","title":"稽核说明","width":50,
                     formatter:function(value,row,index){
                         return "<span title='" + value + "'>" + value + "</span>";

@@ -122,6 +122,7 @@
             singleSelect:true,
             selectOnCheck:true,
             checkOnSelect:true,
+            pageSize: 20,
             columns:[[
                 {"field":"_id",checkbox:true},
                 {"field": "work_order_number","title":"工单编号","width":55},
@@ -167,8 +168,8 @@
 
                 $('#dd').dialog({
                     title : '工单详情',
-                    width : 950,
-                    height : 550,
+                    width : 1250,
+                    height : 650,
                     closed : false,
                     cache : false,
                     content :content ,

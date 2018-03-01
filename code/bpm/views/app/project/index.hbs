@@ -120,8 +120,8 @@
 
                 $('#dd').dialog({
                     title : '工单详情',
-                    width : 950,
-                    height : 550,
+                    width : 1250,
+                    height : 650,
                     closed : false,
                     cache : false,
                     content :content ,
@@ -138,7 +138,8 @@
                 msgError('加载数据出现时发生错误,请稍候重试...');
             },
             pagination:true,
-            loadMsg:'正在加载...'
+            loadMsg:'正在加载...',
+            pageSize: 20,
         });
     }
 
@@ -164,6 +165,7 @@
             fitColumns:true,
             border:false,
             fit:true,
+            pageSize: 20,
             singleSelect:true,
             selectOnCheck:true,
             checkOnSelect:true,
@@ -207,8 +209,8 @@
 
                 $('#dd').dialog({
                     title : '工单详情',
-                    width : 950,
-                    height : 550,
+                    width : 1250,
+                    height : 650,
                     closed : false,
                     cache : false,
                     content :content ,
@@ -239,6 +241,7 @@
             fitColumns:true,
             border:false,
             fit:true,
+            pageSize: 20,
             singleSelect:true,
             selectOnCheck:true,
             checkOnSelect:true,
@@ -267,8 +270,8 @@
 
                 $('#dd').dialog({
                     title : '工单详情',
-                    width : 950,
-                    height : 550,
+                    width : 1250,
+                    height : 650,
                     closed : false,
                     cache : false,
                     content :content ,
