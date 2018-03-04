@@ -28,19 +28,35 @@ exports.getMistakeListPage= function(page, size, conditionMap) {
                 $match: conditionMap
             },
             {
-                $lookup: {
+                $graphLookup: {
                     from: "common_bpm_org_info",
-                    localField: 'channel_id',
-                    foreignField: "company_code",
-                    as: "org"
+                    startWith: "$city_code",
+                    connectFromField: "city_code",
+                    connectToField: "company_code",
+                    as: "city_org",
+                    restrictSearchWithMatch: {level:3}
                 }
             },
             {
-                $unwind : { path: "$org", preserveNullAndEmptyArrays: true }
+                $unwind : { path: "$city_org", preserveNullAndEmptyArrays: true }
+            },
+           {
+                $graphLookup: {
+                    from: "common_bpm_org_info",
+                    startWith: "$channel_id",
+                    connectFromField: "channel_id",
+                    connectToField: "company_code",
+                    as: "channel_org",
+                    restrictSearchWithMatch: {level:6}
+                }
+            },
+            {
+                $unwind : { path: "$channel_org", preserveNullAndEmptyArrays: true }
             },
             {
                 $addFields: {
-                    channel_name:  "$org.org_name"
+                    city_name:  "$city_org.org_name",
+                    channel_name:  "$channel_org.org_name"
                 }
             } ,
             {

@@ -410,6 +410,125 @@
     function openDetail(status,org_id_){
         export_org_id=org_id_;
         export_status=status;
+        var field=[
+            {"field":"_id",checkbox:true},
+            {"field": "work_order_number","title":"工单编号","width":"160px"},
+            {"field": "proc_title","title":"标题","width":"300px",
+                formatter:function(value,row,index){
+                    return "<span title='" +value + "'>" + value + "</span>";
+
+
+                }},
+            {"field": "proc_vars","title":"派单内容","width":"300px",
+                formatter:function(value,row,index){
+
+                    if(value){
+                        var json=JSON.parse(value);
+                        if(json){
+                            return "<span title='" + json.remark + "'>" + json.remark + "</span>";
+                        }else{
+                            return '<span style="color:red">派单内容格式错误</span>';
+                        }
+
+                    }else{
+                        return '无派单内容';
+                    }
+
+
+                }},
+            {"field": "proc_name","title":"类型","width":"150px"},
+            {"field": "proc_inst_task_assignee_name","title":"当前处理人","width":"150px",
+                formatter:function(value,row,index){
+                    if(row.proc_inst_status==4){
+                        return  '<span style="color:green">已归档</span>';
+                    }else{
+                        return value;
+                    }
+
+
+                }},
+            {"field": "proc_inst_task_type","title":"当前状态","width":"150px",
+                formatter:function(value,row,index){
+                    if(row.proc_inst_status==4){
+                        return  '<span style="color:green">已归档</span>';
+                    }else{
+                        return value;
+                    }
+
+
+                }},
+            {"field": "proc_start_time","title":"创建时间","width":"150px",
+                formatter:function(value,row,index){
+                    return new Date(value).Format("yyyy-MM-dd hh:mm:ss");
+
+                }},
+
+
+            {"field": "proc_start_user_name","title":"工单发起人","width":"150px"},
+            {"field": "channel_code","title":"渠道ID","width":"100px"},
+            {"field": "channel_name","title":"渠道名称","width":"300px"},
+            {"field": "user_name","title":"渠道负责人","width":"150px"},
+            {"field": "user_phone","title":"渠道负责人手机号码","width":"150px"},
+            {"field": "channel_histroy","title":"被派单渠道处理意见","width":"150px",
+                formatter:function(value,row,index){
+
+                    var remark_arr=value.toString().split(',');
+                    if(remark_arr.length>0){
+                        return remark_arr[0];
+                    }
+                }},
+        ];
+        if($("#proc_code").combobox('getValue')=='p-109'){
+            field.push({"field": "grid_code","title":"网格编码","width":"150px",
+                formatter:function(value,row,index){
+
+                        return JSON.parse(row.proc_vars).grid_code;
+
+                }});
+            field.push({"field": "grid_name","title":"网格名称","width":"150px",
+                formatter:function(value,row,index){
+                    return JSON.parse(row.proc_vars).grid_name;
+                }});
+            field.push({"field": "two_histroy","title":"网格负责人","width":"150px",
+                formatter:function(value,row,index){
+                    if(value && value.length > 0){
+                        return value[0].proc_inst_task_assignee_name;
+                    }
+                }});
+            field.push( {"field": "two_histroy1","title":"网格负责人手机号码","width":"150px",
+                formatter:function(value,row,index){
+                    if(row.two_histroy && row.two_histroy.length > 0){
+                        return row.two_histroy[0].proc_inst_task_assignee;
+                    }
+                }});
+            field.push( {"field": "two_histroy2","title":"网格处理人意见","width":"150px",
+                formatter:function(value,row,index){
+                    if(row.two_histroy  && row.two_histroy.length > 0 ){
+                        return row.two_histroy[0].proc_inst_task_remark;
+                    }
+                }})
+        }else{
+            field.push({"field": "two_histroy","title":"省级稽核负责人","width":"150px",
+                formatter:function(value,row,index){
+                    if(value && value.length > 0){
+                        return value[0].proc_inst_task_assignee_name;
+                    }
+                }});
+            field.push( {"field": "two_histroy1","title":"省级稽核负责人手机号码","width":"150px",
+                formatter:function(value,row,index){
+                    if(row.two_histroy && row.two_histroy.length > 0){
+                        return row.two_histroy[0].proc_inst_task_assignee;
+                    }
+                }});
+            field.push({"field": "two_histroy2","title":"省级稽核处理人意见","width":"150px",
+                formatter:function(value,row,index){
+                    if(row.two_histroy  && row.two_histroy.length > 0 ){
+                        return row.two_histroy[0].proc_inst_task_remark;
+                    }
+                }});
+
+        }
+
         $('#detailTable').datagrid({
             url:'{{projcfg.appurl}}/api/order_manage/order_statistics/detail_list',
             method:'post',
@@ -431,66 +550,7 @@
             singleSelect:true,
             selectOnCheck:true,
             checkOnSelect:true,
-            columns:[[
-                {"field":"_id",checkbox:true},
-                {"field": "work_order_number","title":"工单编号","width":"160px"},
-                {"field": "proc_title","title":"标题","width":"300px",
-                    formatter:function(value,row,index){
-                        return "<span title='" +value + "'>" + value + "</span>";
-
-
-                    }},
-                {"field": "proc_vars","title":"派单内容","width":"300px",
-                    formatter:function(value,row,index){
-
-                    if(value){
-                        var json=JSON.parse(value);
-                        if(json){
-                            return "<span title='" + json.remark + "'>" + json.remark + "</span>";
-                        }else{
-                            return '<span style="color:red">派单内容格式错误</span>';
-                        }
-
-                    }else{
-                        return '无派单内容';
-                    }
-
-
-                }},
-                {"field": "proc_name","title":"类型","width":"150px"},
-                {"field": "proc_inst_task_assignee_name","title":"当前处理人","width":"150px",
-                    formatter:function(value,row,index){
-                        if(row.proc_inst_status==4){
-                            return  '<span style="color:green">已归档</span>';
-                        }else{
-                            return value;
-                        }
-
-
-                    }},
-                {"field": "proc_inst_task_type","title":"当前状态","width":"150px",
-                    formatter:function(value,row,index){
-                        if(row.proc_inst_status==4){
-                            return  '<span style="color:green">已归档</span>';
-                        }else{
-                            return value;
-                        }
-
-
-                    }},
-                {"field": "proc_start_time","title":"创建时间","width":"150px",
-                    formatter:function(value,row,index){
-                        return new Date(value).Format("yyyy-MM-dd hh:mm:ss");
-
-                    }},
-
-
-                {"field": "proc_start_user_name","title":"工单发起人","width":"150px"},
-                {"field": "channel_code","title":"渠道ID","width":"100px"},
-                {"field": "channel_name","title":"渠道名称","width":"300px"},
-                {"field": "user_name","title":"渠道负责人","width":"150px"},
-                {"field": "user_phone","title":"渠道负责人手机号码","width":"150px"},
-            ]],
+            columns:[field],
             onDblClickRow:function(rowIndex, rowData){
                 var url='{{projcfg.appurl}}/api/order_manage/order_list/showDetailView?proc_code='+rowData.proc_code+'&change_id='+rowData.proc_inst_id+'&status=3';
                 var content = '<iframe src="'+url+'" width="100%" height="99%" frameborder="0" scrolling="yes"></iframe>';
