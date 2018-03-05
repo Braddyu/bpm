@@ -13,9 +13,9 @@ exports.sync_data_from_Athena=function(){
 sync_data_from_Athena();
 
 async function sync_data_from_Athena(){
-    //await update_grid_manager_data();//网格经理
-    //await update_hall_manager_data();//厅经理
-    //await update_salesperson_data();//营业员
+    await update_grid_manager_data();//网格经理
+    await update_hall_manager_data();//厅经理
+    await update_salesperson_data();//营业员
 }
 
 
@@ -94,15 +94,20 @@ function savePeason(result,type){
         a++;
         if( result[i].phone==null || result[i].phone==""){
             //电话为空  机构为空 不导入  导出到文件
-            writeFile("e:\\peasondata\\file_no_tel_type"+type+"_"+a+".txt",JSON.stringify(result[i]))
+            writeFile("e:\\peasondata\\file_no_tel.txt",JSON.stringify(result[i]))
             continue;
         }
 
         if(result[i].orgId==null ||  result[i].orgId==""){
             //电话为空  机构为空 不导入  导出到文件
-            writeFile("e:\\peasondata\\file_no_org__type"+type+"_"+a+".txt",JSON.stringify(result[i]))
+            writeFile("e:\\peasondata\\file_no_org.txt",JSON.stringify(result[i]))
             continue;
         }
+        //if(result[i].phone=='15086436539'){
+        //    console.log(result[i]);
+        //}else{
+        //    continue;
+        //}
         //查询此人员是否已在工单系统中  手机号和名字匹配上才更新
         model_org.$User.find({"login_account": result[i].phone,"user_name": result[i].name},function(err,resp) {
             model_org.$CommonCoreOrg.find({"company_code": result[i].orgId},function(err,res) {
@@ -163,12 +168,13 @@ function savePeason(result,type){
                                     if (error) {
                                         console.log(inst);
                                         console.log('修改用户信息时出现异常。'+error);
-                                        writeFile("e:\\peasondata\\file_updata异常_no_tel_type"+type+"_"+a+".txt",JSON.stringify(inst))
                                     }
                                     else {
                                         console.log('修改用户信息成功。');
                                     }
                                 });
+                            }else {
+                                writeFile("e:\\peasondata\\file_updata_no_dept.txt",JSON.stringify(result[i]))
                             }
                         }
                     }else{//不存在，添加
@@ -176,7 +182,7 @@ function savePeason(result,type){
                         model_org.$User.find({"login_account": result[i].phone},function(err,resp2) {
                             if (resp2){
                                 if(resp2.length>0) {//异常数据
-                                    writeFile("e:\\peasondata\\file_手机存在名字不对异常_no_tel_type"+type+"_"+a+".txt",JSON.stringify(result[i]))
+                                    writeFile("e:\\peasondata\\file_手机存在名字不对异常.txt",JSON.stringify(result[i]))
                                 }else{//手机不存在才添加
                                     if (res) {
                                         if(res.length>0) {//查到orgid
@@ -219,7 +225,6 @@ function savePeason(result,type){
                                                 if(error) {
                                                     console.log(inst);
                                                     console.log('新增用户时出现异常'+error);
-                                                    writeFile("e:\\peasondata\\file_add异常_no_tel_type"+type+"_"+a+".txt",JSON.stringify(inst))
                                                 }
                                                 else {
                                                     console.log( '新增用户成功');
@@ -227,6 +232,7 @@ function savePeason(result,type){
                                             });
                                         }else{//查不到部门怎么办
                                             console.log("没有部门！！！！！！！！！！！！！！！");
+                                            writeFile("e:\\peasondata\\file_add_no_dept.txt",JSON.stringify(result[i]))
                                         }
                                     } else {
                                         console.log(err)
@@ -239,13 +245,12 @@ function savePeason(result,type){
             })
         })
     };
-    console.log("同步结束！！！！！！！！！异常条数"+b);
     return ;
 }
 
 
 function writeFile(file,result){
-    fs.writeFile(file, result, function(err){
+    fs.appendFile(file, '\r\n'+result, function(err){
         if(err)
             console.log("fail " + err);
         else {
