@@ -2321,8 +2321,17 @@ function findNextHandler(user_code,proc_define_id,node_code,params,proc_inst_id)
                             resolve(utils.returnMsg(false, '10001', '查询机构信息错误5', null, null));
                             return;
                         }
+                        var map = [];
+                        for(let i in but_org){
+                            if(but_org[i]._id){
+                                map.push(but_org[i]._id);
+                            }else{
+                                return map;
+                            }
+                        }
+
                         var arr = new Array();
-                        await find_all_org(but_org[0]._id, arr);
+                        await find_all_org(map, arr);
                         let returnMap = {};
                         returnMap.proc_inst_task_assignee = "";
                         returnMap.proc_inst_task_assignee_name = "";
@@ -2357,13 +2366,31 @@ function findNextHandler(user_code,proc_define_id,node_code,params,proc_inst_id)
                             resolve(utils.returnMsg(false, '10001', '查询机构信息错误3', null, null));
                             return;
                         }
-                        let up_org = await model_user.$CommonCoreOrg.find({"_id": but_org[0].org_pid});
+                        var map = [];
+                        for(let i in but_org){
+                            if(but_org[i].org_pid){
+                                map.push(but_org[i].org_pid);
+                            }else{
+                                return map;
+                            }
+                        }
+                        //let up_org = await model_user.$CommonCoreOrg.find({"_id": {$in:but_org[0].org_pid}});
+                        let up_org = await model_user.$CommonCoreOrg.find({"_id": {$in:map}});
                         if (up_org.length==0) {
                             resolve(utils.returnMsg(false, '10001', '查询机构信息错误', null, null));
                             return;
                         }
+
+                        var map2 = [];
+                        for(let i in but_org){
+                            if(up_org[i].org_pid){
+                                map2.push(up_org[i]._id);
+                            }else{
+                                return map2;
+                            }
+                        }
                         var arr = new Array();
-                        await find_all_org(up_org[0]._id, arr);
+                        await find_all_org(map2, arr);
                         let returnMap = {};
                         returnMap.proc_inst_task_assignee = "";
                         returnMap.proc_inst_task_assignee_name = "";
@@ -2391,22 +2418,53 @@ function findNextHandler(user_code,proc_define_id,node_code,params,proc_inst_id)
                             resolve(utils.returnMsg(false, '1000', '查询机构信息错误', null, error));
                             return;
                         }
-                        let up_org = await model_user.$CommonCoreOrg.find({"_id": but_org[0].org_pid});
+                        var map = [];
+                        for(let i in but_org){
+                            if(but_org[i].org_pid){
+                                map.push(but_org[i].org_pid);
+                            }else{
+                                return map;
+                            }
+                        }
+                        //let up_org = await model_user.$CommonCoreOrg.find({"_id": but_org[0].org_pid});
+                        let up_org = await model_user.$CommonCoreOrg.find({"_id": {$in:map}});
                         if (up_org.length==0) {
                             resolve(utils.returnMsg(false, '1000', '查询机构信息错误1', null, error));
                             return;
                         }
-                        let up_up_org = await model_user.$CommonCoreOrg.find({"_id": up_org[0].org_pid});
+                        var map1 = [];
+                        for(let i in up_org){
+                            if(up_org[i].org_pid){
+                                map1.push(up_org[i].org_pid);
+                            }else{
+                                return map1;
+                            }
+                        }
+                        //let up_up_org = await model_user.$CommonCoreOrg.find({"_id": up_org[0].org_pid});
+                        let up_up_org = await model_user.$CommonCoreOrg.find({"_id": {$in:map1}});
                         if (up_up_org.length==0) {
                             resolve(utils.returnMsg(false, '1000', '查询机构信息错误2', null, error));
                             return;
                         }
+                        var map2 = [];
+                        for(let i in up_up_org){
+                            if(up_up_org[i]._id){
+                                map2.push(up_up_org[i]._id);
+                            }else{
+                                return map2;
+                            }
+                        }
                         var arr = new Array();
-                        await find_all_org(up_up_org[0]._id, arr);
+                        //await find_all_org(up_up_org[0]._id, arr);
+                        await find_all_org(map2, arr);
+                        console.log(arr)
+                        var m = arr.slice(1);
+                        var mp = [];
+                        mp.push(m);
                         let returnMap = {};
                         returnMap.proc_inst_task_assignee = "";
                         returnMap.proc_inst_task_assignee_name = "";
-                        returnMap.user_org_id = arr;
+                        returnMap.user_org_id = mp;
                         resolve(utils.returnMsg(true, '10000', '查询用户org', returnMap, null));
                     }
                 }
@@ -2467,17 +2525,15 @@ exports.getNextNodeAndHandlerInfo=function(node_code,proc_task_id,proc_inst_id,p
                         ret_map.push(temp);
                         resolve({"data":ret_map,"msg":"查询完成","error":null,"success":true,"next_node":next_detail.item_code})
                     }else{
-
                         let match={};
-
                         if(data_s.data.user_org_id){
-                            match.user_org={$in:data_s.data.user_org_id};
+                            match.user_org={$in:data_s.data.user_org_id[0]};
                         }
                         if(next_detail.item_assignee_role){
                             match.user_roles={$in:next_detail.item_assignee_role?next_detail.item_assignee_role.split(","):[next_detail.item_assignee_role]};
                         }
                         let res=await model_user.$User.find(match);
-                        if(res.length==0){ resolve({"data":null,"msg":"查询出错","error":null,"success":false});return ;}
+                        if(res.length==0){ resolve({"data":null,"msg":"查询出错1","error":null,"success":false});return ;}
                         var ret_map=[];
                         for(let  i in res ){
                             let temp={};
