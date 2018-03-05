@@ -40,6 +40,7 @@ var userSchema = new Schema(
             inspect_sys_user_id:String,//稽查系统的user_id
             token:String,//不知道是什么东西，留着吧
             special_sign:String,//也不知道是什么东西 留着把
+            work_id:String//工号
             // user_sys : {type: Schema.Types.ObjectId, ref: 'CommonCoreSys'},// 所属系统
 
     },
