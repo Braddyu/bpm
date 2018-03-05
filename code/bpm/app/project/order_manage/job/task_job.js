@@ -9,18 +9,18 @@ const schedule = require("node-schedule");
 var rule = new schedule.RecurrenceRule();
 
 //周一到周日的24点执行
-// rule.dayOfWeek = [0, new schedule.Range(1, 6)];
-// rule.hour = 24;
-// rule.minute = 0;
+rule.dayOfWeek = [0, new schedule.Range(1, 6)];
+rule.hour = 24;
+rule.minute = 0;
 //定时任务
-// schedule.scheduleJob(rule, function(){
-//         task();
-//  });
+schedule.scheduleJob(rule, function(){
+        task();
+ });
 
 async function task() {
     try{
         //查询未归档未超时的差错工单和预警工单
-        let instList=await process_model.$ProcessInst.find({"proc_inst_status":{$nin:4},"proc_code":{$in:['p-201'],"proc_cur_task_name" : "厅店处理回复"},"is_overtime":'0'});
+        let instList=await process_model.$ProcessInst.find({"proc_inst_status":{$nin:4},"proc_code":{$in:['p-201']},"is_overtime":'0',"proc_cur_task_name" :"厅店处理回复"});
         let now=new Date().getTime();
         for(let item in instList){
             let proc_vars=JSON.parse(instList[item].proc_vars);
