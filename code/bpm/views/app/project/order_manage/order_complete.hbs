@@ -116,8 +116,8 @@
 
                 $('#dd').dialog({
                     title : '工单详情',
-                    width : 950,
-                    height : 550,
+                    width : 1250,
+                    height : 650,
                     closed : false,
                     cache : false,
                     content :content ,
@@ -135,6 +135,7 @@
                 msgError('加载数据出现时发生错误,请稍候重试...');
             },
             pagination:true,
+            pageSize: 20,
             loadMsg:'正在加载...'
         });
     }

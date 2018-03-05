@@ -187,6 +187,17 @@
                 {"field": "channel_name","title":"被派单渠道名称","width":"300px"},
                 {"field": "user_name","title":"被派单渠道负责人","width":"150px"},
                 {"field": "user_phone","title":"被派单渠道负责人手机号码","width":"150px"},
+                {"field": "channel_histroy","title":"被派单渠道处理意见","width":"150px",
+                    formatter:function(value,row,index){
+
+                        var remark_arr=value.toString().split(',');
+                        if(remark_arr.length>0){
+                            return remark_arr[0];
+                        }
+
+
+                    }},
+
             ]],
             onDblClickRow:function(rowIndex, rowData){
 
@@ -196,8 +207,8 @@
 
                 $('#dd').dialog({
                     title : '工单详情',
-                    width : 950,
-                    height : 550,
+                    width : 1250,
+                    height : 650,
                     closed : false,
                     cache : false,
                     content :content ,
@@ -214,6 +225,7 @@
                 msgError('加载数据出现时发生错误,请稍候重试...');
             },
             pagination:true,
+            pageSize: 20,
             loadMsg:'正在加载...'
         });
     }

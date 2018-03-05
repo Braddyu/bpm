@@ -20,7 +20,75 @@ var xlsx = require('node-xlsx');
 exports.getMistakeListPage= function(page, size, conditionMap) {
 
     var p = new Promise(function(resolve,reject){
-        utils.pagingQuery4Eui(mistake_model.$ProcessMistake, page, size, conditionMap, resolve, '',  {});
+        page = (page=='0') ? 1 : parseInt(page);
+        size = parseInt(size);
+
+        mistake_model.$ProcessMistake.aggregate([
+            {
+                $match: conditionMap
+            },
+            {
+                $graphLookup: {
+                    from: "common_bpm_org_info",
+                    startWith: "$city_code",
+                    connectFromField: "city_code",
+                    connectToField: "company_code",
+                    as: "city_org",
+                    restrictSearchWithMatch: {level:3}
+                }
+            },
+            {
+                $unwind : { path: "$city_org", preserveNullAndEmptyArrays: true }
+            },
+           {
+                $graphLookup: {
+                    from: "common_bpm_org_info",
+                    startWith: "$channel_id",
+                    connectFromField: "channel_id",
+                    connectToField: "company_code",
+                    as: "channel_org",
+                    restrictSearchWithMatch: {level:6}
+                }
+            },
+            {
+                $unwind : { path: "$channel_org", preserveNullAndEmptyArrays: true }
+            },
+            {
+                $addFields: {
+                    city_name:  "$city_org.org_name",
+                    channel_name:  "$channel_org.org_name"
+                }
+            } ,
+            {
+                $skip : (page - 1) * size
+            },
+            {
+                $limit : size
+            },
+            ]).exec(function(err,res){
+
+               var result={rows:res,success:true};
+               mistake_model.$ProcessMistake.aggregate([
+                {
+                    $match: conditionMap
+                },
+                {
+                    $group: {
+                        _id : null,
+                        count:{$sum:1}
+                    }
+                }
+            ]).exec(function(err,res){
+                if(res.length==0){
+                    result.total=0;
+                }else{
+                    result.total=res[0].count;
+                }
+                resolve(result);
+
+            })
+           })
+    //    utils.pagingQuery4Eui(mistake_model.$ProcessMistake, page, size, conditionMap, resolve, '',  {});
 
     });
 
@@ -235,7 +303,7 @@ function insertMistake(mistake,three_node_config,proc_code,user_name,role_name,q
        //工号和业务名称必须存在
        if(mistake.salesperson_code && mistake.business_name) {
            //查找用户
-           user_model.$User.find({"salesperson_code":mistake.salesperson_code}, function (err, res) {
+           user_model.$User.find({"work_id":mistake.salesperson_code}, function (err, res) {
                if (err) {
                    reject({'success': false, 'code': '1000', 'msg': '找用户系统错误', "error": err});
                } else {
@@ -484,33 +552,63 @@ exports.overtimeList= function(page,size,conditionMap,work_order_number) {
                 $match: conditionMap
             },
             {
-                $lookup: {
-                    from: "common_bpm_org_info",
-                    localField: 'mistake.channel_id',
-                    foreignField: "company_code",
-                    as: "org"
-                }
-            },
-            {
-                $unwind : { path: "$org", preserveNullAndEmptyArrays: true }
-            },
-            {
                 $graphLookup: {
-                    from: "common_bpm_proc_task_histroy",
-                    startWith: "$_id",
-                    connectFromField: "_id",
-                    connectToField: "proc_inst_id",
-                    as: "history",
-                    restrictSearchWithMatch: {"proc_inst_task_type" : "厅店处理回复"}
+                    from: "common_bpm_org_info",
+                    startWith: "$channel_id",
+                    connectFromField: "channel_id",
+                    connectToField: "company_code",
+                    as: "channel_org",
+                    restrictSearchWithMatch: {level:6}
                 }
             },
 
+            {
+                $graphLookup: {
+                    from: "common_bpm_org_info",
+                    startWith: "$mistake.channel_id",
+                    connectFromField: "mistake.channel_id",
+                    connectToField: "company_code",
+                    as: "channel",
+                    restrictSearchWithMatch: {level:6}
+                }
+            },
+            {
+                $unwind : { path: "$channel", preserveNullAndEmptyArrays: true }
+            },
+            {
+                $graphLookup: {
+                    from: "common_bpm_org_info",
+                    startWith: "$mistake.country_code",
+                    connectFromField: "mistake.country_code",
+                    connectToField: "company_code",
+                    as: "country",
+                    restrictSearchWithMatch: {level:4}
+                }
+            },
+            {
+                $unwind : { path: "$country", preserveNullAndEmptyArrays: true }
+            },
+            {
+                $graphLookup: {
+                    from: "common_bpm_org_info",
+                    startWith: "$mistake.city_code",
+                    connectFromField: "mistake.city_code",
+                    connectToField: "company_code",
+                    as: "city",
+                    restrictSearchWithMatch: {level:3}
+                }
+            },
+            {
+                $unwind : { path: "$city", preserveNullAndEmptyArrays: true }
+            },
           {
                 $addFields: {
                     city_code:  "$mistake.city_code",
+                    city_name: "$city.org_fullname",
                     country_code: "$mistake.country_code",
+                    country_name: "$country.org_fullname",
                     channel_id: "$mistake.channel_id",
-                    org_fullname: "$org.org_fullname",
+                    channel_name: "$channel.org_fullname",
                     salesperson_code: "$mistake.salesperson_code",
                     business_name: "$mistake.business_name",
                     remark:  "$mistake.remark",
@@ -670,6 +768,7 @@ function createExcelOvertimeList(list) {
         '受理业务',
         '稽核说明',
         '超时时间',
+        '未归档次数',
         '是否归档'
     ];
 
@@ -680,7 +779,16 @@ function createExcelOvertimeList(list) {
         var json=JSON.parse(c.proc_vars)
         var end_time=new Date(json.end_time).getTime();
         var now=new Date().getTime();
-
+        var time;
+        if(c.proc_inst_status==4){
+            var json=JSON.parse(value)
+            var end_time=new Date(json.end_time).getTime();
+            var complete_time=new Date(row.proc_inst_task_complete_time).getTime();
+            time= formatDuring(complete_time - end_time);
+        }else{
+            var now=new Date().getTime();
+            time= formatDuring(now - end_time);
+        }
         const tmp = [
             c.city_code,
             c.country_code,
@@ -691,7 +799,8 @@ function createExcelOvertimeList(list) {
             c.work_order_number,
             c.business_name,
             c.remark,
-            formatDuring(now-end_time),
+            time,
+            c.refuse_number,
             c.proc_inst_status=='4'?'归档':'未归档'
         ]
 

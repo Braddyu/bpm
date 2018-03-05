@@ -292,8 +292,15 @@ exports.exportDetailList= function(org_id,proc_code,level,status,dispatch_time,s
             statistics['channel_id']=new mongoose.Types.ObjectId(org_id);
         }
         //流程编码
+        var two_histroy={};
+        //流程编码
         if(proc_code){
             statistics['proc_code']=proc_code;
+            if(proc_code=='p-109'){
+                two_histroy={"proc_inst_task_type" : "网格经理审核"}
+            }else{
+                two_histroy={"proc_inst_task_type" : "省营业厅销售部稽核"}
+            }
         }
         //派单时间
         if(dispatch_time){
@@ -376,6 +383,26 @@ exports.exportDetailList= function(org_id,proc_code,level,status,dispatch_time,s
                 $unwind : { path: "$task", preserveNullAndEmptyArrays: task_flag }
             },
             {
+                $graphLookup: {
+                    from: "common_bpm_proc_task_histroy",
+                    startWith: "$proc_inst_id",
+                    connectFromField: "proc_inst_id",
+                    connectToField: "proc_inst_id",
+                    as: "channel_histroy",
+                    restrictSearchWithMatch: {"proc_inst_task_type" : "厅店处理回复"}
+                }
+            },
+            {
+                $graphLookup: {
+                    from: "common_bpm_proc_task_histroy",
+                    startWith: "$proc_inst_id",
+                    connectFromField: "proc_inst_id",
+                    connectToField: "proc_inst_id",
+                    as: "two_histroy",
+                    restrictSearchWithMatch: two_histroy
+                }
+            },
+            {
                 $addFields: {
                     proc_title:  "$inst.proc_title",
                     proc_name: "$inst.proc_name",
@@ -386,6 +413,7 @@ exports.exportDetailList= function(org_id,proc_code,level,status,dispatch_time,s
                     work_order_number: "$inst.work_order_number",
                     proc_inst_task_assignee_name:  "$task.proc_inst_task_assignee_name",
                     proc_inst_status:  "$inst.proc_inst_status",
+                    channel_histroy:  "$channel_histroy.proc_inst_task_remark",
                 }
             }
         ]).exec(function(err,res){
@@ -393,7 +421,7 @@ exports.exportDetailList= function(org_id,proc_code,level,status,dispatch_time,s
                 reject(utils.returnMsg(false, '1000', '查询统计失败。',null,err));
             }else{
 
-                resolve(res);
+                resolve({"data":res,"proc_code":proc_code});
             }
         })
 
@@ -440,8 +468,12 @@ function createExcelOrderList(list) {
 exports.createExcelOrderList = createExcelOrderList;
 
 
-function createExcelOrderDetail(list) {
-    const headers = [
+
+
+exports.createExcelOrderDetail =function createExcelOrderDetail(data) {
+    let list=data.data;
+    let proc_code=data.proc_code;
+    const headers =  [
         '工单编号',
         '标题',
         '派单内容',
@@ -453,8 +485,20 @@ function createExcelOrderDetail(list) {
         '渠道ID',
         '渠道名称',
         '渠道负责人',
-        '渠道负责人手机号码'
+        '渠道负责人手机号码',
+         '渠道处理意见'
     ];
+    if(proc_code=='p-109'){
+        headers.push("网格编码");
+        headers.push("网格名称");
+        headers.push("网格负责人");
+        headers.push("网格负责人手机号码");
+        headers.push("网格处理人意见");
+    }else{
+        headers.push("省级稽核处理人");
+        headers.push("省级稽核处理人手机号码");
+        headers.push("省级稽核处理人意见");
+    }
 
     var data = [headers];
 
@@ -464,16 +508,27 @@ function createExcelOrderDetail(list) {
             c.proc_title,
             JSON.parse(c.proc_vars).remark,
             c.proc_name,
-            !c.proc_inst_task_assignee_name?"已归档":c.proc_inst_task_assignee_name,
-            !c.proc_inst_task_type?"已归档":c.proc_inst_task_type,
+            !c.proc_inst_task_assignee_name? "已归档" : c.proc_inst_task_assignee_name,
+            !c.proc_inst_task_type?  "已归档" : c.proc_inst_task_type,
             c.proc_start_time,
             c.proc_start_user_name,
             c.channel_code,
             c.channel_name,
             c.user_name,
-            c.user_phone
+            c.user_phone,
+            c.channel_histroy ? c.channel_histroy[0] : ""
         ]
-
+        if(proc_code=='p-109'){
+            tmp.push(JSON.parse(c.proc_vars).grid_code);
+            tmp.push(JSON.parse(c.proc_vars).grid_name);
+            tmp.push((c.two_histroy  && c.two_histroy.length > 0 )? c.two_histroy[0].proc_inst_task_assignee_name :'');
+            tmp.push((c.two_histroy  && c.two_histroy.length > 0 )? c.two_histroy[0].proc_inst_task_assignee :'');
+            tmp.push((c.two_histroy  && c.two_histroy.length > 0 )? c.two_histroy[0].proc_inst_task_remark :'');
+        }else{
+            tmp.push((c.two_histroy  && c.two_histroy.length > 0 )? c.two_histroy[0].proc_inst_task_assignee_name :'');
+            tmp.push((c.two_histroy  && c.two_histroy.length > 0 )? c.two_histroy[0].proc_inst_task_assignee :'');
+            tmp.push((c.two_histroy  && c.two_histroy.length > 0 )? c.two_histroy[0].proc_inst_task_remark :'');
+        }
         data.push(tmp);
     });
     var ws = {
@@ -481,13 +536,20 @@ function createExcelOrderDetail(list) {
             "!row" : [{wpx: 67}]
         }
     };
-    ws['!cols']= [{wpx: 130},{wpx: 400},{wpx: 600},{wpx: 100},{wpx: 100},{wpx: 100},{wpx: 100},{wpx: 150},{wpx: 100},{wpx: 400},{wpx: 100},{wpx: 100}];
-
-
+    ws['!cols']= [{wpx: 130},{wpx: 400},{wpx: 600},{wpx: 100},{wpx: 100},{wpx: 100},{wpx: 100},{wpx: 150},{wpx: 100},{wpx: 400},{wpx: 100},{wpx: 150}];
+    if(proc_code){
+        ws['!cols'].push({wpx: 130});
+        ws['!cols'].push({wpx: 130});
+        ws['!cols'].push({wpx: 130});
+        ws['!cols'].push({wpx: 130});
+        ws['!cols'].push({wpx: 180});
+    }else{
+        ws['!cols'].push({wpx: 130});
+        ws['!cols'].push({wpx: 130});
+        ws['!cols'].push({wpx: 180});
+    }
     return xlsx.build([{name:'Sheet1',data:data}],ws);
 }
-
-exports.createExcelOrderDetail = createExcelOrderDetail;
 
 
 /**
@@ -548,9 +610,15 @@ exports.detail_list= function(page,size,org_id,level,status,proc_code,dispatch_t
             //渠道
             statistics['channel_id']=new mongoose.Types.ObjectId(org_id);
         }
+        var two_histroy={};
         //流程编码
         if(proc_code){
             statistics['proc_code']=proc_code;
+            if(proc_code=='p-109'){
+                two_histroy={"proc_inst_task_type" : "网格经理审核"}
+            }else{
+                two_histroy={"proc_inst_task_type" : "省营业厅销售部稽核"}
+            }
         }
         //派单时间
         if(dispatch_time){
@@ -632,6 +700,27 @@ exports.detail_list= function(page,size,org_id,level,status,proc_code,dispatch_t
                 $unwind : { path: "$task", preserveNullAndEmptyArrays: task_flag }
             },
             {
+                $graphLookup: {
+                    from: "common_bpm_proc_task_histroy",
+                    startWith: "$proc_inst_id",
+                    connectFromField: "proc_inst_id",
+                    connectToField: "proc_inst_id",
+                    as: "channel_histroy",
+                    restrictSearchWithMatch: {"proc_inst_task_type" : "厅店处理回复"}
+                }
+            },
+            {
+                $graphLookup: {
+                    from: "common_bpm_proc_task_histroy",
+                    startWith: "$proc_inst_id",
+                    connectFromField: "proc_inst_id",
+                    connectToField: "proc_inst_id",
+                    as: "two_histroy",
+                    restrictSearchWithMatch: two_histroy
+                }
+            },
+
+            {
                 $addFields: {
                     proc_title:  "$inst.proc_title",
                     proc_name: "$inst.proc_name",
@@ -642,6 +731,8 @@ exports.detail_list= function(page,size,org_id,level,status,proc_code,dispatch_t
                     work_order_number: "$inst.work_order_number",
                     proc_inst_task_assignee_name:  "$task.proc_inst_task_assignee_name",
                     proc_inst_status:  "$inst.proc_inst_status",
+                    channel_histroy:  "$channel_histroy.proc_inst_task_remark",
+
             }
             },
             {
@@ -654,7 +745,7 @@ exports.detail_list= function(page,size,org_id,level,status,proc_code,dispatch_t
             if(err){
                 reject(utils.returnMsg(false, '1000', '查询统计失败。',null,err));
             }else{
-
+                console.log(res);
                 var result={rows:res,success:true};
                 //计算总数
                 process_extend_model.$ProcessTaskStatistics.aggregate([

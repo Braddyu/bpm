@@ -80,11 +80,24 @@
             toolbar: '#toolbar1',
             columns:[[
                 {"field":"_id",checkbox:true},
-                {"field": "mistake_time","title":"日期","width":"100px"},
-                {"field": "city_code","title":"地市编码","width":"80px"},
-                {"field": "proc_inst_id","title":"订单号","width":"200px"},
-                {"field": "BOSS_NUM","title":"BOSS订单编码","width":"230px"},
-                {"field": "status","title":"回传结果","width":"80px",
+                {"field": "mistake_time","title":"日期","width":"140px"},
+                {"field": "city_name","title":"地市","width":"150px"},
+                {"field": "channel_id","title":"渠道编码","width":"100px"},
+                {"field": "channel_name","title":"渠道名称","width":"250px",
+                    formatter:function(value,row,index){
+                        if(!value)
+                            return "<span style='color:red'>不存在的渠道</span>";
+                        else
+                            return value;
+
+                    }},
+                {"field": "BOSS_CODE","title":"BOSS订单编码","width":"300px"},
+                {"field": "salesperson_code","title":"营业员工号","width":"140px"},
+                {"field": "channel_code","title":"渠道类型","width":"100px"},
+                {"field": "business_code","title":"业务编码","width":"150px"},
+                {"field": "business_name","title":"业务名称","width":"100px"},
+                {"field": "remark","title":"稽核说明","width":"150px"},
+                {"field": "status","title":"回传结果","width":"250px",
                     formatter:function(value,row,index){
                     if(value==3){
                         return '回传成功';
@@ -92,22 +105,12 @@
                         return '回传失败';
                     }
                 }},
-                {"field": "dispatch_remark","title":"回传说明","width":"120px",
+                {"field": "dispatch_remark","title":"回传说明","width":"300px",
                     formatter:function(value,row,index){
                         return "<span title='" + value + "'>" + value + "</span>";
 
                     }},
-                {"field": "staff_num","title":"营业员工号","width":"150px"},
-                {"field": "channel_type","title":"渠道类型","width":"80px"},
-                {"field": "channel_org","title":"渠道组织","width":"120px"},
-                {"field": "business_num","title":"业务编码","width":"120px"},
-                {"field": "business_name","title":"业务名称","width":"120px"},
-                {"field": "check_status","title":"稽核状态","width":"80px"},
-                {"field": "remark","title":"稽核说明","width":"200px",   formatter:function(value,row,index){
-                    return "<span title='" + value + "'>" + value + "</span>";
 
-                }
-                },
             ]],
             onLoadSuccess:function(json) {
                 if(!json.success) {
@@ -118,6 +121,7 @@
                 msgError('加载数据出现时发生错误,请稍候重试...');
             },
             pagination:true,
+            pageSize: 20,
             loadMsg:'正在加载...'
         });
     }
