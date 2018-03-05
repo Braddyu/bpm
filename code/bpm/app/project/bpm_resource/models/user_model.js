@@ -175,3 +175,18 @@ var commonOrgSchema = new Schema(
 // 机构model
 var CommonCoreOrg = mongoose.model('CommonCoreOrg', commonOrgSchema);
 exports.$CommonCoreOrg = CommonCoreOrg;
+
+var  synch = new Schema(
+    {
+        compTime : Date,// 同步完成时间
+        successOrfail : Number,//1 同步成功 0同步失败
+        error:String,//同步失败原因
+        failTime:Date, //同步失败时间
+        results:String //结果
+    },
+    {collection: "common_sync_data"}//mongodb集合名
+);
+
+// 机构model
+var synchData = mongoose.model('synchData', synch);
+exports.$synchData = synchData;
