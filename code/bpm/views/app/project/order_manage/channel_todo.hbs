@@ -21,6 +21,7 @@
                                         <option value="">==全部==</option>
                                         <option value="厅店处理回复">厅店处理回复</option>
                                         <option value="网格经理审核">网格经理审核</option>
+                                        <option value="complete">归档</option>
                                     </select>
                                 </div>
                                 <div class="btn-group" role="group" aria-label="...">
@@ -121,7 +122,7 @@
         $('#detailTable').datagrid({
             url:'{{projcfg.appurl}}/api/order_manage/order_statistics/channel_detail_list',
             queryParams: {
-                status: '3',
+                status: '1',
                 proc_code: $("#proc_task_code").combobox('getValue'),
                 startDate: $("#startDate").datebox('getValue'),
                 endDate: $("#endDate").datebox('getValue'),
@@ -186,6 +187,17 @@
                 {"field": "channel_name","title":"被派单渠道名称","width":"300px"},
                 {"field": "user_name","title":"被派单渠道负责人","width":"150px"},
                 {"field": "user_phone","title":"被派单渠道负责人手机号码","width":"150px"},
+                {"field": "channel_histroy","title":"被派单渠道处理意见","width":"150px",
+                    formatter:function(value,row,index){
+
+                        var remark_arr=value.toString().split(',');
+                        if(remark_arr.length>0){
+                            return remark_arr[0];
+                        }
+
+
+                    }},
+
             ]],
             onDblClickRow:function(rowIndex, rowData){
 
@@ -195,8 +207,8 @@
 
                 $('#dd').dialog({
                     title : '工单详情',
-                    width : 950,
-                    height : 550,
+                    width : 1250,
+                    height : 650,
                     closed : false,
                     cache : false,
                     content :content ,
@@ -213,6 +225,7 @@
                 msgError('加载数据出现时发生错误,请稍候重试...');
             },
             pagination:true,
+            pageSize: 20,
             loadMsg:'正在加载...'
         });
     }
@@ -234,7 +247,7 @@
             return;
         }
         downloadExcelIng = true;
-        var downloadUrl = '{{projcfg.appurl}}/api/order_manage/order_statistics/export_excel_detail?status=3&todo=1'
+        var downloadUrl = '{{projcfg.appurl}}/api/order_manage/order_statistics/export_excel_detail?status=1&todo=1'
                 +'&proc_code='+$("#proc_task_code").combobox('getValue')+'&startDate='+$("#startDate").datebox('getValue')+'&endDate='+$("#endDate").datebox('getValue')+'&proc_inst_task_type='+$("#proc_inst_task_type").combobox('getValue');
 
         window.location.href=downloadUrl;
@@ -260,7 +273,7 @@
         $('#detailTable').datagrid({
             url: '{{projcfg.appurl}}/api/order_manage/order_statistics/channel_detail_list',
             queryParams: {
-                status: '3',
+                status: '1',
                 proc_code: $("#proc_task_code").combobox('getValue'),
                 proc_inst_task_type: $("#proc_inst_task_type").combobox('getValue'),
                 startDate: $("#startDate").datebox('getValue'),

@@ -165,29 +165,45 @@
             fitColumns:true,
             border:false,
             fit:true,
+            pageSize: 20,
             selectOnCheck:true,
             checkOnSelect:true,
             toolbar: '#toolbar1',
             columns:[[
                 {"field":"_id",checkbox:true},
-                {"field": "city_code","title":"地州","width":"50px"},
-                {"field": "country_code","title":"区县","width":"50px"},
+                {"field": "city_name","title":"地州","width":"120px"},
+                {"field": "country_name","title":"区县","width":"150px"},
                 {"field": "channel_id","title":"渠道ID","width":"90px"},
-                {"field": "org_fullname","title":"营业厅名称","width":"190px"},
-                {"field": "salesperson_code","title":"工号","width":"100px"},
-                {"field": "user_phone","title":"客户号码","width":"100px"},
-                {"field": "work_order_number","title":"客户订单号","width":"180px"},
-                {"field": "business_name","title":"受理业务","width":"140px"},
+                {"field": "channel_name","title":"营业厅名称","width":"220px"},
+                {"field": "salesperson_code","title":"工号","width":"90px"},
+                {"field": "user_phone","title":"客户号码","width":"130px"},
+                {"field": "work_order_number","title":"客户订单号","width":"150px"},
+                {"field": "business_name","title":"受理业务","width":"200px"},
                 {"field": "remark","title":"稽核说明","width":"140px"},
                 {"field": "proc_vars","title":"超时时间","width":"200px",
                     formatter:function(value,row,index){
-                       var json=JSON.parse(value)
-                       var end_time=new Date(json.end_time).getTime();
-                       var now=new Date().getTime();
-                       return formatDuring(now-end_time);
+                        //归档则用归档时间计算
+                       if(row.proc_inst_status==4){
+                           var json=JSON.parse(value)
+                           var end_time=new Date(json.end_time).getTime();
+                           var complete_time=new Date(row.proc_inst_task_complete_time).getTime();
+                           return formatDuring(complete_time - end_time);
+                       }else{
+                           var json=JSON.parse(value)
+                           var end_time=new Date(json.end_time).getTime();
+                           var now=new Date().getTime();
+                           return formatDuring(now - end_time);
+                       }
 
-                    }},
-                {"field": "proc_inst_status","title":"是否归档","width":"100px",
+
+                    }
+                    },
+                {"field": "refuse_number","title":"未归档次数","width":"100px",
+                    formatter:function(value,row,index){
+                       return value+"次";
+                    }
+                },
+                {"field": "proc_inst_status","title":"是否归档","width":"80px",
                     formatter:function(value,row,index){
                         if(value == '4'){
                             return "归档";
@@ -195,7 +211,8 @@
                             return "未归档";
                         }
 
-                    }}
+                    }},
+
             ]],
             onDblClickRow:function(rowIndex, rowData){
                 var url='{{projcfg.appurl}}/api/order_manage/order_list/showDetailView?proc_code='+rowData.proc_code+'&change_id='+rowData._id+'&status=1';
@@ -204,8 +221,8 @@
 
                 $('#dd').dialog({
                     title : '工单详情',
-                    width : 950,
-                    height : 550,
+                    width : 1250,
+                    height : 750,
                     closed : false,
                     cache : false,
                     content :content ,

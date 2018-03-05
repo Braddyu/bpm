@@ -4,6 +4,7 @@ var utils = require('../../../../lib/utils/app_utils');
 var service = require('../services/order_list_service');
 var inst = require('../../bpm_resource/services/instance_service');
 var nodeTransferService=require("../../bpm_resource/services/node_transfer_service");
+var userService = require('../../workflow/services/user_service');
 var nodeAnalysisService=require("../../bpm_resource/services/node_analysis_service");
 var config = require('../../../../config');
 var multer = require('multer')
@@ -199,18 +200,19 @@ router.post('/assignTask',  upload.array("images"), function(req,res, next){
 /**
  * 完成任务
  */
-router.route('/complete') .post(function(req,res) {
-    console.log("开始完成任务...");
+router.post('/complete',  upload.array("images"), function(req,res, next){
+    console.log("开始完成任务...", req.body);
+    var files=req.files;
     var id = req.body.proc_task_id;//任务id
     var memo = req.body.memo;//处理意见
     var user_code = req.session.current_user.user_no;//处理人编码
     var handle = req.body.handle;//操作
-    var params={};//流转参数
+    var params="";//流转参数
     //通过或者归档
     if(handle=='1'){
         params='{\"flag\":true}';
         // params.flag=true;
-    }else{
+    }else if(handle=='0'){
         params='{\"flag\":false}';
         //params.flag=false;
     }
@@ -218,7 +220,7 @@ router.route('/complete') .post(function(req,res) {
     var proc_vars;
     // 任务是否为空
     if(!id) {
-        utils.respMsg(res, false, '2001', '任务ID不能为空。', null, null);
+        utils.respJsonData(res, false, '2001', '任务ID不能为空。', null, null);
         return;
     }
     inst.getTaskById(id).then(function(taskresult){
@@ -228,7 +230,7 @@ router.route('/complete') .post(function(req,res) {
             var proc_inst_id =taskresult.data.proc_inst_id;
             var proc_code =taskresult.data.proc_code;
                 //流程流转方法
-            console.log("!!!!!!!!!!!!!$$$$$$$$$$",taskresult);
+
             console.log(id,node_code,user_code,true,memo,params,biz_vars,proc_vars);
             console.info(params)
             nodeTransferService.transfer(id,node_code,user_code,true,memo,params,biz_vars,proc_vars).then(function(result1){
@@ -242,7 +244,21 @@ router.route('/complete') .post(function(req,res) {
                         utils.respMsg(res, false, '1000', '回传黄河失败', null, err);
                     })
                 }else{
-                    utils.respJsonData(res, result1);
+                    if(result1.success){
+                        service.upload_images(files,id).then(function(result){
+                            utils.respJsonData(res, result);
+                        }).catch(function(err){
+                            utils.respMsg(res, false, '1000', '上传附件失败', null, err);
+                        })
+                    }else{
+                        //删除文件
+                        for(let item in files){
+                            let file=files[item];
+                            fs.unlinkSync(file.path);
+                        }
+                        utils.respJsonData(res, result1);
+                    }
+
                 }
 
             }).catch(function(err_inst){

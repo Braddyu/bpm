@@ -20,7 +20,7 @@ var rule = new schedule.RecurrenceRule();
 async function task() {
     try{
         //查询未归档未超时的差错工单和预警工单
-        let instList=await process_model.$ProcessInst.find({"proc_inst_status":{$nin:4},"proc_code":{$in:['p-109','p-201']},"is_overtime":'0'});
+        let instList=await process_model.$ProcessInst.find({"proc_inst_status":{$nin:4},"proc_code":{$in:['p-201'],"proc_cur_task_name" : "厅店处理回复"},"is_overtime":'0'});
         let now=new Date().getTime();
         for(let item in instList){
             let proc_vars=JSON.parse(instList[item].proc_vars);
@@ -37,7 +37,7 @@ async function task() {
                         if(taskList.length>0){
                             let userList=await user_model.$User.find({"user_no":taskList[0].proc_inst_task_assignee});
                             //发送短信通知当前节点处理人
-                            if (userList.length>0) {
+                  /*          if (userList.length>0) {
                                 var process_utils = require('../../../utils/process_util');
                                 var mobile = userList[0].user_phone;
 
@@ -50,7 +50,7 @@ async function task() {
                                 }).catch(function (err) {
                                     console.log("短信发送失败", err);
                                 });
-                            }
+                            }*/
                         }
                     }
                 });

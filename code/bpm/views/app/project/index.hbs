@@ -95,6 +95,16 @@
 
                     }},
                 {"field": "proc_name","title":"工单类型","width":50},
+                {"field": "proc_inst_task_sign","title":"操作类型","width":50,
+                    formatter:function(value,row,index){
+                        if(value==0){
+                            return "待认领";
+                        }else{
+                            return "待处理";
+                        }
+
+
+                    }},
                 {"field": "proc_inst_task_name","title":"当前处理节点","width":50},
                 {"field": "proc_task_start_name","title":"申请人","width":50},
                 {"field": "proc_inst_task_arrive_time","title":"创建时间","width":80,
@@ -110,8 +120,8 @@
 
                 $('#dd').dialog({
                     title : '工单详情',
-                    width : 950,
-                    height : 550,
+                    width : 1250,
+                    height : 650,
                     closed : false,
                     cache : false,
                     content :content ,
@@ -128,7 +138,8 @@
                 msgError('加载数据出现时发生错误,请稍候重试...');
             },
             pagination:true,
-            loadMsg:'正在加载...'
+            loadMsg:'正在加载...',
+            pageSize: 20,
         });
     }
 
@@ -154,6 +165,7 @@
             fitColumns:true,
             border:false,
             fit:true,
+            pageSize: 20,
             singleSelect:true,
             selectOnCheck:true,
             checkOnSelect:true,
@@ -197,8 +209,8 @@
 
                 $('#dd').dialog({
                     title : '工单详情',
-                    width : 950,
-                    height : 550,
+                    width : 1250,
+                    height : 650,
                     closed : false,
                     cache : false,
                     content :content ,
@@ -229,6 +241,7 @@
             fitColumns:true,
             border:false,
             fit:true,
+            pageSize: 20,
             singleSelect:true,
             selectOnCheck:true,
             checkOnSelect:true,
@@ -257,8 +270,8 @@
 
                 $('#dd').dialog({
                     title : '工单详情',
-                    width : 950,
-                    height : 550,
+                    width : 1250,
+                    height : 650,
                     closed : false,
                     cache : false,
                     content :content ,

@@ -31,7 +31,8 @@ router.route('/list').post(function(req,res){
         })
         .catch(function(err){
             console.log('获取所有工单列表失败',err);
-
+            var data={rows:[],success:true};
+            utils.respJsonData(res, data);
         });
 })
 

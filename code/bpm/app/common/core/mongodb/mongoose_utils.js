@@ -33,7 +33,7 @@ exports.init = function() {
 
         db.once('open', function () {
             // we're connected!
-            console.log('db ', config.mongdb.url, ' is connected')
+            console.log('db process', config.mongdb.url, ' is connected')
         });
         $mongoose = mongoose;
     }

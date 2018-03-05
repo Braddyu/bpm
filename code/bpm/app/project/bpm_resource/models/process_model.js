@@ -167,7 +167,9 @@ var commonProcessInstSchema = new Schema(
         joinup_sys:String,//所属系统编号
         pay_task_id:String ,//派单生成的任务id
         publish_status : Number,//1 发布 0-未发布
-        is_overtime:Number//是否超时，0-未超时，1-超时
+        is_overtime:Number,//是否超时，0-未超时，1-超时
+        proc_inst_task_complete_time:Date,// 归档时间
+        refuse_number:Number// 拒绝次数
     },
     {collection: "common_bpm_proc_inst"}// mongodb集合名
 );
