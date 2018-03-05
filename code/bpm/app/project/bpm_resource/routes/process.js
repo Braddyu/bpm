@@ -285,7 +285,7 @@ router.get('/show/progressed', function(req, res, next) {
     });
 
     /**
-     *  获取跳过节点信息,处理人信息
+     *  获取跳过节点信息,处理人信息(慧眼系统)
      *
      */
 

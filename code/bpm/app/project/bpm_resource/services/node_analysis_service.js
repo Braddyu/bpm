@@ -2457,7 +2457,6 @@ function findNextHandler(user_code,proc_define_id,node_code,params,proc_inst_id)
                         var arr = new Array();
                         //await find_all_org(up_up_org[0]._id, arr);
                         await find_all_org(map2, arr);
-                        console.log(arr)
                         var m = arr.slice(1);
                         var mp = [];
                         mp.push(m);
