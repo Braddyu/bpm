@@ -552,24 +552,63 @@ exports.overtimeList= function(page,size,conditionMap,work_order_number) {
                 $match: conditionMap
             },
             {
-                $lookup: {
+                $graphLookup: {
                     from: "common_bpm_org_info",
-                    localField: 'mistake.channel_id',
-                    foreignField: "company_code",
-                    as: "org"
+                    startWith: "$channel_id",
+                    connectFromField: "channel_id",
+                    connectToField: "company_code",
+                    as: "channel_org",
+                    restrictSearchWithMatch: {level:6}
+                }
+            },
+
+            {
+                $graphLookup: {
+                    from: "common_bpm_org_info",
+                    startWith: "$mistake.channel_id",
+                    connectFromField: "mistake.channel_id",
+                    connectToField: "company_code",
+                    as: "channel",
+                    restrictSearchWithMatch: {level:6}
                 }
             },
             {
-                $unwind : { path: "$org", preserveNullAndEmptyArrays: true }
+                $unwind : { path: "$channel", preserveNullAndEmptyArrays: true }
             },
-
-
+            {
+                $graphLookup: {
+                    from: "common_bpm_org_info",
+                    startWith: "$mistake.country_code",
+                    connectFromField: "mistake.country_code",
+                    connectToField: "company_code",
+                    as: "country",
+                    restrictSearchWithMatch: {level:4}
+                }
+            },
+            {
+                $unwind : { path: "$country", preserveNullAndEmptyArrays: true }
+            },
+            {
+                $graphLookup: {
+                    from: "common_bpm_org_info",
+                    startWith: "$mistake.city_code",
+                    connectFromField: "mistake.city_code",
+                    connectToField: "company_code",
+                    as: "city",
+                    restrictSearchWithMatch: {level:3}
+                }
+            },
+            {
+                $unwind : { path: "$city", preserveNullAndEmptyArrays: true }
+            },
           {
                 $addFields: {
                     city_code:  "$mistake.city_code",
+                    city_name: "$city.org_fullname",
                     country_code: "$mistake.country_code",
+                    country_name: "$country.org_fullname",
                     channel_id: "$mistake.channel_id",
-                    org_fullname: "$org.org_fullname",
+                    channel_name: "$channel.org_fullname",
                     salesperson_code: "$mistake.salesperson_code",
                     business_name: "$mistake.business_name",
                     remark:  "$mistake.remark",
