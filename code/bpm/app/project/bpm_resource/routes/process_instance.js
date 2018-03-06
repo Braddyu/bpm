@@ -60,13 +60,22 @@ exports.process_instance=function() {
             utils.respMsg(res, false, '2001', '下一节点处理人编号为空', null, null);
             return;
         }
+        if (!userName) {
+            utils.respMsg(res, false, '2001', '操作人姓名为空。', null, null);
+            return;
+        }
         try{
             if (!user_code) {
                 utils.respMsg(res, false, '2001', '当前处理人编号为空', null, null);
+                return;
             } else {
                 //判断用户是否存在
                 inst.userInfo(user_code).then(function (rs) {
                     if (rs.success && rs.data.length == 1) {
+                        if(userName!=rs.data[0].user_name){
+                            utils.respMsg(res, false, '2001', '当前操作人姓名错误', null, null);
+                            return;
+                        }
                         //创建实例,并生成任务
                         inst.createInstance(proc_code, proc_ver, proc_title, params, proc_vars, biz_vars, user_code, userName, joinup_sys,next_name)
                             .then(function (result) {

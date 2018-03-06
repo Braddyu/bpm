@@ -1168,7 +1168,7 @@ exports.do_payout=function(proc_task_id,node_code,user_code,assign_user_code,pro
         }
         round_task().then(function (res) {
             //将任务信息返回给调用接口方
-            resolve(utils.returnMsg(true, '1000', '流程流转新增任务信息正常81111。', res, null));
+            resolve(utils.returnMsg(true, '1000', '流程流转新增任务信息正常。', res, null));
         }).catch(function (err) {
             console.log(err);
         });

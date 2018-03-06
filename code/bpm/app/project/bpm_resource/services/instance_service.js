@@ -365,7 +365,7 @@ exports.create_instance_only=function(proc_code,proc_ver,proc_title,user_code,jo
             task.proc_inst_task_code=current_detail.item_code;// : String,// 流程当前节点编码(流程任务编号)
             task.proc_inst_task_name=current_node.name;// : String,// 流程当前节点名称(任务名称)
             task.proc_inst_task_type=current_detail.item_type;// : String,// 流程当前节点类型(任务类型)
-            task.proc_inst_task_title=current_node.name;// : String,// 任务标题
+            task.proc_inst_task_title=proc_title;// : String,// 任务标题
             task.proc_inst_task_arrive_time=new Date();// : Date,// 流程到达时间
             task.proc_inst_task_handle_time=new Date();//: Date,// 流程认领时间
             task.proc_inst_task_complete_time=new Date();// : Date,// 流程完成时间
@@ -405,7 +405,7 @@ exports.create_instance_only=function(proc_code,proc_ver,proc_title,user_code,jo
             task.proc_back = 0;
             task.previous_step = '';//上一节点任务id
             let result_task=await model.$ProcessInstTask.create([task]);
-            resolve({'success':true, 'code':'0000', 'msg':'流程实例。',"error":null,"data":result_task});
+            resolve({'success':true, 'code':'0000', 'msg':'流程任务。',"error":null,"data":result_task});
         }
     });
 }
