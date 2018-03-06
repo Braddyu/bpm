@@ -541,7 +541,7 @@ router.route("/process_info").post(function(req,res){
 
 
 /*
-区县公司调账(营业员--非销户)归档接口
+区县公司调账(营业员--非销户)归档接口(慧眼系统)
  */
 router.route("/pigeonhole").post(function(req,res){
     var proc_inst_id=req.body.proc_inst_id;//流程实例id
@@ -557,7 +557,7 @@ router.route("/pigeonhole").post(function(req,res){
     }
 });
 /**
- * 任务回退接口
+ * 任务回退接口(慧眼系统)
  */
 router.route("/back").post(function(req,res){
     var _id=req.body.task_id;//当前任务id
@@ -600,7 +600,7 @@ router.route("/back").post(function(req,res){
 });
 
 /**
- * 完成任务
+ * 完成任务(慧眼系统)
  */
 router.route("/finish/task").post(async (req,res)=>{
     let user_no=req.body.user_no;
@@ -618,7 +618,7 @@ router.route("/finish/task").post(async (req,res)=>{
 });
 
 /**
- * 用户参与过的流程
+ * 用户参与过的流程(慧眼系统)
  * gdgl/api/task/find/instanceId
  */
 router.route("/find/instanceId").post(function(req,res){
