@@ -357,6 +357,7 @@ var config = {
     },
     //所属系统编号-预警工单系统编号-差错工单系统编号-稽核工单系统编号-慧眼工单系统编号
     joinup_sys:'warnSys_node,errorSys_node,auditorSys_node,syesightSys_node',
+
     AES_KEY:'1234567890ABCDEFGHIJKLMNOPQRSTUV',
     SMS_TEMPLET_ORDER:"渠道工单系统有一张需要您处理的工单，《procName》，工单号：orderNo，请及时登陆认真处理。",
     VALIDATION:"工单系统手机号登录验证码为：randomNumber，请不要透露他人。",

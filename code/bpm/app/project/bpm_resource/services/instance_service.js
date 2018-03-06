@@ -2197,3 +2197,24 @@ exports.find_instanceId = function (user_no,joinup_sys) {
     });
     return p;
 };
+/**
+ * 验证流程编码是否存在
+ * @param
+ * @returns {bluebird}
+ */
+exports.proving_proc_code = function (proc_code,proc_ver) {
+    var p = new Promise(function(resolve,reject){
+        model.$ProcessDefine.find({'proc_code':proc_code,'version':proc_ver},function(err,rs){
+            if(err){
+                resolve(utils.returnMsg(false, '1000', '查询流程定义异常',null ,err ));
+            }else{
+                if(rs.length>0){
+                    resolve(utils.returnMsg(true, '0000', '流程编码与版本号',rs ,null ));
+                }else{
+                    resolve(utils.returnMsg(false, '1000', '流程编码与版本号错误',null ,null ));
+                }
+            }
+        });
+    });
+    return p;
+}
