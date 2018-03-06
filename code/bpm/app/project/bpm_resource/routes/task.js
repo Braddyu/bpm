@@ -7,6 +7,7 @@ var nodeTransferService=require("../services/node_transfer_service");
 var userService = require('../../workflow/services/user_service');
 var nodeAnalysisService=require("../services/node_analysis_service");
 var proc = require('../services/process_service');
+var config = require('../../../../config');
 
 
     // -------------------------------查询我的待办数据接口-------------------------------
@@ -43,6 +44,10 @@ exports.task=function() {
         if (!joinup_sys) {
             utils.respMsg(res, false, '2001', '工单所属系统编号不能为空。', null, null);
             return;
+        }else{
+            if(config.joinup_sys.indexOf(joinup_sys)==-1){
+                return ;
+            }
         }
 
         // 验证用户编号是否为空
@@ -88,6 +93,10 @@ exports.task=function() {
         if (!joinup_sys) {
             utils.respMsg(res, false, '2001', '工单所属系统编号不能为空。', null, null);
             return;
+        }else{
+            if(config.joinup_sys.indexOf(joinup_sys)==-1){
+                return ;
+            }
         }
         // 验证流程名是否为空
         if (!userNo) {
