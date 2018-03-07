@@ -58,6 +58,7 @@ exports.process_instance=function() {
             return;
         }else{
             if(config.joinup_sys.indexOf(joinup_sys)==-1){
+                utils.respMsg(res, false, '2001', '工单所属系统编号不存在。', null, null);
                 return ;
             }
         }
@@ -162,6 +163,7 @@ exports.process_instance=function() {
             return;
         }else{
             if(config.joinup_sys.indexOf(joinup_sys)==-1){
+                utils.respMsg(res, false, '2001', '工单所属系统编号不存在。', null, null);
                 return ;
             }
         }

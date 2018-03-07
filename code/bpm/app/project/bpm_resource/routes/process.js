@@ -134,7 +134,6 @@ router.get('/show/progressed', function(req, res, next) {
         var user_no = req.body.user_no;
         //参数
         var params = req.body.params;
-        console.log(params);
         if (!user_no) {
             utils.respMsg(res, false, '2001', '派单人姓名不能为空。', null, null);
             return;
