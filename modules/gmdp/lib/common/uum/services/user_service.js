@@ -57,7 +57,7 @@ exports.saveUser = function(data, sysid, roleids, orgid, cb) {
                     var org = model.$CommonCoreOrg({_id:orgid});
                     //data.user_org = org;
                     data.user_org.push(org);
-
+                    roleids=roleids.toString().split(",");
                     roleids.forEach(function(roleid) {
                         var role = model.$CommonCoreRole({_id:roleid});
                         data.user_roles.push(role);
@@ -114,6 +114,7 @@ exports.getUser = function(userid, cb){
 exports.updateUser = function(id, data, sysid, roleids, orgid, cb) {
     try{
         // 检查账号是否存在
+        console.log("roleids     ,",roleids);
         console.log("data     ,",data,sysid,roleids,orgid,id);
         model.$.count({login_account:data.login_account,_id:{$ne:id}}, function(count_error, count) {
             if (count_error) {
@@ -131,7 +132,7 @@ exports.updateUser = function(id, data, sysid, roleids, orgid, cb) {
                     var org = model.$CommonCoreOrg({_id: orgid});
                     //data.user_org = org;
                     data.user_org.push(org);
-
+                    roleids=roleids.toString().split(",");
                     roleids.forEach(function (roleid) {
                         var role = model.$CommonCoreRole({_id: roleid});
                         data.user_roles.push(roleid);

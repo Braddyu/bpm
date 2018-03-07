@@ -10,7 +10,7 @@ exports.sync_data_from_Athena=function(){
     sync_data_from_Athena ();
 }
 
-sync_data_from_Athena();
+//sync_data_from_Athena();
 
 async function sync_data_from_Athena(){
     await update_grid_manager_data();//网格经理
