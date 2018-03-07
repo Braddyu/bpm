@@ -298,11 +298,11 @@
                                     var html='';
                                     if(ext=='.JPG' || ext=='.PNG'){
                                         html= '<div id="innerdiv" >'+
-                                                '<img  style="height:130px;width:130px"  src="{{projcfg.appurl}}/api/order_manage/order_list/download/'+row._id+'" />'+
+                                                '<img id="'+row._id+'"  style="height:130px;width:130px"  src="{{projcfg.appurl}}/api/order_manage/order_list/download/'+row._id+'/?t='+Math.random()+'" />'+
                                                 '</div>'
                                     }else if(ext=='.MP3' || ext=='.WAV'|| ext=='.WMA'){
                                         html= '<div id="innerdiv" >'+
-                                                '<audio    src="{{projcfg.appurl}}/api/order_manage/order_list/download/'+row._id+'"  controls="controls"></audio>'+
+                                                '<audio  id="'+row._id+'"  src="{{projcfg.appurl}}/api/order_manage/order_list/download/'+row._id+'/?t='+Math.random()+'"  controls="controls"></audio>'+
                                                 '</div>'
                                     }
 
@@ -558,12 +558,12 @@ function GetQueryString(name) {
             $.messager.alert('提示','文件限于jpg,png,MP3,WAV,WMA格式');
             return;
         }
-
-        if(  document.getElementById("#file"+file_id).fileSize > 1024 * 600){
-            $.messager.alert('提示','文件:'+temp+'必须小于600KB');
+      
+     if(  document.getElementById("file"+file_id).files[0].size> 1024 * 600){
+            $.messager.alert('提示','文件:'+document.getElementById("file"+file_id).files[0].name+'必须小于600KB');
             return;
         }
-        $.ajaxFileUpload({
+       $.ajaxFileUpload({
             type:'POST',
             url : '{{projcfg.appurl}}/api/order_manage/order_list/uploadFile?id='+file_id+"&_csrf="+'{{_csrfToken}}',
             secureuri : false,
