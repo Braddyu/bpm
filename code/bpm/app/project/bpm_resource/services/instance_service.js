@@ -2134,6 +2134,38 @@ exports.proving_taskId = function (task_id) {
     return p;
 }
 
+/*
+完成任务调用的检查任务是否已经完成
+ */
+exports.proving_Id = function (task_id) {
+    var p = new Promise(function(resolve,reject){
+      model.$ProcessTaskHistroy.find({'proc_task_id':task_id},function(err,rs){
+         if(err){
+             resolve(utils.returnMsg(false, '1000', '查找任务失败', null, err));
+         } else{
+             if(rs.length>0){
+                 resolve(utils.returnMsg(true, '0000', '任务已经归档', rs, null));
+                 return ;
+             }else{
+                 model.$ProcessInstTask.find({"_id":task_id},function (er,res) {
+                     if(er){
+                         resolve(utils.returnMsg(false, '1000', '查找任务失败', null, er));
+                     }else {
+                         if (res.length > 0 && res[0].proc_inst_task_status ==1) {
+                                 resolve(utils.returnMsg(true, '0000', '任务已完成', res, null));
+                                 return ;
+                         }else{
+                             resolve(utils.returnMsg(true, '0000', '任务未完成', res, null));
+                             return ;
+                         }
+                     }
+                 });
+             }
+         }
+      });
+    });
+    return p;
+}
 /**
  * 查找用户参与过的流程
  * @param

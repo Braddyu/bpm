@@ -208,46 +208,48 @@ exports.task=function() {
                 utils.respMsg(res, false, '2001', '任务ID不能为空。', null, null);
                 return;
             }else{
-                inst.proving_taskId(id).then(function (rs) {
-                    if(rs.data==1){
-                        utils.respMsg(res,true, '0000', '任务已完成', null, null);
+                inst.proving_Id(id).then(function (rs) {
+                    if(rs.success&&rs.data[0].proc_inst_task_status==1){
+                        utils.respMsg(res,false, '0000', '任务已完成不能重复完成', null, null);
                         return ;
+                    }else{
+                        try{
+                            if (!user_code) {
+                                utils.respMsg(res, false, '2001', '处理人编码不能为空。', null, null);
+                                return ;
+                            } else {
+                                //判断用户是否存在
+                                inst.userInfo(user_code).then(function (rs) {
+                                    if (rs.success && rs.data.length == 1) {
+                                        inst.getTaskById(id).then(function (taskresult) {
+                                            if (taskresult.success) {
+                                                var node_code = taskresult.data._doc.proc_inst_task_code;
+                                                //流程流转方法
+                                                nodeTransferService.transfer(id, node_code, user_code, true, memo, params, biz_vars, proc_vars,next_name).then(function (result1) {
+                                                    utils.respJsonData(res, result1);
+                                                }).catch(function (err_inst) {
+                                                    // console.log(err_inst);
+                                                    logger.error("route-transfer", "流程流转异常", err_inst);
+                                                    utils.respMsg(res, false, '1000', '流程流转异常', null, err_inst);
+                                                });
+                                            } else {
+                                                utils.respJsonData(res, taskresult);
+                                            }
+                                        }).catch(function (err_inst) {
+                                            logger.error("route-getTaskById", "获取任务异常", err_inst);
+                                            utils.respMsg(res, false, '1000', '获取任务异常', null, err_inst);
+                                        });
+                                    } else {
+                                        utils.respMsg(res, false, '1000', '用户不存在', null, null);
+                                    }
+                                });
+                            }
+                        }catch(e){
+                            utils.respMsg(res, false, '1000', '查询错误', null, e);
+                        }
                     }
                 });
             }
-           try{
-               if (!user_code) {
-                   utils.respMsg(res, false, '2001', '处理人编码不能为空。', null, null);
-               } else {
-                   //判断用户是否存在
-                   inst.userInfo(user_code).then(function (rs) {
-                       if (rs.success && rs.data.length == 1) {
-                           inst.getTaskById(id).then(function (taskresult) {
-                               if (taskresult.success) {
-                                   var node_code = taskresult.data._doc.proc_inst_task_code;
-                                   //流程流转方法
-                                   nodeTransferService.transfer(id, node_code, user_code, true, memo, params, biz_vars, proc_vars,next_name).then(function (result1) {
-                                       utils.respJsonData(res, result1);
-                                   }).catch(function (err_inst) {
-                                       // console.log(err_inst);
-                                       logger.error("route-transfer", "流程流转异常", err_inst);
-                                       utils.respMsg(res, false, '1000', '流程流转异常', null, err_inst);
-                                   });
-                               } else {
-                                   utils.respJsonData(res, taskresult);
-                               }
-                           }).catch(function (err_inst) {
-                               logger.error("route-getTaskById", "获取任务异常", err_inst);
-                               utils.respMsg(res, false, '1000', '获取任务异常', null, err_inst);
-                           });
-                       } else {
-                           utils.respMsg(res, false, '1000', '用户不存在', null, null);
-                       }
-                   });
-               }
-           }catch(e){
-               utils.respMsg(res, false, '1000', '查询错误', null, e);
-           }
         });
 
 // -------------------------------获取指定任务接口-------------------------------
