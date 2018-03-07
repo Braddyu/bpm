@@ -13,9 +13,9 @@ exports.sync_data_from_Athena=function(){
 //sync_data_from_Athena();
 
 async function sync_data_from_Athena(){
-    await update_grid_manager_data();//网格经理
-    await update_hall_manager_data();//厅经理
-    await update_salesperson_data();//营业员
+    //await update_grid_manager_data();//网格经理
+    //await update_hall_manager_data();//厅经理
+    //await update_salesperson_data();//营业员
 }
 
 
@@ -103,7 +103,7 @@ function savePeason(result,type){
             writeFile("e:\\peasondata\\file_no_org.txt",JSON.stringify(result[i]))
             continue;
         }
-        //if(result[i].phone=='15086436539'){
+        //if(result[i].phone=='13511927000'){
         //    console.log(result[i]);
         //}else{
         //    continue;
@@ -112,69 +112,77 @@ function savePeason(result,type){
         model_org.$User.find({"login_account": result[i].phone,"user_name": result[i].name},function(err,resp) {
             model_org.$CommonCoreOrg.find({"company_code": result[i].orgId},function(err,res) {
                     if(resp){
-                    if(resp.length>0){//已存在，做何处理
-                        if (res) {
-                            if (res.length > 0) {//查到orgid
-                                inst = resp[0];
-                                inst.user_name = result[i].name;
-                                var roleId = '';
-                                //增加角色
-                                if (type == 1) {//厅经理
-                                    roleId = ObjectID("5a266868bfb42d1e9cdd5c6e");
-                                } else if (type == 2) {//营业员
-                                    roleId = ObjectID("5a26418c5eb3fe1068448753");
-                                } else if (type == 3) {//网格经理
-                                    roleId = ObjectID("5a264057c819ed211853907a");
-                                }
-                                var roleIds = [];
-                                var flag = true;
-
-                                //遍历已有角色，如果有相等的就不加入了
-                                for (var j=0;j<inst.user_roles.length;j++) {
-                                    roleIds.push(inst.user_roles[j]);
-                                    if (inst.user_roles[j].equals(roleId)) {
-                                        flag = false;
+                        console.log(resp,res)
+                        if(resp.length>0){//已存在，做何处理
+                            if (res) {
+                                if (res.length > 0) {//查到orgid
+                                    inst = resp[0];
+                                    inst.user_name = result[i].name;
+                                    var roleId = '';
+                                    //增加角色
+                                    if (type == 1) {//厅经理
+                                        roleId = ObjectID("5a266868bfb42d1e9cdd5c6e");
+                                    } else if (type == 2) {//营业员
+                                        roleId = ObjectID("5a26418c5eb3fe1068448753");
+                                    } else if (type == 3) {//网格经理
+                                        roleId = ObjectID("5a264057c819ed211853907a");
                                     }
-                                }
+                                    var roleIds = [];
+                                    var flag = true;
 
-                                if (flag) {
-                                    roleIds.push(roleId);
-                                }
-
-                                inst.user_roles=roleIds;
-
-
-                                flag = true;
-                                var orgIds = [];
-                                //遍历已有机构，如果有相等的就不加入了
-                                for (var j=0;j<inst.user_org.length;j++) {
-                                    orgIds.push(inst.user_org[j]);
-                                    if (inst.user_org[j].equals(res[0]._id)) {
-                                        flag = false;
+                                    //遍历已有角色，如果有相等的就不加入了
+                                    for (var j=0;j<inst.user_roles.length;j++) {
+                                        roleIds.push(inst.user_roles[j]);
+                                        if (inst.user_roles[j].equals(roleId)) {
+                                            flag = false;
+                                        }
                                     }
-                                }
 
-                                if (flag) {
-                                    orgIds.push(res[0]._id);
-                                }
-
-                                inst.user_org = orgIds;
-
-                                var conditions = {"_id":resp[0]._id};
-                                var update = {$set: {"user_org": orgIds,user_roles:roleIds,user_name:result[i].name,work_id:result[i].id}};
-
-                                var options = {};
-                                model_org.$User.update(conditions,update, options, function (error) {
-                                    if (error) {
-                                        console.log(inst);
-                                        console.log('修改用户信息时出现异常。'+error);
+                                    if (flag) {
+                                        roleIds.push(roleId);
                                     }
-                                    else {
-                                        console.log('修改用户信息成功。');
+
+                                    //roleIds.push(roleId);
+                                    inst.user_roles=roleIds;
+
+                                    flag = true;
+                                    var orgIds = [];
+                                    //遍历已有机构，如果有相等的就不加入了
+                                    for (var j=0;j<inst.user_org.length;j++) {
+                                        orgIds.push(inst.user_org[j]);
+                                        if (inst.user_org[j].equals(res[0]._id)) {
+                                            flag = false;
+                                        }
                                     }
-                                });
-                            }else {
-                                writeFile("e:\\peasondata\\file_updata_no_dept.txt",JSON.stringify(result[i]))
+
+                                    if (flag) {
+                                        orgIds.push(res[0]._id);
+                                    }
+                                    //orgIds.push(res[0]._id);
+                                    inst.user_org = orgIds;
+
+                                    var conditions = {"_id":resp[0]._id};
+
+                                    var password = result[i].phone+'@cmcc';
+                                    inst.login_password = utils.encryptDataByMD5(password);
+
+                                    var update = {$set: {"login_password":inst.login_password,"user_org": inst.user_org,user_roles:inst.user_roles,user_name:inst.user_name}};
+                                    if(result[i].id){
+                                        update = {$set: {"login_password":inst.login_password,"user_org": inst.user_org,user_roles:inst.user_roles,user_name:inst.user_name  ,work_id:result[i].id}};
+                                    }
+                                    var options = {};
+                                    model_org.$User.update(conditions,update, options, function (error) {
+                                        if (error) {
+                                            console.log(inst);
+                                            console.log('修改用户信息时出现异常。'+error);
+                                        }
+                                        else {
+                                            console.log('修改用户信息成功。');
+                                        }
+                                    });
+                                }else {
+                                    writeFile("e:\\peasondata\\file_updata_no_dept.txt",JSON.stringify(result[i]))
+                                }
                             }
                         }
                     }else{//不存在，添加
@@ -189,7 +197,9 @@ function savePeason(result,type){
                                             inst.login_account = result[i].phone;
                                             inst.user_status = 1;
                                             inst.user_id = "";
-                                            inst.work_id = result[i].id;
+                                            if(result[i].id){
+                                                inst.work_id = result[i].id;
+                                            }
                                             inst.user_no = result[i].phone;
                                             inst.user_name = result[i].name;
                                             inst.user_gender = "";
@@ -241,7 +251,6 @@ function savePeason(result,type){
                             }
                         });
                     }
-                }
             })
         })
     };

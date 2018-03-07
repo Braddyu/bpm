@@ -41,7 +41,7 @@ exports.getMyCompleteTaskQuery4Eui= function(page,size,userCode,paramMap,proc_co
             conditionMap['proc_inst_task_complete_time']=compare;
         }
         console.log(conditionMap);
-        utils.pagingQuery4Eui(model.$ProcessTaskHistroy, page, size, conditionMap, resolve, '',  {proc_inst_task_arrive_time:-1});
+        utils.pagingQuery4Eui(model.$ProcessTaskHistroy, page, size, conditionMap, resolve, '',  {proc_inst_task_complete_time:-1});
     });
     return p;
 };
