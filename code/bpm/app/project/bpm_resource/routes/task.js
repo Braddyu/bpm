@@ -46,6 +46,7 @@ exports.task=function() {
             return;
         }else{
             if(config.joinup_sys.indexOf(joinup_sys)==-1){
+                utils.respMsg(res, false, '2001', '工单所属系统编号不存在。', null, null);
                 return ;
             }
         }
@@ -95,6 +96,7 @@ exports.task=function() {
             return;
         }else{
             if(config.joinup_sys.indexOf(joinup_sys)==-1){
+                utils.respMsg(res, false, '2001', '工单所属系统编号不存在。', null, null);
                 return ;
             }
         }
@@ -205,6 +207,13 @@ exports.task=function() {
             if (!id) {
                 utils.respMsg(res, false, '2001', '任务ID不能为空。', null, null);
                 return;
+            }else{
+                inst.proving_taskId(id).then(function (rs) {
+                    if(rs.data==1){
+                        utils.respMsg(res,true, '0000', '任务已完成', null, null);
+                        return ;
+                    }
+                });
             }
            try{
                if (!user_code) {
