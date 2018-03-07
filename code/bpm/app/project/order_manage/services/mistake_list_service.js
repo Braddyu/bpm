@@ -107,7 +107,7 @@ exports.dispatch= function(queryDate,check_status,user_no,user_name,role_name,bu
     var p = new Promise(function(resolve,reject){
         var queryJson={"mistake_time":queryDate,"status":0};
         if(check_status)
-            queryJson.check_status=check_status;
+            queryJson.remark=check_status;
         if(business_name)
             queryJson.business_name=business_name;
         if(city_code)

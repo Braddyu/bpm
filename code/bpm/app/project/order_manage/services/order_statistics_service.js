@@ -77,6 +77,7 @@ exports.getStatisticsListPage= function(org_id,proc_code,level,status,dispatch_t
 
         console.log("statistics",statistics);
         //依机构表为主表，关联统计表和实例表
+
         user_model.$CommonCoreOrg.aggregate([
             {
                 $match: match

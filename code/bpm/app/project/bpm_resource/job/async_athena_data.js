@@ -9,12 +9,12 @@ exports.sync_data_from_Athena=function(){
     sync_data_from_Athena ();
 }
 
-// sync_data_from_Athena();
+ //sync_data_from_Athena();
 
 async function sync_data_from_Athena(){
-      await update_country_data();
-      await update_grid_data();
-      await update_channel_data();
+      // await update_country_data();
+      // await update_grid_data();
+     // await update_channel_data();
 }
 
 
@@ -110,7 +110,7 @@ function update_channel_data(){
             "1 as orgorder,"+
             "t.status as status "+
             "from channel2_develop_baseinfo t"+
-            " where t.status =1 "//4渠道
+            " where t.status =1"//4渠道
         let condition ={};
         let result =await mysql_pool_promise.queryPromise(sql,condition);
         if(!result){
@@ -213,50 +213,51 @@ function saveGrid(mysqlData){
     }
     model_org.$CommonCoreOrg.find(parm,function (err,resp) {
         console.log("saveGrid find parent over:"+resp);
-        if (resp) {//获取区县名与网格数据相等的对应区县
+        if (resp) {
+            //获取区县名与网格数据相等的对应区县
             if (resp.length > 0) {
                 console.log("saveGrid 写入对应父节点id");
                 inst.org_pid =  resp[0]._id;// 机构父节点
-                // inst.org_code_desc = mysqlData.orgpath;// 机构编号
-                inst.org_name = mysqlData.orgname;// 机构名
-                inst.org_fullname = mysqlData.orgname;// 机构全名
-                inst.company_code =  mysqlData.orgcode;// 公司编号
-                if(mysqlData.orgtype==3){
-                    inst.level= 5;//网格
-                }
-                else if(mysqlData.orgtype == 4){
-                    inst.level= 6;//渠道
-                }
-                // inst.org_order =  mysqlData.orgorder;// 排序号
-                inst.org_type =  org_type;// 机构类型
-                inst.company_no= "";//empid
-                inst.parentcode_desc =  "";// 机构父节点描述
-                inst.org_status =  "1";// 机构状态
-                inst.org_belong =  "";// 属于
-                inst.midifytime =  new Date();// 修改时间
-                inst.org_code =  "";// 机构编号
-                inst.childCount =  "";// 子机构数
-                inst.smart_visual_sys_org_id= "";//慧眼系统的org_id
-                inst.athena_sys_org_id= "";//Athena系统的org_id
-                inst.athena_app_sys_org_id="";
-                var arr = [];
-                arr.push(inst);
-                console.log("saveGrid 插入实体："+JSON.stringify(arr));
-                //插入mql有的mongo没有的网格和渠道数据
-                model_org.$CommonCoreOrg.create(arr,function(error,rs){
-                    if(error){
-                        console.log("添加网格数据失败");
-                    }else{
-                        console.log("添加网格数据成功");
-                    }
-                });
-
-
             } else {//名称对应不上的数据,直接写入e盘
                 inst.org_pid =  "";// 机构父节点
                 console.log("saveGrid 名称对应不上的数据,直接写入指定盘");
                 writeFile("e:\\data\\file_add_"+mysqlData.p_orgname+"_"+mysqlData.orgcode+".txt",JSON.stringify(mysqlData));
             }
+            // inst.org_code_desc = mysqlData.orgpath;// 机构编号
+            inst.org_name = mysqlData.orgname;// 机构名
+            inst.org_fullname = mysqlData.orgname;// 机构全名
+            inst.company_code =  mysqlData.orgcode;// 公司编号
+            if(mysqlData.orgtype==3){
+                inst.level= 5;//网格
+            }
+            else if(mysqlData.orgtype == 4){
+                inst.level= 6;//渠道
+            }
+            // inst.org_order =  mysqlData.orgorder;// 排序号
+            inst.org_type =  org_type;// 机构类型
+            inst.company_no= "";//empid
+            inst.parentcode_desc =  "";// 机构父节点描述
+            inst.org_status =  "1";// 机构状态
+            inst.org_belong =  "";// 属于
+            inst.midifytime =  new Date();// 修改时间
+            inst.org_code =  "";// 机构编号
+            inst.childCount =  "";// 子机构数
+            inst.smart_visual_sys_org_id= "";//慧眼系统的org_id
+            inst.athena_sys_org_id= "";//Athena系统的org_id
+            inst.athena_app_sys_org_id="";
+            var arr = [];
+            arr.push(inst);
+            console.log("saveGrid 插入实体："+JSON.stringify(arr));
+            //插入mql有的mongo没有的网格和渠道数据
+            model_org.$CommonCoreOrg.create(arr,function(error,rs){
+                if(error){
+                    console.log("添加网格数据失败");
+                }else{
+                    console.log("添加网格数据成功");
+                }
+            });
+
+
         }
 
 

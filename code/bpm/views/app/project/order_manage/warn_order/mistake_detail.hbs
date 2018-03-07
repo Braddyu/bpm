@@ -558,7 +558,7 @@ function GetQueryString(name) {
             $.messager.alert('提示','文件限于jpg,png,MP3,WAV,WMA格式');
             return;
         }
-      
+
      if(  document.getElementById("file"+file_id).files[0].size> 1024 * 600){
             $.messager.alert('提示','文件:'+document.getElementById("file"+file_id).files[0].name+'必须小于600KB');
             return;
