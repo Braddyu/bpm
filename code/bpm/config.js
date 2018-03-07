@@ -132,12 +132,26 @@ var config = {
         ]
     },
     mongdb:{
-       url: 'mongodb://192.168.9.48:27017/process',
+         url: 'mongodb://192.168.9.48:27017/process',
          // url: 'mongodb://10.196.153.11:30000/process',
         //url:'mongodb://10.201.253.162:27017/process1',
         // url: 'mongodb://10.201.253.111:27017/Examine',
         //url: 'mongodb://127.0.0.1:27017/ywcj',   //内网
         poolsize:20
+    },
+    //慧眼同步数据库地址(测试数据库)
+    hy_mongdb:{
+        url: 'mongodb://10.196.153.11:30003/policySupport',
+        // url: 'mongodb://10.196.153.11:30000/process',
+        //url:'mongodb://10.201.253.162:27017/process1',
+        // url: 'mongodb://10.201.253.111:27017/Examine',
+        //url: 'mongodb://127.0.0.1:27017/ywcj',   //内网
+        poolsize:20
+    },
+    //慧眼同步数据定时任务时间设置
+    hy_time:{
+        hour :'3',
+        minute:'0'
     },
     memcached:{
         // server_locations:['117.135.196.139:11211'],  //外网
@@ -153,6 +167,7 @@ var config = {
         port:3306,
         // port:3307,
         user: 'root',
+
         password: 'repLcmc0613',//repLcmc0613
         database: 'channel2',
         insecureAuth:true
@@ -340,13 +355,9 @@ var config = {
             'Content-Type':'text/plan; charset=UTF-8'
         }
     },
-    //所属系统编号
-    joinup_sys:{
-        warningwork_node : 'warnSys_node',//预警工单系统编号
-        error_node: 'errorSys_node',//差错工单系统编号
-        auditor_node: 'auditorSys_node',//稽核工单系统编号
-        eyesight_node: 'syesightSys_node',//慧眼工单系统编号
-    },
+    //所属系统编号-预警工单系统编号-差错工单系统编号-稽核工单系统编号-慧眼工单系统编号
+    joinup_sys:'warnSys_node,errorSys_node,auditorSys_node,syesightSys_node',
+
     AES_KEY:'1234567890ABCDEFGHIJKLMNOPQRSTUV',
     SMS_TEMPLET_ORDER:"渠道工单系统有一张需要您处理的工单，《procName》，工单号：orderNo，请及时登陆认真处理。",
     VALIDATION:"工单系统手机号登录验证码为：randomNumber，请不要透露他人。",

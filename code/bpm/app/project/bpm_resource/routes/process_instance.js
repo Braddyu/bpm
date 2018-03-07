@@ -7,6 +7,7 @@ var proc = require('../services/process_service');
 var nodeTransferService=require("../services/node_transfer_service");
 var userService = require('../../workflow/services/user_service');
 var nodeAnalysisService=require("../services/node_analysis_service");
+var config = require('../../../../config');
 
 
 
@@ -55,6 +56,10 @@ exports.process_instance=function() {
         if (!joinup_sys) {
             utils.respMsg(res, false, '2001', '工单所属系统编号不能为空。', null, null);
             return;
+        }else{
+            if(config.joinup_sys.indexOf(joinup_sys)==-1){
+                return ;
+            }
         }
         if (!assign_user_no) {
             utils.respMsg(res, false, '2001', '下一节点处理人编号为空', null, null);
@@ -152,30 +157,46 @@ exports.process_instance=function() {
         var proc_vars = req.body.proc_vars;
         var joinup_sys=req.body.joinup_sys;
         var next_name = req.body.next_name;//下一节点处理人编号
+        if (!joinup_sys) {
+            utils.respMsg(res, false, '2001', '工单所属系统编号不能为空。', null, null);
+            return;
+        }else{
+            if(config.joinup_sys.indexOf(joinup_sys)==-1){
+                return ;
+            }
+        }
         if (!proc_code) {
             utils.respMsg(res, false, '2001', '流程编号为空', null, null);
             return;
+        }else{
+         inst.proving_proc_code(proc_code,proc_ver).then(function (rs) {
+            if(rs.success && rs.data.length >0){
+                try{
+                    if (!user_code) {
+                        utils.respMsg(res, false, '1000', '当前处理人编号为空', null, null);
+                        return;
+                    } else {
+                        //判断用户是否存在
+                        inst.userInfo(user_code).then(function (rs) {
+                            if (rs.success && rs.data.length == 1) {
+                                // 调用
+                                inst.create_instance_only(proc_code,proc_ver,proc_title,user_code,joinup_sys,proc_vars,biz_vars,next_name)
+                                    .then(function(result){
+                                        utils.respJsonData(res, result);
+                                    });
+                            } else {
+                                utils.respMsg(res, false, '1000', '用户不存在', null, null);
+                            }
+                        });
+                    }
+                }catch (e){
+                    utils.respMsg(res, false, '1000', '查询错误', null, e);
+                }
+            }else{
+                utils.respMsg(res, false, '1000', '流程编码或版本号无效', null, null);
+            }
+         });
         }
-       try{
-           if (!user_code) {
-               utils.respMsg(res, false, '1000', '当前处理人编号为空', null, null);
-           } else {
-               //判断用户是否存在
-               inst.userInfo(user_code).then(function (rs) {
-                   if (rs.success && rs.data.length == 1) {
-                       // 调用
-                       inst.create_instance_only(proc_code,proc_ver,proc_title,user_code,joinup_sys,proc_vars,biz_vars,next_name)
-                           .then(function(result){
-                               utils.respJsonData(res, result);
-                           });
-                   } else {
-                       utils.respMsg(res, false, '1000', '用户不存在', null, null);
-                   }
-               });
-           }
-       }catch (e){
-           utils.respMsg(res, false, '1000', '查询错误', null, e);
-       }
     });
     /**
      *  -------------------------------查询流程实例接口-------------------------------
