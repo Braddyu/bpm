@@ -3,7 +3,7 @@
  */
 
 var mongooses = require('mongoose');
-// var config   = require('../../../../config');
+ var config   = require('../../../../config');
 // var logger = require('../common/logger');
 //慧眼数据地址
 
@@ -11,9 +11,9 @@ mongooses.Promise=Promise;
 var $mongooses = null;
 exports.inits = function() {
     if($mongooses == null) {
-        $mongooses= mongooses.createConnection('mongodb://10.196.153.11:30000/policySupportSC0228',
+        $mongooses= mongooses.createConnection(config.hy_mongdb.url,
             {
-                server: {poolSize: 20}/*,
+                server: {poolSize: config.hy_mongdb.poolsize}/*,
                 user: config.mongdb.user,
                 pass: config.mongdb.pass*/
             },
