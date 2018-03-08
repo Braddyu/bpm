@@ -12,9 +12,9 @@ exports.sync_data_from_Athena=function(){
  //sync_data_from_Athena();
 
 async function sync_data_from_Athena(){
-      // await update_country_data();
-      // await update_grid_data();
-     // await update_channel_data();
+       await update_country_data();
+       await update_grid_data();
+      await update_channel_data();
 }
 
 

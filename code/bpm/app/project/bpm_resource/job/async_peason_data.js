@@ -13,9 +13,9 @@ exports.sync_data_from_Athena=function(){
 //sync_data_from_Athena();
 
 async function sync_data_from_Athena(){
-    //await update_grid_manager_data();//网格经理
-    //await update_hall_manager_data();//厅经理
-    //await update_salesperson_data();//营业员
+    await update_grid_manager_data();//网格经理
+    await update_hall_manager_data();//厅经理
+    await update_salesperson_data();//营业员
 }
 
 

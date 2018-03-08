@@ -369,7 +369,7 @@ var config = {
         athena_app_switch:true  //同步雅典娜app数据(网格经理、厅经理、营业员)作业任务开关
     },
     //定时任务表达式
-    athena_switch_core:"1 * * * * *",
+    athena_switch_core:"30 1 1 * * *",
     ftp_huanghe_server:{
         host: '192.168.9.66',
         port: 21,
