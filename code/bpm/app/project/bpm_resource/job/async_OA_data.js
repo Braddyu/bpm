@@ -1,27 +1,100 @@
 var model_user=require("../models/user_model");
 var Pormise=require("bluebird");
-var utils = require('../../../../lib/utils/app_utils');
+// var utils = require('../../../../lib/utils/app_utils');
 var new_model=require("../models/newest_user_model");
-var mysql_pool=require("../../../../lib/mysql_pool");
-var mysql_pool_bpm=require("../../../../lib/mysql_pool_athena");
+// var mysql_pool=require("../../../../lib/mysql_pool");
+// var mysql_pool_bpm=require("../../../../lib/mysql_pool_athena");
+ var config   = require('../../../../config');
 
 //用于更新OA 数据
 // exports.sync_data_from_OA=function(){
 //     sync_data_from_OA ();
 // }
 //
-//sync_data_from_OA ();
+//
+//  sync_data_from_OA();
 
-async function sync_data_from_OA () {
-     //await update_org_main();//没有问踢
-     //await update_org_pid_main();//没有问题
-     //await update_role_main();
-     //await update_user_main();
-     await link_user_and_org_main();
-     await link_user_and_role_main();
-    console.log("+++++++++++++++++++++++++++++++++++++++++++");
-    return ;
+//判断是否开启定时任务
+if(config.switchDetail.oa_switch){
+    var schedule = require("node-schedule");
+    var rule = new schedule.RecurrenceRule();
+
+    rule.dayOfWeek = [0, new schedule.Range(1, 6)];
+    rule.hour = config.hy_time.hour;
+    rule.minute = config.hy_time.minute;
+    schedule.scheduleJob(rule, function(){
+        sync_data_from_OA ();
+    });
 }
+
+function sync_data(data,resolve,reject){
+    var map = {};
+    map.compTime= "";
+    map.successOrfail = 0;
+    map.error =data ;
+    map.failTime = new Date();
+    map.results ='同步失败';
+    model_user.$synchData.create(map,function(errorss,results){
+        if(errorss){
+            resolve({"data":null,"error":errorss,"msg":"同步数据时记录"});
+        }else{
+            return;
+        }
+    })
+}
+async function sync_data_from_OA (resolve,reject) {
+             let rs = await update_org_main();//没有问踢
+            if(rs.error ==null){
+                console.log("机构更新成功");
+            }else{
+                sync_data(rs.error);
+                return;
+            }
+             let rs_org_pid = await update_org_pid_main();//没有问题
+            if(rs_org_pid.error==null){
+                console.log("机构父id更新成功");
+            }else{
+                sync_data(rs_org_pid.error);
+                return;
+            }
+             let rs_role =   await update_role_main();
+            if(rs_role.error==null){
+                console.log("角色更新成功");
+            }else{
+                sync_data(rs_role.error);
+                return;
+            }
+              let rs_user = await update_user_main();
+              if(rs_user.error == null ){
+                  console.log('用户更新成功');
+              }else{
+                  sync_data(rs_user.error);
+                  return;
+              }
+              let rs_user_org =   await link_user_and_org_main();
+              if(rs_user_org.error == null ){
+                  console.log('用户关联机构更新完成');
+              }else{
+                  sync_data(rs_user_org.error);
+                  return;
+              }
+              let rs_user_role = await link_user_and_role_main();
+                if(rs_user_role.error == null){
+                 var map = {};
+                map.compTime= new Date();
+                map.successOrfail = 1;
+                map.error =rs_user_role.error;
+                map.failTime = '';
+                map.results ='同步成功';
+                await model_user.$synchData.create(map);
+                }else{
+                    sync_data(rs_user_role.error);
+                    return;
+                }
+             console.log("rs同步完成s");
+            return ;
+}
+
 
 //check_data();
 function check_data(){
@@ -30,50 +103,38 @@ function check_data(){
     })
 }
 function check_sub(arr,k){
-    console.log(arr.length,k)
     if(arr.length>k){
         var user = arr[k];
         model_user.$User.find({"user_no":user.user_no},function(err,res){
-            console.log()
             new_model.$Role.find({"_id":{$in:user.process_roles}},function(error,result){
                 var ids=new Array();
                 for(let i in result){
                     ids.push(result[i].role_name);
                 }
                 model_user.$Role.find({"role_name":{$in:ids}},function(e,r){
-                    console.log(r.length);
-                    console.log(res.length)
-                    console.log(result.length);
                     var id=new Array();
                     for(let i in r){
                         id.push(r[i]._id)
                     }
-                    console.log(id)
                     if(res.length>0||id.length>0){
                         model_user.$User.update({"_id":res[0]._id},{$set:{"user_roles":id}},function(errs,ress){
                             if(errs){
                                 console.log(errs);
                             }else{
-                                console.log(ress);
                                 k++;
                                 check_sub(arr,k)
                             }
                         })
-
                     }else{
                         k++;
                         check_sub(arr,k)
                     }
-
-
-
                 })
             });
         })
     }else{
         return ;
     }
-
 }
 
 /**
@@ -98,58 +159,61 @@ function link_user_and_role_main(){
 //把用户和对应的角色连接起来实际执行程序
 function link_user_and_role_sub(k,array,resolve){
     if(array&&array.length>k){
-        var user=array[k];
+        var user=array[k]._doc;
         if(user){
-            var roles=user.user_roles;
+            //更新用户角色慧眼用户表角色字段process_roles
+            var roles=user.process_roles;
             model_user.$User.find({"user_no":user.user_no},function(e,r){
-                if(r.length>0){
-                    new_model.$Role.find({"_id":{$in:roles}},function(error,result){
-                        if(error){
-                            console.log(error);
-                            resolve({"data":null,"error":error,"msg":"funcking   !!!!"});
-                        }else{
-                            if(result.length>0){
-                                var role_names=[];
-                                for(var i in result){
-                                    var role=result[i];
-                                    role_names.push(role.role_name);
-                                }
-                                model_user.$Role.find({"role_name":{$in:role_names}},function(errors,results){
-                                    if(errors){
-                                        console.log(errors);
-                                        resolve({"data":null,"error":errors,"msg":"funcking   !!!!"});
-                                    } else{
-                                        if(results.length>0){
-                                            var role_ids=[];
-                                            for(var m in results){
-                                                role_ids.push(results[m]._id);
-                                            }
-                                            console.log(role_ids);
-                                            model_user.$User.update({"_id":r[0]._id},{$set:{"user_roles":role_ids}},{},function(e,r){
-                                                if(e){
-                                                    console.log(e);
-                                                    resolve({"data":null,"error":e,"msg":"funcking   !!!!"});
-                                                }else{
-                                                    k++;
-                                                    link_user_and_role_sub(k,array,resolve);
-                                                }
-                                            });
-
-                                        }else{
-                                            k++;
-                                            link_user_and_role_sub(k,array,resolve);
-                                        }
-                                    }
-                                });
-                            }else{
-                                k++;
-                                link_user_and_role_sub(k,array,resolve);
-                            }
-                        }
-                    });
+                if(e){
+                    resolve({"data":null,"error":e,"msg":"角link org to user错误 3"});
                 }else{
-                    k++;
-                    link_user_and_role_sub(k,array,resolve);
+                    if(r.length>0){
+                        new_model.$Role.find({"_id":{$in:roles}},function(error,result){
+                            if(error){
+                                console.log(error);
+                                resolve({"data":null,"error":error,"msg":"funcking   !!!!"});
+                            }else{
+                                if(result.length>0){
+                                    var role_names=[];
+                                    for(var i in result){
+                                        var role=result[i];
+                                        role_names.push(role.role_name);
+                                    }
+                                    model_user.$Role.find({"role_name":{$in:role_names}},function(errors,results){
+                                        if(errors){
+                                            console.log(errors);
+                                            resolve({"data":null,"error":errors,"msg":"funcking   !!!!"});
+                                        } else{
+                                            if(results.length>0){
+                                                var role_ids=[];
+                                                for(var m in results){
+                                                    role_ids.push(results[m]._id);
+                                                }
+                                                model_user.$User.update({"_id":r[0]._id},{$set:{"user_roles":role_ids}},{},function(e,r){
+                                                    if(e){
+                                                        console.log(e);
+                                                        resolve({"data":null,"error":e,"msg":"funcking   !!!!"});
+                                                    }else{
+                                                        k++;
+                                                        link_user_and_role_sub(k,array,resolve);
+                                                    }
+                                                });
+                                            }else{
+                                                k++;
+                                                link_user_and_role_sub(k,array,resolve);
+                                            }
+                                        }
+                                    });
+                                }else{
+                                    k++;
+                                    link_user_and_role_sub(k,array,resolve);
+                                }
+                            }
+                        });
+                    }else{
+                        k++;
+                        link_user_and_role_sub(k,array,resolve);
+                    }
                 }
             })
         }else{
@@ -178,7 +242,6 @@ function link_user_and_org_main(){
             }else{
                 link_user_and_org_sub(0,result,resolve);
             }
-
         });
     });
 }
@@ -233,20 +296,15 @@ function link_user_and_org_sub(k,array,resolve){
                         }
                     }
                 });
-
             }else{
                 k++;
                 link_user_and_org_sub(k,array,resolve);
             }
-
         })
-
     }else{
         resolve({"data":null,"error":null,"msg":"角link org to user is over"});
         return ;
-
     }
-
 }
 
 
@@ -276,8 +334,11 @@ function update_user_main(){
 function update_user_sub(k,array,resolve){
     if(array&&array.length>k){
         var user=array[k];
-
-      if(user.user_org==null){
+      if(user.user_no=='admin'){
+          k++;
+          update_user_sub(k,array,resolve);
+      }
+      else if(user.user_org==null){
           k++;
           update_user_sub(k,array,resolve);
       }else{
@@ -330,8 +391,21 @@ function update_user_sub(k,array,resolve){
                           if(errors){
                               console.log(errors);
                           }else{
-                              k++;
-                              update_user_sub(k,array,resolve);
+                              var map ={};
+                              map.asyncTime = (new Date()).toLocaleDateString();
+                              map.class = 'user';
+                              map.from_sys = 'oa';
+                              map.code =user.login_account;
+                              map.name = user.user_name;
+                              model_user.$asynch_Data.create(map,function (err) {
+                                  if(err){
+                                      console.log(err);
+                                      resolve({"data":null,"error":err,"msg":"记录新增数据错误 "});
+                                  }else{
+                                      k++;
+                                      update_user_sub(k,array,resolve);
+                                  }
+                              })
                           }
                       });
                   }
@@ -342,8 +416,6 @@ function update_user_sub(k,array,resolve){
         resolve({"data":null,"error":null,"msg":"game is over  ~~! 2"});
         return ;
     }
-
-
 }
 
 /**
@@ -399,7 +471,6 @@ function update_role_sub(k,array,resolve){
                             console.log(errors);
                             resolve({"data":null,"error":errors,"msg":"插入角色表错误 2"});
                         }else{
-                            console.log(results);
                             k++;
                             update_role_sub(k,array,resolve);
                         }
@@ -411,9 +482,21 @@ function update_role_sub(k,array,resolve){
                             console.log(errors);
                             resolve({"data":null,"error":errors,"msg":"插入角色表错误3 "});
                         }else{
-                            console.log(results);
-                            k++;
-                            update_role_sub(k,array,resolve);
+                            var map ={};
+                            map.asyncTime = (new Date()).toLocaleDateString() ;
+                            map.class = 'role';
+                            map.from_sys = 'oa';
+                            map.code = role.role_code;
+                            map.name = role.role_name;
+                            model_user.$asynch_Data.create(map,function (err) {
+                                if(err){
+                                    console.log(err);
+                                    resolve({"data":null,"error":err,"msg":"记录新增数据错误 "});
+                                }else{
+                                    k++;
+                                    update_role_sub(k,array,resolve);
+                                }
+                            })
                         }
                     });
                 }
@@ -466,7 +549,6 @@ function update_org_sub_async(k,array,resolve){
                                 resolve({"data":null,"error":es,"msg":"最后一步  最后一步  查询org_name 报错 坑爹啊  "});
                             } else{
                                 if(rs.length>0){
-                                    console.log("匹配到了数据  开始更新");
                                     var map = {};
                                     map.org_pid=rs[0]._id;
                                     model_user.$CommonCoreOrg.find({"org_code_desc":org.org_code_desc},function(errors,results){
@@ -499,14 +581,12 @@ function update_org_sub_async(k,array,resolve){
                             }
 
                         });
-
                     }else{
                         console.log("不存在  parent_id");
                         k++;
                         update_org_sub_async(k,array,resolve);
                     }
                 }
-
             });
         }else{
             k++;
@@ -529,7 +609,7 @@ function update_org_main (){
                 resolve({"data":null,"error":error,"msg":"初次使用mongo数据出错  让不让人 活了  "});
             }else{
                 if(result.length>0){
-                    update_org(0,result,resolve);
+                     update_org(0,result,resolve);
                 }else{
                     resolve({"data":null,"error":null,"msg":"卧槽 查询不到数据！"});
 
@@ -553,32 +633,35 @@ function update_org(k,array,resolve){
                     resolve({"data":null,"error":error,"msg":"查询原来的失败啦  还是 org 表 这不科学"});
                 }else{
                     if(result.length>0){
-                        console.log("org  哦  原来你也在这里 ");
-                        var map={};
-                        map.org_name=org.org_name;
-                        map.org_code_desc=org.org_code_desc;
-                        map.org_fullname=org.org_fullname;
-                        map.company_code=org.company_code;
-                        // console.log(org)
-                        if(org.level){
-                            map.level=org.level;
-                        }else{
-                            map.level=null;
-                        }
+                        if(org.level==3){
+                            k++;
+                            update_org(k,array,resolve);
+                        }else {
+                            var map={};
+                            map.org_name=org.org_name;
+                            map.org_code_desc=org.org_code_desc;
+                            map.org_fullname=org.org_fullname;
+                            map.company_code=org.company_code;
+                            // console.log(org)
+                            if(org.level){
+                                map.level=org.level;
+                            }else{
+                                map.level=null;
+                            }
 
-                        map.org_order=org.org_order;
-                        map.org_type=org.org_type;
-                        map.org_pid=org.org_pid;
-                        map.company_no=org.company_no;
-                        map.parentcode_desc=org.parentcode_desc;
-                        map.org_status=org.org_status;
-                        map.org_belong=org.org_belong;
-                        map.midifytime=org.midifytime;
-                        map.org_code=org.org_code;
-                        map.smart_visual_sys_org_id="";
-                        map.athena_sys_org_id="";
-                        map.athena_app_sys_org_id="";
-                        map.inspect_sys_org_id="";
+                            map.org_order=org.org_order;
+                            map.org_type=org.org_type;
+                            map.org_pid=org.org_pid;
+                            map.company_no=org.company_no;
+                            map.parentcode_desc=org.parentcode_desc;
+                            map.org_status=org.org_status;
+                            map.org_belong=org.org_belong;
+                            map.midifytime=org.midifytime;
+                            map.org_code=org.org_code;
+                            map.smart_visual_sys_org_id="";
+                            map.athena_sys_org_id="";
+                            map.athena_app_sys_org_id="";
+                            map.inspect_sys_org_id="";
                             model_user.$CommonCoreOrg.update({"_id":result[0]._id},{$set:map},{},function(err,res){
                                 if(err){
                                     console.log(err);
@@ -587,7 +670,7 @@ function update_org(k,array,resolve){
                                     update_org(k,array,resolve);
                                 }
                             });
-
+                        }
                     }else{
                         var map={};
                         map.org_name=org.org_name;
@@ -613,8 +696,21 @@ function update_org(k,array,resolve){
                                 console.log(e);
                                 resolve({"data":null,"error":e,"msg":"org 完全不给面子都不让老子插入数据库"});
                             }else{
-                                k++;
-                                update_org(k,array,resolve);
+                                var map ={};
+                                map.asyncTime = (new Date()).toLocaleDateString();
+                                map.class = 'org';
+                                map.from_sys = 'oa';
+                                map.code =org.org_code;
+                                map.name = org.org_fullname;
+                                model_user.$asynch_Data.create(map,function (err) {
+                                    if(err){
+                                        console.log(err);
+                                        resolve({"data":null,"error":err,"msg":"记录新增数据错误 "});
+                                    }else{
+                                        k++;
+                                        update_org(k,array,resolve);
+                                    }
+                                })
                             }
                         });
                     }

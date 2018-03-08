@@ -191,3 +191,20 @@ var  synch = new Schema(
 // 机构model
 var synchData = mongoose.model('synchData', synch);
 exports.$synchData = synchData;
+
+var  async = new Schema(
+    {
+        asyncTime : Date,// 同步完成时间
+        class : String,//同步类型
+        from_sys:String, //数据来源系统
+        code:String ,//编码
+        name:String, //名称
+    },
+    {collection: "async_oa_data"}//mongodb集合名
+);
+
+// 机构model
+var async = mongoose.model('asynch_Data', async);
+exports.$asynch_Data = async;
+
+

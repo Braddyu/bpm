@@ -2,15 +2,9 @@
  * Created by zhaojing on 2016/8/4.
  */
 // 引入mongoose工具类
-var mongoUtils  = require('../../../common/core/mongodb/mongoose_utils');
-var mongoose = mongoUtils.init();
-mongoose.set("debug",true);
-
-Promise = require("bluebird");
-
-mongoose.Promise=Promise;
-
-var Schema = mongoose.Schema;
+var mongoUtil  = require('../../../common/core/mongodb/mongoose_db');
+var mongooses = mongoUtil.inits();
+var Schema = require('mongoose').Schema;
 
 
 
@@ -45,10 +39,10 @@ var userSchema = new Schema(
             // user_sys : {type: Schema.Types.ObjectId, ref: 'CommonCoreSys'},// 所属系统
 
     },
-    {collection: "newest_common_user_info"}// mongodb集合名
+    {collection: "common_user_info"}// mongodb集合名
 );
 //将User类给予接口
-var User = mongoose.model('new_User', userSchema);
+var User = mongooses.model('new_User', userSchema);
 
 //promise化user类及其方法
 Promise.promisifyAll(User);
@@ -73,10 +67,10 @@ var roleSchema = new Schema(
         inspect_sys_role_id:String,//稽查系统的role_id
 
     },
-    {collection: "newest_common_role_info"}// mongodb集合名
+    {collection: "process_role_info"}// mongodb集合名
 );
 //将User类给予接口
-var Role = mongoose.model('new_Role', roleSchema);
+var Role = mongooses.model('new_Role', roleSchema);
 
 //promise化Role类及其方法
 Promise.promisifyAll(Role);
@@ -118,7 +112,7 @@ var userRoleSchema = new Schema(
     {collection: "newest_common_user_role"}// mongodb集合名
 );
 //将User类给予接口
-var UserRole = mongoose.model('new_UserRole', userRoleSchema);
+var UserRole = mongooses.model('new_UserRole', userRoleSchema);
 
 //promise化Role类及其方法
 Promise.promisifyAll(UserRole);
@@ -150,9 +144,10 @@ var commonOrgSchema = new Schema(
         inspect_sys_org_id:String,//稽查系统的org_id
 
     },
-    {collection: "newest_common_org_info"}//mongodb集合名
+    {collection: "common_org_info"}//mongodb集合名
 );
 
 // 机构model
-var CommonCoreOrg = mongoose.model('new_Org', commonOrgSchema);
+var CommonCoreOrg = mongooses.model('new_Org', commonOrgSchema);
 exports.$CommonCoreOrg = CommonCoreOrg;
+
