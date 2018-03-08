@@ -19,6 +19,7 @@ async function sync_data_from_Athena(){
 }
 
 
+
 /**
  *  从雅典娜更新厅经理人员数据
  * @returns {bluebird|exports|module.exports}   hall_manager_info
