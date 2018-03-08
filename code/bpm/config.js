@@ -364,9 +364,9 @@ var config = {
     OPEN_SMS:false,
     //定时任务开关明细
     switchDetail:{
-        oa_switch:true,
-        athena_switch:true,
-        athena_app_switch:true
+        oa_switch:true,   //同步OA数据(省、地市、区县级)作业任务开关
+        athena_switch:true,  //同步雅典娜数据(网格、渠道级)作业任务开关
+        athena_app_switch:true  //同步雅典娜app数据(网格经理、厅经理、营业员)作业任务开关
     },
     ftp_huanghe_server:{
         host: '192.168.9.66',
