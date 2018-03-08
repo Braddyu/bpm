@@ -362,6 +362,12 @@ var config = {
     SMS_TEMPLET_ORDER:"渠道工单系统有一张需要您处理的工单，《procName》，工单号：orderNo，请及时登陆认真处理。",
     VALIDATION:"工单系统手机号登录验证码为：randomNumber，请不要透露他人。",
     OPEN_SMS:false,
+    //定时任务开关明细
+    switchDetail:{
+        oa_switch:true,
+        athena_switch:true,
+        athena_app_switch:true
+    },
     ftp_huanghe_server:{
         host: '192.168.9.66',
         port: 21,
