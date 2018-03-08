@@ -7,13 +7,16 @@ var config = require('../../../../config');
 var orgFlag = config.switchDetail.athena_switch;
 var peasonFlag = config.switchDetail.athena_app_switch;
 
-schedule.scheduleJob(config.athena_switch_core, function(){
+schedule.scheduleJob(config.athena_org_switch_core, function(){
     if(orgFlag){
         //console.log('运行了。');
         orgasync.sync_data_from_Athena();
     }
+});
+
+schedule.scheduleJob(config.athena_peason_switch_core, function(){
     if(peasonFlag){
-        //console.log('运行了。');
+        //console.log('运行了。app');
         peasonsync.sync_data_from_Athena();
     }
 });
