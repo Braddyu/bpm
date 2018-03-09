@@ -86,7 +86,7 @@ function update_salesperson_data(){
  * @param result
  * @param type 1厅经理  2营业员  3网格经理
  */
-function savePeason(result,type){
+async function savePeason(result,type){
     var b =0;
     var a = 1;
 
@@ -104,156 +104,141 @@ function savePeason(result,type){
             writeFile("e:\\peasondata\\file_no_org.txt",JSON.stringify(result[i]))
             continue;
         }
-        //if(result[i].phone=='13511927000'){
-        //    console.log(result[i]);
-        //}else{
-        //    continue;
-        //}
-        //查询此人员是否已在工单系统中  手机号和名字匹配上才更新
-        model_org.$User.find({"login_account": result[i].phone,"user_name": result[i].name},function(err,resp) {
-            model_org.$CommonCoreOrg.find({"company_code": result[i].orgId},function(err,res) {
-                    if(resp){
-                        console.log(resp,res)
-                        if(resp.length>0){//已存在，做何处理
-                            if (res) {
-                                if (res.length > 0) {//查到orgid
-                                    inst = resp[0];
-                                    inst.user_name = result[i].name;
-                                    var roleId = '';
-                                    //增加角色
-                                    if (type == 1) {//厅经理
-                                        roleId = ObjectID("5a266868bfb42d1e9cdd5c6e");
-                                    } else if (type == 2) {//营业员
-                                        roleId = ObjectID("5a26418c5eb3fe1068448753");
-                                    } else if (type == 3) {//网格经理
-                                        roleId = ObjectID("5a264057c819ed211853907a");
-                                    }
-                                    var roleIds = [];
-                                    var flag = true;
+        console.log(i,result[i]);
+        //查找人员信息
+        let resp = await  model_org.$User.find({"login_account": result[i].phone,"user_name": result[i].name});
+        let res = await   model_org.$CommonCoreOrg.find({"company_code": result[i].orgId});
+        if(resp){
+            console.log(i,resp.length);
+            if(resp.length>0){//已存在，做何处理
 
-                                    //遍历已有角色，如果有相等的就不加入了
-                                    for (var j=0;j<inst.user_roles.length;j++) {
-                                        roleIds.push(inst.user_roles[j]);
-                                        if (inst.user_roles[j].equals(roleId)) {
-                                            flag = false;
-                                        }
-                                    }
+                if (res) {
+                    if (res.length > 0) {//查到orgid
+                        inst = resp[0];
+                        inst.user_name = result[i].name;
+                        var roleId = '';
+                        //增加角色
+                        if (type == 1) {//厅经理
+                            roleId = ObjectID("5a266868bfb42d1e9cdd5c6e");
+                        } else if (type == 2) {//营业员
+                            roleId = ObjectID("5a26418c5eb3fe1068448753");
+                        } else if (type == 3) {//网格经理
+                            roleId = ObjectID("5a264057c819ed211853907a");
+                        }
+                        var roleIds = [];
+                        var flag = true;
 
-                                    if (flag) {
-                                        roleIds.push(roleId);
-                                    }
-
-                                    //roleIds.push(roleId);
-                                    inst.user_roles=roleIds;
-
-                                    flag = true;
-                                    var orgIds = [];
-                                    //遍历已有机构，如果有相等的就不加入了
-                                    for (var j=0;j<inst.user_org.length;j++) {
-                                        orgIds.push(inst.user_org[j]);
-                                        if (inst.user_org[j].equals(res[0]._id)) {
-                                            flag = false;
-                                        }
-                                    }
-
-                                    if (flag) {
-                                        orgIds.push(res[0]._id);
-                                    }
-                                    //orgIds.push(res[0]._id);
-                                    inst.user_org = orgIds;
-
-                                    var conditions = {"_id":resp[0]._id};
-
-                                    var password = result[i].phone+'@cmcc';
-                                    inst.login_password = utils.encryptDataByMD5(password);
-
-                                    var update = {$set: {"login_password":inst.login_password,"user_org": inst.user_org,user_roles:inst.user_roles,user_name:inst.user_name}};
-                                    if(result[i].id){
-                                        update = {$set: {"login_password":inst.login_password,"user_org": inst.user_org,user_roles:inst.user_roles,user_name:inst.user_name  ,work_id:result[i].id}};
-                                    }
-                                    var options = {};
-                                    model_org.$User.update(conditions,update, options, function (error) {
-                                        if (error) {
-                                            console.log(inst);
-                                            console.log('修改用户信息时出现异常。'+error);
-                                        }
-                                        else {
-                                            console.log('修改用户信息成功。');
-                                        }
-                                    });
-                                }else {
-                                    writeFile("e:\\peasondata\\file_updata_no_dept.txt",JSON.stringify(result[i]))
-                                }
+                        //遍历已有角色，如果有相等的就不加入了
+                        for (var j=0;j<inst.user_roles.length;j++) {
+                            roleIds.push(inst.user_roles[j]);
+                            if (inst.user_roles[j].equals(roleId)) {
+                                flag = false;
                             }
                         }
-                    }else{//不存在，添加
-                        //不存在还需要用手机号查询一下，没有才增加，有的话为异常数据
-                        model_org.$User.find({"login_account": result[i].phone},function(err,resp2) {
-                            if (resp2){
-                                if(resp2.length>0) {//异常数据
-                                    writeFile("e:\\peasondata\\file_手机存在名字不对异常.txt",JSON.stringify(result[i]))
-                                }else{//手机不存在才添加
-                                    if (res) {
-                                        if(res.length>0) {//查到orgid
-                                            inst.login_account = result[i].phone;
-                                            inst.user_status = 1;
-                                            inst.user_id = "";
-                                            if(result[i].id){
-                                                inst.work_id = result[i].id;
-                                            }
-                                            inst.user_no = result[i].phone;
-                                            inst.user_name = result[i].name;
-                                            inst.user_gender = "";
-                                            inst.user_phone = result[i].phone;
-                                            inst.user_tel = result[i].phone;
-                                            inst.user_email = "";
-                                            var password = result[i].phone+'@cmcc';
-                                            inst.login_password = utils.encryptDataByMD5(password);
-                                            inst.user_sys = "56f20ec0c2b4db9c2a7dfe7a";
-                                            inst.user_org_desc = "";
-                                            inst.theme_name = "themes/beyond/";
-                                            inst.theme_skin = "deepblue";
-                                            inst.user_photo = "";
-                                            inst.boss_id = "";
-                                            inst.smart_visual_sys_user_id = "";
-                                            inst.athena_sys_user_id = "";
-                                            inst.athena_app_sys_user_id = "";
-                                            inst.inspect_sys_user_id = "";
-                                            inst.token = "";
-                                            inst.special_sign = "";
-                                            inst.sys_roles = [];
-                                            if(type==1){//厅经理
-                                                inst.user_roles = [ObjectID("5a266868bfb42d1e9cdd5c6e")];
-                                            }else if(type==2){//营业员
-                                                inst.user_roles = [ObjectID("5a26418c5eb3fe1068448753")];
-                                            }else if(type==3){//网格经理
-                                                inst.user_roles = [ObjectID("5a264057c819ed211853907a")];
-                                            }
-                                            inst.user_org = [res[0]._id];
-                                            inst.__v = 0;
-                                            // 实例模型，调用保存方法
-                                            model_org.$User(inst).save(function(error,rs){
-                                                if(error) {
-                                                    console.log(inst);
-                                                    console.log('新增用户时出现异常'+error);
-                                                }
-                                                else {
-                                                    console.log( '新增用户成功');
-                                                }
-                                            });
-                                        }else{//查不到部门怎么办
-                                            console.log("没有部门！！！！！！！！！！！！！！！");
-                                            writeFile("e:\\peasondata\\file_add_no_dept.txt",JSON.stringify(result[i]))
-                                        }
-                                    } else {
-                                        console.log(err)
-                                    }
-                                }
+
+                        if (flag) {
+                            roleIds.push(roleId);
+                        }
+
+                        //roleIds.push(roleId);
+                        inst.user_roles=roleIds;
+
+                        flag = true;
+                        var orgIds = [];
+                        //遍历已有机构，如果有相等的就不加入了
+                        for (var j=0;j<inst.user_org.length;j++) {
+                            orgIds.push(inst.user_org[j]);
+                            if (inst.user_org[j].equals(res[0]._id)) {
+                                flag = false;
                             }
-                        });
+                        }
+
+                        if (flag) {
+                            orgIds.push(res[0]._id);
+                        }
+                        //orgIds.push(res[0]._id);
+                        inst.user_org = orgIds;
+
+                        var conditions = {"_id":resp[0]._id};
+
+                        var password = result[i].phone+'@cmcc';
+                        inst.login_password = utils.encryptDataByMD5(password);
+
+                        var update = {$set: {"login_password":inst.login_password,"user_org": inst.user_org,user_roles:inst.user_roles,user_name:inst.user_name}};
+                        if(result[i].id){
+                            update = {$set: {"login_password":inst.login_password,"user_org": inst.user_org,user_roles:inst.user_roles,user_name:inst.user_name  ,work_id:result[i].id}};
+                        }
+                        var options = {};
+                        let update_rs =await  model_org.$User.update(conditions,update, options);
+                        if(update_rs.ok>0)
+                             console.log('修改用户信息成功。',update);
+
+                    }else {
+                        writeFile("e:\\peasondata\\file_updata_no_dept.txt",JSON.stringify(result[i]))
                     }
-            })
-        })
+                }
+            }else{//不存在，添加
+                //不存在还需要用手机号查询一下，没有才增加，有的话为异常数据
+                let resp2 = await  model_org.$User.find({"login_account": result[i].phone});
+                if (resp2){
+                    if(resp2.length>0) {//异常数据
+                        writeFile("e:\\peasondata\\file_手机存在名字不对异常.txt",JSON.stringify(result[i]))
+                    }else{//手机不存在才添加
+                        if (res) {
+                            if(res.length>0) {//查到orgid
+                                inst.login_account = result[i].phone;
+                                inst.user_status = 1;
+                                inst.user_id = "";
+                                if(result[i].id){
+                                    inst.work_id = result[i].id;
+                                }
+                                inst.user_no = result[i].phone;
+                                inst.user_name = result[i].name;
+                                inst.user_gender = "";
+                                inst.user_phone = result[i].phone;
+                                inst.user_tel = result[i].phone;
+                                inst.user_email = "";
+                                var password = result[i].phone+'@cmcc';
+                                inst.login_password = utils.encryptDataByMD5(password);
+                                inst.user_sys = "56f20ec0c2b4db9c2a7dfe7a";
+                                inst.user_org_desc = "";
+                                inst.theme_name = "themes/beyond/";
+                                inst.theme_skin = "deepblue";
+                                inst.user_photo = "";
+                                inst.boss_id = "";
+                                inst.smart_visual_sys_user_id = "";
+                                inst.athena_sys_user_id = "";
+                                inst.athena_app_sys_user_id = "";
+                                inst.inspect_sys_user_id = "";
+                                inst.token = "";
+                                inst.special_sign = "";
+                                inst.sys_roles = [];
+                                if(type==1){//厅经理
+                                    inst.user_roles = [ObjectID("5a266868bfb42d1e9cdd5c6e")];
+                                }else if(type==2){//营业员
+                                    inst.user_roles = [ObjectID("5a26418c5eb3fe1068448753")];
+                                }else if(type==3){//网格经理
+                                    inst.user_roles = [ObjectID("5a264057c819ed211853907a")];
+                                }
+                                inst.user_org = [res[0]._id];
+                                inst.__v = 0;
+                                // 实例模型，调用保存方法
+                                let rs =await model_org.$User(inst).save();
+                                console.log("新增用户",inst);
+
+                            }else{//查不到部门怎么办
+                                console.log("没有部门！！！！！！！！！！！！！！！");
+                                writeFile("e:\\peasondata\\file_add_no_dept.txt",JSON.stringify(result[i]))
+                            }
+                        } else {
+                            console.log(err)
+                        }
+                    }
+                }
+
+            }
+        }
+
     };
     return ;
 }
