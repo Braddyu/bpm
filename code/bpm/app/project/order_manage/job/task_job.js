@@ -8,14 +8,9 @@ const path=require('path');
 const schedule = require("node-schedule");
 var rule = new schedule.RecurrenceRule();
 
-//周一到周日的24点执行
-rule.dayOfWeek = [0, new schedule.Range(1, 6)];
-rule.hour = 24;
-rule.minute = 0;
-//定时任务
-schedule.scheduleJob(rule, function(){
-        task();
- });
+exports.task_job=function(){
+    task ();
+}
 
 async function task() {
     try{

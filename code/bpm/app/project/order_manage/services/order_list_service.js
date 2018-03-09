@@ -315,18 +315,18 @@ exports.orderDetail= function(change_id,status) {
 };
 
 /**
- * 回传黄河
+ * 回传
  * @param result1 结果
  * @param proc_code  流程编码
  * @param proc_inst_id 订单编码
  * @returns {Promise}
  */
-exports.repareHuanghe= function(result1,proc_code,proc_inst_id,memo) {
+exports.repare= function(result1,proc_code,proc_inst_id,memo) {
 
     var p = new Promise(function(resolve,reject){
         console.log(result1);
-        //如果是差错工单归档则进行回传黄河数据
-        if( result1.success && proc_code=='p-201'){
+        //如果是差错工单归档则进行回传黄河数据,注：暂时不回传和不对调
+        if(false && result1.success && proc_code=='p-201'){
             //获取附件信息
             process_extend_model.$ProcessTaskFile.find({"proc_inst_id":proc_inst_id},function(err,fileRes){
                 if(err){
@@ -358,7 +358,7 @@ exports.repareHuanghe= function(result1,proc_code,proc_inst_id,memo) {
                                                         var count = 0;
                                                         //将当前工单的附件传到ftp上
                                                         for (let index = 0; index < fileRes.length; index++) {
-                                                            ftp_util.uploadFile(fileRes[index].file_path, ftp_huanghe_put + "/" + fileRes[index].file_name, function (err, resFile) {
+                                                            ftp_util.uploadFile(fileRes[index].file_path, path + "/" + fileRes[index].file_name, function (err, resFile) {
                                                                 var conditions = {_id: fileRes[index]._id};
                                                                 var update = {};
                                                                 if (err) {
@@ -410,6 +410,13 @@ exports.repareHuanghe= function(result1,proc_code,proc_inst_id,memo) {
 
 
 
+        }else if(result1.success && proc_code=='p-109'){
+            //预警工单归档回调雅典娜接口
+            postChannel(proc_inst_id).then(function(res){
+                resolve(res);
+            }).catch(function(err){
+                reject(err);
+            })
         }else{
             resolve(result1);
         }
@@ -472,6 +479,30 @@ function postHuanghe(proc_inst_id,mistakeRes,memo,order_num){
 }
 
 
+function postChannel(proc_inst_id){
+    return new Promise(function(resolve,reject){
+        //获取对应的工单详情
+        model.$ProcessInst.find({"_id":proc_inst_id},function(err,result){
+            if(err){
+                console.log('获取工单信息失败',err);
+                reject({'success':false,'code':'1000','msg':'获取工单信息失败',"error":err});
+            }else{
+                let warn_date=JSON.parse(result[0].proc_vars).time;
+                //回传地址
+                var options= config.repair_channel;
+                //开始回传
+                process_utils.httpPostChannel(proc_inst_id,warn_date,options).then(function(rs){
+                    resolve({'success':true,'code':'1000','msg':'回传雅典娜',"error":null});
+                }).catch(function(err){
+
+                    reject({'success':false,'code':'1000','msg':'回传雅典娜失败',"error":err});
+                });
+            }
+        })
+
+
+    })
+}
 
 
 /**

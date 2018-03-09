@@ -139,29 +139,100 @@ exports.httpPost=function(postContent,options){
     })
 
 };
-var moment = require('moment');
-var postData={
-    'jobId':'GDBH2018123387571',//工单系统订单编号
-    'orderId':'85916388675304',//BOSS订单ID即客户单号
-    'orderCode':'85920171227122448B01434015',//BOSS订单编码
-    'suggestion':'审核成功',//补录意见
-    'crmTradeDate':'20171227'//推送的日期（黄河推送给工单系统原数据的日期）
-}
 
-var options={
-        // hostname:'135.10.38.80',
-        // port:9090,
-        path:'/ewfs/client/ewf4store/repair.do',
-        method:'POST',
-        headers:{
-        'Content-Type':'text/plan; charset=UTF-8'
-    }
-}
+
+/**
+ * 调用雅典娜接口
+ * @param proc_inst_id
+ * @param warn_date
+ * @param options
+ * @returns {Promise}
+ */
+exports.httpPostChannel=function(proc_inst_id,warn_date,options){
+    return  new Promise(function(resolve,reject){
+        try{
+            let postContent='<?xml version="1.0"?>' +
+                '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"' +
+                ' xmlns:sam="http://controller.webServiceTo4A.channel2.gz.cmcc/"  ' +
+                'xmlns:xsd="http://www.w3.org/2001/XMLSchema" ' +
+                'xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' +
+                '<soap:Header/>' +
+                '<soap:Body>' +
+                '<sam:warnFile><' +
+                'proc_inst_id>'+proc_inst_id+'</proc_inst_id>' +
+                '<warn_date>'+warn_date+'</warn_date><' +
+                '/sam:warnFile>' +
+                '</soap:Body>' +
+                '</soap:Envelope>';
+
+            //返回结果
+            var result={};
+            //发送请求
+            var req=http.request(options, function(res) {
+                console.log('Status:',res.statusCode);
+                console.log('headers:',JSON.stringify(res.headers));
+                res.setEncoding('utf-8');
+                res.on('data',function(chun){
+                    console.log('body分隔线---------------------------------\r\n');
+                    console.info(chun);
+                    resolve(chun);
+                });
+                res.on('end',function(){
+                    console.log('No more data in response.********');
+                });
+            });
+
+            req.on('error',function(err){
+                console.error(err);
+                resolve(err);
+
+            });
+            req.write(postContent);
+            req.end();
+
+
+        }catch (e){
+            console.log(e);
+            reject("post请求错误");
+        }
+    })
+
+};
+
+// var moment = require('moment');
+// var postData={
+//     'jobId':'GDBH2018123387571',//工单系统订单编号
+//     'orderId':'85916388675304',//BOSS订单ID即客户单号
+//     'orderCode':'85920171227122448B01434015',//BOSS订单编码
+//     'suggestion':'审核成功',//补录意见
+//     'crmTradeDate':'20171227'//推送的日期（黄河推送给工单系统原数据的日期）
+// }
+
+// var options={
+//         // hostname:'135.10.38.80',
+//         // port:9090,
+//         path:'/ewfs/client/ewf4store/repair.do',
+//         method:'POST',
+//         headers:{
+//         'Content-Type':'text/plan; charset=UTF-8'
+//     }
+// }
 // var base=new Buffer(JSON.stringify(postData)).toString('base64');
 
 // var en=new Buffer(base, 'base64').toString();;
-
-// this.httpPost(postData,options).then(function(res){
+//
+// var options={
+//      hostname:'localhost',
+//      port:8080,
+//     path:'/channel2/services/DataSync',
+//     method:'POST',
+//     headers:{
+//         'Content-Type': 'application/soap+xml; charset=utf-8'
+//     }
+// }
+//
+//
+// this.httpPostChannel('1','2',options).then(function(res){
 //     console.log("成功",res);
 // }).catch(function(res){
 //     console.log("失败",res);

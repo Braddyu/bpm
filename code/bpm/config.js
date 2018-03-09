@@ -355,6 +355,16 @@ var config = {
             'Content-Type':'text/plan; charset=UTF-8'
         }
     },
+    //预警工单归档时回传雅典娜地址
+    repair_channel: {
+        hostname: 'localhost',
+        port: 8080,
+        path: '/channel2/services/DataSync',
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/soap+xml; charset=utf-8'
+        },
+    },
     //所属系统编号-预警工单系统编号-差错工单系统编号-稽核工单系统编号-慧眼工单系统编号
     joinup_sys:'warnSys_node,errorSys_node,auditorSys_node,syesightSys_node',
 
@@ -364,13 +374,18 @@ var config = {
     OPEN_SMS:false,
     //定时任务开关明细
     switchDetail:{
-        oa_switch:true,   //同步OA数据(省、地市、区县级)作业任务开关
+        oa_switch:false,   //同步OA数据(省、地市、区县级)作业任务开关
         athena_switch:true,  //同步雅典娜数据(网格、渠道级)作业任务开关
-        athena_app_switch:true  //同步雅典娜app数据(网格经理、厅经理、营业员)作业任务开关
+        athena_app_switch:true,  //同步雅典娜app数据(网格经理、厅经理、营业员)作业任务开关
+        huanghe_switch:true , //差错工单同步黄河数据
+        mistake_switch:true  //差错工单任务是否超时定时任务
     },
     //定时任务表达式
     athena_org_switch_core:"30 1 1 * * *",//秒、分、时、日、月、周几
     athena_peason_switch_core:"30 1 2 * * *",//秒、分、时、日、月、周几
+    huanghe_switch_core:"30 11 15 * * *",//秒、分、时、日、月、周几
+    mistake_switch_core:"40 14 15 * * *",//秒、分、时、日、月、周几
+
     ftp_huanghe_server:{
         host: '192.168.9.66',
         port: 21,
@@ -379,7 +394,7 @@ var config = {
     },//差错工单ftp地址
     ftp_huanghe_get:'/upload/',//获取差错工单ftp路径
     ftp_huanghe_put:'/upload/',//上传差错工单附件路径
-    local_haunghe_path:'E:/test/'//本地存储黄河数据
-
+    local_haunghe_path:'E:/test/',//本地存储黄河数据
+    local_path:'/upload/',//本地存储附件路径
 }
 module.exports = config;

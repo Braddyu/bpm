@@ -238,10 +238,10 @@ router.post('/complete',  upload.array("images"), function(req,res, next){
                 console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!",id,node_code,user_code,true,memo,params)
                 //归档时,回传黄河数据
                 if(handle==1){
-                    service.repareHuanghe(result1,proc_code,proc_inst_id,memo).then(function(result){
+                    service.repare(result1,proc_code,proc_inst_id,memo).then(function(result){
                         utils.respJsonData(res, result);
                     }).catch(function(err){
-                        utils.respMsg(res, false, '1000', '回传黄河失败', null, err);
+                        utils.respJsonData(res, err);
                     })
                 }else{
                     if(result1.success){

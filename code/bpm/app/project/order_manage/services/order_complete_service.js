@@ -62,6 +62,11 @@ exports.getMyArchiveTaskQuery4Eui= function(page,size,userNo,work_order_number) 
         if(work_order_number){
             match.work_order_number=work_order_number;
         }
+        page=parseInt(page);
+        size=parseInt(size);
+        if(page==0){
+            page=1;
+        }
         model.$ProcessTaskHistroy.aggregate([
             {
                 $match: match
@@ -79,7 +84,8 @@ exports.getMyArchiveTaskQuery4Eui= function(page,size,userNo,work_order_number) 
             },
             {
                 $match: {'inst.proc_inst_status':4}
-            },
+            }
+            ,
             {
                 $group: {
                     _id : "$proc_inst_id",
@@ -92,7 +98,15 @@ exports.getMyArchiveTaskQuery4Eui= function(page,size,userNo,work_order_number) 
                     proc_cur_arrive_time:{$first:"$inst.proc_cur_arrive_time"},
                     work_order_number:{$first:"$inst.work_order_number"},
                 }
-            }
+            }, {
+                $sort:{"proc_cur_arrive_time":-1}
+            },
+           {
+                $skip : (page - 1) * size
+            },
+            {
+                $limit : size
+            },
         ]).exec(function(err,res){
             if(err){
                 reject(utils.returnMsg(false, '1000', '查询统计失败。',null,err));

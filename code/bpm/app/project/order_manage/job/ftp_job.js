@@ -10,31 +10,24 @@ const schedule = require("node-schedule");
 
 
 var server = config.ftp_huanghe_server;
-
-var rule     = new schedule.RecurrenceRule();
-// rule.dayOfWeek = [0, new schedule.Range(1, 6)];
-// rule.hour =9;
-// rule.minute = 0;
-// var times2    = [1,31];
-// rule.second  = times2;
-// rule.hour  = times3; rule1.minute = 0;
-
-
-/*
-//定时任务
-schedule.scheduleJob(rule, function(){
-        ftp();
- });*/
+exports.ftp_job=function(){
+    ftp ();
+}
 
 function ftp() {
     ftp_util.connect(server);
+    //切换目录
+    ftp_util.cwd(config.ftp_huanghe_get,function(err,res){
+        console.log(res);
+    })
 
-   ftp_util.list( function(err,res){
+    ftp_util.list( function(err,res){
     var data=res.data;
     ftp_util.downloadFileList(config.local_haunghe_path, config.ftp_huanghe_get, function (err, res) {
         if (err) {
 
         } else {
+
             for (let i in data) {
                 if ((data[i].name).indexOf("txt") > 0) {
                    readFile(data[i].name);
@@ -45,8 +38,6 @@ function ftp() {
     });
     })
 
-
-
 }
 
 
@@ -54,7 +45,7 @@ function ftp() {
 
 async function readFile(fileName) {
     try{
-        var  filePath = config.local_haunghe_path+fileName;
+        var  filePath = config.local_haunghe_path+"/"+fileName;
         console.log(filePath);
         let fRead =  fs.createReadStream(filePath,'binary');
         let objReadline =  readline.createInterface({
@@ -70,48 +61,48 @@ async function readFile(fileName) {
             console.log(index);
             let lineData = data.split('|');
             if (lineData.length > 0) {
-                if ( !lineData[0] && lineData[0].trim()!='') {
+                if ( !lineData[0] && (lineData[0]!='' || lineData[0].trim()!='')) {
                     errorLog(fileName,index);
                     return;
                 }
-                if (!lineData[1] && lineData[1].trim()!='' ) {
+                if (!lineData[1] && (lineData[1]!='' || lineData[1].trim()!='') ) {
                     errorLog(fileName,index);
                     return;
                 }
-                if (!lineData[2] && lineData[2].trim()!=''  ) {
+                if (!lineData[2] && (lineData[2]!='' || lineData[2].trim()!='')  ) {
                     errorLog(fileName,index);
                     return;
                 }
-                if ( !lineData[4] && lineData[4].trim()!='' ) {
+                if ( !lineData[4] && (lineData[4]!='' || lineData[4].trim()!='') ) {
                     errorLog(fileName,index);
                     return;
                 }
-                if ( !lineData[5] && lineData[5].trim()!='' ) {
+                if ( !lineData[5] && (lineData[5]!='' || lineData[5].trim()!='') ) {
                     errorLog(fileName,index);
                     return;
                 }
-                if ( !lineData[6] && lineData[6].trim()!='' ) {
+                if ( !lineData[6] && (lineData[6]!='' || lineData[6].trim()!='') ) {
                     errorLog(fileName,index);
                     return;
                 }
-                if ( !lineData[7] && lineData[7].trim()!='' ) {
+                if ( !lineData[7] && (lineData[7]!='' || lineData[7].trim()!='') ) {
                     errorLog(fileName,index);
                     return;
                 }
-                if (!lineData[8] && lineData[8].trim()!=''  ) {
+                if (!lineData[8] && (lineData[8]!='' || lineData[8].trim()!='')  ) {
                     errorLog(fileName,index);
                     return;
                 }
-                if (!lineData[9] &&  lineData[9].trim()!='' ) {
+                if (!lineData[9] &&  (lineData[9]!='' || lineData[9].trim()!='') ) {
                     errorLog(fileName,item);
                     return;
                 }
-                if (!lineData[10] &&  lineData[10].trim()!='' ) {
+                if (!lineData[10] &&  (lineData[10]!='' || lineData[10].trim()!='') ) {
                     errorLog(fileName,index);
                     return;
                 }
 
-                if (!lineData[11] && lineData[11].trim()!=''  ) {
+                if (!lineData[11] && (lineData[11]!='' || lineData[11].trim()!='') ) {
                     errorLog(fileName,index);
                     return;
                 }

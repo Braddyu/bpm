@@ -208,7 +208,7 @@
                 },
                 success: function (data) {
                     if(data.success){
-                       // $('#orderTablelist').datagrid('reload');
+                      $('#orderTablelist').datagrid('reload');
                         $.messager.alert('提示',data.msg);
                     }else{
                         $.messager.alert('错误提示',data.error);

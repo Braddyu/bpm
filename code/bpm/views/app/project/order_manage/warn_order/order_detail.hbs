@@ -397,13 +397,13 @@
                 dataType:'json',
                 data: formData,
                 success: function (data) {
-
+                
                     if(data.success){
                         parent.$("#dd").dialog('close');
                         parent.$('#orderTablelist').datagrid('reload');
                         $.messager.alert('提示','归档成功');
                     }else{
-                        $.messager.alert('错误提示',data.error);
+                        $.messager.alert('错误提示',data.msg);
                     }
                 }
             });
