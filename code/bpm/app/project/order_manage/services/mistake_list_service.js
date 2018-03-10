@@ -28,6 +28,9 @@ exports.getMistakeListPage= function(page, size, conditionMap) {
                 $match: conditionMap
             },
             {
+                $sort:{"mistake_time":-1}
+            },
+            {
                 $graphLookup: {
                     from: "common_bpm_org_info",
                     startWith: "$city_code",
@@ -53,18 +56,21 @@ exports.getMistakeListPage= function(page, size, conditionMap) {
             {
                 $unwind : { path: "$channel_org", preserveNullAndEmptyArrays: true }
             },
+
             {
                 $addFields: {
                     city_name:  "$city_org.org_name",
                     channel_name:  "$channel_org.org_name"
                 }
             } ,
+
             {
                 $skip : (page - 1) * size
             },
             {
                 $limit : size
             },
+
             ]).exec(function(err,res){
 
                var result={rows:res,success:true};
