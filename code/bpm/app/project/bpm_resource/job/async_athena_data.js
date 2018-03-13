@@ -4,6 +4,9 @@ var utils = require('../../../../lib/utils/app_utils');
 var mysql_pool=require("../../../../lib/mysql_pool");
 var mysql_pool_promise=require("../../../../lib/mysql_pool_athena_promise");
 var fs = require('fs');
+var config = require('../../../../config');
+
+var org_sync_data_from_Athena_url = config.org_sync_data_from_Athena_url;
 
 exports.sync_data_from_Athena=function(){
     sync_data_from_Athena ();
@@ -172,7 +175,7 @@ function getAthenaGrid(result){
                             } else{
                                 //名称对应不上的数据,直接写入c盘
                                 console.log("名称对应不上的数据,直接写入指定盘");
-                                writeFile("e:\\data\\file_updata_"+result[i].p_orgname+"_"+result[i].orgcode+".txt",JSON.stringify(result[i]));
+                                writeFile(org_sync_data_from_Athena_url+"\\file_updata_"+result[i].p_orgname+"_"+result[i].orgcode+".txt",JSON.stringify(result[i]));
                             }
                         } else {
                             console.log(err);
@@ -221,7 +224,7 @@ function saveGrid(mysqlData){
             } else {//名称对应不上的数据,直接写入e盘
                 inst.org_pid =  "";// 机构父节点
                 console.log("saveGrid 名称对应不上的数据,直接写入指定盘");
-                writeFile("e:\\data\\file_add_"+mysqlData.p_orgname+"_"+mysqlData.orgcode+".txt",JSON.stringify(mysqlData));
+                writeFile(org_sync_data_from_Athena_url+"\\file_add_"+mysqlData.p_orgname+"_"+mysqlData.orgcode+".txt",JSON.stringify(mysqlData));
             }
             // inst.org_code_desc = mysqlData.orgpath;// 机构编号
             inst.org_name = mysqlData.orgname;// 机构名

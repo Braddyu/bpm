@@ -5,6 +5,9 @@ var mysql_pool=require("../../../../lib/mysql_pool");
 var mysql_pool_promise=require("../../../../lib/mysql_pool_peason_athena_promise");
 var fs = require('fs');
 var ObjectID = require('mongodb').ObjectID;
+var config = require('../../../../config');
+
+var peson_sync_data_from_Athena_url = config.peson_sync_data_from_Athena_url;
 
 exports.sync_data_from_Athena=function(){
     sync_data_from_Athena ();
@@ -95,34 +98,28 @@ async function savePeason(result,type,resolve){
         let  inst={};
         if( result[i].phone==null || result[i].phone==""){
             //电话为空  机构为空 不导入  导出到文件
-           writeFile("e:\\peasondata\\file_no_tel.txt",JSON.stringify(result[i]))
+           writeFile(peson_sync_data_from_Athena_url+"\\file_no_tel.txt",JSON.stringify(result[i]))
             continue;
         }
 
         if(result[i].orgId==null ||  result[i].orgId==""){
             //电话为空  机构为空 不导入  导出到文件
-            writeFile("e:\\peasondata\\file_no_org.txt",JSON.stringify(result[i]))
+            writeFile(peson_sync_data_from_Athena_url+"\\file_no_org.txt",JSON.stringify(result[i]))
             continue;
         }
 
-        if(result[i].phone =='13984315725'){
-
-        }else{
-            continue;
-        }
-
-        console.log(1);
+        //console.log(1);
         //console.log(i,result[i]);
         //查找人员信息
         let resp = await model_org.$User.find({"login_account": result[i].phone,"user_name": result[i].name});
-        console.log(2);
+       // console.log(2);
         let res = await model_org.$CommonCoreOrg.find({"company_code": result[i].orgId});
         if(resp){
            // console.log(i,resp.length);
             if(resp.length>0){//已存在，做何处理
                 if (res) {
                     if (res.length > 0) {//查到orgid
-                        console.log(3);
+                        //console.log(3);
                         inst = resp[0];
                         inst.user_name = result[i].name;
                         var roleId = '';
@@ -184,7 +181,7 @@ async function savePeason(result,type,resolve){
                         if(update_rs.ok>0)
                             console.log('修改用户信息成功。',update);
                     }else {
-                        writeFile("e:\\peasondata\\file_updata_no_dept.txt",JSON.stringify(result[i]))
+                        writeFile(peson_sync_data_from_Athena_url+"\\file_updata_no_dept.txt",JSON.stringify(result[i]))
                     }
                 }
             }else{//不存在，添加
@@ -192,11 +189,11 @@ async function savePeason(result,type,resolve){
                 let resp2 = await  model_org.$User.find({"login_account": result[i].phone});
                 if (resp2){
                     if(resp2.length>0) {//异常数据
-                        writeFile("e:\\peasondata\\file_手机存在名字不对异常.txt",JSON.stringify(result[i]))
+                        writeFile(peson_sync_data_from_Athena_url+"\\file_手机存在名字不对异常.txt",JSON.stringify(result[i]))
                     }else{//手机不存在才添加
                         if (res) {
                             if(res.length>0) {//查到orgid
-                                console.log(3);
+                                //console.log(3);
                                 inst.login_account = result[i].phone;
                                 inst.user_status = 1;
                                 inst.user_id = "";
@@ -235,11 +232,11 @@ async function savePeason(result,type,resolve){
                                 inst.__v = 0;
                                 // 实例模型，调用保存方法
                                 let rs =await model_org.$User(inst).save();
-                                console.log("新增用户",inst);
+                                //console.log("新增用户",inst);
 
                             }else{//查不到部门怎么办
                                 console.log("没有部门！！！！！！！！！！！！！！！");
-                                writeFile("e:\\peasondata\\file_add_no_dept.txt",JSON.stringify(result[i]))
+                                writeFile(peson_sync_data_from_Athena_url+"\\file_add_no_dept.txt",JSON.stringify(result[i]))
                             }
                         } else {
                             console.log(err)
