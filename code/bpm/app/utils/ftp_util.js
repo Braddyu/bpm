@@ -1,7 +1,7 @@
 var Client = require('ftp');
 var c = new Client();
 var fs = require('fs');
-
+var moment = require('moment');
 
 /**
  * 连接ftp
@@ -31,7 +31,6 @@ exports.end=function(){
  * @param cb 回调函数
  */
 exports.uploadFile=function(path,zcomp,cb){
-
     c.put(path, zcomp, function(err) {
         if (err){
             cb(err);
@@ -79,20 +78,19 @@ exports.downloadFileList=function(path,zcomp,cb){
         }else{
             if(list.length>0){
                 for(let item=0;item<list.length;item++){
+                   var yesterday = moment().subtract(1, 'days').format('YYYYMMDD');;
                     //只下载文件
-                    if(list[item].type=='-'){
+                    if(list[item].type=='-' && list[item].name.indexOf(yesterday) >= 0){
                         c.get(list[item].name, function(err, stream) {
                             if (err){
                                 cb(err);
                             }else{
                                 stream.once('close', function() {
-                                    console.log('close')
-                                    c.end(); });
-
+                                    c.end();
+                                });
                                 stream.pipe(fs.createWriteStream(path+"/"+list[item].name));
                                 stream.on('end', function() {
                                     if(item == list.length-1){
-
                                         cb(null,{success:true,data:zcomp+' 下载至 '+path+' 成功'});
                                     }
                                 });
@@ -233,7 +231,6 @@ exports.cwd=function(path,cb){
 
     });
 }
-
 
 
 

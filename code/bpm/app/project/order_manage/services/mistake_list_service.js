@@ -26,6 +26,7 @@ exports.getMistakeListPage= function(page, size, conditionMap) {
         mistake_model.$ProcessMistake.aggregate([
             {
                 $match: conditionMap
+
             },
             {
                 $sort:{"mistake_time":-1}
@@ -70,6 +71,7 @@ exports.getMistakeListPage= function(page, size, conditionMap) {
             {
                 $limit : size
             },
+
 
             ]).exec(function(err,res){
 

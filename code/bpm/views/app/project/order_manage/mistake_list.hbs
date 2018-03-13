@@ -14,7 +14,7 @@
 
                                     </div>
                                     <div class="btn-group" role="group" aria-label="...">
-                                        <label for="filterParam3">稽核状态：</label>
+                                        <label for="filterParam3">稽核说明：</label>
                                         <select class="easyui-combobox"id="check_status" style="width: 230px;height:31px;">
                                             <option value="">=========全部========</option>
                                             <option value="无纸化打印传送中">无纸化打印传送中</option>
@@ -59,7 +59,7 @@
                                     </select>
                                 </div>
                                 <div class="btn-group" role="group" aria-label="...">
-                                    <label for="filterParam3">业务：</label>
+                                    <label for="filterParam3">业务名称：</label>
                                     <select class="easyui-combobox"id="business_name" style="width: 100px;height:31px;">
 
                                         <option value="">=全部=</option>
@@ -149,8 +149,6 @@
 
     $(document).ready(function () {
 
-        //加载列表
-        loadMistakeListDatagrid();
         $('#queryDate').datebox().datebox('calendar').calendar({
             validator: function(date){
                 var now = new Date();
@@ -159,6 +157,13 @@
 
             }
         });
+
+        var now = new Date();
+        var day =now.getFullYear()+"-"+(now.getMonth()+1)+"-"+(now.getDate()-1);
+        $('#queryDate').datebox('setValue',day);
+
+        //加载列表
+        loadMistakeListDatagrid();
     });
 
     function loadMistakeListDatagrid(){
@@ -167,8 +172,8 @@
             url:'{{projcfg.appurl}}/api/order_manage/mistake_list/list',
             method:'post',
             queryParams:{
-                status:0
-
+                status:0,
+                queryDate:$('#queryDate').datebox('getValue'),
             },
             rownumbers:true,
             striped:true,
