@@ -385,7 +385,8 @@ var config = {
     athena_peason_switch_core:"30 1 2 * * *",//秒、分、时、日、月、周几
     huanghe_switch_core:"30 11 15 * * *",//秒、分、时、日、月、周几
     mistake_switch_core:"40 14 15 * * *",//秒、分、时、日、月、周几
-
+    peson_sync_data_from_Athena_url:"e:\\peasondata",//同步人员错误数据导出地址
+    org_sync_data_from_Athena_url:"e:\\data",//同步机构错误数据导出地址
     ftp_huanghe_server:{
         host: '192.168.9.66',
         port: 21,

@@ -5,6 +5,9 @@ var mysql_pool=require("../../../../lib/mysql_pool");
 var mysql_pool_promise=require("../../../../lib/mysql_pool_peason_athena_promise");
 var fs = require('fs');
 var ObjectID = require('mongodb').ObjectID;
+var config = require('../../../../config');
+
+var peson_sync_data_from_Athena_url = config.peson_sync_data_from_Athena_url;
 
 exports.sync_data_from_Athena=function(){
     sync_data_from_Athena ();
@@ -13,7 +16,7 @@ exports.sync_data_from_Athena=function(){
 //sync_data_from_Athena();
 
 async function sync_data_from_Athena(){
-    await update_grid_manager_data();//网格经理
+   await update_grid_manager_data();//网格经理
     await update_hall_manager_data();//厅经理
     await update_salesperson_data();//营业员
 }
@@ -34,7 +37,7 @@ function update_hall_manager_data(){
         }else {
             //console.log(result.length);
             savePeason(result,1,resolve);
-            resolve();
+           //resolve();
             console.log("获取mysql厅经理人员总数成功");
         }
     });
@@ -52,9 +55,9 @@ function update_grid_manager_data(){
         if(!result){
             console.log("获取mysql网格经理人员总数失败");
         }else {
-            console.log(result);
+            //console.log(result);
             savePeason(result,3,resolve);
-            resolve();
+            //resolve();
             console.log("获取mysql网格经理人员总数成功");
         }
     });
@@ -73,10 +76,10 @@ function update_salesperson_data(){
         if(!result){
             console.log("获取mysql营业员人员总数失败");
         }else {
-            console.log(result);
+           // console.log(result);
             savePeason(result,2,resolve);
-            resolve();
             console.log("获取mysql营业员人员总数成功");
+            //resolve();
         }
     });
 }
@@ -86,34 +89,37 @@ function update_salesperson_data(){
  * @param result
  * @param type 1厅经理  2营业员  3网格经理
  */
-async function savePeason(result,type){
+async function savePeason(result,type,resolve){
     var b =0;
     var a = 1;
+    var c = 0;
 
     for(let i in result){
         let  inst={};
-        a++;
         if( result[i].phone==null || result[i].phone==""){
             //电话为空  机构为空 不导入  导出到文件
-            writeFile("e:\\peasondata\\file_no_tel.txt",JSON.stringify(result[i]))
+           writeFile(peson_sync_data_from_Athena_url+"\\file_no_tel.txt",JSON.stringify(result[i]))
             continue;
         }
 
         if(result[i].orgId==null ||  result[i].orgId==""){
             //电话为空  机构为空 不导入  导出到文件
-            writeFile("e:\\peasondata\\file_no_org.txt",JSON.stringify(result[i]))
+            writeFile(peson_sync_data_from_Athena_url+"\\file_no_org.txt",JSON.stringify(result[i]))
             continue;
         }
-        console.log(i,result[i]);
-        //查找人员信息
-        let resp = await  model_org.$User.find({"login_account": result[i].phone,"user_name": result[i].name});
-        let res = await   model_org.$CommonCoreOrg.find({"company_code": result[i].orgId});
-        if(resp){
-            console.log(i,resp.length);
-            if(resp.length>0){//已存在，做何处理
 
+        //console.log(1);
+        //console.log(i,result[i]);
+        //查找人员信息
+        let resp = await model_org.$User.find({"login_account": result[i].phone,"user_name": result[i].name});
+       // console.log(2);
+        let res = await model_org.$CommonCoreOrg.find({"company_code": result[i].orgId});
+        if(resp){
+           // console.log(i,resp.length);
+            if(resp.length>0){//已存在，做何处理
                 if (res) {
                     if (res.length > 0) {//查到orgid
+                        //console.log(3);
                         inst = resp[0];
                         inst.user_name = result[i].name;
                         var roleId = '';
@@ -145,6 +151,7 @@ async function savePeason(result,type){
 
                         flag = true;
                         var orgIds = [];
+                        console.log("org111111111111111"+res[0]._id+"aaa"+c)
                         //遍历已有机构，如果有相等的就不加入了
                         for (var j=0;j<inst.user_org.length;j++) {
                             orgIds.push(inst.user_org[j]);
@@ -170,11 +177,11 @@ async function savePeason(result,type){
                         }
                         var options = {};
                         let update_rs =await  model_org.$User.update(conditions,update, options);
+                       // console.log(4);
                         if(update_rs.ok>0)
-                             console.log('修改用户信息成功。',update);
-
+                            console.log('修改用户信息成功。',update);
                     }else {
-                        writeFile("e:\\peasondata\\file_updata_no_dept.txt",JSON.stringify(result[i]))
+                        writeFile(peson_sync_data_from_Athena_url+"\\file_updata_no_dept.txt",JSON.stringify(result[i]))
                     }
                 }
             }else{//不存在，添加
@@ -182,10 +189,11 @@ async function savePeason(result,type){
                 let resp2 = await  model_org.$User.find({"login_account": result[i].phone});
                 if (resp2){
                     if(resp2.length>0) {//异常数据
-                        writeFile("e:\\peasondata\\file_手机存在名字不对异常.txt",JSON.stringify(result[i]))
+                        writeFile(peson_sync_data_from_Athena_url+"\\file_手机存在名字不对异常.txt",JSON.stringify(result[i]))
                     }else{//手机不存在才添加
                         if (res) {
                             if(res.length>0) {//查到orgid
+                                //console.log(3);
                                 inst.login_account = result[i].phone;
                                 inst.user_status = 1;
                                 inst.user_id = "";
@@ -224,25 +232,23 @@ async function savePeason(result,type){
                                 inst.__v = 0;
                                 // 实例模型，调用保存方法
                                 let rs =await model_org.$User(inst).save();
-                                console.log("新增用户",inst);
+                                //console.log("新增用户",inst);
 
                             }else{//查不到部门怎么办
                                 console.log("没有部门！！！！！！！！！！！！！！！");
-                                writeFile("e:\\peasondata\\file_add_no_dept.txt",JSON.stringify(result[i]))
+                                writeFile(peson_sync_data_from_Athena_url+"\\file_add_no_dept.txt",JSON.stringify(result[i]))
                             }
                         } else {
                             console.log(err)
                         }
                     }
                 }
-
             }
         }
 
     };
-    return ;
+    resolve();
 }
-
 
 function writeFile(file,result){
     fs.appendFile(file, '\r\n'+result, function(err){
