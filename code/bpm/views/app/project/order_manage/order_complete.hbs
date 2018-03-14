@@ -103,7 +103,8 @@
                 {"field": "proc_inst_task_name","title":"处理节点","width":50},
                 {"field": "proc_inst_task_complete_time","title":"处理时间","width":80,
                     formatter:function(value,row,index){
-                        return  new Date(value).Format("yyyy-MM-dd hh:mm:ss");
+                        var isoDateStr = value.substring(0,value.indexOf('.'));
+                        return  new Date(isoDateStr.replace(/-/g,'/').replace(/T|Z/g,' ')).Format("yyyy-MM-dd hh:mm:ss");
                     }},
                 {"field": "proc_task_start_name","title":"发起人","width":50}
 

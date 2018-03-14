@@ -88,8 +88,8 @@
 
         $('#endDate').datebox().datebox('calendar').calendar({
             validator: function(date){
-                var startDate = new Date($('#startDate').datebox('getValue'));
                 if($('#startDate').datebox('getValue')){
+                    var startDate = new Date($('#startDate').datebox('getValue').replace(/-/g,'/').replace(/T|Z/g,' '));
                     var d1 = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
                     return  date>=d1;
                 }else{

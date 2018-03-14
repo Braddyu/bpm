@@ -473,7 +473,8 @@
                 }},
             {"field": "proc_start_time","title":"创建时间","width":"150px",
                 formatter:function(value,row,index){
-                    return new Date(value).Format("yyyy-MM-dd hh:mm:ss");
+                    var isoDateStr = value.substring(0,value.indexOf('.'));
+                    return  new Date(isoDateStr.replace(/-/g,'/').replace(/T|Z/g,' ')).Format("yyyy-MM-dd hh:mm:ss");
 
                 }},
 

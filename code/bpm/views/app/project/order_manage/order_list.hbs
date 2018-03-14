@@ -158,7 +158,8 @@
                 {"field": "proc_start_user_name","title":"申请人","width":50},
                 {"field": "proc_start_time","title":"创建时间","width":80,
                     formatter:function(value,row,index){
-                       return  new Date(value).Format("yyyy-MM-dd hh:mm:ss");
+                        var isoDateStr = value.substring(0,value.indexOf('.'));
+                       return  new Date(isoDateStr.replace(/-/g,'/').replace(/T|Z/g,' ')).Format("yyyy-MM-dd hh:mm:ss");
                     }}
             ]],
             onDblClickRow:function(rowIndex, rowData){

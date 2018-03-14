@@ -185,12 +185,12 @@
                         //归档则用归档时间计算
                        if(row.proc_inst_status==4){
                            var json=JSON.parse(value)
-                           var end_time=new Date(json.end_time).getTime();
-                           var complete_time=new Date(row.proc_inst_task_complete_time).getTime();
+                           var end_time=new Date(json.end_time.replace(/-/g,'/').replace(/T|Z/g,' ')).getTime();
+                           var complete_time=new Date(row.proc_inst_task_complete_time.replace(/-/g,'/').replace(/T|Z/g,' ')).getTime();
                            return formatDuring(complete_time - end_time);
                        }else{
                            var json=JSON.parse(value)
-                           var end_time=new Date(json.end_time).getTime();
+                           var end_time=new Date(json.end_time.replace(/-/g,'/').replace(/T|Z/g,' ')).getTime();
                            var now=new Date().getTime();
                            return formatDuring(now - end_time);
                        }
