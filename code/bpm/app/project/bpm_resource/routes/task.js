@@ -192,10 +192,8 @@ exports.task=function() {
 
         });
 
-
-    router.route('/complete')
-    // -------------------------------完成任务接口-------------------------------
-        .post(function (req, res) {
+// -------------------------------完成任务接口-------------------------------
+    router.route('/complete').post(function (req, res) {
             var id = req.body.id;//任务id
             var memo = req.body.memo;//处理意见
             var user_code = req.body.user_no;//处理人编码

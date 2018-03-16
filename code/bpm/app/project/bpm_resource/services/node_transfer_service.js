@@ -394,7 +394,7 @@ async function rejectFunction(proc_inst_task_id, node_code, params, reject, reso
     var condition_task = {};
     let result_s=await nodeAnalysisService.findParams(proc_inst_id,node_code);
     if(!result_s.success){resolve(result_s);return ;}
-    var proc_inst_task_params=result_t.data
+    var proc_inst_task_params=result_s.data
     condition_task.proc_inst_task_sign = 0;// : Number,// 流程签收(0-未认领，1-已认领)
     condition_task.proc_inst_id = proc_inst_id;//: {type: Schema.Types.ObjectId, ref: 'CommonCoreProcessInst'}, // 流程流转当前信息ID
     condition_task.proc_inst_task_code = proc_cur_task;// : String,// 流程当前节点编码(流程任务编号)
