@@ -2279,15 +2279,15 @@ function findNextHandler(user_code,proc_define_id,node_code,params,proc_inst_id)
                     //1. 提取参照节点
                     //2.去任务表 根据节点和proc_define_id 找到相对应的任务执行完成人（操作人）
                     //3.提取操作人的信息（user_no,org_no）
-                    // let results = await model.$ProcessInstTask.find({
-                    //     "proc_inst_id": proc_inst_id,
-                    //     "proc_inst_task_code": item_assignee_ref_task,
-                    // });
-                    // if (!results) {
-                    //     resolve(utils.returnMsg(false, '10001', '查询用户信息错误', null, null));
-                    //     return;
-                    // }
-                    let user = await model_user.$User.find({"user_no": user_code});
+                     let results = await model.$ProcessInstTask.find({
+                         "proc_inst_id": proc_inst_id,
+                         "proc_inst_task_code": item_assignee_ref_task,
+                     });
+                     if (!results) {
+                         resolve(utils.returnMsg(false, '10001', '查询用户信息错误', null, null));
+                         return;
+                     }
+                    let user = await model_user.$User.find({"user_no": results[0].proc_inst_task_assignee});
                     if (user.length!=1) {
                         resolve(utils.returnMsg(false, '10000', '查询用户org', null, null))
                     }
@@ -4109,6 +4109,7 @@ exports.getNodeDetail=function(proc_code,node_code){
                                 //如果是对下一节点的连接线
                                 if(item.item_code==nextLines[line]){
                                     var item_el=item.item_el;
+
                                     //是否是拒绝线
                                     if(item_el.indexOf("flag==false")!=-1){
                                         haveRefuse=true;
