@@ -25,7 +25,7 @@ exports.getOrderListPage= function(page, size, conditionMap) {
 
     var p = new Promise(function(resolve,reject){
 
-        utils.pagingQuery4Eui(model.$ProcessInst, page, size, conditionMap, resolve, '',  {proc_start_time:-1});
+        utils.pagingQuery4Eui(model.$ProcessInst, page, size, conditionMap, resolve, '',  {});
 
     });
 
@@ -46,7 +46,6 @@ exports.moneyAudit= function(proc_title, user_code,userName,role_name, assign_us
         var proc_vars = JSON.stringify(proc_vars_parm);
         var biz_vars;
         var proc_ver;
-        var next_name = "processDefineDiv_node_24";
         process_model.$ProcessDefine.find({"proc_code":proc_code},function(err,res){
             if(err){
                 console.log('获取差错工单流程信息失败',err);
@@ -101,7 +100,7 @@ exports.moneyAudit= function(proc_title, user_code,userName,role_name, assign_us
                             var node_code = three_node_config.item_code;
                             var memo = '资金稽核派发成功';
                             //创建实例,并生成任务
-                            inst.createInstance(proc_code, proc_ver, proc_title, "", proc_vars, biz_vars, user_code, userName, "errorSys_node",next_name)
+                            inst.createInstance(proc_code, proc_ver, proc_title, "", proc_vars, biz_vars, user_code, userName, "errorSys_node")
                                 .then(function (result) {
                                     if (result.success) {
                                         var task_id = result.data[0]._id;
