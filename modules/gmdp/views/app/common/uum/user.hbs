@@ -335,7 +335,8 @@
             method: 'get',
             url: '{{projcfg.appurl}}/public/orgRootTreeDataAsyn',
             multiple:true,
-            value:currentOrgId
+            value:currentOrgId,
+            cascadeCheck: false,
         });
 
         $('#user_roles').combobox({

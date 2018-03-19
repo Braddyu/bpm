@@ -500,7 +500,6 @@ exports.updateUser = function(id, data, sysid, roleids, orgid, cb) {
                     var update = {$set: data};
 
                     var options = {};
-                    console.error(data,'kkkkkkkkkkk');
                     model.$.update(conditions, update, options, function (error) {
                         if (error) {
                             cb(utils.returnMsg(false, '1000', '修改用户信息时出现异常。', null, error));
