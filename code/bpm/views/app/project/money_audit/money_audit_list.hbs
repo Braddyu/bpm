@@ -591,22 +591,28 @@
             return false;
         }
 
-        $.ajax({
-            url: '{{projcfg.appurl}}/api/money_audit/money_audit_list/moneyAudit',
-            type: 'post',
-            dataType:'json',
-            data: $('#orderDetailForm').serializeJson(),
-            success: function (data) {
-                if(data.success){
-                    $('#orderDetail').dialog("close");
-                    $('#orderTablelist').datagrid('reload');
-                    $.messager.alert('提示','新增工单成功');
-                }else{
-                    $.messager.alert('错误提示',data.error);
+        $.messager.confirm('提示','确定提交工单吗?',function(r){
+            if (r){
+                $.ajax({
+                    url: '{{projcfg.appurl}}/api/money_audit/money_audit_list/moneyAudit',
+                    type: 'post',
+                    dataType:'json',
+                    data: $('#orderDetailForm').serializeJson(),
+                    success: function (data) {
+                        if(data.success){
+                            $('#orderDetail').dialog("close");
+                            $('#orderTablelist').datagrid('reload');
+                            $.messager.alert('提示','新增工单成功');
+                        }else{
+                            $.messager.alert('错误提示',data.error);
 
-                }
+                        }
+                    }
+                });
             }
         });
+
+
     }
 
     //查询
