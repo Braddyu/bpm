@@ -54,9 +54,14 @@ exports.saveUser = function(data, sysid, roleids, orgid, cb) {
                     // data.user_sys = sys;
                     data.user_sys = sysid;
 
-                    var org = model.$CommonCoreOrg({_id:orgid});
+                    orgid=orgid.toString().split(",");
+                    orgid.forEach(function (orgid) {
+                        var org = model.$CommonCoreOrg({_id: orgid});
+                        data.user_org.push(org);
+                    });
+                    //var org = model.$CommonCoreOrg({_id:orgid});
                     //data.user_org = org;
-                    data.user_org.push(org);
+                    //data.user_org.push(org);
                     roleids=roleids.toString().split(",");
                     roleids.forEach(function(roleid) {
                         var role = model.$CommonCoreRole({_id:roleid});
@@ -128,8 +133,13 @@ exports.updateUser = function(id, data, sysid, roleids, orgid, cb) {
                 else {
                     // var sys = model.$CommonCoreSys({_id: sysid});
                     data.user_sys = sysid;
+                    orgid=orgid.toString().split(",");
+                    orgid.forEach(function (orgid) {
+                        var org = model.$CommonCoreOrg({_id: orgid});
+                        data.user_org.push(org);
+                    });
 
-                    var org = model.$CommonCoreOrg({_id: orgid});
+                    //var org = model.$CommonCoreOrg({_id: orgid});
                     //data.user_org = org;
                     data.user_org.push(org);
                     roleids=roleids.toString().split(",");
