@@ -228,8 +228,9 @@
                                 formatter:function(value,row,index){
                                     if(value!=null){
                                         var isoDateStr = value.substring(0,value.indexOf('.'));
-                                        var d2 = new Date(isoDateStr.replace(/-/g,'/').replace(/T|Z/g,' '));
-                                        return new Date(d2).Format("yyyy-MM-dd hh:mm:ss");
+                                        var date=new Date(isoDateStr.replace(/-/g,'/').replace(/T|Z/g,' '));
+                                        date.setHours(date.getHours()+8)
+                                        return  date.Format("yyyy-MM-dd hh:mm:ss");
                                     }else{
                                         return '';
                                     }

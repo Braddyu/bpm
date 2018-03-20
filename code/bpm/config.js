@@ -398,5 +398,6 @@ var config = {
     ftp_huanghe_put:'/upload/',//上传差错工单附件路径
     local_haunghe_path:'E:/test/',//本地存储黄河数据
     local_path:'/upload/',//本地存储附件路径
+    batch_size:2000,//差错工单每一批次数量
 }
 module.exports = config;

@@ -10,6 +10,7 @@ var moment = require('moment');
 var mongoUtils  = require('../../../common/core/mongodb/mongoose_utils');
 var mongoose = mongoUtils.init();
 var xlsx = require('node-xlsx');
+var config = require('../../../../config');
 /**
  * 查询差错工单列表
  * @param page
@@ -108,7 +109,7 @@ exports.getMistakeListPage= function(page, size, conditionMap) {
  * @param queryDate
  * @returns {Promise}
  */
-exports.dispatch= function(queryDate,check_status,user_no,user_name,role_name,business_name,city_code) {
+exports.dispatch= function(queryDate,check_status,user_no,user_name,role_name,business_name,city_code,work_id) {
     //处理流程
     var proc_code='p-201';
 
@@ -179,7 +180,7 @@ exports.dispatch= function(queryDate,check_status,user_no,user_name,role_name,bu
                                     if(three_node_config.item_assignee_type==2){
                                         console.log("派单数量",mistakeRes.length);
                                         //开始派单
-                                        insertMistakes(mistakeRes,three_node_config,proc_code,proc_name,user_no,user_name,role_name,queryDate).then(function(result){
+                                        insertMistakes(mistakeRes,three_node_config,proc_code,proc_name,user_no,user_name,role_name,queryDate,work_id).then(function(result){
                                            resolve(result);
                                         }).catch(function(err){
                                             reject(err);
@@ -231,67 +232,85 @@ exports.dispatch_logs= function(page,size,conditionMap) {
  * @param queryJson
  * @returns {Promise.<void>}
  */
- function insertMistakes(mistakeRes,three_node_config,proc_code,proc_name,user_no,user_name,role_name,queryDate){
+ function insertMistakes(mistakeRes,three_node_config,proc_code,proc_name,user_no,user_name,role_name,queryDate,work_id){
 
         return new Promise(function(resolve,reject){
-
             //成功数
-            var successCount=0;
+            let successCount = 0;
             //失败数
-            var failCount=0;
-            for(let i=0;i<mistakeRes.length;i++){
-                let mistake=mistakeRes[i];
-                //营业员工号
-                let salesperson_code=mistake.salesperson_code;
-                //业务名称
-                let business_name=mistake.business_name;
+            let failCount = 0;
+            let batch_size = config.batch_size;
+            let length =mistakeRes.length;
+            //分批次派发工单
+            let pool_size= Math.ceil(length / batch_size) ;
 
-                 insertMistake(mistake,three_node_config,proc_code,user_name,role_name,queryDate).then(function(result){
-                    //成功派单
-                    if(result=='successCount'){
-                        successCount++;
-                    }else if(result=='failCount'){
-                        //派单失败
-                        failCount++;
-                    }
-                    //全部处理完成
-                    if((failCount+successCount)==mistakeRes.length){
-                        var datas=[];
-                        var data={};
-                        data.proc_code=proc_code;
-                        data.proc_name=proc_name;
-                        data.dispatch_time=queryDate;
-                        data.create_user_no=user_no;
-                        data.create_user_name=user_name;
-                        data.update_user_no='';
-                        data.create_time=new Date();
-                        //1表示：派单全部成功。2表示：派单部分成功。3表示：派单全部失败。
-                        if(successCount==mistakeRes.length){
-                            data.status=1;
-                        }else if(failCount==mistakeRes.length){
-                            data.status=3;
-                        }else{
-                            data.status=2;
-                        }
-                        data.dispatch_remark='工单派发:成功数为'+successCount+" 失败数为"+failCount;
-                        datas.push(data);
-                        //将派发结果插入日志表中
-                        mistake_model.$ProcessMistakeLogs.create(datas,function(err){
-                            if(err){
-                                reject({'success':false,'code':'1000','msg':'插入统计表失败',"error":err});
-                            }else{
-                                resolve({'success':true,'code':'1000','msg':'工单派发:成功数为'+successCount+" 失败数为"+failCount});
+            console.log("=================总共",pool_size,"次====================");
+            (async function(){
+                 for(let i = 0;i < pool_size;i++){
+                     console.log("=================第",i,"次====================");
+                     let start = i * batch_size;
+                     let end = ((i+1) * batch_size)> length ?length : ((i+1) * batch_size);
+                     console.log(start,end,length);
+                    await new Promise (resolve1 => {
+                             let count =0;
+                             for(let j = start;j < end; j++){
+                                  let mistake=mistakeRes[j];
+                                  insertMistake(mistake,three_node_config,proc_code,user_name,role_name,queryDate,user_no).then(function(result){
+                                      console.log("=================",count,successCount,failCount,end,"====================");
+                                     //成功派单
+                                     if(result=='successCount'){
+                                         successCount++;
+                                     }else if(result=='failCount'){
+                                         //派单失败
+                                         failCount++;
+                                     }
+                                     //全部处理完成
+                                     if((failCount + successCount)==length){
+                                         var datas=[];
+                                         var data={};
+                                         data.proc_code=proc_code;
+                                         data.proc_name=proc_name;
+                                         data.dispatch_time=queryDate;
+                                         data.create_user_no=work_id;
+                                         data.create_user_name=user_name;
+                                         data.update_user_no='';
+                                         data.create_time=new Date();
+                                         //1表示：派单全部成功。2表示：派单部分成功。3表示：派单全部失败。
+                                         if(successCount==length){
+                                             data.status=1;
+                                         }else if(failCount==length){
+                                             data.status=3;
+                                         }else{
+                                             data.status=2;
+                                         }
+                                         data.dispatch_remark='工单派发:成功数为'+successCount+" 失败数为"+failCount;
+                                         datas.push(data);
+                                         //将派发结果插入日志表中
+                                         mistake_model.$ProcessMistakeLogs.create(datas,function(err){
+                                             if(err){
 
-                            }
-                        })
-                    }else{
+                                                 reject({'success':false,'code':'1000','msg':'插入统计表失败',"error":err});
+                                             }else{
+                                                 resolve({'success':true,'code':'1000','msg':'工单派发:成功数为'+successCount+" 失败数为"+failCount});
 
-                    }
+                                             }
+                                         })
+                                     }
 
-                }).catch(function(e){
-                    reject(e);
-                });
-            }
+                                      if(count == (end-start-1))
+                                          resolve1()
+                                      count++;
+                                 }).catch(function(e){
+                                     reject(e);
+                                 });
+                             }
+
+
+                     })
+
+                 }
+            })()
+
 
         })
 }
@@ -306,7 +325,7 @@ exports.dispatch_logs= function(page,size,conditionMap) {
  * @param proc_code
  * @returns {Promise}
  */
-function insertMistake(mistake,three_node_config,proc_code,user_name,role_name,queryDate){
+function insertMistake(mistake,three_node_config,proc_code,user_name,role_name,queryDate,admin_user_no){
    return  new Promise(function(resolve,reject){
        //工号和业务名称必须存在
        if(mistake.salesperson_code && mistake.business_name) {
@@ -321,12 +340,13 @@ function insertMistake(mistake,three_node_config,proc_code,user_name,role_name,q
                        var user_no = res[0].user_no;
 
                        var proc_ver;
-                       var proc_title = mistake.remark+"    ("+mistake.BOSS_CODE+")";
-                       var user_code = 'admin';
+                       var proc_title = mistake.business_name+"    ("+mistake.BOSS_CODE+")";
+                       var user_code = admin_user_no;
                        var assign_user_no = user_no;
-                       var userName = '系统管理员';
+                       var userName = user_name;
                        var node_code = three_node_config.item_code;
                        //直接向mistake中插入key不可行，这里先将对象转对json字符串再转为json
+                       mistake.remark ="上传文件(图片，文档，语音),原因:"+  mistake.remark;
                        var mistak_json = JSON.stringify(mistake);
                        mistake = JSON.parse(mistak_json);
 

@@ -73,11 +73,12 @@ router.route('/dispatch').post(function(req,res){
         return;
     }
     var user_no=req.session.current_user.user_no;
+    var work_id=req.session.current_user.work_id;
     var user_name=req.session.current_user.user_name;
     var role_name=req.session.current_user.user_roles[0].role_name;
 
     // 调用分页
-    service.dispatch(queryDate,check_status,user_no,user_name,role_name,business_name,city_code)
+    service.dispatch(queryDate,check_status,user_no,user_name,role_name,business_name,city_code,work_id)
         .then(function(result){
             console.log("派发工单成功",result);
             utils.respJsonData(res, result);

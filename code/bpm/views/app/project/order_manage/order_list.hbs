@@ -8,7 +8,6 @@
                         <div id="toolbar1" class="row tbRow">
                             <div class="col-xs-8 col-md-8">
                                 <div class="btn-group" role="group" aria-label="...">
-                                    <!--<button type="button" class="btn btn-default" onclick="addNewOrder()"><i class="fa fa-plus"></i>新增</button>-->
                                     <label for="filterParam3">工单类型：</label>
                                     <select class="easyui-combobox"id="proc_task_code"  style="width: 180px;height:31px;">
                                     </select>
@@ -91,6 +90,7 @@
             }
         });
     });
+
     //时间格式化:new Date().Format("yyyy-MM-dd hh:mm:ss");
     Date.prototype.Format = function (fmt) { //author: meizz
         var o = {
@@ -156,10 +156,12 @@
                     }
                 },
                 {"field": "proc_start_user_name","title":"申请人","width":50},
-                {"field": "proc_start_time","title":"创建时间","width":80,
+                {"field": "proc_start_time","title":"派单时间","width":80,
                     formatter:function(value,row,index){
                         var isoDateStr = value.substring(0,value.indexOf('.'));
-                       return  new Date(isoDateStr.replace(/-/g,'/').replace(/T|Z/g,' ')).Format("yyyy-MM-dd hh:mm:ss");
+                        var date=new Date(isoDateStr.replace(/-/g,'/').replace(/T|Z/g,' '));
+                        date.setHours(date.getHours()+8)
+                        return  date.Format("yyyy-MM-dd hh:mm:ss");
                     }}
             ]],
             onDblClickRow:function(rowIndex, rowData){

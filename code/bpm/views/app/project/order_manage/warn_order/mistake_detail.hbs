@@ -1,6 +1,7 @@
 <link rel="stylesheet" type="text/css" href="{{projcfg.appurl}}/static/order/css/order_detail.css">
+<link rel="stylesheet" type="text/css" href="{{projcfg.appurl}}/static/{{projcfg.theme}}js/uploadify/uploadify.css">
 <script src="{{projcfg.appurl}}/static/js/ajaxfileupload.js"></script>
-
+<script src="{{projcfg.appurl}}/static/{{projcfg.theme}}js/uploadify/jquery.uploadify.min.js"></script>
 
     <div class="easyui-tabs" id="tabs" >
         <div title="工单信息" style="padding:10px">
@@ -48,11 +49,11 @@
 
                 </tr>
 
-                <tr>
+              <!--  <tr>
                     <td align="right" class="tdLabel">手机号:</td>
                     <td> <input disabled class="easyui-textbox" name="user_phone" id="user_phone"  style="width: 280px"></td>
 
-                </tr>
+                </tr>-->
                 <tr>
                     <td align="right" class="tdLabel">派单内容:</td>
                     <td colspan="3"><input disabled
@@ -116,7 +117,7 @@
                 </tr>
                 <tr  id="fileUpload">
                     <td align="right" class="tdLabel">附件上传:</td>
-                    <td>  <input type="file"labelPosition="top"id="images" name="images" multiple="true" data-options="prompt:'选择文件...',buttonText:'选择'" style="width:250px"/>
+                    <td>  <input type="file"labelPosition="top"id="files" name="files" multiple="true" data-options="prompt:'选择文件...',buttonText:'选择'" style="width:250px"/>
                     </td>
                 </tr>
 
@@ -140,6 +141,11 @@
         </div>
         <div title="附件" style="padding:10px">
             <table cellpadding="5" align="center">
+                <tr  id="fileUpload1" style="display: none">
+
+                    <td>  <input type="file"labelPosition="top"id="files1" name="files1" multiple="true" data-options="prompt:'选择文件...',buttonText:'选择'" style="width:250px"/>
+                    </td>
+                </tr>
                 <tr>
                     <td colspan="4">
                         <table id="file_dg"></table>
@@ -155,23 +161,71 @@
     }
 </script>
 <script type="text/javascript">
+    $(function() {
+        $('#files').uploadify({
+            'swf'      : '{{projcfg.appurl}}/static/{{projcfg.theme}}js/uploadify/uploadify.swf',
+            'uploader' : '{{projcfg.appurl}}/api/order_manage/order_list/uploadFile?_csrf='+'{{_csrfToken}}',
+            'auto'           :false,
+            'multi'          :true,
+            'buttonText':'附件上传',
+            'fileTypeExts' : '*.gif; *.jpg; *.png;*.mp3;*.wav;*.wma;*.pdf',
+             'checkExisting':true,
+             'fileSizeLimit':'5MB',
+            //浏览按钮的宽度
+            'width':'100',
+            //浏览按钮的高度
+            'height':'30',
+            'onQueueComplete' : function(queueData) {
+                 $.messager.alert('提示','处理成功');
+                parent.$("#dd").dialog('close');
+                parent.$('#orderTablelist').datagrid('reload');
+            }
+        });
+
+    });
     //是否属于归档节点
     var endFlag=false;
     var proc_inst_task_sign=1;
     $(document).ready(function () {
 
-        //状态1:已发起的工单,2：我的待办,3:我的已办，4：新增操作
+        //状态1:归档,2：我的待办,3:我的已办，4：新增操作
         var status=GetQueryString("status");
         //状态为2时表示任务id，1和3时为实例id
         var change_id=GetQueryString("change_id");
-        if(status==1 ||status==3){
+        if(status==1 || status==3){
             //隐藏处理操作
             $("#detail").hide();
             $("#submitButton").hide();
+            if(status == 3){
+                $("#fileUpload1").show();
+            }
+
         }else if(status==2){
             //待办操作
 
         }
+        $('#files1').uploadify({
+            'swf'      : '{{projcfg.appurl}}/static/{{projcfg.theme}}js/uploadify/uploadify.swf',
+            'uploader' : '{{projcfg.appurl}}/api/order_manage/order_list/uploadFile?_csrf='+'{{_csrfToken}}',
+            'formData':{
+                'status':0,
+                'id':change_id,
+            },
+            'auto'           :true,
+            'multi'          :true,
+            'buttonText':'附件补传',
+            'fileTypeExts' : '*.gif; *.jpg; *.png;*.mp3;*.wav;*.wma;*.pdf',
+            'checkExisting':true,
+            'fileSizeLimit':'5MB',
+            //浏览按钮的宽度
+            'width':'100',
+            //浏览按钮的高度
+            'height':'30',
+            'onQueueComplete' : function(queueData) {
+                $.messager.alert('提示','补传成功!');
+                $('#file_dg').datagrid('reload');//刷新
+            }
+        });
         $.ajax({
             url: '{{projcfg.appurl}}/api/order_manage/order_list/orderDetail',
             type: 'post',
@@ -212,7 +266,6 @@
                         $("#proc_inst_task_name").textbox("setValue",proc_inst_task_name);
                         //操作下拉框初始化
                         isEndNode(GetQueryString("proc_code"),node_code,task_id,inst_id);
-
                         $("#node_code").val(node_code);
                         $("#proc_inst_id").val(inst_id);
                         $("#proc_task_id").val(task_id);
@@ -259,8 +312,9 @@
                                 formatter:function(value,row,index){
                                     if(value!=null){
                                         var isoDateStr = value.substring(0,value.indexOf('.'));
-                                        var d2 = new Date(isoDateStr.replace(/-/g,'/').replace(/T|Z/g,' '));
-                                        return new Date(d2).Format("yyyy-MM-dd hh:mm:ss");
+                                        var date=new Date(isoDateStr.replace(/-/g,'/').replace(/T|Z/g,' '));
+                                        date.setHours(date.getHours()+8)
+                                        return  date.Format("yyyy-MM-dd hh:mm:ss");
                                     }else{
                                         return '';
                                     }
@@ -314,19 +368,22 @@
                             {field:'insert_time',title:'上传时间',width:150, halign:'center',
                                 formatter:function(value,row,index){
                                     if(value!=null){
-                                        var isoDateStr = value;
-                                        var d2 = new Date(isoDateStr);
-                                        return new Date(d2).Format("yyyy-MM-dd hh:mm:ss");
+                                        var isoDateStr = value.substring(0,value.indexOf('.'));
+                                        var date=new Date(isoDateStr.replace(/-/g,'/').replace(/T|Z/g,' '));
+                                        date.setHours(date.getHours()+8)
+                                        return  date.Format("yyyy-MM-dd hh:mm:ss");
                                     }else{
                                         return '';
                                     }
                                 }},
-                            {field:'proc_inst_task_remark',title:'点击上传文件',width:250,
+                            {field:'proc_inst_task_remark',title:'操作',width:250,
                                 halign:'center',
                                 formatter: function (value,row,index) {
-                                  var html=   '<div align="center"><form id="form'+row._id+'" method="post" enctype="multipart/form-data"> <input id="file'+row._id+'" name="image" type="file"onchange="doUploadCorrect(this)"style="width: 0px;height:0px"/>'+
-                                    ' <a  href="javascript:void(0);"type="file" onclick="uploadFile(\''+row._id+'\')">再次上传</a></form>'+
-                                         ' &nbsp;&nbsp;<a href="javascript:void(0);" onclick="deleteFile(\''+row._id+'\')" >删除</a></div>'
+                                    var html='';
+                                    if(status != 1){
+                                             html='<div style="text-align: center"><a href="javascript:void(0);" onclick="deleteFile(\''+row._id+'\')" >删除</a></div>';
+                                    }
+
 
 
                                     return html;
@@ -431,18 +488,16 @@ function GetQueryString(name) {
 
     //提交任务
     function submitTask(){
-
-        // 验证表单
-       var validate = $('#orderDetailForm').form('validate');
-        if(!validate) {
-            return false;
-        }
-
-        //归档
-        if(endFlag && proc_inst_task_sign == 1){
-            var formData=$('#orderDetailForm').serializeArray();
-            $.ajax({
-                url: '{{projcfg.appurl}}/api/order_manage/order_list/complete',
+         // 验证表单
+          var validate = $('#orderDetailForm').form('validate');
+           if(!validate) {
+               return false;
+           }
+           //归档
+           if(endFlag && proc_inst_task_sign == 1){
+               var formData=$('#orderDetailForm').serializeArray();
+               $.ajax({
+                   url: '{{projcfg.appurl}}/api/order_manage/order_list/complete',
                 type: 'post',
                 dataType:'json',
                 data: formData,
@@ -476,38 +531,14 @@ function GetQueryString(name) {
             });
         }else{
             $("#task_title").val($("#proc_inst_task_title").textbox('getValue'));
-
-            var obj = document.getElementById("images");
-            var length = obj.files.length;
-            for(var i=0;i<obj.files.length;i++){
-                var temp = obj.files[i].name;
-                var size = obj.files[i].size;
-
-                var extStart=temp.lastIndexOf(".");
-                var ext=temp.substring(extStart,temp.length).toUpperCase();
-
-                if(ext!=".JPG" && ext!=".PNG" && ext!=".MP3"&& ext!=".WAV"&& ext!=".WMA"){
-                    $.messager.alert('提示','文件:'+temp+' 限于jpg,png,MP3,WAV,WMA格式');
-                    return;
-                }
-
-                if(size > 1024 * 600){
-                    $.messager.alert('提示','文件:'+temp+'必须小于600KB');
-                    return;
-                }
-            }
-
             var ajax_option= {
                    url: "{{projcfg.appurl}}/api/order_manage/order_list/complete?_csrf="+'{{_csrfToken}}',//默认是form action
                    success: function (data) {
                     if(data.success){
-                        $.messager.alert('提示','处理成功');
-                        parent.$("#dd").dialog('close');
-                        parent.$('#orderTablelist').datagrid('reload');
-
+                        $('#files').uploadify('settings',"formData",
+                                {'status':1,'id':$("#proc_task_id").val()});
+                        $('#files').uploadify('upload','*')
                     }else{
-                        parent.$("#dd").dialog('close');
-                        parent.$('#orderTablelist').datagrid('reload');
                         $.messager.alert('错误提示',data.msg);
                     }
                 }
