@@ -25,7 +25,7 @@ exports.getOrderListPage= function(page, size, conditionMap) {
 
     var p = new Promise(function(resolve,reject){
 
-        utils.pagingQuery4Eui(model.$ProcessInst, page, size, conditionMap, resolve, '',  {});
+        utils.pagingQuery4Eui(model.$ProcessInst, page, size, conditionMap, resolve, '',  {proc_start_time:-1});
 
     });
 
@@ -52,14 +52,11 @@ exports.moneyAudit= function(proc_title, user_code,userName,role_name, assign_us
                 return;
             }else {
                 if (res.length > 0) {
-                    /** 首先查找差错工单第三节点配置信息，且第三节点只可配置第二配置项**/
                     var proc_name = res[0].proc_name;
                     var proc_define = JSON.parse(res[0].proc_define);
                     var item_config = JSON.parse(res[0].item_config);
                     var lines = proc_define.lines;
                     var nodes = proc_define.nodes;
-                    console.log(JSON.stringify(lines));
-                    console.log(JSON.stringify(nodes));
                     //第三节点配置信息
                     var three_node_config;
                     //获取开始节点

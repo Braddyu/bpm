@@ -346,7 +346,7 @@
     }
 
     //判断当前节点是否是归档节点
-    function isEndNode(proc_code,node_code,task_id,inst_id,user_no,user_name){
+    function isEndNode(proc_code,node_code,task_id,inst_id){
         //判断是否是归档节点
         $.ajax({
             url: '{{projcfg.appurl}}/api/order_manage/order_list/procDefineDetail',
