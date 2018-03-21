@@ -1028,7 +1028,7 @@ exports.getMyTaskQuery4Eui= function(page,size,userCode,joinup_sys,proc_code,wor
                         }
 
                    }
-                })
+                }).sort({proc_inst_task_arrive_time:-1})
 
 
             }
