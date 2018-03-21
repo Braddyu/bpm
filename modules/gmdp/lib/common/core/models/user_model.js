@@ -102,6 +102,7 @@ var commonUserSchema = new Schema(
                 county_id:String, // 区县ID
                 county_name:String // 区县名称
         },
+        work_id:String ,//工号
         theme_name : String,// 使用主题
         theme_skin : String// 使用皮肤
     },
@@ -135,6 +136,7 @@ var commonUploadUserSchema = new Schema(
             county_id:String, // 区县ID
             county_name:String // 区县名称
         },
+        work_id:String ,//工号
         theme_name : String,// 使用主题
         theme_skin : String// 使用皮肤
     },

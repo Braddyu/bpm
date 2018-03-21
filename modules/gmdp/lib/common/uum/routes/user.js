@@ -49,6 +49,7 @@ router.route('/')
         var user_status = req.body.user_status;
        // var user_orgs = req.body.user_orgs;
         var user_sys = req.body.user_sys;
+        var work_id = req.body.work_id;
         // 数组特殊处理
         //var user_org = user_orgs.split(',');
         var user_org = req.body.user_org ? [req.body.user_org] : req.body['user_org[]'];
@@ -83,6 +84,7 @@ router.route('/')
         }
         // 验证通过组装数据
         var data = {};
+        data.work_id = work_id;
         data.login_account = login_account;
         data.user_status = parseInt(user_status);
         data.user_no = user_no;
@@ -154,6 +156,7 @@ router.route('/:id')
         var user_status = req.body.user_status;
        // var user_orgs = req.body.user_orgs;
         var user_sys = req.body.user_sys;
+        var work_id = req.body.work_id;
         // 数组特殊处理
         //var user_org = user_orgs.split(',');
         var user_org = req.body.user_org ? [req.body.user_org] : req.body['user_org[]'];
@@ -192,6 +195,7 @@ router.route('/:id')
         }
         // 验证通过组装数据
         var data = {};
+        data.work_id = work_id;
         data.login_account = login_account;
         data.user_status = parseInt(user_status);
         data.user_no = user_no;
