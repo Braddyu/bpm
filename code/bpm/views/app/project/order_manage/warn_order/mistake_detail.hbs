@@ -3,62 +3,67 @@
 <script src="{{projcfg.appurl}}/static/js/ajaxfileupload.js"></script>
 <script src="{{projcfg.appurl}}/static/{{projcfg.theme}}js/uploadify/jquery.uploadify.min.js"></script>
 
-    <div class="easyui-tabs" id="tabs" >
-        <div title="工单信息" style="padding:10px">
-        <legend ><b>任务基本信息</b></legend>
-        <form id="orderDetailForm" method="post" enctype="multipart/form-data" >
+<div class="easyui-tabs" id="tabs">
+    <div title="工单信息" style="padding:10px">
+        <legend><b>任务基本信息</b></legend>
+        <form id="orderDetailForm" method="post" enctype="multipart/form-data">
             <table cellpadding="5" align="center" style="border-collapse:separate; border-spacing:0px 5px;">
 
-                <input  type="hidden"id="node_code"  name="proc_inst_task_code"/>
-                <input  type="hidden"id="next_code" name="next_code" />
-                <input  type="hidden"id="proc_inst_id"  name="proc_inst_id"/>
-                <input  type="hidden"id="proc_task_id"  name="proc_task_id"/>
-                <input  type="hidden"id="task_title"  name="proc_inst_task_title"/>
+                <input type="hidden" id="node_code" name="proc_inst_task_code"/>
+                <input type="hidden" id="next_code" name="next_code"/>
+                <input type="hidden" id="proc_inst_id" name="proc_inst_id"/>
+                <input type="hidden" id="proc_task_id" name="proc_task_id"/>
+                <input type="hidden" id="task_title" name="proc_inst_task_title"/>
 
                 <tr>
                     <td align="right" class="tdLabel">工单标题:</td>
-                    <td colspan="3"><input disabled style="width: 665px" class="easyui-textbox"data-options="required:true, missingMessage:'请输入工单标题'" id="proc_inst_task_title"  ></input></td>
+                    <td colspan="3"><input disabled style="width: 665px" class="easyui-textbox"
+                                           data-options="required:true, missingMessage:'请输入工单标题'"
+                                           id="proc_inst_task_title"></input></td>
                 </tr>
 
                 <tr>
                     <td align="right" class="tdLabel">工单类型:</td>
-                    <td> <input disabled class="easyui-combobox" name="proc_task_code" id="proc_task_code"  style="width: 280px"></td>
+                    <td><input disabled class="easyui-combobox" name="proc_task_code" id="proc_task_code"
+                               style="width: 280px"></td>
 
                     <td align="right" class="tdLabel">工作天数:</td>
-                    <td><input disabled style="width: 280px"class="easyui-numberbox"data-options="precision:0"  name="work_day" id="work_day"
+                    <td><input disabled style="width: 280px" class="easyui-numberbox" data-options="precision:0"
+                               name="work_day" id="work_day"
                     ></input></td>
                 </tr>
                 <tr>
                     <td align="right" class="tdLabel">开始时间:</td>
-                    <td><input disabled style="width: 280px"class="easyui-textbox"
+                    <td><input disabled style="width: 280px" class="easyui-textbox"
                                id="start_time" name="start_time"></input></td>
                     <td align="right" class="tdLabel">完成时间:</td>
-                    <td><input disabled style="width: 280px"  class="easyui-textbox"
+                    <td><input disabled style="width: 280px" class="easyui-textbox"
                                id="end_time" name="end_time"></input></td>
                     <td colspan="2"></td>
 
                 </tr>
                 <tr>
                     <td align="right" class="tdLabel">发起人角色:</td>
-                    <td><input disabled style="width: 280px"class="easyui-textbox"
-                               name="start_user" ></input></td>
+                    <td><input disabled style="width: 280px" class="easyui-textbox"
+                               name="start_user"></input></td>
 
                     <td align="right" class="tdLabel">发起人:</td>
                     <td><input disabled style="width: 280px" class="easyui-textbox"
-                               name="start_user_name" ></input></td>
+                               name="start_user_name"></input></td>
 
                 </tr>
 
-              <!--  <tr>
-                    <td align="right" class="tdLabel">手机号:</td>
-                    <td> <input disabled class="easyui-textbox" name="user_phone" id="user_phone"  style="width: 280px"></td>
+                <!--  <tr>
+                      <td align="right" class="tdLabel">手机号:</td>
+                      <td> <input disabled class="easyui-textbox" name="user_phone" id="user_phone"  style="width: 280px"></td>
 
-                </tr>-->
+                  </tr>-->
                 <tr>
                     <td align="right" class="tdLabel">派单内容:</td>
                     <td colspan="3"><input disabled
                                            style="width: 670px; height: 50px; resize: none;" cols="30"
-                                           name="remark" rows="4"  class="easyui-textbox"  labelPosition="top" multiline="true"/>
+                                           name="remark" rows="4" class="easyui-textbox" labelPosition="top"
+                                           multiline="true"/>
                     </td>
                 </tr>
             </table>
@@ -74,109 +79,111 @@
             </table>
 
             <fieldset id="detail">
-            <legend><b>节点处理</b></legend>
+                <legend><b>节点处理</b></legend>
 
-            <table  cellpadding="5" align="center" style="border-collapse:separate; border-spacing:0px 5px;">
-
-
-                <tr>
-                    <td align="right" class="tdLabel">当前节点:</td>
-                    <td colspan="3"><input disabled style="width: 670px" class="easyui-textbox" name="proc_inst_task_name" id="proc_inst_task_name" ></input></td>
+                <table cellpadding="5" align="center" style="border-collapse:separate; border-spacing:0px 5px;">
 
 
-
-                </tr>
-                <tr id="tr_4">
-                    <td align="right" class="tdLabel">操作:</td>
-                    <td colspan="3" class="tdLabel">
-                        <select class="easyui-combobox" name="handle"
-                                style="width: 80px;" id="handle"   panelHeight="auto">
-
-                        </select>
+                    <tr>
+                        <td align="right" class="tdLabel">当前节点:</td>
+                        <td colspan="3"><input disabled style="width: 670px" class="easyui-textbox"
+                                               name="proc_inst_task_name" id="proc_inst_task_name"></input></td>
 
 
-                    </td>
-                </tr>
-               <!-- <tr id="tr_5">
-                    <td align="right" class="tdLabel">下一节点处理人:</td>
-                    <td colspan="3"><select class="easyui-combobox"
-                                            id="nextJobHandler" name="assign_user_no"  style="width: 180px;">
+                    </tr>
+                    <tr id="tr_4">
+                        <td align="right" class="tdLabel">操作:</td>
+                        <td colspan="3" class="tdLabel">
+                            <select class="easyui-combobox" name="handle"
+                                    style="width: 80px;" id="handle" panelHeight="auto">
 
-                    </select> </td>
-
-
-                </tr>-->
+                            </select>
 
 
-                <tr>
-                    <td align="right" class="tdLabel">处理意见:</td>
-                    <td colspan="2"><input name="memo" class="easyui-textbox"  labelPosition="top" multiline="true" style="width: 670px; height: 54px; resize: none;"/>
+                        </td>
+                    </tr>
+                    <!-- <tr id="tr_5">
+                         <td align="right" class="tdLabel">下一节点处理人:</td>
+                         <td colspan="3"><select class="easyui-combobox"
+                                                 id="nextJobHandler" name="assign_user_no"  style="width: 180px;">
 
-                    </td>
-
-                </tr>
-                <tr  id="fileUpload">
-                    <td align="right" class="tdLabel">附件上传:</td>
-                    <td>  <input type="file"labelPosition="top"id="files" name="files" multiple="true" data-options="prompt:'选择文件...',buttonText:'选择'" style="width:250px"/>
-                    </td>
-                </tr>
+                         </select> </td>
 
 
-            </table>
+                     </tr>-->
 
+
+                    <tr>
+                        <td align="right" class="tdLabel">处理意见:</td>
+                        <td colspan="2"><input name="memo" class="easyui-textbox" labelPosition="top" multiline="true"
+                                               style="width: 670px; height: 54px; resize: none;"/>
+
+                        </td>
+
+                    </tr>
+                    <tr id="fileUpload">
+                        <td align="right" class="tdLabel">附件上传:</td>
+                        <td><input type="file" labelPosition="top" id="files" name="files" multiple="true"
+                                   data-options="prompt:'选择文件...',buttonText:'选择'" style="width:250px"/>
+                        </td>
+                    </tr>
+                </table>
 
 
             </fieldset>
             <div style="padding:5px 0;" align="center" id="button_group">
-                <a id="submitButton" href="javascript:void(0);" class="easyui-linkbutton" onclick="submitTask()" style="width: 100px;">提交</a>
+                <a id="submitButton" href="javascript:void(0);" class="easyui-linkbutton" onclick="submitTask()"
+                   style="width: 100px;">提交</a>
             </div>
 
         </form>
 
 
-</div>
-        <div title="流程图" style="padding:10px">
-
-            <iframe id="iframeId" frameborder=0 width=1200 height=830 marginheight=0 marginwidth=0 scrolling=no src=></iframe>
-        </div>
-        <div title="附件" style="padding:10px">
-            <table cellpadding="5" align="center">
-                <tr  id="fileUpload1" style="display: none">
-
-                    <td>  <input type="file"labelPosition="top"id="files1" name="files1" multiple="true" data-options="prompt:'选择文件...',buttonText:'选择'" style="width:250px"/>
-                    </td>
-                </tr>
-                <tr>
-                    <td colspan="4">
-                        <table id="file_dg"></table>
-                    </td>
-                </tr>
-
-            </table>
-        </div>
     </div>
+    <div title="流程图" style="padding:10px">
+
+        <iframe id="iframeId" frameborder=0 width=1200 height=830 marginheight=0 marginwidth=0 scrolling=no
+                src=></iframe>
+    </div>
+    <div title="附件" style="padding:10px">
+        <table cellpadding="5" align="center">
+            <tr id="fileUpload1" style="display: none">
+                <td><input type="file" labelPosition="top" id="files1" name="files1" multiple="true"
+                           data-options="prompt:'选择文件...',buttonText:'选择'" style="width:250px"/>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="4">
+                    <table id="file_dg"></table>
+                </td>
+            </tr>
+
+        </table>
+    </div>
+</div>
 <script>
-    $.ajaxSettings.beforeSend = function(xhr, request) {
+    $.ajaxSettings.beforeSend = function (xhr, request) {
         xhr.setRequestHeader('csrf-token', '{{_csrfToken}}');
     }
 </script>
 <script type="text/javascript">
-    $(function() {
+    $(function () {
+
         $('#files').uploadify({
-            'swf'      : '{{projcfg.appurl}}/static/{{projcfg.theme}}js/uploadify/uploadify.swf',
-            'uploader' : '{{projcfg.appurl}}/api/order_manage/order_list/uploadFile?_csrf='+'{{_csrfToken}}',
-            'auto'           :false,
-            'multi'          :true,
-            'buttonText':'附件上传',
-            'fileTypeExts' : '*.gif; *.jpg; *.png;*.mp3;*.wav;*.wma;*.pdf',
-             'checkExisting':true,
-             'fileSizeLimit':'5MB',
+            'swf': '{{projcfg.appurl}}/static/{{projcfg.theme}}js/uploadify/uploadify.swf',
+            'uploader': '{{projcfg.appurl}}/api/order_manage/order_list/uploadFile?_csrf=' + '{{_csrfToken}}',
+            'auto': false,
+            'multi': true,
+            'buttonText': '附件上传',
+            'fileTypeExts': '*.gif; *.jpg; *.png;*.mp3;*.wav;*.wma;*.pdf',
+            'checkExisting': true,
+            'fileSizeLimit': '5MB',
             //浏览按钮的宽度
-            'width':'100',
+            'width': '100',
             //浏览按钮的高度
-            'height':'30',
-            'onQueueComplete' : function(queueData) {
-                 $.messager.alert('提示','处理成功');
+            'height': '30',
+            'onQueueComplete': function (queueData) {
+                $.messager.alert('提示', '处理成功');
                 parent.$("#dd").dialog('close');
                 parent.$('#orderTablelist').datagrid('reload');
             }
@@ -184,109 +191,107 @@
 
     });
     //是否属于归档节点
-    var endFlag=false;
-    var proc_inst_task_sign=1;
+    var endFlag = false;
+    var proc_inst_task_sign = 1;
     $(document).ready(function () {
-
         //状态1:归档,2：我的待办,3:我的已办，4：新增操作
-        var status=GetQueryString("status");
+        var status = GetQueryString("status");
         //状态为2时表示任务id，1和3时为实例id
-        var change_id=GetQueryString("change_id");
-        if(status==1 || status==3){
+        var change_id = GetQueryString("change_id");
+        if (status == 1 || status == 3) {
             //隐藏处理操作
             $("#detail").hide();
             $("#submitButton").hide();
-            if(status == 3){
+          /*  if (status == 3) {
                 $("#fileUpload1").show();
-            }
-
-        }else if(status==2){
+            }*/
+        } else if (status == 2) {
             //待办操作
-
+            $("#fileUpload1").show();
         }
         $('#files1').uploadify({
-            'swf'      : '{{projcfg.appurl}}/static/{{projcfg.theme}}js/uploadify/uploadify.swf',
-            'uploader' : '{{projcfg.appurl}}/api/order_manage/order_list/uploadFile?_csrf='+'{{_csrfToken}}',
-            'formData':{
-                'status':0,
-                'id':change_id,
+            'swf': '{{projcfg.appurl}}/static/{{projcfg.theme}}js/uploadify/uploadify.swf',
+            'uploader': '{{projcfg.appurl}}/api/order_manage/order_list/uploadFile?_csrf=' + '{{_csrfToken}}',
+            'formData': {
+                'status': 0,
+                'id': change_id,
             },
-            'auto'           :true,
-            'multi'          :true,
-            'buttonText':'附件补传',
-            'fileTypeExts' : '*.gif; *.jpg; *.png;*.mp3;*.wav;*.wma;*.pdf',
-            'checkExisting':true,
-            'fileSizeLimit':'5MB',
+            'auto': true,
+            'multi': true,
+            'buttonText': '附件补传',
+            'fileTypeExts': '*.gif; *.jpg; *.png;*.mp3;*.wav;*.wma;*.pdf',
+            'checkExisting': true,
+            'fileSizeLimit': '5MB',
             //浏览按钮的宽度
-            'width':'100',
+            'width': '100',
             //浏览按钮的高度
-            'height':'30',
-            'onQueueComplete' : function(queueData) {
-                $.messager.alert('提示','补传成功!');
+            'height': '30',
+            'onQueueComplete': function (queueData) {
+                $.messager.alert('提示', '补传成功!');
                 $('#file_dg').datagrid('reload');//刷新
             }
         });
         $.ajax({
             url: '{{projcfg.appurl}}/api/order_manage/order_list/orderDetail',
             type: 'post',
-            dataType:'json',
+            dataType: 'json',
             data: {
-                "change_id":change_id,
-                "status":status
+                "change_id": change_id,
+                "status": status
             },
             success: function (data) {
-                if(data.success){
+                if (data.success) {
                     console.log(JSON.stringify(data.data));
                     //业务数据
-                    var proc_vars=data.data.proc_vars;
+                    var proc_vars = data.data.proc_vars;
                     //工单标题
-                    var proc_title='';
+                    var proc_title = '';
                     //实例id
                     var inst_id;
 
-                    var proc_vars_json=JSON.parse(proc_vars);
+                    var proc_vars_json = JSON.parse(proc_vars);
                     //状态为0表示需要认领
-                    if(data.data.proc_inst_task_sign==0){
-                        proc_inst_task_sign=0;
+                    if (data.data.proc_inst_task_sign == 0) {
+                        proc_inst_task_sign = 0;
                         $("#submitButton").text('认领');
                         $("#detail").hide();
                     }
 
                     //待办标题字段不同
-                    if(status==2){
-                        proc_title=  data.data.proc_inst_task_title;
-                        inst_id=data.data.proc_inst_id;
+                    if (status == 2) {
+                        proc_title = data.data.proc_inst_task_title;
+                        inst_id = data.data.proc_inst_id;
                         //当前节点
-                        var node_code=data.data.proc_inst_task_code;
+                        var node_code = data.data.proc_inst_task_code;
                         //任务id
-                        var task_id=data.data._id;
+                        var task_id = data.data._id;
 
                         //当前节点名称
-                        var proc_inst_task_name= data.data.proc_inst_task_name;
-                        $("#proc_inst_task_name").textbox("setValue",proc_inst_task_name);
+                        var proc_inst_task_name = data.data.proc_inst_task_name;
+                        $("#proc_inst_task_name").textbox("setValue", proc_inst_task_name);
                         //操作下拉框初始化
-                        isEndNode(GetQueryString("proc_code"),node_code,task_id,inst_id);
+                        isEndNode(GetQueryString("proc_code"), node_code, task_id, inst_id);
                         $("#node_code").val(node_code);
                         $("#proc_inst_id").val(inst_id);
                         $("#proc_task_id").val(task_id);
 
 
-                    }else{
-                        proc_title=  data.data.proc_title;
-                        inst_id=change_id;
+                    } else {
+                        proc_title = data.data.proc_title;
+                        inst_id = change_id;
 
                     }
                     $('#orderDetailForm').form('load', proc_vars_json);
-                    $("#proc_inst_task_title").textbox("setValue",proc_title);
-                    $("#proc_task_code").combobox("setValue",GetQueryString("proc_code"));
+                    $("#proc_inst_task_title").textbox("setValue", proc_title);
+                    $("#proc_task_code").combobox("setValue", GetQueryString("proc_code"));
 
                     //重新加载流程图
                     $('#tabs').tabs({
-                        border:false,
-                        onSelect:function(title,index){
-                            if(title=='流程图'){
-                                var url='{{projcfg.appurl}}/api/process/show/progressed?proc_inst_id='+inst_id;
-                                document.getElementById("iframeId").src=url;
+                        border: false,
+                        onSelect: function (title, index) {
+                            if (title == '流程图') {
+                                var url = '{{projcfg.appurl}}/api/process/show/progressed?proc_inst_id=' + inst_id;
+                                document.getElementById("iframeId").src = url;
                             }
 
                         }
@@ -294,105 +299,116 @@
 
                     //流程日志
                     $('#dg').datagrid({
-                        url:'{{projcfg.appurl}}/api/order_manage/order_complete/logs',
-                        width:800,
+                        url: '{{projcfg.appurl}}/api/order_manage/order_complete/logs',
+                        width: 800,
                         queryParams: {
                             inst_id: inst_id
                         },
-                        method:'post',
-                        columns:[[
-                            {field:'proc_inst_task_name',title:'节点名称',width:130, halign:'center',
-                                formatter:function(value,row,index){
+                        method: 'post',
+                        columns: [[
+                            {
+                                field: 'proc_inst_task_name', title: '节点名称', width: 130, halign: 'center',
+                                formatter: function (value, row, index) {
 
                                     return "<span title='" + value + "'>" + value + "</span>";
 
-                                }},
-                            {field:'proc_inst_task_assignee_name',title:'处理人',width:100, halign:'center'},
-                            {field:'proc_inst_task_complete_time',title:'处理时间',width:145, halign:'center',
-                                formatter:function(value,row,index){
-                                    if(value!=null){
-                                        var isoDateStr = value.substring(0,value.indexOf('.'));
-                                        var date=new Date(isoDateStr.replace(/-/g,'/').replace(/T|Z/g,' '));
-                                        date.setHours(date.getHours()+8)
-                                        return  date.Format("yyyy-MM-dd hh:mm:ss");
-                                    }else{
+                                }
+                            },
+                            {field: 'proc_inst_task_assignee_name', title: '处理人', width: 100, halign: 'center'},
+                            {
+                                field: 'proc_inst_task_complete_time', title: '处理时间', width: 145, halign: 'center',
+                                formatter: function (value, row, index) {
+                                    if (value != null) {
+                                        var isoDateStr = value.substring(0, value.indexOf('.'));
+                                        var date = new Date(isoDateStr.replace(/-/g, '/').replace(/T|Z/g, ' '));
+                                        date.setHours(date.getHours() + 8)
+                                        return date.Format("yyyy-MM-dd hh:mm:ss");
+                                    } else {
                                         return '';
                                     }
-                                }},
-                            {field:'proc_inst_task_remark',title:'处理意见',width:350,
-                                halign:'center',
+                                }
+                            },
+                            {
+                                field: 'proc_inst_task_remark', title: '处理意见', width: 350,
+                                halign: 'center',
                                 formatter: function (value) {
                                     return "<span title='" + value + "'>" + value + "</span>";
-                                }}
+                                }
+                            }
                         ]]
                     })
-                   //上传附件
+                    //上传附件
                     $('#file_dg').datagrid({
-                        url:'{{projcfg.appurl}}/api/order_manage/order_list/fileLogs',
-                        width:800,
+                        url: '{{projcfg.appurl}}/api/order_manage/order_list/fileLogs',
+                        width: 800,
                         queryParams: {
                             inst_id: inst_id
                         },
 
-                        method:'post',
-                        columns:[[
-                            {field:'_id',hidden:true},
-                            {field:'file_name',title:'文件名',width:130, halign:'center',
-                                formatter:function(value,row,index){
+                        method: 'post',
+                        columns: [[
+                            {field: '_id', hidden: true},
+                            {
+                                field: 'file_name', title: '文件名', width: 130, halign: 'center',
+                                formatter: function (value, row, index) {
 
-                                    return "<a href='{{projcfg.appurl}}/api/order_manage/order_list/download/"+row._id+"'>" + value + "</a>";
+                                    return "<a href='{{projcfg.appurl}}/api/order_manage/order_list/download/" + row._id + "'>" + value + "</a>";
 
-                                }},
-                            {field:'file_path',title:'预览',width:130, halign:'center',height:130,
-                                formatter:function(value,row,index){
-                                    var extStart=row.file_name.lastIndexOf(".");
-                                    var ext=row.file_name.substring(extStart,row.file_name.length).toUpperCase();
+                                }
+                            },
+                            {
+                                field: 'file_path', title: '预览', width: 130, halign: 'center', height: 130,
+                                formatter: function (value, row, index) {
+                                    var extStart = row.file_name.lastIndexOf(".");
+                                    var ext = row.file_name.substring(extStart, row.file_name.length).toUpperCase();
 
 
-                                    var html='';
-                                    if(ext=='.JPG' || ext=='.PNG'){
-                                        html= '<div id="innerdiv" >'+
-                                                '<img id="'+row._id+'"  style="height:130px;width:130px"  src="{{projcfg.appurl}}/api/order_manage/order_list/download/'+row._id+'/?t='+Math.random()+'" />'+
+                                    var html = '';
+                                    if (ext == '.JPG' || ext == '.PNG') {
+                                        html = '<div id="innerdiv" >' +
+                                                '<img id="' + row._id + '"  style="height:130px;width:130px"  src="{{projcfg.appurl}}/api/order_manage/order_list/download/' + row._id + '/?t=' + Math.random() + '" />' +
                                                 '</div>'
-                                    }else if(ext=='.MP3' || ext=='.WAV'|| ext=='.WMA'){
-                                        html= '<div id="innerdiv" >'+
-                                                '<audio  id="'+row._id+'"  src="{{projcfg.appurl}}/api/order_manage/order_list/download/'+row._id+'/?t='+Math.random()+'"  controls="controls"></audio>'+
+                                    } else if (ext == '.MP3' || ext == '.WAV' || ext == '.WMA') {
+                                        html = '<div id="innerdiv" >' +
+                                                '<audio  id="' + row._id + '"  src="{{projcfg.appurl}}/api/order_manage/order_list/download/' + row._id + '/?t=' + Math.random() + '"  controls="controls"></audio>' +
                                                 '</div>'
                                     }
 
                                     return html;
 
-                                }},
-                            {field:'proc_inst_task_type',title:'上传节点',width:120, halign:'center'},
-                            {field:'user_name',title:'上传人',width:60, halign:'center'},
-                            {field:'insert_time',title:'上传时间',width:150, halign:'center',
-                                formatter:function(value,row,index){
-                                    if(value!=null){
-                                        var isoDateStr = value.substring(0,value.indexOf('.'));
-                                        var date=new Date(isoDateStr.replace(/-/g,'/').replace(/T|Z/g,' '));
-                                        date.setHours(date.getHours()+8)
-                                        return  date.Format("yyyy-MM-dd hh:mm:ss");
-                                    }else{
+                                }
+                            },
+                            {field: 'proc_inst_task_type', title: '上传节点', width: 120, halign: 'center'},
+                            {field: 'user_name', title: '上传人', width: 60, halign: 'center'},
+                            {
+                                field: 'insert_time', title: '上传时间', width: 150, halign: 'center',
+                                formatter: function (value, row, index) {
+                                    if (value != null) {
+                                        var isoDateStr = value.substring(0, value.indexOf('.'));
+                                        var date = new Date(isoDateStr.replace(/-/g, '/').replace(/T|Z/g, ' '));
+                                        date.setHours(date.getHours() + 8)
+                                        return date.Format("yyyy-MM-dd hh:mm:ss");
+                                    } else {
                                         return '';
                                     }
-                                }},
-                            {field:'proc_inst_task_remark',title:'操作',width:250,
-                                halign:'center',
-                                formatter: function (value,row,index) {
-                                    var html='';
-                                    if(status != 1){
-                                             html='<div style="text-align: center"><a href="javascript:void(0);" onclick="deleteFile(\''+row._id+'\')" >删除</a></div>';
+                                }
+                            },
+                            {
+                                field: 'proc_inst_task_remark', title: '操作', width: 250,
+                                halign: 'center',
+                                formatter: function (value, row, index) {
+                                    var html = '';
+                                    if (status == 2) {
+                                        html = '<div style="text-align: center"><a href="javascript:void(0);" onclick="deleteFile(\'' + row._id + '\')" >删除</a></div>';
                                     }
-
-
-
                                     return html;
-                                }}
+                                }
+                            }
                         ]]
                     })
 
-                }else{
-                    $.messager.alert('错误提示','工单创建失败');
+                } else {
+                    $.messager.alert('错误提示', '工单创建失败');
 
                 }
             }
@@ -402,29 +418,30 @@
         getAllProBase();
 
 
-
     });
 
 
-function GetQueryString(name) {
-        var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
+    function GetQueryString(name) {
+        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
         var r = window.location.search.substr(1).match(reg);
-        if(r!=null)
-            return  unescape(r[2]);
+        if (r != null)
+            return unescape(r[2]);
         return null;
     }
+
     /**
      * 初始化工单类型下拉框
      */
-    function getAllProBase(){
+    function getAllProBase() {
         $("#proc_task_code").combobox({
             method: 'get',
             url: '{{projcfg.appurl}}/api/order_manage/order_list/proBase',
-            valueField:'proc_code',
-            textField:'proc_name'
+            valueField: 'proc_code',
+            textField: 'proc_name'
         });
 
     }
+
     //时间格式化:new Date().Format("yyyy-MM-dd hh:mm:ss");
     Date.prototype.Format = function (fmt) { //author: meizz
         var o = {
@@ -443,107 +460,121 @@ function GetQueryString(name) {
     }
 
 
-
     //判断当前节点是否是归档节点
-    function isEndNode(proc_code,node_code,task_id,inst_id){
+    function isEndNode(proc_code, node_code, task_id, inst_id) {
         //判断是否是归档节点
         $.ajax({
             url: '{{projcfg.appurl}}/api/order_manage/order_list/procDefineDetail',
             type: 'post',
-            dataType:'json',
+            dataType: 'json',
             data: {
-                proc_code:proc_code,
-                node_code:node_code
+                proc_code: proc_code,
+                node_code: node_code
             },
             success: function (data) {
-                if(data.success){
-                    var comboboxData=[];
+                if (data.success) {
+                    var comboboxData = [];
 
                     //归档节点
-                    if(data.data.isEnd){
+                    if (data.data.isEnd) {
                         //是归档节点不需要下一节点处理人
                         $("#tr_5").hide();
-                        endFlag=true;
-                        comboboxData.push({ value: '1', text: '归档' })  ;
+                        endFlag = true;
+                        comboboxData.push({value: '1', text: '归档'});
                         $("#fileUpload").hide();
 
-                    }else{
+                    } else {
                         //获取下一节点处理人
-                     /*   getNextNodeUser(node_code,task_id,inst_id);
-                        $("#tr_5").show();*/
-                        comboboxData.push({ value: '2', text: '通过' })  ;
+                        /*   getNextNodeUser(node_code,task_id,inst_id);
+                           $("#tr_5").show();*/
+                        comboboxData.push({value: '2', text: '通过'});
                     }
-                    if(data.data.haveRefuse){
-                    //是否存在拒绝节点
-                        comboboxData.push({ value: '0', text: '拒绝' })  ;
+                    if (data.data.haveRefuse) {
+                        //是否存在拒绝节点
+                        comboboxData.push({value: '0', text: '拒绝'});
                     }
-                    $("#handle") .combobox('loadData',comboboxData) ;
-                    $("#handle") .combobox('select',comboboxData[0].value)
-                }else{
-                    $.messager.alert('错误提示',data.error);
+                    $("#handle").combobox('loadData', comboboxData);
+                    $("#handle").combobox('select', comboboxData[0].value)
+                } else {
+                    $.messager.alert('错误提示', data.error);
                 }
             }
         });
     }
 
+
     //提交任务
-    function submitTask(){
-         // 验证表单
-          var validate = $('#orderDetailForm').form('validate');
-           if(!validate) {
-               return false;
-           }
-           //归档
-           if(endFlag && proc_inst_task_sign == 1){
-               var formData=$('#orderDetailForm').serializeArray();
-               $.ajax({
-                   url: '{{projcfg.appurl}}/api/order_manage/order_list/complete',
+    function submitTask() {
+        // 验证表单
+        var validate = $('#orderDetailForm').form('validate');
+        if (!validate) {
+            return false;
+        }
+        //点击后点击按钮失效
+      $('#submitButton').removeAttr('onclick');
+        //归档
+        if (endFlag && proc_inst_task_sign == 1) {
+            var formData = $('#orderDetailForm').serializeArray();
+            $.ajax({
+                url: '{{projcfg.appurl}}/api/order_manage/order_list/complete',
                 type: 'post',
-                dataType:'json',
+                dataType: 'json',
                 data: formData,
                 success: function (data) {
-                    if(data.success){
+                    if (data.success) {
                         parent.$("#dd").dialog('close');
                         parent.$('#orderTablelist').datagrid('reload');
-                        $.messager.alert('提示','归档成功');
-                    }else{
-                        $.messager.alert('错误提示',data.error);
+                        $.messager.alert('提示', '归档成功');
+                    } else {
+                        $.messager.alert('错误提示', data.error);
                     }
+                    $('#submitButton').attr("onclick", "submitTask();")
                 }
             });
-        }else if( proc_inst_task_sign == 0){
+        } else if (proc_inst_task_sign == 0) {
             //开始认领
             $.ajax({
                 url: '{{projcfg.appurl}}/api/order_manage/order_todo/accept',
                 type: 'post',
-                dataType:'json',
+                dataType: 'json',
                 data: {
-                   "id":$("#proc_task_id").val()
+                    "id": $("#proc_task_id").val()
                 },
                 success: function (data) {
-                    if(data.success){
-                       var href= parent.$("#dd").dialog('options').href;
-                        parent.$("#dd").dialog({href:href});
-                    }else{
-                        $.messager.alert('错误提示',data.error);
+                    if (data.success) {
+                        var href = parent.$("#dd").dialog('options').href;
+                        parent.$("#dd").dialog({href: href});
+                    } else {
+                        $.messager.alert('错误提示', data.error);
                     }
+                    $('#submitButton').attr("onclick", "submitTask();")
                 }
             });
-        }else{
+        } else {
             $("#task_title").val($("#proc_inst_task_title").textbox('getValue'));
-            var ajax_option= {
-                   url: "{{projcfg.appurl}}/api/order_manage/order_list/complete?_csrf="+'{{_csrfToken}}',//默认是form action
-                   success: function (data) {
-                    if(data.success){
-                        $('#files').uploadify('settings',"formData",
-                                {'status':1,'id':$("#proc_task_id").val()});
-                        $('#files').uploadify('upload','*')
-                    }else{
-                        $.messager.alert('错误提示',data.msg);
+            var ajax_option = {
+                url: "{{projcfg.appurl}}/api/order_manage/order_list/complete?_csrf=" + '{{_csrfToken}}',//默认是form action
+                success: function (data) {
+                    if (data.success) {
+                        //如果有选择文件
+                        if($('#files').data('uploadify').queueData.queueLength > 0){
+                            $('#files').uploadify('settings', "formData",
+                                    {'status': 1, 'id': $("#proc_task_id").val()});
+                            $('#files').uploadify('upload', '*')
+                        }else{
+                            $.messager.alert('提示', '处理成功');
+                            parent.$("#dd").dialog('close');
+                            parent.$('#orderTablelist').datagrid('reload');
+                        }
+
+                    } else {
+                        $.messager.alert('错误提示', data.msg);
                     }
+                  $('#submitButton').attr("onclick", "submitTask();")
+
                 }
             }
-                $('#orderDetailForm').ajaxSubmit(ajax_option);
+            $('#orderDetailForm').ajaxSubmit(ajax_option);
         }
 
     }
@@ -552,66 +583,69 @@ function GetQueryString(name) {
      * 删除上传附件
      * @param id
      */
-    function deleteFile(id){
+    function deleteFile(id) {
         $.ajax({
             url: '{{projcfg.appurl}}/api/order_manage/order_list/deleteFile',
             type: 'post',
-            dataType:'json',
+            dataType: 'json',
             data: {
-                id:id,
+                id: id,
             },
             success: function (data) {
-                if(data.success){
+                if (data.success) {
                     $('#file_dg').datagrid('reload');
-                }else{
+                } else {
                     $.messager.alert('删除失败');
                 }
             }
         });
     }
-    var file_id;
-    function uploadFile(id){
 
-        file_id=id;
-        document.getElementById("file"+id).click();
+    var file_id;
+
+    function uploadFile(id) {
+
+        file_id = id;
+        document.getElementById("file" + id).click();
 
     }
+
     /**
      * 上传
      */
-    function doUploadCorrect(){
-        var  filepath = $("#file"+file_id).val();
+    function doUploadCorrect() {
+        var filepath = $("#file" + file_id).val();
         // 图片类型
-        var extStart=filepath.lastIndexOf(".");
-        var ext=filepath.substring(extStart,filepath.length).toUpperCase();
+        var extStart = filepath.lastIndexOf(".");
+        var ext = filepath.substring(extStart, filepath.length).toUpperCase();
 
-        if(ext!=".JPG" && ext!=".PNG" && ext!=".MP3"&& ext!=".WAV"&& ext!=".WMA"){
-            $.messager.alert('提示','文件限于jpg,png,MP3,WAV,WMA格式');
+        if (ext != ".JPG" && ext != ".PNG" && ext != ".MP3" && ext != ".WAV" && ext != ".WMA") {
+            $.messager.alert('提示', '文件限于jpg,png,MP3,WAV,WMA格式');
             return;
         }
 
-     if(  document.getElementById("file"+file_id).files[0].size> 1024 * 600){
-            $.messager.alert('提示','文件:'+document.getElementById("file"+file_id).files[0].name+'必须小于600KB');
+        if (document.getElementById("file" + file_id).files[0].size > 1024 * 600) {
+            $.messager.alert('提示', '文件:' + document.getElementById("file" + file_id).files[0].name + '必须小于600KB');
             return;
         }
-       $.ajaxFileUpload({
-            type:'POST',
-            url : '{{projcfg.appurl}}/api/order_manage/order_list/uploadFile?id='+file_id+"&_csrf="+'{{_csrfToken}}',
-            secureuri : false,
-            fileElementId : 'file'+file_id,     //与html代码中的input的id值对应
-            dataType : 'json',
-            success : function(data) {
-                if(data.success){
-                    $.messager.alert('提示','修正成功!');
+        $.ajaxFileUpload({
+            type: 'POST',
+            url: '{{projcfg.appurl}}/api/order_manage/order_list/uploadFile?id=' + file_id + "&_csrf=" + '{{_csrfToken}}',
+            secureuri: false,
+            fileElementId: 'file' + file_id,     //与html代码中的input的id值对应
+            dataType: 'json',
+            success: function (data) {
+                if (data.success) {
+                    $.messager.alert('提示', '修正成功!');
                     $('#file_dg').datagrid('reload');//刷新
-                }else{
-                    $.messager.alert('警告',data.msg,'error');
+                } else {
+                    $.messager.alert('警告', data.msg, 'error');
                 }
             },
-            error:function(err){
+            error: function (err) {
                 alert(JSON.stringify(err));
             }
         })
-        document.getElementById('file'+file_id).outerHTML+="";
+        document.getElementById('file' + file_id).outerHTML += "";
     }
-    </script>
+</script>

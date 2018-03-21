@@ -13,6 +13,7 @@ var commonProcessTaskStatisticsSchema = new Schema(
     {
         proc_inst_id : {type: Schema.Types.ObjectId, ref: 'CommonCoreProcessInst'}, // 实例ID
         user_no:String,//所属用户编号
+        work_id:String,//用户工号
         user_name:String,//所属用户姓名
         user_phone:String,//所属用户电话
         channel_id:{type: Schema.Types.ObjectId},//渠道ID

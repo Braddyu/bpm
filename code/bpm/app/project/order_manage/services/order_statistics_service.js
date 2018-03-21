@@ -131,6 +131,8 @@ exports.getStatisticsListPage= function(org_id,proc_code,level,status,startDate,
                     total:{$sum: { $cond: { if:  { $in: [ "$inst.proc_inst_status", [1,2,3,4] ] }, then:{ $sum: 1 } , else: 0 }}},
                     success:{$sum: { $cond: { if:  { $in: [ "$inst.proc_inst_status", [4] ] }, then:{ $sum: 1 } , else: 0 }}},
                     overtime:{$sum: { $cond: { if:  {$and:[{ $in: [ "$inst.is_overtime", [0] ]},{$in: [ "$inst.proc_inst_status", [4] ]}]}, then:{ $sum: 1 } , else: 0 }}},
+                    one_file:{$sum: { $cond: { if:  {$and:[{ $in: [ "$inst.refuse_number", [0] ]},{$in: [ "$inst.proc_inst_status", [4] ]}]}, then:{ $sum: 1 } , else: 0 }}},
+
                 }
             },
             {
@@ -272,6 +274,8 @@ exports.exportStatisticsList= function(org_id,proc_code,level,status,startDate,e
                     total:{$sum: { $cond: { if:  { $in: [ "$inst.proc_inst_status", [1,2,3,4] ] }, then:{ $sum: 1 } , else: 0 }}},
                     success:{$sum: { $cond: { if:  { $in: [ "$inst.proc_inst_status", [4] ] }, then:{ $sum: 1 } , else: 0 }}},
                     overtime:{$sum: { $cond: { if:  {$and:[{ $in: [ "$inst.is_overtime", [0] ]},{$in: [ "$inst.proc_inst_status", [4] ]}]}, then:{ $sum: 1 } , else: 0 }}},
+                    one_file:{$sum: { $cond: { if:  {$and:[{ $in: [ "$inst.refuse_number", [0] ]},{$in: [ "$inst.proc_inst_status", [4] ]}]}, then:{ $sum: 1 } , else: 0 }}},
+
                 }
             },
             {
@@ -304,10 +308,11 @@ exports.exportStatisticsList= function(org_id,proc_code,level,status,startDate,e
  * @param endDate
  * @returns {Promise}
  */
-exports.exportDetailList= function(org_id,proc_code,level,status,dispatch_time,startDate,endDate,proc_inst_task_type) {
+exports.exportDetailList= function(org_id,proc_code,level,status,startDate,endDate,proc_inst_task_type,channel_code,channel_work_id,work_order_number) {
 
     var p = new Promise(function(resolve,reject){
         let obj_org_id=[];
+        console.log("org_id",org_id,level);
         if(org_id instanceof Array){
             for(let item in org_id){
                 obj_org_id.push(new mongoose.Types.ObjectId(org_id[item]))
@@ -355,27 +360,46 @@ exports.exportDetailList= function(org_id,proc_code,level,status,dispatch_time,s
             //结束时间追加至当天的最后时间
             compare['$lte']=new Date(endDate+' 23:59:59');
         }
-
+        console.log("channel_work_id",channel_work_id,"channel_code",channel_code);
+        //渠道编码
+        if(channel_code){
+            statistics['channel_code']=channel_code;
+        }
+        //BOSS工号
+        if(channel_work_id){
+            statistics['work_id']=channel_work_id;
+        }
 
         //查询实例
         var inst_match={};
+        //时间查询
+        if(!isEmptyObject(compare)){
+            inst_match['inst.proc_start_time']=compare;
+        }
         //总数
         if(status==1){
-            inst_match={"inst.proc_inst_status":{$in:[1,2,3,4]}};
+            inst_match['inst.proc_inst_status']={$in:[1,2,3,4]};
         }
         //归档数
         if(status==2){
-            inst_match={"inst.proc_inst_status":{$in:[4]}};
+            inst_match['inst.proc_inst_status']={$in:[4]};
         }
-        //未超时档数
+        //未超时归档数
         if(status==3){
-            inst_match={"inst.is_overtime":0,"inst.proc_inst_status":4};
+            inst_match['inst.is_overtime']=0;
+            inst_match['inst.proc_inst_status']=4;
+
         }
-        //时间查询
-        if(!isEmptyObject(compare)){
-            inst_match['insert_time']=compare;
+        //一次归档工单
+        if(status==4){
+            inst_match['inst.refuse_number']=0;
+            inst_match['inst.proc_inst_status']=4;
+
         }
-        var task_flag=true;
+        if(work_order_number) {
+            inst_match['inst.work_order_number']=work_order_number;
+        }
+        let task_flag=true;
         var task_search={"proc_inst_task_status":0}
         if(proc_inst_task_type){
             if(proc_inst_task_type=='complete'){
@@ -384,7 +408,6 @@ exports.exportDetailList= function(org_id,proc_code,level,status,dispatch_time,s
                 task_search.proc_inst_task_type=proc_inst_task_type;
                 task_flag=false;
             }
-
         }
         console.log("task_search",task_search,proc_inst_task_type=='complete');
         console.log("statistics",statistics);
@@ -393,7 +416,7 @@ exports.exportDetailList= function(org_id,proc_code,level,status,dispatch_time,s
             {
                 $match: statistics
             },
-            {
+           {
                 $lookup: {
                     from: "common_bpm_proc_inst",
                     localField: 'proc_inst_id',
@@ -467,6 +490,7 @@ exports.exportDetailList= function(org_id,proc_code,level,status,dispatch_time,s
                     proc_inst_status:  "$inst.proc_inst_status",
                     channel_histroy:  "$channel_histroy.proc_inst_task_remark",
                     work_id:  "$user.work_id",
+                    channel_work_id:  "$work_id",
 
                 }
             }
@@ -495,8 +519,10 @@ function createExcelOrderList(list) {
         '工单数',
         '归档工单数',
         '未超时归档工单数',
+        '一次归档工单数',
         '工单归档率',
         '工单及时归档率',
+        '一次归档率',
     ];
 
     var data = [headers];
@@ -527,15 +553,29 @@ function createExcelOrderList(list) {
             }
 
         }
+        //一次工单及时归档率
+        let one_filing_rate= "0%";
+        if(c.one_file==0 || c.total==0){
+            timely_filing_rate= "0%";
+        }else{
+            var re=((parseInt(c.one_file)/c.total).toFixed(5)*100).toFixed(3);
+            if(re==0){
+                one_filing_rate="0%";
+            }else{
+                one_filing_rate= re+"%";
+            }
 
+        }
         const tmp = [
             c.company_code,
             c.org_fullname,
             c.total,
             c.success,
             c.overtime,
+            c.one_file,
             filing_rate,
-            timely_filing_rate
+            timely_filing_rate,
+            one_filing_rate
         ]
 
         data.push(tmp);
@@ -571,33 +611,29 @@ exports.createExcelOrderDetail =function createExcelOrderDetail(data) {
         '是否超时',
         '超时时间',
         '工单发起人',
-        '渠道ID',
+        '渠道编码',
         '渠道名称',
-        '渠道负责人',
+        '渠道负责人BOSS工号',
+        '渠道负责人姓名',
         '渠道负责人手机号码',
+        '所属网格编码',
+        '所属网格名称',
+        '所属区县编码',
+        '所属区县名称',
+        '渠道处理意见',
 
     ];
     if(proc_code=='p-109'){
-        headers.push('渠道处理意见');
-        headers.push("所属网格编码");
-        headers.push("所属网格名称");
         headers.push("网格负责人");
         headers.push("网格负责人手机号码");
         headers.push("网格处理人意见");
     }else if(proc_code=='p-201'){
-        headers.push("所属网格编码");
-        headers.push("所属网格名称");
-        headers.push("所属区县编码");
-        headers.push("所属区县名称");
-        headers.push('渠道处理意见');
         headers.push("省级稽核处理人");
         headers.push("省级稽核处理人手机号码");
         headers.push("省级稽核处理人意见");
     }
 
     var data = [headers];
-
-
 
     list.map(c=>{
         let proc_inst_task_assignee_name="";
@@ -610,7 +646,7 @@ exports.createExcelOrderDetail =function createExcelOrderDetail(data) {
             work_id = c.work_id;
         }else{
             proc_inst_task_assignee_name = '待认领';
-            work_id ='待认领';
+            work_id ='';
         }
 
         let proc_inst_task_type="";
@@ -634,27 +670,18 @@ exports.createExcelOrderDetail =function createExcelOrderDetail(data) {
             c.proc_start_user_name,
             c.channel_code,
             c.channel_name,
+            c.channel_work_id,
             c.user_name,
             c.user_phone,
-
+            c.grid_code,
+            c.grid_name,
+            c.county_code,
+            c.county_name,
+            c.channel_histroy ? c.channel_histroy[0] : "",
+            (c.two_histroy  && c.two_histroy.length > 0 )? c.two_histroy[0].proc_inst_task_assignee_name :'',
+            (c.two_histroy  && c.two_histroy.length > 0 )? c.two_histroy[0].proc_inst_task_assignee :'',
+            (c.two_histroy  && c.two_histroy.length > 0 )? c.two_histroy[0].proc_inst_task_remark :''
         ]
-        if(proc_code=='p-109'){
-            tmp.push(  c.channel_histroy ? c.channel_histroy[0] : "");
-            tmp.push(JSON.parse(c.proc_vars).grid_code);
-            tmp.push(JSON.parse(c.proc_vars).grid_name);
-            tmp.push((c.two_histroy  && c.two_histroy.length > 0 )? c.two_histroy[0].proc_inst_task_assignee_name :'');
-            tmp.push((c.two_histroy  && c.two_histroy.length > 0 )? c.two_histroy[0].proc_inst_task_assignee :'');
-            tmp.push((c.two_histroy  && c.two_histroy.length > 0 )? c.two_histroy[0].proc_inst_task_remark :'');
-        }else if(proc_code=='p-201'){
-            tmp.push( c.grid_code);
-            tmp.push( c.grid_name);
-            tmp.push(c.county_code);
-            tmp.push(c.county_name);
-            tmp.push(  c.channel_histroy ? c.channel_histroy[0] : "");
-            tmp.push((c.two_histroy  && c.two_histroy.length > 0 )? c.two_histroy[0].proc_inst_task_assignee_name :'');
-            tmp.push((c.two_histroy  && c.two_histroy.length > 0 )? c.two_histroy[0].proc_inst_task_assignee :'');
-            tmp.push((c.two_histroy  && c.two_histroy.length > 0 )? c.two_histroy[0].proc_inst_task_remark :'');
-        }
         data.push(tmp);
     });
     var ws = {
@@ -662,24 +689,13 @@ exports.createExcelOrderDetail =function createExcelOrderDetail(data) {
             "!row" : [{wpx: 67}]
         }
     };
-    ws['!cols']= [{wpx: 130},{wpx: 100},{wpx: 300},{wpx: 500},{wpx: 100},{wpx: 100},{wpx: 100},{wpx: 100},{wpx: 100},{wpx: 100},{wpx: 100},{wpx: 100},{wpx: 400},{wpx: 200},{wpx: 200}];
-    if(proc_code=='p-109'){
-        ws['!cols'].push({wpx: 150});
-        ws['!cols'].push({wpx: 130});
-        ws['!cols'].push({wpx: 130});
-        ws['!cols'].push({wpx: 130});
-        ws['!cols'].push({wpx: 130});
-        ws['!cols'].push({wpx: 180});
-    }else if(proc_code=='p-201'){
-        ws['!cols'].push({wpx: 130});
-        ws['!cols'].push({wpx: 130});
-        ws['!cols'].push({wpx: 130});
-        ws['!cols'].push({wpx: 130});
-        ws['!cols'].push({wpx: 200});
-        ws['!cols'].push({wpx: 100});
-        ws['!cols'].push({wpx: 200});
-        ws['!cols'].push({wpx: 200});
-    }
+    ws['!cols']= [
+        {wpx: 130},{wpx: 100},{wpx: 300},{wpx: 500},{wpx: 100},
+        {wpx: 120},{wpx: 100},{wpx: 100},{wpx: 100},{wpx: 100},
+        {wpx: 100},{wpx: 100},{wpx: 400},{wpx: 120},{wpx: 200},
+        {wpx: 200},{wpx: 100},{wpx: 100},{wpx: 100},{wpx: 100},
+        {wpx: 100},{wpx: 100},{wpx: 200},{wpx: 120}];
+
     return xlsx.build([{name:'Sheet1',data:data}],ws);
 }
 
@@ -717,7 +733,7 @@ exports.pre_org= function(org_id) {
  * @param endDate
  * @returns {Promise}
  */
-exports.detail_list= function(page,size,org_id,level,status,proc_code,dispatch_time,startDate,endDate,proc_inst_task_type,work_order_number) {
+exports.detail_list= function(page,size,org_id,level,status,proc_code,startDate,endDate,proc_inst_task_type,work_order_number,channel_code,channel_work_id) {
 
     var p = new Promise(function(resolve,reject){
         page=parseInt(page);
@@ -762,8 +778,16 @@ exports.detail_list= function(page,size,org_id,level,status,proc_code,dispatch_t
             }
         }
         //派单时间
-        if(dispatch_time){
+      /*  if(dispatch_time){
             statistics['dispatch_time']=dispatch_time.replace(/\-/g,'');
+        }*/
+        //渠道编码
+        if(channel_code){
+            statistics['channel_code']=channel_code;
+        }
+        //BOSS工号
+        if(channel_work_id){
+            statistics['work_id']=channel_work_id;
         }
         var compare={};
         //开始时间
@@ -775,28 +799,37 @@ exports.detail_list= function(page,size,org_id,level,status,proc_code,dispatch_t
             //结束时间追加至当天的最后时间
             compare['$lte']=new Date(endDate+' 23:59:59');
         }
-        //时间查询
-        if(!isEmptyObject(compare)){
-            statistics['insert_time']=compare;
-        }
+
         var task_flag=true;
         //查询实例
         var inst_match={};
+        console.log(compare);
+        //时间查询
+        if(!isEmptyObject(compare)){
+            inst_match['inst.proc_start_time']=compare;
+        }
         //总数
         if(status==1){
-            inst_match={"inst.proc_inst_status":{$in:[1,2,3,4]}};
+            inst_match['inst.proc_inst_status']={$in:[1,2,3,4]};
         }
         //归档数
         if(status==2){
-            inst_match={"inst.proc_inst_status":{$in:[4]}};
+            inst_match['inst.proc_inst_status']={$in:[4]};
         }
         //未超时归档数
         if(status==3){
-            inst_match={"inst.is_overtime":0,"inst.proc_inst_status":4};
+            inst_match['inst.is_overtime']=0;
+            inst_match['inst.proc_inst_status']=4;
+
+        }
+        //一次归档工单
+        if(status==4){
+            inst_match['inst.refuse_number']=0;
+            inst_match['inst.proc_inst_status']=4;
 
         }
         if(work_order_number) {
-            inst_match={"inst.work_order_number":work_order_number};
+            inst_match['inst.work_order_number']=work_order_number;
         }
 
         var task_search={"proc_inst_task_status":0}
@@ -810,6 +843,8 @@ exports.detail_list= function(page,size,org_id,level,status,proc_code,dispatch_t
         }
         console.log("task_search",task_search);
         console.log("statistics",statistics);
+        console.log("inst_match",inst_match);
+
         //依机构表为主表，关联统计表和实例表
         process_extend_model.$ProcessTaskStatistics.aggregate([
             {
@@ -887,6 +922,7 @@ exports.detail_list= function(page,size,org_id,level,status,proc_code,dispatch_t
                     proc_inst_status:  "$inst.proc_inst_status",
                     channel_histroy:  "$channel_histroy.proc_inst_task_remark",
                     work_id:  "$user.work_id",
+                    channel_work_id:  "$work_id",
 
             }
             },

@@ -240,7 +240,7 @@
     function loadOrderArchiveListDatagrid(){
         // 加载已归档工单基本属性列表
         $('#orderTablelist3').datagrid({
-            url:'{{projcfg.appurl}}/api/order_manage/order_complete/file_list',
+            url:'{{projcfg.appurl}}/api/order_manage/order_file/list',
             method:'post',
             rownumbers:true,
             striped:true,
@@ -253,23 +253,46 @@
             checkOnSelect:true,
             columns:[[
                 {"field":"_id",hidden:true},
-                {"field": "work_order_number","title":"工单编号","width":55},
-                {"field": "proc_title","title":"工单标题","width":100,
+                {"field": "work_order_number","title":"工单编号","width":"200px"},
+                {"field": "proc_title","title":"工单标题","width":"300px",
                     formatter:function(value,row,index){
                         return "<span title='" + value + "'>" + value + "</span>";
 
                     }},
-                {"field": "proc_name","title":"工单类型","width":50},
-                {"field": "proc_ver","title":"版本","width":20},
-                {"field": "proc_cur_task_name","title":"当前处理节点","width":50},
-                {"field": "proc_start_user_name","title":"申请人","width":50},
-                {"field": "proc_cur_arrive_time","title":"归档时间","width":80,
+                {"field": "proc_name","title":"工单类型","width":"150px"},
+                {"field": "proc_start_user_name","title":"派单人","width":"100px"},
+                {"field": "proc_start_time","title":"派单时间","width":"150px",
                     formatter:function(value,row,index){
                         var isoDateStr = value.substring(0,value.indexOf('.'));
                         var date=new Date(isoDateStr.replace(/-/g,'/').replace(/T|Z/g,' '));
                         date.setHours(date.getHours()+8)
                         return  date.Format("yyyy-MM-dd hh:mm:ss");
-                    }}
+                    }},
+                {"field": "proc_inst_task_complete_time","title":"归档时间","width":"150px",
+                    formatter:function(value,row,index){
+                        var isoDateStr = value.substring(0,value.indexOf('.'));
+                        var date=new Date(isoDateStr.replace(/-/g,'/').replace(/T|Z/g,' '));
+                        date.setHours(date.getHours()+8)
+                        return  date.Format("yyyy-MM-dd hh:mm:ss");
+                    }},
+                {"field": "refuse_number","title":"未归档次数","width":"90px",
+                    formatter:function(value,row,index){
+                        return value+"次";
+                    }},
+                {"field": "is_overtime","title":"是否超时","width":"70px",
+                    formatter:function(value,row,index){
+                        if(value==0){
+                            return "<span style='color:green'>未超时</span>";
+                        }else{
+                            return "<span style='color:red'>超时</span>";
+                        }
+
+                    }},
+                {"field": "proc_vars","title":"超时时间","width":"150px"
+                    ,formatter:function(value,row,index){
+                    var proc_vars=JSON.parse(value)
+                    return  proc_vars.end_time;
+                }},
 
             ]],
             onDblClickRow:function(rowIndex, rowData){

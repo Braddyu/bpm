@@ -56,6 +56,14 @@ exports.addStatistics = function(inst_id,dispatch_time) {
         ///被派单渠道所属人电话号码，因为渠道的账号手机号和编号为同一个
         statistics.user_phone=task.proc_inst_task_assignee;
 
+        //查找用户信息
+        let user_result= await user_model.$User.find({"user_no":task.proc_inst_task_assignee} );
+        if(user_result.length==0 ){
+            reject(utils.returnMsg(false, '1000', '查找用户错误。',null,org_id));
+            return;
+        }
+        //被派渠道工号
+        statistics.work_id=user_result[0].work_id;
         //查找渠道信息
         let channel_result= await user_model.$CommonCoreOrg.find({"_id":org_id,"level":6} );
         if(channel_result.length !=1 ){

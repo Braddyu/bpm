@@ -22,7 +22,7 @@ exports.getOrderListPage= function(page, size, conditionMap) {
 
     var p = new Promise(function(resolve,reject){
 
-        utils.pagingQuery4Eui(model.$ProcessInst, page, size, conditionMap, resolve, '',  {proc_start_time:-1});
+        utils.pagingQuery4Eui(model.$ProcessInst, page, size, conditionMap, resolve, '',  {});
 
     });
 
@@ -512,7 +512,7 @@ function postChannel(proc_inst_id){
  * @param task_id
  * @returns {Promise}
  */
-exports.upload_images= function(files,task_id) {
+exports.upload_images= function(files,task_id,user_name) {
 
     var p = new Promise(function(resolve,reject){
 
@@ -536,7 +536,7 @@ exports.upload_images= function(files,task_id) {
                                             data.proc_inst_id=res[0].proc_inst_id;
                                             data.proc_inst_task_code=res[0].proc_inst_task_code;
                                             data.proc_inst_task_type=res[0].proc_inst_task_type;
-                                            data.user_name=res[0].proc_inst_task_assignee_name;
+                                            data.user_name=user_name;
                                             data.proc_code=res[0].proc_code;
                                             data.proc_name=res[0].proc_name;
                                             for(let item in files){
@@ -568,7 +568,7 @@ exports.upload_images= function(files,task_id) {
                                     data.proc_inst_id=res[0].proc_inst_id;
                                     data.proc_inst_task_code=res[0].proc_inst_task_code;
                                     data.proc_inst_task_type=res[0].proc_inst_task_type;
-                                    data.user_name=res[0].proc_inst_task_assignee_name;
+                                    data.user_name=user_name;
                                     data.proc_code=res[0].proc_code;
                                     data.proc_name=res[0].proc_name;
                                     for(let item in files){

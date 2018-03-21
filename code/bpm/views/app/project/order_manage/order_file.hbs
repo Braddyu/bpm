@@ -8,7 +8,6 @@
                         <div id="toolbar1" class="row tbRow">
                             <div class="col-xs-8 col-md-8">
                                 <div class="btn-group" role="group" aria-label="...">
-                                    <!--<button type="button" class="btn btn-default" onclick="addNewOrder()"><i class="fa fa-plus"></i>新增</button>-->
                                     <label for="filterParam3">工单类型：</label>
                                     <select class="easyui-combobox"id="proc_task_code"  style="width: 180px;height:31px;">
                                     </select>
@@ -19,17 +18,32 @@
                                     <input class="easyui-textbox"id="work_order_number"  style="width: 180px;height:31px;">
                                     </input>
                                 </div>
+                                <div class="btn-group" role="group" aria-label="...">
+                                    <label for="filterParam3">派单时间：</label>
+                                    <input id="proc_start_time" class="easyui-datebox" label="Start Date:" labelPosition="top" style="width:130px;height:35px">
 
+                                </div>
+                                <div class="btn-group" role="group" aria-label="...">
+                                    <label for="filterParam3">归档时间：</label>
+                                    <input id="proc_inst_task_complete_time" class="easyui-datebox" label="Start Date:" labelPosition="top" style="width:130px;height:35px">
+
+                                </div>
+                                <div class="btn-group" role="group" aria-label="...">
+                                    <label for="filterParam3">是否超时：</label>
+                                    <select class="easyui-combobox"id="is_overtime"  style="width: 180px;height:31px;">
+                                        <option value="">===全部==</option>
+                                        <option value="0">未超时</option>
+                                        <option value="1">超时</option>
+                                    </select>
+                                </div>
                             </div>
                             <div class="col-xs-4 col-md-4 text-right">
                                 <form class="form-inline">
                                     <div class="form-group">
 
                                         <div class="input-group">
-                                            <!--<input type="input" id="filterParam1" class="form-control" style="width:130px;" placeholder="输入标题查询"/>-->
                                             <span class="input-group-btn">
                                                 <button class="btn btn-default" type="button" onclick="doSearch()"><i class="fa fa-search"></i>查询</button>
-                                               <!-- <button class="btn btn-default" type="button" id="exportData"><i class="glyphicon glyphicon-open"></i>导出</button>-->
                                             </span>
                                         </div>
                                     </div>
@@ -92,45 +106,47 @@
             selectOnCheck:true,
             checkOnSelect:true,
             columns:[[
-                {"field":"_id",checkbox:true},
-                {"field": "work_order_number","title":"工单编号","width":55},
-                {"field": "proc_title","title":"工单标题","width":100,
+                {"field":"_id",hidden:true},
+                {"field": "work_order_number","title":"工单编号","width":"200px"},
+                {"field": "proc_title","title":"工单标题","width":"300px",
                     formatter:function(value,row,index){
                         return "<span title='" + value + "'>" + value + "</span>";
 
                     }},
-                {"field": "proc_name","title":"所属流程","width":50},
-                {"field": "proc_ver","title":"版本","width":20},
-                {"field": "proc_cur_task_name","title":"当前处理节点","width":50},
-                {"field": "proc_inst_status","title":"状态","width":50,
+                {"field": "proc_name","title":"工单类型","width":"150px"},
+                {"field": "proc_start_user_name","title":"派单人","width":"100px"},
+                {"field": "proc_start_time","title":"派单时间","width":"150px",
                     formatter:function(value,row,index){
-                        //1 已启用  0 已禁用,2 流转中，3子流程流转中 ,4  归档,5 回退，6 废弃
-                        if(value == '1'){
-                            return "启用";
-                        }else if(value == '2'){
-                            return "流转中";
-                        }else if(value == '3'){
-                            return "子流程流转中";
-                        }else if(value == '4'){
-                            return "归档";
-                        }else if(value == '5'){
-                            return "回退";
-                        }else if(value == '6'){
-                            return "废弃";
-                        }else if(value == '0'){
-                            return "已禁用";
-                        }
-
-                    }
-                },
-                {"field": "proc_start_user_name","title":"申请人","width":50},
-                {"field": "proc_start_time","title":"创建时间","width":80,
+                    var isoDateStr = value.substring(0,value.indexOf('.'));
+                    var date=new Date(isoDateStr.replace(/-/g,'/').replace(/T|Z/g,' '));
+                    date.setHours(date.getHours()+8)
+                    return  date.Format("yyyy-MM-dd hh:mm:ss");
+                }},
+                {"field": "proc_inst_task_complete_time","title":"归档时间","width":"150px",
                     formatter:function(value,row,index){
                         var isoDateStr = value.substring(0,value.indexOf('.'));
                         var date=new Date(isoDateStr.replace(/-/g,'/').replace(/T|Z/g,' '));
                         date.setHours(date.getHours()+8)
                         return  date.Format("yyyy-MM-dd hh:mm:ss");
-                    }}
+                    }},
+                {"field": "refuse_number","title":"未归档次数","width":"90px",
+                    formatter:function(value,row,index){
+                        return value+"次";
+                    }},
+                {"field": "is_overtime","title":"是否超时","width":"70px",
+                    formatter:function(value,row,index){
+                        if(value==0){
+                            return "<span style='color:green'>未超时</span>";
+                        }else{
+                            return "<span style='color:red'>超时</span>";
+                        }
+
+                    }},
+                {"field": "proc_vars","title":"超时时间","width":"150px"
+                    ,formatter:function(value,row,index){
+                        var proc_vars=JSON.parse(value)
+                    return  proc_vars.end_time;
+                }},
             ]],
             onDblClickRow:function(rowIndex, rowData){
                 var url='{{projcfg.appurl}}/api/order_manage/order_list/showDetailView?proc_code='+rowData.proc_code+'&change_id='+rowData._id+'&status=1';
@@ -183,7 +199,8 @@
            url: '{{projcfg.appurl}}/api/order_manage/order_file/list',
            queryParams: {
                proc_code: $("#proc_task_code").combobox('getValue'),
-
+               proc_start_time:$('#proc_start_time').datebox('getValue'),
+               proc_start_time:$('#proc_start_time').datebox('getValue'),
                work_order_number:$("#work_order_number").val(),
 
            }

@@ -28,7 +28,7 @@
 
                                         <button class="btn btn-default" type="button" onclick="doSearch()"><i class="fa fa-search"></i>查询</button>
                                         <button class="btn btn-default" type="button" id="exportData"><i class="glyphicon glyphicon-open"></i>导出</button>
-                                       <button class="btn btn-default" type="button" id="exportChannelData"><i class="glyphicon glyphicon-open"></i>导出渠道信息</button>
+                                      <!-- <button class="btn btn-default" type="button" id="exportChannelData"><i class="glyphicon glyphicon-open"></i>导出渠道信息</button>-->
 
                                 </div>
                                 <div class="btn-group" role="group" aria-label="...">
@@ -97,6 +97,10 @@
 
                     level=data.data.level;
                     org_id=data.data.org_id.join(",");
+
+
+                    export_org_id=org_id;
+                    export_status=0;
                     //加载列表
                     loadOrderListDatagrid();
                 }else{
@@ -150,7 +154,6 @@
     }
 
     function loadOrderListDatagrid(){
-//        alert(org_id);
         // 加载工单基本属性列表
         $('#orderTablelist').datagrid({
             url:'{{projcfg.appurl}}/api/order_manage/order_statistics/list',
@@ -173,7 +176,7 @@
             checkOnSelect:true,
             sortName:'company_code',
             columns:[[
-                {"field":"_id",checkbox:true},
+                {"field":"_id",hidden:true},
                 {"field":"fail",hidden:true},
                 {"field":"company_code","title":"区域编码","width":"200px",
                     "sortable":true,sorter:function(a,b){
@@ -221,7 +224,7 @@
                     }
                     },
 
-                {"field": "success","title":"归档工单数","width":"210px","sortable":true,sorter:function(a,b){
+                {"field": "success","title":"归档工单数","width":"120px","sortable":true,sorter:function(a,b){
                     return a>b?1:-1;
                 },
                     formatter:function(value,row,index){
@@ -234,7 +237,7 @@
                         }
                     }},
 
-              {"field": "overtime","title":"未超时归档工单数","width":160 ,"sortable":true,sorter:function(a,b){
+              {"field": "overtime","title":"未超时归档工单数","width":"150px" ,"sortable":true,sorter:function(a,b){
                   return a>b?1:-1;
               },
                   formatter:function(value,row,index){
@@ -251,7 +254,25 @@
                   }
 
               }},
-                {"field": "t2","title":"工单归档率","width":"160px",
+                {"field": "one_file","title":"一次归档工单数","width":"150px" ,"sortable":true,sorter:function(a,b){
+                    return a>b?1:-1;
+                },
+                    formatter:function(value,row,index){
+                        //大于6表示已经下砖到渠道层级
+
+                        if(level+1>6){
+                            return value;
+                        }else if(value>0){
+                            return '<a href="javascript:void(0)" onclick="openDetail(4,\''+row._id+'\')">'+value+'</a>';
+
+                        }else{
+                            return '<a href="javascript:void(0)">'+(value)+'</a>';
+
+                        }
+
+                    }},
+
+                {"field": "t2","title":"工单归档率","width":"150px",
                     formatter:function(value,row,index){
                     if(row.success==0|| row.total==0){
                         return "0%";
@@ -267,7 +288,7 @@
 
 
                 }},
-              {"field": "proc_start_time","title":"工单及时归档率","width":160,
+              {"field": "proc_start_time","title":"工单及时归档率","width":"150px",
                   formatter:function(value,row,index){
                   if(row.overtime==0 || row.total==0){
                       return "0%";
@@ -282,7 +303,23 @@
                   }
 
 
-              }}
+              }},
+                {"field": "t3","title":"一次归档率","width":"150px",
+                    formatter:function(value,row,index){
+                        if(row.one_file==0 || row.total==0){
+                            return "0%";
+                        }else{
+                            var re=((parseInt(row.one_file)/row.total).toFixed(5)*100).toFixed(3);
+                            if(re==0){
+                                return"0%";
+                            }else{
+                                return re+"%";
+                            }
+
+                        }
+
+
+                    }}
             ]],
 
             onLoadSuccess:function(json) {
@@ -378,8 +415,14 @@
         $.messager.confirm('导出', '确定要导出吗?', function(r) {
             if (r) {
                 //导出的为上一级的所以要返回一级
-                level=level-1;
-                downloadExcelDetail();
+                var export_level=level;
+                if(level == top_level){
+                    export_level=level;
+                }else{
+                    export_level=level-1;
+                }
+
+                downloadExcelDetail(export_level);
             }
         });
     });
@@ -388,7 +431,7 @@
     $("#exportDataDetail").click(function () {
         $.messager.confirm('导出', '确定要导出吗?', function(r) {
             if (r) {
-                downloadExcelDetail();
+                downloadExcelDetail(level);
             }
         });
     });
@@ -416,17 +459,15 @@
 
 
 
-    function downloadExcelDetail() {
+    function downloadExcelDetail(export_level) {
         if (downloadExcelIng) {
             return;
         }
         downloadExcelIng = true;
 
         var downloadUrl = '{{projcfg.appurl}}/api/order_manage/order_statistics/export_excel_detail?status='
-                +export_status+'&level='+level+'&org_id='+export_org_id+'&proc_code='+$("#proc_code").combobox('getValue')
+                +export_status+'&level='+export_level+'&org_id='+export_org_id+'&proc_code='+$("#proc_code").combobox('getValue')
                 +'&startDate='+$("#startDate").datebox('getValue')+'&endDate='+$("#endDate").datebox('getValue');
-        //导出结束后返回正常的级别
-        level=level+1;
         window.location.href=downloadUrl;
         downloadExcelIng = false;
     }
@@ -437,7 +478,7 @@
         export_org_id=org_id_;
         export_status=status;
         var field=[
-            {"field":"_id",checkbox:true},
+            {"field":"_id",hidden:true},
             {"field": "work_order_number","title":"工单编号","width":"160px"},
             {"field": "proc_title","title":"标题","width":"300px",
                 formatter:function(value,row,index){
@@ -493,35 +534,26 @@
 
                 }},
 
-
             {"field": "proc_start_user_name","title":"工单发起人","width":"150px"},
-            {"field": "channel_code","title":"渠道ID","width":"100px"},
+            {"field": "channel_code","title":"渠道编码","width":"100px"},
             {"field": "channel_name","title":"渠道名称","width":"300px"},
+            {"field": "channel_work_id","title":"渠道负责人BOSS工号","width":"170px"},
             {"field": "user_name","title":"渠道负责人","width":"150px"},
             {"field": "user_phone","title":"渠道负责人手机号码","width":"150px"},
+            {"field": "grid_code","title":"所属网格编码","width":"150px"},
+            {"field": "grid_name","title":"所属网格","width":"150px"},
+            {"field": "county_code","title":"所属区县编码","width":"150px"},
+            {"field": "county_name","title":"所属区县","width":"150px"},
+            {"field": "channel_histroy","title":"被派单渠道处理意见","width":"150px",
+                formatter:function(value,row,index){
 
+                    var remark_arr=value.toString().split(',');
+                    if(remark_arr.length>0){
+                        return remark_arr[0];
+                    }
+                }}
         ];
         if($("#proc_code").combobox('getValue')=='p-109'){
-
-            field.push( {"field": "channel_histroy","title":"被派单渠道处理意见","width":"150px",
-                    formatter:function(value,row,index){
-
-                var remark_arr=value.toString().split(',');
-                if(remark_arr.length>0){
-                    return remark_arr[0];
-                }
-            }});
-
-            field.push({"field": "grid_code","title":"所属网格编码","width":"150px",
-             formatter:function(value,row,index){
-
-                        return JSON.parse(row.proc_vars).grid_code;
-
-                }});
-            field.push({"field": "grid_name","title":"所属网格名称","width":"150px",
-               formatter:function(value,row,index){
-                    return JSON.parse(row.proc_vars).grid_name;
-                }});
             field.push({"field": "two_histroy","title":"网格负责人","width":"150px",
                 formatter:function(value,row,index){
                     if(value && value.length > 0){
@@ -541,18 +573,7 @@
                     }
                 }})
         }else{
-            field.push(  {"field": "grid_code","title":"所属网格编码","width":"150px"});
-            field.push(  {"field": "grid_name","title":"所属网格","width":"150px"});
-            field.push( {"field": "county_code","title":"所属区县编码","width":"150px"});
-            field.push( {"field": "county_name","title":"所属区县","width":"150px"});
-            field.push( {"field": "channel_histroy","title":"被派单渠道处理意见","width":"150px",
-                formatter:function(value,row,index){
 
-                    var remark_arr=value.toString().split(',');
-                    if(remark_arr.length>0){
-                        return remark_arr[0];
-                    }
-                }});
             field.push({"field": "two_histroy","title":"省级稽核负责人","width":"150px",
                 formatter:function(value,row,index){
                     if(value && value.length > 0){
