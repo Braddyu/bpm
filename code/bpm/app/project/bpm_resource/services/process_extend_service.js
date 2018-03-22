@@ -10,7 +10,7 @@ var nodeAnalysisService=require('../services/node_analysis_service')
 var mongoUtils  = require('../../../common/core/mongodb/mongoose_utils');
 var mongoose = mongoUtils.init();
 var moment = require('moment');
-
+var process_util = require('../../../utils/process_util');
 /**
  * 插入统计表
  * @param inst_id 实例ID
@@ -147,7 +147,7 @@ exports.copyToSend = function(inst_id) {
 
     return new Promise(function(resolve,reject){
         //查询厅经理任务
-        process_model.$ProcessInstTask.find({'proc_inst_id':inst_id,'proc_inst_task_status':0},function(err,res){
+        process_model.$ProcessInstTask.find({'proc_inst_id':inst_id,'proc_inst_task_status':0,"proc_inst_task_type" : "厅店处理回复"},function(err,res){
                 if(err){
                     resolve(utils.returnMsg(false, '1000', '获取抄送信息失败。',null,null));
                 }else{
@@ -163,8 +163,20 @@ exports.copyToSend = function(inst_id) {
                             if(rs.success){
                                 var data=rs.data;
                                 if(data.length==1){
-                                    console.log('抄送信息为:',data[0].user_no,'您的所辖渠道管理员',task.proc_inst_task_assignee_name,task.proc_inst_task_title,'有一份工单待处理');
-                                    resolve(utils.returnMsg(true, '2000', '抄送成功。',null,null));
+                                    process_extend_model.$ProcessTaskStatistics.find({"proc_inst_id":inst_id},function(err,res1){
+                                        if(err){
+                                            resolve(utils.returnMsg(false, '1000', '错误的抄送信息1。',null,null));
+                                        }else{
+                                            var params = {
+                                                "channelName": res1[0].channel_name,
+                                                "channelCode": res1[0].channel_code,
+                                                "procName":task.proc_inst_task_title,
+                                                "orderNo":task.work_order_number
+                                            }
+                                            process_util.sendSMS(data[0].user_no,params,'GRID_COPY');
+                                            resolve(utils.returnMsg(true, '2000', '抄送成功。',null,null));
+                                        }
+                                    })
                                 }else if(data.length>1){
                                     resolve(utils.returnMsg(false, '1000', '多个抄送对象,无法指定。',null,null));
                                 }else{

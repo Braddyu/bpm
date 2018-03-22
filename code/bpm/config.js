@@ -370,9 +370,15 @@ var config = {
     joinup_sys:'warnSys_node,errorSys_node,auditorSys_node,syesightSys_node',
 
     AES_KEY:'1234567890ABCDEFGHIJKLMNOPQRSTUV',
+
     SMS_TEMPLET_ORDER:"渠道工单系统有一张需要您处理的工单，《procName》，工单号：orderNo，请及时登陆认真处理。",
     VALIDATION:"工单系统手机号登录验证码为：randomNumber，请不要透露他人。",
-    OPEN_SMS:false,
+    GRID_COPY:"尊敬的网格管理员，您所辖渠道:channelName,渠道编码:channelCode,有一条待处理工单《procName》,工单号：orderNo，请及时催促处理。",
+    OPEN_SMS_ALL:false, //工单短信发送总开关
+    OPEN_SMS:false, //工单短信发送接口
+    OPEN_LOGIN_SMS:false, //短信登录验证码
+    GRID_COPY_SMS:false, //预警工单抄送给网格经理短信
+
     //定时任务开关明细
     switchDetail:{
         oa_switch:false,   //同步OA数据(省、地市、区县级)作业任务开关
