@@ -13,6 +13,7 @@ var config = require('../../../../config');
 var ObjectID = require('mongodb').ObjectID;
 var inst = require('../../bpm_resource/services/instance_service');
 var nodeTransferService=require("../../bpm_resource/services/node_transfer_service");
+var tree = require('../../../../lib/utils/tree_utils');
 
 /**
  * 工单列表分页
@@ -144,7 +145,8 @@ exports.moneyAudit= function(proc_title, user_code,userName,role_name, assign_us
 exports.getOrgPeason= function(orgId) {
 
     var p = new Promise(function(resolve,reject){
-        model_user.$User.find({"user_org":{$in:[ObjectID(orgId)]}},function(err,result){
+        //5aaa4e7a4c6f2d64c4dc882c  资金稽核负责人角色id
+        model_user.$User.find({"user_org":{$in:[ObjectID(orgId)]},"user_roles":{$in:[ObjectID("5aaa4e7a4c6f2d64c4dc882c")]}},function(err,result){
             if(err){
                 console.log('获取机构人员失败',err);
                 resolve({'success':false,'code':'1000','msg':'获取机构人员失败',"error":err});
@@ -157,3 +159,75 @@ exports.getOrgPeason= function(orgId) {
     });
     return p;
 };
+
+/**
+ * 异步获取机构数据
+ * @param condition
+ * @param cb
+ */
+exports.getOrgTreeDataAsyn = function(condition) {
+
+    var p = new Promise(function(resolve,reject){
+        if(condition.org_pid==0){
+            var fields = {_id:1, org_name: 1, org_pid: 1,childCount:1}; // 待返回的字段
+            //var fields = {_id:1, org_name: 1, org_pid: 1}; // 待返回的字段
+            var options = {sort: {'org_pid': 1,'childCount':-1,  'org_order': 1}};
+            model_user.$CommonCoreOrg.find(condition,fields, options, function(error, result) {
+                if(error) {
+                    resolve(new Array());
+                }
+                else {
+                    resolve(tree.buildEasyuiTreeAsyn(result, '_id', 'org_name', 'org_pid','childCount'));
+                }
+            });
+        }
+        model_user.$CommonCoreOrg.find({"_id": condition.org_pid},function(err,res) {
+            if(res){//如果点到市县机构 直接加载自营厅  无需加载网格数据
+                if(res.length>0) {
+                    if(res[0].level==4){//是区县加载  区县下所有自营厅   不知道mongodb是否
+                        var fields = {_id:1, org_name: 1, org_pid: 1,childCount:1}; // 待返回的字段
+                        var options = {sort: {'org_pid': 1,'childCount':-1,  'org_order': 1}};
+                        var param = {};
+                        param.audit_org_pid=condition.org_pid;
+                        param.if_money_audit_org=1;
+                        model_user.$CommonCoreOrg.find(param,fields, options, function(error, result) {
+                            if(error) {
+                                resolve(new Array());
+                            }
+                            else {
+                                resolve(tree.buildEasyuiTreeAsyn(result, '_id', 'org_name', 'org_pid','childCount'));
+                            }
+                        });
+                    }else{//不是区县  按原来的加载
+                        var fields = {_id:1, org_name: 1, org_pid: 1,childCount:1}; // 待返回的字段
+                        //var fields = {_id:1, org_name: 1, org_pid: 1}; // 待返回的字段
+                        var options = {sort: {'org_pid': 1,'childCount':-1,  'org_order': 1}};
+                        model_user.$CommonCoreOrg.find(condition,fields, options, function(error, result) {
+                            if(error) {
+                                resolve(new Array());
+                            }
+                            else {
+                                resolve(tree.buildEasyuiTreeAsyn(result, '_id', 'org_name', 'org_pid','childCount'));
+                            }
+                        });
+                    }
+                }
+            }
+        });
+    });
+    return p;
+};
+
+/**
+ * 递归查询区县下的所有自营厅
+ * @param condition
+ */
+exports.getOrgTreeDatadg = function(id) {
+    var condition={};
+    var org_pid = req.query.org_pid;
+    condition.org_pid = org_pid;
+   model_user.$CommonCoreOrg.find(condition, function(error, result){
+
+   })
+
+}
