@@ -102,7 +102,7 @@
 
                 <tr>
                     <td  align="right" class="tdLabel">处理人机构：</td>
-                    <td colspan="3" class="tdLabel"><select  class="easyui-combobox" id="orgId"  style="width: 80%;height:40px;"></select></td>
+                    <td colspan="3" class="tdLabel"><select  class="easyui-combobox" id="orgId"  style="width: 665px;height:40px;"></select></td>
                 </tr>
                 <tr id="tr_5">
                     <td align="right" class="tdLabel">处理人:</td>
@@ -115,7 +115,7 @@
 
                 <tr  id="fileUpload">
                     <td align="right" class="tdLabel">附件上传:</td>
-                    <td>  <input type="file"labelPosition="top"id="files" name="files" multiple="true" data-options="prompt:'选择文件...',buttonText:'选择'" style="width:250px"/>
+                    <td colspan="3" class="tdLabel">  <input type="file"labelPosition="top"id="files" name="files" multiple="true" data-options="prompt:'选择文件...',buttonText:'选择'" style="width:500px"/>
                     </td>
                 </tr>
 
@@ -254,11 +254,9 @@
                         return "<span title='" + value + "'>" + value + "</span>";
 
                     }},
-                {"field": "proc_peason_type","title":"人员类型","width":50,
+                {"field": "proc_inst_name","title":"工单类型","width":50,
                     formatter:function(value,row,index){
-                        var proc_vars_json=JSON.parse(row.proc_vars);
-                        var myval = proc_vars_json.proc_inst_name;alert(row.proc_vars);
-                        return myval;
+                        return "资金稽核工单";
                     }},
                 {"field": "proc_name","title":"所属流程","width":50},
                 {"field": "proc_ver","title":"版本","width":20},
