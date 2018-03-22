@@ -234,6 +234,24 @@ router.route('/assignTask').post(function(req,res) {
     }
 });
 
+router.route("/orgTreeDataAsyn").get(function (req,res) {
+    //异步加载
+    var condition={};
+    var org_pid = req.query.org_pid;
+    condition.org_pid = org_pid;
+    condition.org_status =1 ;
+    service.getOrgTreeDataAsyn(condition).then(function (result) {
+        if(org_pid != "0"){
+            utils.respJsonData(res, result);
+        }else{
+            utils.respJsonData(res, [{id:'0', text : "贵州移动", children:result}]);
+        }
+    }).catch(function(err){
+        console.log('err');
+        console.log(err);
+    });
+});
+
 function isEmptyObject(e) {
     var t;
     for (t in e)
