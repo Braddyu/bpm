@@ -44,6 +44,8 @@ router.route('/')
         var org_belong = req.body.org_belong;//机构所属地区
         var orgStatus = req.body.org_status;//机构状态
         var orgRemark = req.body.org_remark;//机构描述
+        var audit_org_pid = req.body.audit_org_pid;//父id 资金稽核工单使用
+        var if_money_audit_org = req.body.if_money_audit_org;//是否属于资金稽核工单机构
 
         // 验证机构编号是否为空
         if(!orgCode) {
@@ -88,6 +90,12 @@ router.route('/')
         orgEntity.org_pid = orgPid;
         orgEntity.org_status = orgStatus;
         orgEntity.org_belong = org_belong;
+        if(audit_org_pid){
+            orgEntity.audit_org_pid = audit_org_pid;
+        }
+        if(if_money_audit_org){
+            orgEntity.if_money_audit_org = if_money_audit_org;
+        }
         if(orgRemark){
             orgEntity.org_remark = orgRemark;
         }
@@ -129,6 +137,8 @@ router.route('/:id')
         var org_belong = req.body.org_belong;//机构所属地区
         var orgStatus = req.body.org_status;//机构状态
         var orgRemark = req.body.org_remark;//机构描述
+        var audit_org_pid = req.body.audit_org_pid;//父id 资金稽核工单使用
+        var if_money_audit_org = req.body.if_money_audit_org;//是否属于资金稽核工单机构
 
         // 验证id是否为空
         if (!id) {
@@ -177,6 +187,12 @@ router.route('/:id')
         orgEntity.org_pid = orgPid;
         orgEntity.org_belong = org_belong;
         orgEntity.org_status = orgStatus;
+        if(audit_org_pid){
+            orgEntity.audit_org_pid = audit_org_pid;
+        }
+        if(if_money_audit_org){
+            orgEntity.if_money_audit_org = if_money_audit_org;
+        }
         if(orgRemark){
             orgEntity.org_remark = orgRemark;
         }
@@ -195,7 +211,7 @@ router.route('/:id')
             utils.respMsg(res, false, '1009', 'id不能为空。', null, null);
         }
         var criteria = {_id: id}; // 查询条件
-        var fields = {_id:0, org_code: 1, org_name: 1, org_fullname: 1, org_order: 1, org_type: 1, org_pid: 1, org_status: 1, org_remark: 1, org_belong:1}; // 待返回的字段
+        var fields = {_id:0, org_code: 1, org_name: 1, org_fullname: 1, org_order: 1, org_type: 1, org_pid: 1, org_status: 1, org_remark: 1, org_belong:1,audit_org_pid:1,if_money_audit_org:1}; // 待返回的字段
         var options = {};
         service.getOrg(criteria,fields,function(result){
             utils.respJsonData(res, result);

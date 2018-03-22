@@ -15,8 +15,41 @@ var http=require('http');
 exports.sendSMS=function(mobile,params,tmplet_key){
     return  new Promise(function(resolve,reject){
         try{
-            //是否开启短信服务
-            var isOpen=config.OPEN_SMS;
+                let isOpen = config.OPEN_SMS_ALL;
+            if(tmplet_key){
+
+                //是否开启短信服务
+                var OPEN_SMS=config.OPEN_SMS;
+                //验证码登录
+                var OPEN_LOGIN_SMS=config.OPEN_LOGIN_SMS
+                //抄送
+                var GRID_COPY_SMS=config.GRID_COPY_SMS
+
+                //是否开通短信登录
+                if(tmplet_key == 'VALIDATION' && OPEN_LOGIN_SMS){
+                    isOpen = true;
+                }else if(tmplet_key == 'VALIDATION'){
+                    reject("短信服务未开启");
+                    return;
+                }
+
+                //是否开通工单派发接收短信
+                if(tmplet_key == 'SMS_TEMPLET_ORDER' && OPEN_SMS){
+                    isOpen = true;
+                }else if(tmplet_key == 'SMS_TEMPLET_ORDER'){
+                    reject("短信服务未开启");
+                    return;
+                }
+
+                //是否开通工单抄送接收短信
+                if(tmplet_key == 'GRID_COPY' && GRID_COPY_SMS){
+                    isOpen = true;
+                }else if(tmplet_key == 'GRID_COPY'){
+                    reject("短信服务未开启");
+                    return;
+                }
+            }
+
             if(isOpen){
                 //获取请求内容
                 var postContent=config.SMS.postContent;
@@ -34,7 +67,7 @@ exports.sendSMS=function(mobile,params,tmplet_key){
                     }
 
                 }
-                console.log(SMS_TEMPLET);
+                console.log("开始发送",SMS_TEMPLET);
                 //加上时间戳
                 postContent.PubInfo.TransactionTime=moment().format('YYYYMMDDHHmmss');
                 //短信发送号码
@@ -51,10 +84,11 @@ exports.sendSMS=function(mobile,params,tmplet_key){
                         'Content-Length':Buffer.byteLength(JSON.stringify(postContent))
                     }
                 }
+
                 //返回结果
                 var result={};
                 //发送请求
-                var req=http.request(options, function(res) {
+            var req=http.request(options, function(res) {
                     console.log('Status:',res.statusCode);
                     console.log('headers:',JSON.stringify(res.headers));
                     res.setEncoding('utf-8');
