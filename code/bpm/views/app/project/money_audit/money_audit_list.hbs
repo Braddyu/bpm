@@ -1,4 +1,7 @@
 <link rel="stylesheet" type="text/css" href="{{projcfg.appurl}}/static/order/css/order_detail.css">
+<link rel="stylesheet" type="text/css" href="{{projcfg.appurl}}/static/{{projcfg.theme}}js/uploadify/uploadify.css">
+<script src="{{projcfg.appurl}}/static/js/ajaxfileupload.js"></script>
+<script src="{{projcfg.appurl}}/static/{{projcfg.theme}}js/uploadify/jquery.uploadify.min.js"></script>
 <div id="processDiv" class="row">
     <div class="col-xs-12 col-md-12">
         <div class="widget">
@@ -23,57 +26,6 @@
                             </form>
                         </div>
                     </div>
-
-                        <!--<div id="toolbar1" class="row tbRow">-->
-                            <!--<div class="col-xs-8 col-md-8">-->
-                                <!--&lt;!&ndash;<div class="btn-group" role="group" aria-label="...">&ndash;&gt;-->
-                                    <!--&lt;!&ndash;&lt;!&ndash;<button type="button" class="btn btn-default" onclick="addNewOrder()"><i class="fa fa-plus"></i>新增</button>&ndash;&gt;&ndash;&gt;-->
-                                    <!--&lt;!&ndash;<label for="filterParam3">人员类型：</label>&ndash;&gt;-->
-                                    <!--&lt;!&ndash;<select class="easyui-combobox" id="proc_peason_type"&ndash;&gt;-->
-                                            <!--&lt;!&ndash;style="width: 80px;"  name="proc_peason_type" panelHeight="auto">&ndash;&gt;-->
-                                        <!--&lt;!&ndash;<option value="1">社会渠道</option>&ndash;&gt;-->
-                                        <!--&lt;!&ndash;<option value="2">自营厅</option>&ndash;&gt;-->
-                                        <!--&lt;!&ndash;<option value="3">政企</option>&ndash;&gt;-->
-                                        <!--&lt;!&ndash;<option value="4">业务支撑部</option>&ndash;&gt;-->
-                                        <!--&lt;!&ndash;<option value="4">业务部</option>&ndash;&gt;-->
-                                    <!--&lt;!&ndash;</select>&ndash;&gt;-->
-                                <!--&lt;!&ndash;</div>&ndash;&gt;-->
-                                <!--<div class="btn-group" role="group" aria-label="...">-->
-
-                                    <!--<label for="filterParam3">工单编号：</label>-->
-                                    <!--<input class="easyui-textbox"id="work_order_number"  style="width: 180px;height:31px;">-->
-                                    <!--</input>-->
-                                <!--</div>-->
-
-                                <!--&lt;!&ndash;<div class="btn-group" role="group" aria-label="...">&ndash;&gt;-->
-                                    <!--&lt;!&ndash;<label for="filterParam3">开始时间：</label>&ndash;&gt;-->
-                                    <!--&lt;!&ndash;<input id="startDate" class="easyui-datebox" label="Start Date:" labelPosition="top" style="width:130px;height:30px">&ndash;&gt;-->
-                                <!--&lt;!&ndash;</div>&ndash;&gt;-->
-                                <!--&lt;!&ndash;<div class="btn-group" role="group" aria-label="...">&ndash;&gt;-->
-                                    <!--&lt;!&ndash;<label for="filterParam3">结束时间：</label>&ndash;&gt;-->
-                                    <!--&lt;!&ndash;<input id="endDate" class="easyui-datebox" label="Start Date:" labelPosition="top" style="width:130px;height:30px">&ndash;&gt;-->
-                                <!--&lt;!&ndash;</div>&ndash;&gt;-->
-                                <!--<div class="col-xs-8 col-md-8">-->
-                                    <!--<div class="btn-group" role="group" aria-label="...">-->
-                                        <!--<button type="button" class="btn btn-default" onclick="addDrafts()"><i class="fa fa-plus"></i>新增</button>-->
-                                    <!--</div>-->
-                                <!--</div>-->
-                            <!--</div>-->
-                            <!--<div class="col-xs-4 col-md-4 text-right">-->
-                                <!--<form class="form-inline">-->
-                                    <!--<div class="form-group">-->
-
-                                        <!--<div class="input-group">-->
-                                            <!--&lt;!&ndash;<input type="input" id="filterParam1" class="form-control" style="width:130px;" placeholder="输入标题查询"/>&ndash;&gt;-->
-                                            <!--<span class="input-group-btn">-->
-                                                <!--<button class="btn btn-default" type="button" onclick="doSearch()"><i class="fa fa-search"></i>查询</button>-->
-                                               <!--&lt;!&ndash; <button class="btn btn-default" type="button" id="exportData"><i class="glyphicon glyphicon-open"></i>导出</button>&ndash;&gt;-->
-                                            <!--</span>-->
-                                        <!--</div>-->
-                                    <!--</div>-->
-                                <!--</form>-->
-                            <!--</div>-->
-                        <!--</div>-->
                         <table id="orderTablelist">
 
                         </table>
@@ -154,23 +106,6 @@
                 <input  type="hidden"id="proc_name"  name="proc_name"/>
                 <input  type="hidden"id="proc_ver"  name="proc_ver"/>
 
-                <!--<tr>-->
-                    <!--<td align="right" class="tdLabel">当前节点:</td>-->
-                    <!--<td colspan="3"><input disabled style="width: 670px" class="easyui-textbox" name="proc_inst_task_name" id="proc_inst_task_name" value="填写工单" ></input></td>-->
-                <!--</tr>-->
-                <!--<tr id="tr_4">-->
-                    <!--<td align="right" class="tdLabel">操作:</td>-->
-                    <!--<td colspan="3" class="tdLabel">-->
-                        <!--<select class="easyui-combobox" id="handle"-->
-                                <!--style="width: 80px;"  name="handle" panelHeight="auto">-->
-                            <!--<option value="1" >通过</option>-->
-                            <!--&lt;!&ndash;  <option value="0">不通过</option>&ndash;&gt;-->
-
-                        <!--</select>-->
-
-
-                    <!--</td>-->
-                <!--</tr>-->
                 <tr>
                     <td  align="right" class="tdLabel">处理人机构：</td>
                     <td colspan="3" class="tdLabel"><select  class="easyui-combobox" id="orgId"  style="width: 80%;height:40px;"></select></td>
@@ -184,13 +119,13 @@
 
                 </tr>
 
-                <tr>
+                <tr  id="fileUpload">
                     <td align="right" class="tdLabel">附件上传:</td>
-                    <td>
-                        <input class="easyui-filebox"labelPosition="top" data-options="prompt:'选择文件...',buttonText:'选择'" style="width: 670px"/>                </td>
+                    <td>  <input type="file"labelPosition="top"id="files" name="files" multiple="true" data-options="prompt:'选择文件...',buttonText:'选择'" style="width:250px"/>
+                    </td>
                 </tr>
 
-
+                <input type='hidden' name='_csrf' value='{{ _csrfToken }}'/>
             </table>
         </fieldset>
 
@@ -198,9 +133,34 @@
 
 </div>
 
-
+<script>
+    $.ajaxSettings.beforeSend = function(xhr, request) {
+        xhr.setRequestHeader('csrf-token', '{{_csrfToken}}');
+    }
+</script>
 <script type="text/javascript">
+    $(function() {
+        $('#files').uploadify({
+            'swf'      : '{{projcfg.appurl}}/static/{{projcfg.theme}}js/uploadify/uploadify.swf',
+            'uploader' : '{{projcfg.appurl}}/api/order_manage/order_list/uploadFile?_csrf='+'{{_csrfToken}}',
+            'auto'           :false,
+            'multi'          :true,
+            'buttonText':'附件上传',
+            'fileTypeExts' : '*.gif; *.jpg; *.png;*.mp3;*.wav;*.wma;*.pdf;*.txt;*.xls;*.xlsx',
+            'checkExisting':true,
+            'fileSizeLimit':'5MB',
+            //浏览按钮的宽度
+            'width':'100',
+            //浏览按钮的高度
+            'height':'30',
+            'onQueueComplete' : function(queueData) {
+                $.messager.alert('提示','处理成功');
+                $('#orderDetail').dialog("close");
+                $('#orderTablelist').datagrid('reload');
+            }
+        });
 
+    });
 
 
     $(document).ready(function () {
@@ -214,14 +174,14 @@
        // $("#assign_user_no") .combobox('setValue','') ;
         $("#handle") .combobox('setValue','') ;
         $("#proc_peason_type") .combobox('setValue','') ;
-//
+
         //填写工作天数，给完成时间赋值
         $('#proc_work_day').textbox({
             onChange: function(value) {
                 if(value!=''&&value!=null){
                     var time=new Date($("#start_time").textbox("getValue"));
-                    var work_day= parseInt(value)  ;
-                    time.setDate(time.getDate()+work_day)
+                    var work_day= parseInt(value);
+                    time.setDate(time.getDate()+work_day);
                     $("#end_time").textbox("setValue",time.Format("yyyy-MM-dd hh:mm:ss"));
                 }else{
                     $("#end_time").textbox("setValue","");
@@ -600,9 +560,10 @@
                     data: $('#orderDetailForm').serializeJson(),
                     success: function (data) {
                         if(data.success){
-                            $('#orderDetail').dialog("close");
-                            $('#orderTablelist').datagrid('reload');
-                            $.messager.alert('提示','新增工单成功');
+                            var proc_task_id =data.data;
+                            $('#files').uploadify('settings',"formData",
+                                    {'status':1,'id':proc_task_id});
+                            $('#files').uploadify('upload','*')
                         }else{
                             $.messager.alert('错误提示',data.error);
 

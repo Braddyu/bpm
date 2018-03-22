@@ -107,7 +107,7 @@ exports.moneyAudit= function(proc_title, user_code,userName,role_name, assign_us
                                                 //  nodeTransferService.assign_transfer(task_id,node_code,user_code,assign_user_no,proc_title,biz_vars,proc_vars,memo).then(function(results){
                                                 //批量派发
                                                 nodeTransferService.do_payout(task_id, node_code, user_code, assign_user_no, proc_title, biz_vars, proc_vars, memo).then(function (results) {
-                                                    resolve({'success':true,'code':'1001','msg':'资金稽核派发成功',"data":null,"error":null});
+                                                    resolve({'success':true,'code':'1001','msg':'资金稽核派发成功',"data":task_id,"error":null});
 
                                                 }).catch(function (err_inst) {
                                                     // console.log(err_inst);
