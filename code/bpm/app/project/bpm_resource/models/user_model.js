@@ -208,3 +208,72 @@ var async = mongoose.model('asynch_Data', async);
 exports.$asynch_Data = async;
 
 
+var updateUserLogs = new Schema(
+    {
+        login_account : String,// 登录账号
+        user_status : Number,// 用户状态
+        user_id:String,//用户ID
+        user_no : String,// 用户工号
+        user_name : String,// 用户姓名
+        user_gender : String,// 用户性别
+        user_phone : String,// 用户手机
+        user_tel : String,// 用户联系电话
+        user_email : String,// 用户邮箱
+        login_password : String,// 登录密码
+        user_org :  [{type: Schema.Types.ObjectId}],// 所在部门
+        user_sys : String,// 所属系统
+        user_org_desc:String,//所属系统的 描述
+        theme_name : String,// 使用主题
+        theme_skin : String,// 使用皮肤
+        user_photo : String,// 用户头像/照片
+        user_roles :  [{type: Schema.Types.ObjectId}],// 菜单访问权限使用角色
+        sys_roles:[{type: Schema.Types.ObjectId}],//流程使用的角色
+        boss_id:String,//对接外部系统专用的 Boss_id
+        smart_visual_sys_user_id:String,//慧眼系统的 User_id
+        athena_sys_user_id:String,//Athena系统的user_id
+        athena_app_sys_user_id:String,//Athena_app系统的user_id
+        inspect_sys_user_id:String,//稽查系统的user_id
+        token:String,//不知道是什么东西，留着吧
+        special_sign:String,//也不知道是什么东西 留着把
+        work_id:String//工号
+        // user_sys : {type: Schema.Types.ObjectId, ref: 'CommonCoreSys'},// 所属系统
+
+    },
+    {collection: "common_update_user_logs"}// mongodb集合名
+);
+//将User类给予接口
+var user_logs = mongoose.model('user_logs', updateUserLogs);
+exports.$update_user = user_logs;
+
+
+//声明 commonOrg Schema结构
+var updateOrgLogs = new Schema(
+    {
+        org_code_desc : String,// 机构编号
+        org_name : String,// 机构名
+        org_fullname : String,// 机构全名
+        company_code : String,// 公司编号
+        level:String,//层级
+        org_order : Number,// 排序号
+        org_type : String,// 机构类型
+        org_pid : String,// 机构父节点
+        company_no:String,//empid
+        parentcode_desc : String,// 机构父节点描述
+        org_status : Number,// 机构状态
+        org_belong : String,// 属于
+        midifytime : Date,// 修改时间
+        org_code : String,// 机构编号
+        level : Number,// 机构层级
+        childCount : Number,// 子机构数
+        smart_visual_sys_org_id:String,//慧眼系统的org_id
+        athena_sys_org_id:String,//Athena系统的org_id
+        athena_app_sys_org_id:String,//Athena_app系统的org_id
+        inspect_sys_org_id:String,//稽查系统的org_id
+
+    },
+    {collection: "common_update_org_logs"}//mongodb集合名
+);
+
+// 机构model
+var orgLogs = mongoose.model('updateOrgLogs', updateOrgLogs);
+exports.$update_org = orgLogs;
