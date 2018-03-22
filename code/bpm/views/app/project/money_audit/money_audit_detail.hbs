@@ -22,15 +22,10 @@
                     <td colspan="3"><input disabled style="width: 665px" class="easyui-textbox"data-options="required:true, missingMessage:'请输入工单标题'" id="proc_inst_task_title" name="proc_inst_task_title" ></input></td>
                 </tr>
                 <tr>
-                    <td align="right" class="tdLabel">人员类型:</td>
+                    <td align="right" class="tdLabel">工单类型:</td>
                     <td>
-                        <select disabled class="easyui-combobox"id="proc_peason_type" name="proc_peason_type" style="width: 180px;height:31px;">
-                            <option value="1" aria-checked="true">社会渠道</option>
-                            <option value="2">自营厅</option>
-                            <option value="3">政企</option>
-                            <option value="4">业务支撑部</option>
-                            <option value="4">业务部</option>
-                        </select>
+                        <input disabled style="width: 280px"class="easyui-textbox"
+                               id="proc_inst_name" name="proc_inst_name"></input>
                     </td>
 
                     <td align="right" class="tdLabel">工作天数:</td>
@@ -194,7 +189,6 @@
     //是否属于归档节点
     var endFlag=false;
     $(document).ready(function () {
-
         //状态1:已发起的工单,2：我的待办,3:我的已办，4：新增操作
         var status=GetQueryString("status");
 
@@ -552,12 +546,16 @@
                 success: function (data) {
                 
                     if(data.success){
-                        parent.$("#dd").dialog('close');
-                        parent.$('#orderTablelist').datagrid('reload');
-                        $('#files').uploadify('settings',"formData",
-                                {'status':1,'id':$("#proc_task_id").val()});
-                        $('#files').uploadify('upload','*')
-                        $.messager.alert('提示','归档成功');
+                        if($('#files').data('uploadify').queueData.queueLength > 0) {
+                            var proc_task_id = $("#proc_task_id").val();
+                            $('#files').uploadify('settings',"formData",
+                                    {'status':1,'id':proc_task_id});
+                            $('#files').uploadify('upload','*')
+                        }else {
+                            $.messager.alert('提示','归档成功');
+                            parent.$("#dd").dialog('close');
+                            parent.$('#orderTablelist').datagrid('reload');
+                        }
                     }else{
                         $.messager.alert('错误提示',data.msg);
                     }
@@ -578,10 +576,16 @@
                 data: formData,
                 success: function (data) {
                     if(data.success){
-                        var proc_task_id = $("#proc_task_id").val();
-                        $('#files').uploadify('settings',"formData",
-                                {'status':1,'id':proc_task_id});
-                        $('#files').uploadify('upload','*')
+                        if($('#files').data('uploadify').queueData.queueLength > 0) {
+                            var proc_task_id = $("#proc_task_id").val();
+                            $('#files').uploadify('settings',"formData",
+                                    {'status':1,'id':proc_task_id});
+                            $('#files').uploadify('upload','*')
+                        }else {
+                            $.messager.alert('提示','处理成功');
+                            parent.$("#dd").dialog('close');
+                            parent.$('#orderTablelist').datagrid('reload');
+                        }
                     }else{
                         $.messager.alert('错误提示',data.error);
                     }
