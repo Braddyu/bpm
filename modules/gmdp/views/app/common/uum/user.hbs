@@ -135,13 +135,23 @@
                                 </div>
                             </div>
                             <div class="row">
+
                                 <div class="col-sm-6">
                                     <div class="form-group">
                                         <label class="control-label">所在机构/部门</label><br/>
-                                        <select id="user_org" name="user_org" class="form-control" style="width: 180px;height:34px;">
+                                        <input class="easyui-combobox" name="user_org_real" id="user_org_real" style="width: 250px;height:34px;" >
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <label class="control-label">机构/部门操作</label><br/>
+                                        <select id="user_org_all" name="user_org_all" class="form-control" style="width: 180px;height:34px;">
                                         </select>
                                     </div>
                                 </div>
+
+                            </div>
+                            <div class="row">
                                 <div class="col-sm-6">
                                     <div class="form-group">
                                         <label class="control-label">用户性别</label><br/>
@@ -151,22 +161,21 @@
                                         </select>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="row">
                                 <div class="col-sm-6">
                                     <div class="form-group">
                                         <label class="control-label">手机号码</label>
                                         <input name="user_phone" type="text" class="form-control" placeholder="手机号码">
                                     </div>
                                 </div>
+
+                            </div>
+                            <div class="row">
                                 <div class="col-sm-6">
                                     <div class="form-group">
                                         <label class="control-label">邮箱</label>
                                         <input name="user_email" type="text" class="form-control" placeholder="邮箱">
                                     </div>
                                 </div>
-                            </div>
-                            <div class="row">
                                 <div class="col-sm-6">
                                     <div class="form-group">
                                         <label class="control-label">员工工号</label>
@@ -291,9 +300,32 @@
     var currentSysId = '{{currentUser.user_sys._id}}';
     var changeSysId = '{{currentUser.user_sys._id}}';
     var currentOrgId = '{{currentUser.user_org._id}}';
-
-
     $(document).ready(function() {
+
+        $('#user_org_real').combobox({
+            valueField:'_id',
+            textField:'org_fullname',
+            panelHeight:'auto',
+            required:false,
+            iconWidth:22,
+            icons:[{
+                iconCls:'icon-cut',
+                handler:function(){
+                    var selectValue=$("#user_org_real").combobox("getValue");
+                    var comboboxData=  $('#user_org_real').combobox('getData')
+                    for(let i in comboboxData){
+                        let data=comboboxData[i];
+                        if(data._id==selectValue){
+                            comboboxData.splice(i,1)
+                        }
+                    }
+                    $('#user_org_real').combobox('loadData',comboboxData)
+                    $('#user_org_real').combobox('setValue', '');
+                }
+            }],
+            label: 'Language:',
+            labelPosition: 'top'
+        });
         $('#filter_sys').combobox({
             method: 'get',
             url: '{{projcfg.appurl}}/public/sysData',
@@ -339,12 +371,23 @@
                 }
             }
         });
-        $('#user_org').combotree({
+        $('#user_org_all').combotree({
             method: 'get',
             url: '{{projcfg.appurl}}/public/orgRootTreeDataAsyn',
-            multiple:true,
+            multiple:false,
             value:currentOrgId,
             cascadeCheck: false,
+            onSelect:function(node) {
+                let node_json={
+                    "_id":node.id,
+                    "org_fullname":node.text
+                }
+                var comboboxData=  $('#user_org_real').combobox('getData')
+                comboboxData.push(node_json);
+                $('#user_org_real').combobox('loadData',comboboxData)
+                $('#user_org_real').combobox('setValue', '');
+
+            }
         });
 
         $('#user_roles').combobox({
@@ -469,7 +512,7 @@
     function doClear() {
         $('#filter_name').val('');
         $('#filter_sys').combobox('setValue',currentSysId),
-                $('#filter_org').combotree('setValue',currentOrgId)
+        $('#filter_org').combotree('setValue',currentOrgId)
         doSearch();
     }
     // 新增数据
@@ -478,6 +521,19 @@
         // 验证表单
         var validate = $('#userForm').form('validate');
         // var user_orgs = $('#user_org').combotree('getValues').join(',');
+        var user_orgs=[];
+        var comboboxData=  $('#user_org_real').combobox('getData')
+        for(let i in comboboxData){
+            let data=comboboxData[i];
+            user_orgs.push(data._id)
+        }
+        user_orgs=user_orgs.join(',');
+        if(user_orgs.length ==0){
+            msgError('机构不得为空');
+            return;
+        }
+        var values=$('#userForm').serializeJson()
+        values.user_org=user_orgs;
         if(!validate) {
             return false;
         }
@@ -485,7 +541,7 @@
         $.ajax({
             url: '{{projcfg.appurl}}/admin/api/common/uum/user',
             type: 'post',
-            data: $('#userForm').serializeJson(),
+            data: values,
             success: function (data) {
                 if(data.success) {
                     msgSuccess(data.msg);
@@ -508,7 +564,6 @@
             msgError('提示,请选择一条数据再进行修改');
             return false;
         }
-        console.log(rows,'ddddd')
         var id = rows[0]._id;
 
         $('#user_roles').combobox({
@@ -530,17 +585,16 @@
             data: {
             }, success: function (data) {
                 if(data.success) {
-                    console.log(data);
-                    $('#user_org').combotree({
+                    $('#user_org_all').combotree({
                         method: 'get',
                         url: '{{projcfg.appurl}}/public/orgRootTreeDataAsyn',
                         editable:false,
-                        required:true,
+                        required:false,
                         value:data.user_org,
                     });
+
                     $('#userForm').form('load',data.data);
-
-
+                    $('#user_org_real').combobox('loadData',rows[0].user_org)
                 }
                 else {
                     msgError(data.msg+',错误代码:'+data.code);
@@ -552,16 +606,28 @@
     function doEdit(value) {
         // 验证表单
 
-        var validate = $('#userForm').serializeJson()
-        var user_orgs = $('#user_org').combotree('getValues').join(',');
-        //var values=$('#userForm').serializeJson()
+        var validate =$('#userForm').form('validate');
+        //var user_orgs = $('#user_org_all').combotree('getValues').join(',');
+        var user_orgs=[];
+        var comboboxData=  $('#user_org_real').combobox('getData')
+        for(let i in comboboxData){
+            let data=comboboxData[i];
+            user_orgs.push(data._id)
+        }
+        user_orgs=user_orgs.join(',');
+        if(user_orgs.length ==0){
+            msgError('机构不得为空');
+            return;
+        }
+         var values=$('#userForm').serializeJson()
+        values.user_org=user_orgs;
         if(!validate) {
             return false;
         }
         $.ajax({
             url: '{{projcfg.appurl}}/admin/api/common/uum/user/'+value,
             type: 'put',
-            data: $('#userForm').serializeJson(),user_orgs,
+            data: values,
             success: function (data) {
                 if(data.success) {
                     msgSuccess(data.msg);
@@ -607,6 +673,8 @@
     // 清空新增表单数据
     function clear() {
         $('#userForm').form('reset');
+        var arr=[];
+        $('#user_org_real').combobox('loadData',arr);
     }
 
 </script>
