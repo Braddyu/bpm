@@ -103,6 +103,22 @@
                         </div>
                     </div>
                     <div class="form-group">
+                        <label for="inputauditOrgPid" class="col-sm-2 control-label no-padding-right">上级机构</label>
+                        <div class="col-sm-10">
+                            <input class="easyui-combotree" id="inputauditOrgPid" name="audit_org_pid" value="0"  style="width:300px;;height:31px;">
+                            <font color="red">（资金稽核工单使用）</font>
+                        </div>
+                        <label for="if_money_audit_org" class="col-sm-2 control-label no-padding-right">是否政企或自营厅</label>
+                        <div class="col-sm-4">
+                            <select class="easyui-combobox form-control" style="width: 70px;height:34px;" data-options="editable:false,panelHeight:75" name="if_money_audit_org" id="if_money_audit_org" data-bv-field="if_money_audit_org">
+                                <option value="0">否</option>
+                                <option value="1">是</option>
+                            </select>
+                            <font color="red">（资金稽核工单使用）</font>
+                        </div>
+
+                    </div>
+                    <div class="form-group">
                         <label for="inputOrgRemark" class="col-sm-2 control-label no-padding-right">备注</label>
                         <div class="col-sm-10">
                             <textarea class="form-control" name="org_remark" id="inputOrgRemark" placeholder="请输入备注" rows="3"></textarea>
@@ -141,6 +157,12 @@
         $('#inputOrgPid').combotree({
             method: 'get',
             required:true,
+            url: '{{projcfg.appurl}}/admin/api/common/uum/org/tree',
+            value:currentOrgId
+        });
+        $('#inputauditOrgPid').combotree({
+            method: 'get',
+            required:false,
             url: '{{projcfg.appurl}}/admin/api/common/uum/org/tree',
             value:currentOrgId
         });
@@ -276,9 +298,9 @@
 
         $('#myModal').mydialog({
             title:title,
-            width: 700,
-            height: 600,
-            top:100,
+            width: 800,
+            height: 700,
+            top:80,
             modal: true,
             myButtons:[
                 {
@@ -344,6 +366,7 @@
                     $('#orgForm').form('load',data.data[0]);
                     $('#inputOrgType').combotree('setValue',data.data[0].org_type);
                     $('#org_belong').combotree('setValue',data.data[0].org_belong);
+                    $('#audit_org_pid').combotree('setValue',data.data[0].audit_org_pid);
                 }
                 else {
                     msgError(data.msg+',错误代码:'+data.code);

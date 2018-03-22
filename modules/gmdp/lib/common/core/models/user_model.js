@@ -20,7 +20,9 @@ var commonOrgSchema = new Schema(
         org_belong : String,// 机构所属区县
         org_status : Number,// 机构状态
         org_remark : String,// 机构描述
-        child_count:Number//机构子节点统计
+        child_count:Number,//机构子节点统计
+		audit_org_pid:String,//父id 资金稽核工单使用
+        if_money_audit_org:Number//是否属于资金稽核工单机构
     },
     {collection: "common_bpm_org_info"}//mongodb集合名
 );

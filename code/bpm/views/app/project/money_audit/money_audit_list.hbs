@@ -51,17 +51,11 @@
                     <td colspan="3"><input style="width: 665px" class="easyui-textbox"data-options="required:true, missingMessage:'请输入工单标题'" id="proc_title" name="proc_title" ></input></td>
                 </tr>
                 <tr>
-                    <td align="right" class="tdLabel">人员类型:</td>
+                    <td align="right" class="tdLabel">工单类型:</td>
                     <td>
-                        <select class="easyui-combobox"id="proc_peason_type" name="proc_peason_type" style="width: 180px;height:31px;">
-                            <option value="1" aria-checked="true">社会渠道</option>
-                            <option value="2">自营厅</option>
-                            <option value="3">政企</option>
-                            <option value="4">业务支撑部</option>
-                            <option value="4">业务部</option>
-                        </select>
+                        <input disabled style="width: 280px"class="easyui-textbox"
+                               id="proc_inst_name"  name="proc_inst_name"></input>
                     </td>
-
                     <td align="right" class="tdLabel">工作天数:</td>
                     <td><input style="width: 280px"class="easyui-numberbox" data-options="precision:0,required:true, missingMessage:'请输入工作天数'"id="proc_work_day" name="proc_work_day"
                     ></input></td>
@@ -173,8 +167,6 @@
         loadOrgTree();//加载机构树
        // $("#assign_user_no") .combobox('setValue','') ;
         $("#handle") .combobox('setValue','') ;
-        $("#proc_peason_type") .combobox('setValue','') ;
-
         //填写工作天数，给完成时间赋值
         $('#proc_work_day').textbox({
             onChange: function(value) {
@@ -213,10 +205,10 @@
     function loadOrgTree(){
         $('#orgId').combotree({
             method: 'get',
-            url: '{{projcfg.appurl}}/api/workflow/process/orgTreeDataAsyn?org_pid=5a275c0377ec2e1e844878dd',
+            url: '{{projcfg.appurl}}/api/money_audit/money_audit_list/orgTreeDataAsyn?org_pid=0',
             //url: '{{projcfg.appurl}}/process/orgTreeData',
             onBeforeExpand:function(node,param){
-                $('#orgId').combotree("tree").tree("options").url =  '{{projcfg.appurl}}/api/workflow/process/orgTreeDataAsyn?org_pid=' + node.id;
+                $('#orgId').combotree("tree").tree("options").url =  '{{projcfg.appurl}}/api/money_audit/money_audit_list/orgTreeDataAsyn?org_pid=' + node.id;
             },
             editable:false,
 //                    required:true,
@@ -265,18 +257,8 @@
                 {"field": "proc_peason_type","title":"人员类型","width":50,
                     formatter:function(value,row,index){
                         var proc_vars_json=JSON.parse(row.proc_vars);
-                        var myval = proc_vars_json.proc_peason_type;
-                        if(myval == '1'){
-                            return "社会渠道";
-                        }else if(myval == '2'){
-                            return "自营厅";
-                        }else if(myval == '3'){
-                            return "政企";
-                        }else if(myval == '4'){
-                            return "业务支撑部";
-                        }else if(myval == '5'){
-                            return "业务部";
-                        }
+                        var myval = proc_vars_json.proc_inst_name;alert(row.proc_vars);
+                        return myval;
                     }},
                 {"field": "proc_name","title":"所属流程","width":50},
                 {"field": "proc_ver","title":"版本","width":20},
@@ -346,6 +328,7 @@
         $("#start_name").textbox("setValue",user_name);
         //用户角色
         $("#user_role_names").textbox("setValue","省级资金稽核管理人");
+        $("#proc_inst_name").textbox('setValue','资金稽核工单') ;
         $("#handle").combobox("setValue","1");
 
         //当前填单时间
@@ -560,10 +543,16 @@
                     data: $('#orderDetailForm').serializeJson(),
                     success: function (data) {
                         if(data.success){
-                            var proc_task_id =data.data;
-                            $('#files').uploadify('settings',"formData",
-                                    {'status':1,'id':proc_task_id});
-                            $('#files').uploadify('upload','*')
+                            if($('#files').data('uploadify').queueData.queueLength > 0) {
+                                var proc_task_id = data.data;
+                                $('#files').uploadify('settings', "formData",
+                                        {'status': 1, 'id': proc_task_id});
+                                $('#files').uploadify('upload', '*')
+                            }else {
+                                $.messager.alert('提示','处理成功');
+                                $('#orderDetail').dialog("close");
+                                $('#orderTablelist').datagrid('reload');
+                            }
                         }else{
                             $.messager.alert('错误提示',data.error);
 

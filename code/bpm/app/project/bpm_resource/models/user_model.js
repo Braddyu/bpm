@@ -168,7 +168,8 @@ var commonOrgSchema = new Schema(
         athena_sys_org_id:String,//Athena系统的org_id
         athena_app_sys_org_id:String,//Athena_app系统的org_id
         inspect_sys_org_id:String,//稽查系统的org_id
-
+        audit_org_pid:String,//父id 资金稽核工单使用
+        if_money_audit_org:Number//是否属于资金稽核工单机构
     },
     {collection: "common_bpm_org_info"}//mongodb集合名
 );
