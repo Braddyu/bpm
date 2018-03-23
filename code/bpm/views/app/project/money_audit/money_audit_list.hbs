@@ -148,7 +148,7 @@
             //浏览按钮的高度
             'height':'30',
             'onQueueComplete' : function(queueData) {
-                $.messager.alert('提示','处理成功');
+                msgSuccess('处理成功');
                 $('#orderDetail').dialog("close");
                 $('#orderTablelist').datagrid('reload');
             }
@@ -548,7 +548,7 @@
                                         {'status': 1, 'id': proc_task_id});
                                 $('#files').uploadify('upload', '*')
                             }else {
-                                $.messager.alert('提示','处理成功');
+                                msgSuccess('处理成功');
                                 $('#orderDetail').dialog("close");
                                 $('#orderTablelist').datagrid('reload');
                             }
@@ -569,7 +569,7 @@
         $('#orderTablelist').datagrid({
             url: '{{projcfg.appurl}}/api/order_manage/order_list/list',
             queryParams: {
-               proc_code: "p_444",
+               proc_code: "zj_101",
                 proc_peason_type:$("#proc_peason_type").combobox('getValue'),
 //                startDate: $("#startDate").datebox('getValue'),
 //                endDate: $("#endDate").datebox('getValue'),

@@ -25,7 +25,7 @@ router.route('/list').post(function(req,res){
     var size = req.body.rows;
     var work_order_number = req.body.work_order_number;
 
-    var proc_code = "p_444";//流程编码
+    var proc_code = "zj_101";//流程编码
     var proc_peason_type = req.body.proc_peason_type;//流程编码
     //var startDate = req.body.startDate;//创建时间
     //var endDate = req.body.endDate;//创建时间
