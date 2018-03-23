@@ -65,7 +65,7 @@ exports.getMyArchiveTaskQuery4Eui = function (page, size, userNo, work_order_num
                     work_order_number: {$first: "$inst.work_order_number"},
                 }
             }, {
-                $sort: {"proc_cur_arrive_time": -1}
+                $sort: {"proc_inst_task_complete_time": -1}
             },
             {
                 $skip: (page - 1) * size
