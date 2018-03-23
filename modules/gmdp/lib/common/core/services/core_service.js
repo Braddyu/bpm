@@ -393,13 +393,16 @@ exports.getLoginAccountErrorCount = function(login_account, cb) {
  * @param login_password
  * @param cb
  */
-exports.saveUserLoginErrorLog = function(login_account, login_password, cb) {
+exports.saveUserLoginErrorLog = function(userInfo, cb) {
     userModel.$CommonUserLoginErrorLog(
         {
-            login_account:login_account,
-            login_password:login_password,
+            login_account:userInfo.login_account,
+            login_password:userInfo.login_password,
             login_date:utils.formatTime('yyyy-MM-dd'),
-            login_time:new Date()
+            login_time:new Date(),
+            user_name : userInfo.user_name,
+            user_phone : userInfo.user_phone,
+            user_no :userInfo.user_no,
         }
     ).save(function(error){
         cb(error);
@@ -450,7 +453,7 @@ exports.userLogin = function(account, password, cb) {
                             if(userInfo.login_password != password) {
 
                                 // 此处保存错误日志记录
-                                exports.saveUserLoginErrorLog(account, password, function(log_error){
+                                exports.saveUserLoginErrorLog(userInfo, function(log_error){
                                     if(log_error) {
                                         cb(utils.returnMsg(false, '1009', '根据账号名获取用户信息时出现异常。', null, log_error));
                                     }
