@@ -308,9 +308,10 @@
                             {field:'proc_inst_task_complete_time',title:'处理时间',width:145, halign:'center',
                                 formatter:function(value,row,index){
                                     if(value!=null){
-                                        var isoDateStr = value;
-                                        var d2 = new Date(isoDateStr);
-                                        return new Date(d2).Format("yyyy-MM-dd hh:mm:ss");
+                                        var isoDateStr = value.substring(0,value.indexOf('.'));
+                                        var date=new Date(isoDateStr.replace(/-/g,'/').replace(/T|Z/g,' '));
+                                        date.setHours(date.getHours()+8)
+                                        return  date.Format("yyyy-MM-dd hh:mm:ss");
                                     }else{
                                         return '';
                                     }

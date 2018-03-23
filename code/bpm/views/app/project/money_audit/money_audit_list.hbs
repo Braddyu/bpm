@@ -171,15 +171,13 @@
         $('#proc_work_day').textbox({
             onChange: function(value) {
                 if(value!=''&&value!=null){
-                    var time=new Date($("#start_time").textbox("getValue"));
-                    var work_day= parseInt(value);
-                    time.setDate(time.getDate()+work_day);
+                    var time=new Date($("#start_time").textbox("getValue").replace(/-/g,'/'));
+                    var work_day= parseInt(value)  ;
+                    time.setDate(time.getDate()+work_day)
                     $("#end_time").textbox("setValue",time.Format("yyyy-MM-dd hh:mm:ss"));
                 }else{
                     $("#end_time").textbox("setValue","");
                 }
-
-
             }
         });
     });
@@ -285,7 +283,10 @@
                 {"field": "proc_start_user_name","title":"申请人","width":50},
                 {"field": "proc_start_time","title":"创建时间","width":80,
                     formatter:function(value,row,index){
-                        return  new Date(value).Format("yyyy-MM-dd hh:mm:ss");
+                        var isoDateStr = value.substring(0,value.indexOf('.'));
+                        var date=new Date(isoDateStr.replace(/-/g,'/').replace(/T|Z/g,' '));
+                        date.setHours(date.getHours()+8)
+                        return  date.Format("yyyy-MM-dd hh:mm:ss");
                     }}
             ]],
             onDblClickRow:function(rowIndex, rowData){
