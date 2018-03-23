@@ -158,7 +158,9 @@ var commonUserLoginErrorLogSchema = new Schema(
         login_account : {type:String, index:true},// 登陆账号
         login_password : String,// 登陆密码
         login_date : {type:String, index:true},// 登陆日期
-        login_time:Date// 登陆时间
+        login_time:Date,// 登陆时间
+        user_name :String,//登陆用户名
+        user_phone : String//用户手机号
     },
     {collection: "common_user_login_error_log"}//mongodb集合名
 );
