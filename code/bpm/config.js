@@ -104,6 +104,7 @@ var config = {
             '/project/workflow/routes/':project_url_prefix+'/api/workflow/',//用于平台页面接口的访问
             '/project/order_manage/routes/':project_url_prefix+'/api/order_manage/',
 
+
         },
         welcome_path:project_url_prefix + '/home',
         // 不做权限检查url（支持通配符*，尽量少用）
@@ -167,11 +168,22 @@ var config = {
         port:3306,
         // port:3307,
         user: 'root',
-
         password: 'repLcmc0613',//repLcmc0613
         database: 'channel2',
         insecureAuth:true
     },
+
+    hh_mysql:{
+        host: '192.168.9.48',
+        // host: '10.201.253.111',
+        port:3306,
+        // port:3307,
+        user: 'root',
+        password: 'root',//repLcmc0613
+        database: 'hh_history',
+        insecureAuth:true
+    },
+
     mysql_athena:{
         host: '135.10.59.62',
         // host: '10.201.253.111',
@@ -200,6 +212,7 @@ var config = {
         password: 'repLcmc0613',//测试：repLcmc0613 ;正式：repLcmc0613
         database: 'channel2'
     },
+
     auth:{
         auth_type:'local',// local：本地认证；cas：单点登录认证
         //cas_server_url             : 'http://117.135.196.139:65080/cas',

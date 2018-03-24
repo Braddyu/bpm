@@ -1,0 +1,89 @@
+<link rel="stylesheet" type="text/css" href="{{projcfg.appurl}}/static/order/css/order_detail.css">
+<div id="processDiv" class="row">
+    <div class="col-xs-12 col-md-12">
+        <div class="widget">
+            <div class="widget-body">
+                <div id="processLayout" class="easyui-layout" data-options="fit:true" style="width:1000px;height:666px;">
+
+                    <table id="orderTablelist">
+                    </table>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        //加载我的待办列表
+        loadOrderTodaoListDatagrid();
+    });
+
+    function loadOrderTodaoListDatagrid(){
+        // 加载工单基本属性列表
+        $('#orderTablelist').datagrid({
+            url:'{{projcfg.appurl}}/api/order_manage/order_history/list',
+            method:'post',
+            rownumbers:true,
+            striped:true,
+            fitColumns:true,
+            border:false,
+            fit:true,
+            pageSize: 50,
+            selectOnCheck:true,
+            checkOnSelect:true,
+            columns:[[
+                {"field":"id",checkbox:true},
+                {"field": "task_id","title":"任务id","width":55},
+                {"field": "job_id","title":"工单id","width":100,
+                    formatter:function(value,row,index){
+                        return "<span title='" + value + "'>" + value + "</span>";
+                    }},
+                {"field": "title","title":"标题","width":120},
+                {"field": "PRE_SOLVEMETH","title":"派单内容","width":100},
+                {"field": "stepName","title":"派单内容","width":100},
+                {"field": "statusName","title":"类型","width":50},
+                {"field": "bossId","title":"当前处理人BOSS工号","width":80},
+                {"field": "caller","title":"当前处理人","width":80},
+                {"field": "FINISH_FLAG","title":"当前状态","width":80},
+                {"field": "timeout","title":"是否超时","width":80},
+               // {"field": "","title":"超时时间","width":50},
+                {"field": "created","title":"创建时间","width":80},
+                // {"field": "","title":"工单事件","width":50},
+                // {"field": "","title":"工单发起人id","width":50},
+                // {"field": "caller","title":"工单发起人","width":50},
+                // {"field": "","title":"工单发起人手机号码","width":50},
+                // {"field": "","title":"被派单渠道id","width":50},
+                // {"field": "","title":"被派单渠道名称","width":50},
+                // {"field": "","title":"被派单渠道负责人BOSS工号","width":50},
+                // {"field": "","title":"被派单渠道负责人","width":50},
+                // {"field": "","title":"被派单渠道负责人手机号码","width":50},
+                // {"field": "/","title":"整改天数","width":50},
+                // {"field": "/","title":"被派单渠道处理意见","width":50},
+                // {"field": "/","title":"省级id","width":50},
+                // {"field": "/","title":"省级名称","width":50,
+                //     formatter:function(value,row,index){
+                //     if(value){
+                //         return value;
+                //     }else{
+                //         return '/';
+                //     }
+                // }},
+                // {"field": "/","title":"省级负责人BOSS工号","width":50},
+                // {"field": "/","title":"省级负责人","width":50},
+                // {"field": "/","title":"负责人手机号码","width":50},
+                // {"field": "/","title":"省级处理意见","width":50},
+            ]],
+
+            onLoadError:function() {
+                msgError('加载数据出现时发生错误,请稍候重试...');
+            },
+            pagination:true,
+            loadMsg:'正在加载...'
+        });
+    }
+
+</script>
