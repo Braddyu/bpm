@@ -179,9 +179,9 @@
             //浏览按钮的高度
             'height':'30',
             'onQueueComplete' : function(queueData) {
-                $.messager.alert('提示','处理成功');
                 parent.$("#dd").dialog('close');
                 parent.$('#orderTablelist').datagrid('reload');
+                $.messager.alert('提示','处理成功');
             }
         });
 
@@ -274,6 +274,7 @@
 
                     }
                     $('#orderDetailForm').form('load', proc_vars_json);
+                    $("#proc_inst_name").textbox('setValue','资金稽核工单') ;
                     $("#proc_inst_task_title").textbox("setValue",proc_title);
                     $("#proc_task_code").val(GetQueryString("proc_code"));
 

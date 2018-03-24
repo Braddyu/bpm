@@ -43,7 +43,7 @@ exports.getOrderListPage= function(page, size, conditionMap) {
 exports.moneyAudit= function(proc_title, user_code,userName,role_name, assign_user_no,proc_vars_parm) {
 
     var p = new Promise(function(resolve,reject){
-        var proc_code = "p_444";
+        var proc_code = "zj_101";
         var proc_vars = JSON.stringify(proc_vars_parm);
         var biz_vars;
         var proc_ver;
