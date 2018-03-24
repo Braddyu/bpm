@@ -20,7 +20,9 @@ var commonOrgSchema = new Schema(
         org_belong : String,// 机构所属区县
         org_status : Number,// 机构状态
         org_remark : String,// 机构描述
-        child_count:Number//机构子节点统计
+        child_count:Number,//机构子节点统计
+		audit_org_pid:String,//父id 资金稽核工单使用
+        if_money_audit_org:Number//是否属于资金稽核工单机构
     },
     {collection: "common_bpm_org_info"}//mongodb集合名
 );
@@ -102,6 +104,7 @@ var commonUserSchema = new Schema(
                 county_id:String, // 区县ID
                 county_name:String // 区县名称
         },
+        work_id:String ,//工号
         theme_name : String,// 使用主题
         theme_skin : String// 使用皮肤
     },
@@ -135,6 +138,7 @@ var commonUploadUserSchema = new Schema(
             county_id:String, // 区县ID
             county_name:String // 区县名称
         },
+        work_id:String ,//工号
         theme_name : String,// 使用主题
         theme_skin : String// 使用皮肤
     },
@@ -154,7 +158,9 @@ var commonUserLoginErrorLogSchema = new Schema(
         login_account : {type:String, index:true},// 登陆账号
         login_password : String,// 登陆密码
         login_date : {type:String, index:true},// 登陆日期
-        login_time:Date// 登陆时间
+        login_time:Date,// 登陆时间
+        user_name :String,//登陆用户名
+        user_phone : String//用户手机号
     },
     {collection: "common_user_login_error_log"}//mongodb集合名
 );

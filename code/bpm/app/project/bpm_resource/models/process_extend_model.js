@@ -13,13 +13,20 @@ var commonProcessTaskStatisticsSchema = new Schema(
     {
         proc_inst_id : {type: Schema.Types.ObjectId, ref: 'CommonCoreProcessInst'}, // 实例ID
         user_no:String,//所属用户编号
+        work_id:String,//用户工号
         user_name:String,//所属用户姓名
         user_phone:String,//所属用户电话
         channel_id:{type: Schema.Types.ObjectId},//渠道ID
         channel_code:String,//渠道编码
         channel_name:String,//渠道名称
+        grid_code:String,//网格编码
+        grid_name:String,//网格名称
         grid_id:{type: Schema.Types.ObjectId},//网格ID
+        county_code:String,//区县编码
+        county_name:String,//区县名称
         county_id:{type: Schema.Types.ObjectId},//区县ID
+        city_code:String,//地州编码
+        city_name:String,//地州名称
         city_id:{type: Schema.Types.ObjectId},//地市ID
         province_id:{type: Schema.Types.ObjectId},//省级ID
         proc_code:String,//流程编码

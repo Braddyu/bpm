@@ -103,6 +103,7 @@ var config = {
             // '/project/bpm_resource/routes/': project_url_prefix + '/api/bpm_resource/',//给外部用户 不要需要权限的 用户 调用的  URL
             '/project/workflow/routes/':project_url_prefix+'/api/workflow/',//用于平台页面接口的访问
             '/project/order_manage/routes/':project_url_prefix+'/api/order_manage/',
+            '/project/money_audit/routes/':project_url_prefix+'/api/money_audit/',
 
 
         },
@@ -382,16 +383,22 @@ var config = {
     joinup_sys:'warnSys_node,errorSys_node,auditorSys_node,syesightSys_node',
 
     AES_KEY:'1234567890ABCDEFGHIJKLMNOPQRSTUV',
+
     SMS_TEMPLET_ORDER:"渠道工单系统有一张需要您处理的工单，《procName》，工单号：orderNo，请及时登陆认真处理。",
     VALIDATION:"工单系统手机号登录验证码为：randomNumber，请不要透露他人。",
-    OPEN_SMS:false,
+    GRID_COPY:"尊敬的网格管理员，您所辖渠道:channelName,渠道编码:channelCode,有一条待处理工单《procName》,工单号：orderNo，请及时催促处理。",
+    OPEN_SMS_ALL:false, //工单短信发送总开关
+    OPEN_SMS:false, //工单短信发送接口
+    OPEN_LOGIN_SMS:false, //短信登录验证码
+    GRID_COPY_SMS:false, //预警工单抄送给网格经理短信
+
     //定时任务开关明细
     switchDetail:{
         oa_switch:false,   //同步OA数据(省、地市、区县级)作业任务开关
-        athena_switch:true,  //同步雅典娜数据(网格、渠道级)作业任务开关
-        athena_app_switch:true,  //同步雅典娜app数据(网格经理、厅经理、营业员)作业任务开关
-        huanghe_switch:true , //差错工单同步黄河数据
-        mistake_switch:true  //差错工单任务是否超时定时任务
+        athena_switch:false,  //同步雅典娜数据(网格、渠道级)作业任务开关
+        athena_app_switch:false,  //同步雅典娜app数据(网格经理、厅经理、营业员)作业任务开关
+        huanghe_switch:false , //差错工单同步黄河数据
+        mistake_switch:false  //差错工单任务是否超时定时任务
     },
     //定时任务表达式
     athena_org_switch_core:"30 1 1 * * *",//秒、分、时、日、月、周几
@@ -410,5 +417,6 @@ var config = {
     ftp_huanghe_put:'/upload/',//上传差错工单附件路径
     local_haunghe_path:'E:/test/',//本地存储黄河数据
     local_path:'/upload/',//本地存储附件路径
+    batch_size:2000,//差错工单每一批次数量
 }
 module.exports = config;

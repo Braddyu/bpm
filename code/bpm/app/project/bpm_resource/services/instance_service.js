@@ -1028,7 +1028,7 @@ exports.getMyTaskQuery4Eui= function(page,size,userCode,joinup_sys,proc_code,wor
                         }
 
                    }
-                })
+                }).sort({proc_inst_task_arrive_time:-1})
 
 
             }
@@ -2028,7 +2028,11 @@ exports.return_task = function(task_id,user_no,memo,node_code,node_name){
                                        condition_task.publish_status = rsu[0].publish_status;//1-发布 0- 未发布
                                        condition_task.proc_inst_id = rsu[0].proc_inst_id;//: {type: Schema.Types.ObjectId, ref: 'CommonCoreProcessInst'}, // 流程流转当前信息ID
                                        condition_task.proc_inst_task_code = rsu[0].proc_inst_task_code;// : String,// 流程当前节点编码(流程任务编号)
-                                       condition_task.proc_inst_task_name =rsu[0].proc_inst_task_name;//: String,// 流程当前节点名称(任务名称)
+                                       if(rsu[0].proc_inst_task_name=='起草'){
+                                           condition_task.proc_inst_task_name = '起草修改'
+                                       }else{
+                                           condition_task.proc_inst_task_name =rsu[0].proc_inst_task_name;//: String,// 流程当前节点名称(任务名称)
+                                       }
                                        condition_task.proc_inst_task_type = rsu[0].proc_inst_task_type;//: String,// 流程当前节点类型(任务类型)
                                        condition_task.proc_inst_task_arrive_time = new Date();//,// 流程到达时间
                                        condition_task.proc_inst_task_handle_time = new Date();//,// 流程认领时间

@@ -91,7 +91,7 @@
             selectOnCheck:true,
             checkOnSelect:true,
             columns:[[
-                {"field":"_id",checkbox:true},
+                {"field":"_id",hidden:true},
                 {"field": "work_order_number","title":"工单编号","width":55},
                 {"field": "proc_inst_task_title","title":"工单标题","width":100,
                     formatter:function(value,row,index){
@@ -104,7 +104,9 @@
                 {"field": "proc_inst_task_complete_time","title":"处理时间","width":80,
                     formatter:function(value,row,index){
                         var isoDateStr = value.substring(0,value.indexOf('.'));
-                        return  new Date(isoDateStr.replace(/-/g,'/').replace(/T|Z/g,' ')).Format("yyyy-MM-dd hh:mm:ss");
+                        var date=new Date(isoDateStr.replace(/-/g,'/').replace(/T|Z/g,' '));
+                        date.setHours(date.getHours()+8)
+                        return  date.Format("yyyy-MM-dd hh:mm:ss");
                     }},
                 {"field": "proc_task_start_name","title":"发起人","width":50}
 

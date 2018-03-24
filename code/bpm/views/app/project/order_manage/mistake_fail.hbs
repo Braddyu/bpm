@@ -8,7 +8,7 @@
                         <div id="toolbar1" class="row tbRow">
                             <div class="col-xs-8 col-md-8">
                                 <div class="btn-group" role="group" aria-label="...">
-                                    <label for="filterParam3">派单时间：</label>
+                                    <label for="filterParam3">日期：</label>
                                     <input id="queryDate" class="easyui-datebox" label="Start Date:" labelPosition="top" style="width:130px;height:35px">
 
                                 </div>
@@ -88,7 +88,7 @@
             checkOnSelect:true,
             toolbar: '#toolbar1',
             columns:[[
-                {"field":"_id",checkbox:true},
+                {"field":"_id",hidden:true},
                 {"field": "mistake_time","title":"日期","width":30},
                 {"field": "city_name","title":"地市","width":50},
                 {"field": "channel_id","title":"渠道编码","width":30},

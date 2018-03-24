@@ -1,4 +1,5 @@
-
+var mongoUtils  = require('../../../common/core/mongodb/mongoose_utils');
+var mongoose = mongoUtils.init();
 var model = require('../../bpm_resource/models/process_model');
 var mistake_model = require('../models/mistake_model');
 var process_extend_model = require('../../bpm_resource/models/process_extend_model');
@@ -511,77 +512,97 @@ function postChannel(proc_inst_id){
  * @param task_id
  * @returns {Promise}
  */
-exports.upload_images= function(files,task_id) {
+exports.upload_images= function(files,task_id,user_name) {
 
     var p = new Promise(function(resolve,reject){
-        var date=moment().format('YYYYMMDDHHmmss');
-        let  path =  config.local_path+date;
 
-            //如果有上传文件
-            if(files && files.length>0){
-                    //判断文件夹是否存在
-                    fs.exists(path,function(exists){
-                        if(!exists)
-                            fs.mkdir(path,function(err){
-                                if(err)
-                                    console.error(err);
-                                else{
-                                    model.$ProcessInstTask.find({"_id":task_id},function(err,res){
-                                        if(err){
-                                            reject({'success':false,'code':'1000','msg':'获取任务信息错误',"error":null});
-                                        }else{
-                                            if(res.length==1){
-                                                var data={};
-                                                data.proc_task_id=task_id;
-                                                data.proc_inst_id=res[0].proc_inst_id;
-                                                data.proc_inst_task_code=res[0].proc_inst_task_code;
-                                                data.proc_inst_task_type=res[0].proc_inst_task_type;
-                                                data.user_name=res[0].proc_inst_task_assignee_name;
-                                                data.proc_code=res[0].proc_code;
-                                                data.proc_name=res[0].proc_name;
-                                                for(let item in files){
-                                                    let file=files[item];
-                                                    console.log("path:",file.path,file.originalname);
-                                                    fs.rename(file.path, path+"/"+file.originalname,function(err){
-                                                        if(err){
-                                                            console.log(err);
-                                                        }else{
-                                                            var datas=[];
-                                                            data.file_path=path+"/"+file.originalname;
-                                                            data.file_name=file.originalname;
-                                                            data.status=0;
-                                                            data.insert_time=new Date();
-                                                            datas.push(data);
-                                                            //插入附件表
-                                                            process_extend_model.$ProcessTaskFile.create(datas,function(err){
-                                                                if(err){
-                                                                    reject({'success':false,'code':'1000','msg':'节点流转成功，但附件上传失败',"error":null});
-                                                                }else{
-                                                                    if(item==files.length-1){
-                                                                        resolve({'success':true,'code':'2000','msg':'节点流转成功',"error":null});
+        model.$ProcessInstTask.find({"_id":task_id},function(err,res){
+            if(err){
+                reject({'success':false,'code':'1000','msg':'获取任务信息错误',"error":null});
+            }else{
+                if(res.length==1){
+                    let  path =  config.local_path+res[0].work_order_number;
+                    //如果有上传文件
+                    if(files && files.length>0){
+                        //判断文件夹是否存在
+                          fs.exists(path,function(exists){
+                                if(!exists)
+                                    fs.mkdir(path,function(err){
+                                        if(err)
+                                            console.log("创建文件夹错误",err);
+                                        else{
+                                            var data={};
+                                            data.proc_task_id=task_id;
+                                            data.proc_inst_id=res[0].proc_inst_id;
+                                            data.proc_inst_task_code=res[0].proc_inst_task_code;
+                                            data.proc_inst_task_type=res[0].proc_inst_task_type;
+                                            data.user_name=user_name;
+                                            data.proc_code=res[0].proc_code;
+                                            data.proc_name=res[0].proc_name;
+                                            for(let item in files){
+                                                let file=files[item];
+                                                console.log("path:",file.path,file.originalname);
+                                                fs.rename(file.path, path+"/"+file.originalname,function(err){
+                                                    if(err)
+                                                        console.log("文件移动错误",err);
+                                                    var datas=[];
+                                                    data.file_path=path+"/"+file.originalname;
+                                                    data.file_name=file.originalname;
+                                                    data.status=0;
+                                                    data.insert_time=new Date();
+                                                    datas.push(data);
+                                                    //插入附件表
+                                                    process_extend_model.$ProcessTaskFile.create(datas,function(){
+                                                        if(item==files.length-1){
+                                                            resolve({'success':true,'code':'2000','msg':'节点流转成功',"error":null});
 
-                                                                    }
-                                                                }
-                                                            })
                                                         }
-
-                                                    });
-                                                }
-                                            }else{
-                                                reject({'success':false,'code':'1000','msg':'获取任务不存在',"error":null});
+                                                    })
+                                                })
                                             }
                                         }
                                     })
+                                else{
+                                    var data={};
+                                    data.proc_task_id=task_id;
+                                    data.proc_inst_id=res[0].proc_inst_id;
+                                    data.proc_inst_task_code=res[0].proc_inst_task_code;
+                                    data.proc_inst_task_type=res[0].proc_inst_task_type;
+                                    data.user_name=user_name;
+                                    data.proc_code=res[0].proc_code;
+                                    data.proc_name=res[0].proc_name;
+                                    for(let item in files){
+                                        let file=files[item];
+                                        console.log("path:",file.path,file.originalname);
+                                        fs.rename(file.path, path+"/"+file.originalname,function(err){
+                                            if(err)
+                                                console.log("文件移动错误",err);
+                                            var datas=[];
+                                            data.file_path=path+"/"+file.originalname;
+                                            data.file_name=file.originalname;
+                                            data.status=0;
+                                            data.insert_time=new Date();
+                                            datas.push(data);
+                                            //插入附件表
+                                            process_extend_model.$ProcessTaskFile.create(datas,function(){
+                                                if(item==files.length-1){
+                                                    resolve({'success':true,'code':'2000','msg':'节点流转成功',"error":null});
+
+                                                }
+                                            })
+                                        })
+                                    }
                                 }
-                            });
-                    });
 
-
-            }else{
-                resolve({'success':true,'code':'2000','msg':'节点流转成功',"error":null});
+                            })
+                    }else{
+                        resolve({'success':true,'code':'2000','msg':'节点流转成功',"error":null});
+                    }
+                }else{
+                    reject({'success':false,'code':'1000','msg':'获取任务不存在',"error":null});
+                }
             }
-
-
+        })
     });
 
     return p;
@@ -611,47 +632,117 @@ exports.fileLogs= function(inst_id) {
  * @param fileID
  * @returns {Promise}
  */
-exports.update_images= function(files,fileID) {
-    var p = new Promise(function(resolve,reject){
-        var date=moment().format('YYYYMMDDHHmmss');
-        let  path = config.local_path+date;
+exports.again_images= function(files,inst_id,user_name) {
 
-            //如果有上传文件
-            if(files.length>0){
-                    //判断文件夹是否存在
-                    fs.exists(path,function(exists){
-                        if(!exists)
-                            fs.mkdir(path,function(err){
-                                if(err)
-                                    console.error(err);
-                                else{
-                                    fs.rename(files[0].path, path+"/"+files[0].originalname,function(err){
+    var p = new Promise(function(resolve,reject){
+
+        //如果有上传文件
+        if(files && files.length>0){
+
+            model.$ProcessInst.find({"_id":inst_id},function(err,res){
+                if(err){
+                    reject({'success':false,'code':'1000','msg':'获取任务信息错误',"error":null});
+                }else{
+                    if(res.length==1){
+                        let  path =  config.local_path+res[0].work_order_number;
+                        //判断文件夹是否存在
+                        fs.exists(path,function(exists){
+                            if(!exists) {
+                                fs.mkdir(path, function (err) {
+                                    if (err)
+                                        console.error(err);
+                                    else {
+                                        var data={};
+                                        data.proc_task_id=new mongoose.Types.ObjectId('000000000000');
+                                        data.proc_inst_id=inst_id;
+                                        data.proc_inst_task_code='补传附件';
+                                        data.proc_inst_task_type='补传附件';
+                                        data.user_name=user_name;
+                                        data.proc_code=res[0].proc_code;
+                                        data.proc_name=res[0].proc_name;
+                                        for(let item in files){
+                                            let file=files[item];
+                                            console.log("path:",file.path,file.originalname,path);
+                                            fs.rename(file.path, path+"/"+file.originalname,function(err){
+                                                if(err){
+                                                    console.log(err);
+                                                }else{
+                                                    var datas=[];
+                                                    data.file_path=path+"/"+file.originalname;
+                                                    data.file_name=file.originalname;
+                                                    data.status=0;
+                                                    data.insert_time=new Date();
+                                                    datas.push(data);
+                                                    console.log(datas);
+                                                    //插入附件表
+                                                    process_extend_model.$ProcessTaskFile.create(datas,function(err){
+                                                        if(err){
+                                                            reject({'success':false,'code':'1000','msg':'节点流转成功，但附件上传失败',"error":null});
+                                                        }else{
+                                                            if(item==files.length-1){
+                                                                resolve({'success':true,'code':'2000','msg':'节点流转成功',"error":null});
+
+                                                            }
+                                                        }
+                                                    })
+                                                }
+
+                                            });
+                                        }
+                                    }
+                                });
+                            }else{
+                                var data={};
+                                data.proc_task_id=new mongoose.Types.ObjectId('000000000000');
+                                data.proc_inst_id=inst_id;
+                                data.proc_inst_task_code='补传附件';
+                                data.proc_inst_task_type='补传附件';
+                                data.user_name=user_name;
+                                data.proc_code=res[0].proc_code;
+                                data.proc_name=res[0].proc_name;
+                                for(let item in files){
+                                    let file=files[item];
+                                    console.log("path:",file.path,file.originalname,path);
+                                    fs.rename(file.path, path+"/"+file.originalname,function(err){
                                         if(err){
                                             console.log(err);
                                         }else{
-                                            var data={};
-                                            data.file_path=path+"/"+files[0].originalname;
-                                            data.file_name=files[0].originalname;
+                                            var datas=[];
+                                            data.file_path=path+"/"+file.originalname;
+                                            data.file_name=file.originalname;
+                                            data.status=0;
                                             data.insert_time=new Date();
-                                            var conditions = {_id: fileID};
-                                            var update = {$set: data};
-                                            var options = {};
-                                            //修改附件表
-                                            process_extend_model.$ProcessTaskFile.update(conditions, update, options, function (errors){
+                                            datas.push(data);
+                                            console.log(datas);
+                                            //插入附件表
+                                            process_extend_model.$ProcessTaskFile.create(datas,function(err){
                                                 if(err){
                                                     reject({'success':false,'code':'1000','msg':'节点流转成功，但附件上传失败',"error":null});
                                                 }else{
-                                                    resolve({'success':true,'code':'2000','msg':'上传成功',"error":null});
+                                                    if(item==files.length-1){
+                                                        resolve({'success':true,'code':'2000','msg':'节点流转成功',"error":null});
+
+                                                    }
                                                 }
                                             })
                                         }
+
                                     });
                                 }
-                            });
-                    });
+                            }
+                        });
+
+                    }else{
+                        reject({'success':false,'code':'1000','msg':'获取任务不存在',"error":null});
+                    }
+                }
+            })
 
 
-            }
+
+        }else{
+            resolve({'success':true,'code':'2000','msg':'节点流转成功',"error":null});
+        }
 
 
     });

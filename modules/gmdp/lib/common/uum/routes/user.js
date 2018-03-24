@@ -47,9 +47,12 @@ router.route('/')
         var user_phone = req.body.user_phone;
         var user_email = req.body.user_email;
         var user_status = req.body.user_status;
-        var user_org = req.body.user_org;
+       // var user_orgs = req.body.user_orgs;
         var user_sys = req.body.user_sys;
+        var work_id = req.body.work_id;
         // 数组特殊处理
+        //var user_org = user_orgs.split(',');
+        var user_org = req.body.user_org ? [req.body.user_org] : req.body['user_org[]'];
         var user_role = req.body.user_roles ? [req.body.user_roles] : req.body['user_roles[]'];//只选一个角色时req.body.user_roles有值，req.body['user_roles[]']为undefined，选多个角色时相反
         // var user_role = (req.body.user_roles && req.body.user_roles instanceof Array) ? req.body.user_roles : [req.body.user_roles];// : req.body['user_roles[]'];
         var user_duties = (req.body.user_duties && req.body.user_duties instanceof Array) ? req.body.user_duties : [req.body.user_duties];// ? [req.body.user_duties] : req.body['user_duties[]'];
@@ -74,13 +77,14 @@ router.route('/')
             utils.respMsg(res, false, '2006', '用户姓名不能为空。', null, null);
         }
         if(!user_org) {
-            utils.respMsg(res, false, '2007', '所在机构/部门不能为空。', null, null);
+            utils.respMsg(res, false, '2007', '所在机构/部门不能为空1。', null, null);
         }
         if(!user_gender) {
             utils.respMsg(res, false, '2008', '所在机构/部门不能为空。', null, null);
         }
         // 验证通过组装数据
         var data = {};
+        data.work_id = work_id;
         data.login_account = login_account;
         data.user_status = parseInt(user_status);
         data.user_no = user_no;
@@ -150,12 +154,15 @@ router.route('/:id')
         var user_phone = req.body.user_phone;
         var user_email = req.body.user_email;
         var user_status = req.body.user_status;
-        var user_org = req.body.user_org;
+       // var user_orgs = req.body.user_orgs;
         var user_sys = req.body.user_sys;
+        var work_id = req.body.work_id;
         // 数组特殊处理
+        //var user_org = user_orgs.split(',');
+        var user_org = req.body.user_org ? [req.body.user_org] : req.body['user_org[]'];
         var user_role = req.body.user_roles ? [req.body.user_roles] : req.body['user_roles[]'];//只选一个角色时req.body.user_roles有值，req.body['user_roles[]']为undefined，选多个角色时相反
         // var user_role = (req.body.user_roles && req.body.user_roles instanceof Array) ? req.body.user_roles : [req.body.user_roles];
-        console.log("sssssssssssssssssssssssss1",req.body.user_roles,"  ",[req.body.user_roles]);
+        console.log("sssssssssssssssssssssssss1",user_org);
         var user_duties = (req.body.user_duties && req.body.user_duties instanceof Array) ? req.body.user_duties : [req.body.user_duties];
 
         // 验证
@@ -188,6 +195,7 @@ router.route('/:id')
         }
         // 验证通过组装数据
         var data = {};
+        data.work_id = work_id;
         data.login_account = login_account;
         data.user_status = parseInt(user_status);
         data.user_no = user_no;

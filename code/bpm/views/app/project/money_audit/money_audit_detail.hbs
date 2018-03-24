@@ -1,4 +1,7 @@
 <link rel="stylesheet" type="text/css" href="{{projcfg.appurl}}/static/order/css/order_detail.css">
+<link rel="stylesheet" type="text/css" href="{{projcfg.appurl}}/static/{{projcfg.theme}}js/uploadify/uploadify.css">
+<script src="{{projcfg.appurl}}/static/js/ajaxfileupload.js"></script>
+<script src="{{projcfg.appurl}}/static/{{projcfg.theme}}js/uploadify/jquery.uploadify.min.js"></script>
 
 
 
@@ -12,16 +15,21 @@
                 <input  type="hidden"id="next_code" name="next_code" />
                 <input  type="hidden"id="proc_inst_id"  name="proc_inst_id"/>
                 <input  type="hidden"id="proc_task_id"  name="proc_task_id"/>
+                <input  type="hidden"id="proc_task_code"  name="proc_task_code"/>
+
                 <tr>
                     <td align="right" class="tdLabel">工单标题:</td>
                     <td colspan="3"><input disabled style="width: 665px" class="easyui-textbox"data-options="required:true, missingMessage:'请输入工单标题'" id="proc_inst_task_title" name="proc_inst_task_title" ></input></td>
                 </tr>
                 <tr>
                     <td align="right" class="tdLabel">工单类型:</td>
-                    <td> <input disabled class="easyui-combobox" name="proc_task_code" id="proc_task_code"  style="width: 280px"></td>
+                    <td>
+                        <input disabled style="width: 280px"class="easyui-textbox"
+                               id="proc_inst_name" name="proc_inst_name"></input>
+                    </td>
 
                     <td align="right" class="tdLabel">工作天数:</td>
-                    <td><input disabled style="width: 280px"class="easyui-numberbox"data-options="precision:0"  name="work_day" id="work_day"
+                    <td><input disabled style="width: 280px"class="easyui-numberbox"data-options="precision:0"  name="proc_work_day" id="work_day"
                     ></input></td>
                 </tr>
                 <tr>
@@ -38,11 +46,11 @@
                 <tr>
                     <td align="right" class="tdLabel">发起人角色:</td>
                     <td><input disabled style="width: 280px"class="easyui-textbox"
-                               name="start_user" ></input></td>
+                               name="role_name" ></input></td>
 
                     <td align="right" class="tdLabel">发起人:</td>
                     <td><input disabled style="width: 280px" class="easyui-textbox"
-                               name="start_user_name" ></input></td>
+                               name="user_name" ></input></td>
 
                 </tr>
 
@@ -51,7 +59,7 @@
                     <td align="right" class="tdLabel">派单内容:</td>
                     <td colspan="3"><input disabled
                                            style="width: 670px; height: 100px; resize: none;" cols="30"
-                                           name="remark" rows="4"  class="easyui-textbox"  labelPosition="top" multiline="true"/>
+                                           name="proc_content" rows="4"  class="easyui-textbox"  labelPosition="top" multiline="true"/>
 
                     </td>
                 </tr>
@@ -95,7 +103,7 @@
                     <td align="right" class="tdLabel">下一节点处理人:</td>
                     <td colspan="3"><select class="easyui-combobox"
                                             id="nextJobHandler" name="assign_user_no"  style="width: 180px;">
-
+                        <!--<option value="admin">系统管理员</option>-->
                     </select> </td>
 
 
@@ -108,6 +116,12 @@
 
                     </td>
 
+                </tr>
+
+                <tr  id="fileUpload">
+                    <td align="right" class="tdLabel">附件上传:</td>
+                    <td>  <input type="file"labelPosition="top"id="files" name="files" multiple="true" data-options="prompt:'选择文件...',buttonText:'选择'" style="width:250px"/>
+                    </td>
                 </tr>
 
                 <input type='hidden' name='_csrf' value='{{ _csrfToken }}'/>
@@ -126,14 +140,55 @@
 
             <iframe id="iframeId" frameborder=0 width=1200 height=830 marginheight=0 marginwidth=0 scrolling=no src=></iframe>
         </div>
+        <div title="附件" style="padding:10px">
+            <table cellpadding="5" align="center">
+                <tr  id="fileUpload1" style="display: none">
+
+                    <td>  <input type="file"labelPosition="top"id="files1" name="files1" multiple="true" data-options="prompt:'选择文件...',buttonText:'选择'" style="width:250px"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="4">
+                        <table id="file_dg"></table>
+                    </td>
+                </tr>
+
+            </table>
+        </div>
 
     </div>
 
+<script>
+    $.ajaxSettings.beforeSend = function(xhr, request) {
+        xhr.setRequestHeader('csrf-token', '{{_csrfToken}}');
+    }
+</script>
 <script type="text/javascript">
+    $(function() {
+        $('#files').uploadify({
+            'swf'      : '{{projcfg.appurl}}/static/{{projcfg.theme}}js/uploadify/uploadify.swf',
+            'uploader' : '{{projcfg.appurl}}/api/order_manage/order_list/uploadFile?_csrf='+'{{_csrfToken}}',
+            'auto'           :false,
+            'multi'          :true,
+            'buttonText':'附件上传',
+            'fileTypeExts' : '*.gif; *.jpg; *.png;*.mp3;*.wav;*.wma;*.pdf;*.txt;*.xls;*.xlsx',
+            'checkExisting':true,
+            'fileSizeLimit':'5MB',
+            //浏览按钮的宽度
+            'width':'100',
+            //浏览按钮的高度
+            'height':'30',
+            'onQueueComplete' : function(queueData) {
+                parent.$("#dd").dialog('close');
+                parent.$('#orderTablelist').datagrid('reload');
+                $.messager.alert('提示','处理成功');
+            }
+        });
+
+    });
     //是否属于归档节点
     var endFlag=false;
     $(document).ready(function () {
-
         //状态1:已发起的工单,2：我的待办,3:我的已办，4：新增操作
         var status=GetQueryString("status");
 
@@ -143,10 +198,36 @@
         if(status==1 ||status==3){
             //隐藏处理操作
             $("#detail").hide();
+            if(status == 3){
+                $("#fileUpload1").show();
+            }
         }else if(status==2){
             //待办操作
 
         }
+
+        $('#files1').uploadify({
+            'swf'      : '{{projcfg.appurl}}/static/{{projcfg.theme}}js/uploadify/uploadify.swf',
+            'uploader' : '{{projcfg.appurl}}/api/order_manage/order_list/uploadFile?_csrf='+'{{_csrfToken}}',
+            'formData':{
+                'status':0,
+                'id':change_id,
+            },
+            'auto'           :true,
+            'multi'          :true,
+            'buttonText':'附件补传',
+            'fileTypeExts' : '*.gif; *.jpg; *.png;*.mp3;*.wav;*.wma;*.pdf;*.txt;*.xls;*.xlsx',
+            'checkExisting':true,
+            'fileSizeLimit':'5MB',
+            //浏览按钮的宽度
+            'width':'100',
+            //浏览按钮的高度
+            'height':'30',
+            'onQueueComplete' : function(queueData) {
+                $.messager.alert('提示','补传成功!');
+                $('#file_dg').datagrid('reload');//刷新
+            }
+        });
 
 
         $.ajax({
@@ -180,7 +261,7 @@
                         var proc_inst_task_name= data.data.proc_inst_task_name;
                         $("#proc_inst_task_name").textbox("setValue",proc_inst_task_name);
                         //操作下拉框初始化
-                        isEndNode(GetQueryString("proc_code"),node_code,task_id,inst_id);
+                        isEndNode(GetQueryString("proc_code"),node_code,task_id,inst_id,proc_vars_json.user_no,proc_vars_json.user_name);
 
                         $("#node_code").val(node_code);
                         $("#proc_inst_id").val(inst_id);
@@ -193,8 +274,9 @@
 
                     }
                     $('#orderDetailForm').form('load', proc_vars_json);
+                    $("#proc_inst_name").textbox('setValue','资金稽核工单') ;
                     $("#proc_inst_task_title").textbox("setValue",proc_title);
-                    $("#proc_task_code").combobox("setValue",GetQueryString("proc_code"));
+                    $("#proc_task_code").val(GetQueryString("proc_code"));
 
                     //重新加载流程图
                     $('#tabs').tabs({
@@ -245,7 +327,70 @@
                     })
 
 
+                    //上传附件
+                    $('#file_dg').datagrid({
+                        url:'{{projcfg.appurl}}/api/order_manage/order_list/fileLogs',
+                        width:800,
+                        queryParams: {
+                            inst_id: inst_id
+                        },
 
+                        method:'post',
+                        columns:[[
+                            {field:'_id',hidden:true},
+                            {field:'file_name',title:'文件名',width:130, halign:'center',
+                                formatter:function(value,row,index){
+
+                                    return "<a href='{{projcfg.appurl}}/api/order_manage/order_list/download/"+row._id+"'>" + value + "</a>";
+
+                                }},
+                            {field:'file_path',title:'预览',width:130, halign:'center',height:130,
+                                formatter:function(value,row,index){
+                                    var extStart=row.file_name.lastIndexOf(".");
+                                    var ext=row.file_name.substring(extStart,row.file_name.length).toUpperCase();
+
+
+                                    var html='';
+                                    if(ext=='.JPG' || ext=='.PNG'){
+                                        html= '<div id="innerdiv" >'+
+                                                '<img id="'+row._id+'"  style="height:130px;width:130px"  src="{{projcfg.appurl}}/api/order_manage/order_list/download/'+row._id+'/?t='+Math.random()+'" />'+
+                                                '</div>'
+                                    }else if(ext=='.MP3' || ext=='.WAV'|| ext=='.WMA'){
+                                        html= '<div id="innerdiv" >'+
+                                                '<audio  id="'+row._id+'"  src="{{projcfg.appurl}}/api/order_manage/order_list/download/'+row._id+'/?t='+Math.random()+'"  controls="controls"></audio>'+
+                                                '</div>'
+                                    }
+
+                                    return html;
+
+                                }},
+                            {field:'proc_inst_task_type',title:'上传节点',width:120, halign:'center'},
+                            {field:'user_name',title:'上传人',width:60, halign:'center'},
+                            {field:'insert_time',title:'上传时间',width:150, halign:'center',
+                                formatter:function(value,row,index){
+                                    if(value!=null){
+                                        var isoDateStr = value.substring(0,value.indexOf('.'));
+                                        var date=new Date(isoDateStr.replace(/-/g,'/').replace(/T|Z/g,' '));
+                                        date.setHours(date.getHours()+8)
+                                        return  date.Format("yyyy-MM-dd hh:mm:ss");
+                                    }else{
+                                        return '';
+                                    }
+                                }},
+                            {field:'proc_inst_task_remark',title:'操作',width:250,
+                                halign:'center',
+                                formatter: function (value,row,index) {
+                                    var html='';
+                                    if(status != 1){
+                                        html='<div style="text-align: center"><a href="javascript:void(0);" onclick="deleteFile(\''+row._id+'\')" >删除</a></div>';
+                                    }
+
+
+
+                                    return html;
+                                }}
+                        ]]
+                    })
 
 
                 }else{
@@ -255,8 +400,10 @@
             }
         });
 
+
+
         //初始化工单类型下拉框
-        getAllProBase();
+       // getAllProBase();
 
 
 
@@ -300,15 +447,18 @@
     /**
      * 获取下一节点处理人
      */
-    function getNextNodeUser(node_code,proc_task_id,proc_inst_id){
+    function getNextNodeUser(node_code,proc_task_id,proc_inst_id,user_no){
+        var map ={};
+        map.flag=""
         $.ajax({
-            url: '{{projcfg.appurl}}/api/order_manage/order_list/nextNodeUser',
+            url: '{{projcfg.appurl}}/api/money_audit/money_audit_list/nextNodeAnduser',
             type: 'post',
             dataType:'json',
             data: {
                 node_code:node_code,
                 proc_task_id:proc_task_id,
-                proc_inst_id:proc_inst_id
+                proc_inst_id:proc_inst_id,
+                params:JSON.stringify(map)
             },
             success: function (data) {
                 if(data.success){
@@ -347,7 +497,6 @@
             success: function (data) {
                 if(data.success){
                     var comboboxData=[];
-
                     //归档节点
                     if(data.data.isEnd){
                         //是归档节点不需要下一节点处理人
@@ -381,11 +530,10 @@
         if(!validate) {
             return false;
         }
-        var nextNodeUser= $('#nextJobHandler').combobox('getValue');
+        var nextNodeUser= $('#nextJobHandler').combobox('getValues');
         if(!nextNodeUser && !endFlag){
             $.messager.alert('提示','请选择下一节点处理人');
             return false;
-
         }
 
         var formData=$('#orderDetailForm').serializeArray();
@@ -400,9 +548,16 @@
                 success: function (data) {
                 
                     if(data.success){
-                        parent.$("#dd").dialog('close');
-                        parent.$('#orderTablelist').datagrid('reload');
-                        $.messager.alert('提示','归档成功');
+                        if($('#files').data('uploadify').queueData.queueLength > 0) {
+                            var proc_task_id = $("#proc_task_id").val();
+                            $('#files').uploadify('settings',"formData",
+                                    {'status':1,'id':proc_task_id});
+                            $('#files').uploadify('upload','*')
+                        }else {
+                            $.messager.alert('提示','归档成功');
+                            parent.$("#dd").dialog('close');
+                            parent.$('#orderTablelist').datagrid('reload');
+                        }
                     }else{
                         $.messager.alert('错误提示',data.msg);
                     }
@@ -423,9 +578,16 @@
                 data: formData,
                 success: function (data) {
                     if(data.success){
-                        parent.$("#dd").dialog('close');
-                        parent.$('#orderTablelist').datagrid('reload');
-                        $.messager.alert('提示','处理成功');
+                        if($('#files').data('uploadify').queueData.queueLength > 0) {
+                            var proc_task_id = $("#proc_task_id").val();
+                            $('#files').uploadify('settings',"formData",
+                                    {'status':1,'id':proc_task_id});
+                            $('#files').uploadify('upload','*')
+                        }else {
+                            $.messager.alert('提示','处理成功');
+                            parent.$("#dd").dialog('close');
+                            parent.$('#orderTablelist').datagrid('reload');
+                        }
                     }else{
                         $.messager.alert('错误提示',data.error);
                     }
@@ -433,6 +595,74 @@
             });
         }
 
+    }
+
+
+    /**
+    * 删除上传附件
+    * @param id
+    */
+    function deleteFile(id){
+        $.ajax({
+            url: '{{projcfg.appurl}}/api/order_manage/order_list/deleteFile',
+            type: 'post',
+            dataType:'json',
+            data: {
+                id:id,
+            },
+            success: function (data) {
+                if(data.success){
+                    $('#file_dg').datagrid('reload');
+                }else{
+                    $.messager.alert('删除失败');
+                }
+            }
+        });
+    }
+    var file_id;
+    function uploadFile(id){
+
+        file_id=id;
+        document.getElementById("file"+id).click();
+
+    }
+    /**
+     * 上传
+     */
+    function doUploadCorrect() {
+        var filepath = $("#file" + file_id).val();
+        // 图片类型
+        var extStart = filepath.lastIndexOf(".");
+        var ext = filepath.substring(extStart, filepath.length).toUpperCase();
+
+        if (ext != ".JPG" && ext != ".PNG" && ext != ".MP3" && ext != ".WAV" && ext != ".WMA") {
+            $.messager.alert('提示', '文件限于jpg,png,MP3,WAV,WMA格式');
+            return;
+        }
+
+        if (document.getElementById("file" + file_id).files[0].size > 1024 * 600) {
+            $.messager.alert('提示', '文件:' + document.getElementById("file" + file_id).files[0].name + '必须小于600KB');
+            return;
+        }
+        $.ajaxFileUpload({
+            type: 'POST',
+            url: '{{projcfg.appurl}}/api/order_manage/order_list/uploadFile?id=' + file_id + "&_csrf=" + '{{_csrfToken}}',
+            secureuri: false,
+            fileElementId: 'file' + file_id,     //与html代码中的input的id值对应
+            dataType: 'json',
+            success: function (data) {
+                if (data.success) {
+                    $.messager.alert('提示', '修正成功!');
+                    $('#file_dg').datagrid('reload');//刷新
+                } else {
+                    $.messager.alert('警告', data.msg, 'error');
+                }
+            },
+            error: function (err) {
+                alert(JSON.stringify(err));
+            }
+        })
+        document.getElementById('file' + file_id).outerHTML += "";
     }
 
 
