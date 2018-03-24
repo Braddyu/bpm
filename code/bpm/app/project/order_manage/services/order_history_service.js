@@ -9,9 +9,10 @@ var pool_hh_history = mysql.createPool(config.hh_mysql);
  * @param conditionMap
  * @returns {Promise}
  */
-exports.getHistoryList= function() {
+exports.getHistoryList= function(condition,pageNow,pageSize) {
     var p = new Promise(async function(resolve,reject){
 
+        let start =(pageNow-1)*pageSize;
         var  sql ="select distinct j.id,\n" +
             "                j.task_id,   -- 任务id\n" +
             "                j.job_id,    -- 工单id\n" +
@@ -41,6 +42,8 @@ exports.getHistoryList= function() {
             "   and j.caller = u.id\n" +
             "   and j.CALLER_ROLE=998\n" +
             "   order by j.created desc";
+
+        sql += " limit "+start+","+pageSize;
         pool_hh_history.query(sql,function (err, result) {
             if (err) {
                 console.log('[SELECT ERROR] - ', err.message);
