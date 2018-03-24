@@ -179,9 +179,9 @@
             //浏览按钮的高度
             'height':'30',
             'onQueueComplete' : function(queueData) {
+                parent.msgSuccess('处理成功');
                 parent.$("#dd").dialog('close');
                 parent.$('#orderTablelist').datagrid('reload');
-                $.messager.alert('提示','处理成功');
             }
         });
 
@@ -584,7 +584,7 @@
                                     {'status':1,'id':proc_task_id});
                             $('#files').uploadify('upload','*')
                         }else {
-                            $.messager.alert('提示','处理成功');
+                            parent.msgSuccess('处理成功');
                             parent.$("#dd").dialog('close');
                             parent.$('#orderTablelist').datagrid('reload');
                         }

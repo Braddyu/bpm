@@ -148,7 +148,7 @@
             //浏览按钮的高度
             'height':'30',
             'onQueueComplete' : function(queueData) {
-                msgSuccess('处理成功');
+                msgSuccess('派单成功');
                 $('#orderDetail').dialog("close");
                 $('#orderTablelist').datagrid('reload');
             }
@@ -548,7 +548,7 @@
                                         {'status': 1, 'id': proc_task_id});
                                 $('#files').uploadify('upload', '*')
                             }else {
-                                msgSuccess('处理成功');
+                                msgSuccess('派单成功');
                                 $('#orderDetail').dialog("close");
                                 $('#orderTablelist').datagrid('reload');
                             }
