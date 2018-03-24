@@ -13,6 +13,7 @@ exports.init_gmdp = function() {
         uum_user_services : require('./common/uum/services/user_service'),
         uum_org_services : require('./common/uum/services/org_service'),
         uum_role_services : require('./common/uum/services/role_service'),
+        uum_login_services : require('./common/uum/services/login_service'),
         core_user_model : require('./common/core/models/user_model'),
         mysql_utils : require('./common/core/utils/mysql_utils'),
         role_menu_model : require('./common/core/models/role_menu_model'),
@@ -51,6 +52,7 @@ exports.init_gmdp = function() {
             _app.use(_basePath + route_mapping_prefix_map.uum + "other_org", require('./common/uum/routes/other_org'));
             _app.use(_basePath + route_mapping_prefix_map.uum + "role", require('./common/uum/routes/role'));
             _app.use(_basePath + route_mapping_prefix_map.uum + "user", require('./common/uum/routes/user'));
+            _app.use(_basePath + route_mapping_prefix_map.uum + "login_err", require('./common/uum/routes/login_err'));
 
             // portal
             _app.use(_basePath + route_mapping_prefix_map.portal + "module", require('./common/portal/routes/module'));
