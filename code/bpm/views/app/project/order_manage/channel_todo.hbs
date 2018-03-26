@@ -23,8 +23,6 @@
                                 <div class="btn-group" role="group" aria-label="...">
                                     <label for="filterParam3">工单类型：</label>
                                     <select class="easyui-combobox"id="proc_task_code"  style="width: 180px;height:31px;">
-                                        <option value="p-109">业务指标预警流程</option>
-                                        <option value="p-201">稽核工单差错</option>
                                     </select>
                                 </div>
                                 <div class="btn-group" role="group" aria-label="...">
@@ -83,11 +81,12 @@
 <script type="text/javascript">
 
     $(document).ready(function () {
+        //初始化工单类型下拉框
+        getAllProBase();
         //加载所辖渠道未处理工单
        loadChannelTodoListDatagrid();
 
-        //初始化工单类型下拉框
-       // getAllProBase();
+
         $('#startDate').datebox().datebox('calendar').calendar({
             validator: function(date){
                 var endDate = new Date($('#endDate').datebox('getValue'));
@@ -363,5 +362,17 @@
                 channel_work_id: $("#channel_work_id").val(),
             }
         })*/
+    }
+    /**
+     * 初始化工单类型下拉框
+     */
+    function getAllProBase(){
+        $("#proc_task_code").combobox({
+            method: 'get',
+            url: '{{projcfg.appurl}}/api/order_manage/order_list/proBase',
+            valueField:'proc_code',
+            textField:'proc_name'
+        });
+        $("#proc_task_code").combobox("setValue","p-109");
     }
 </script>

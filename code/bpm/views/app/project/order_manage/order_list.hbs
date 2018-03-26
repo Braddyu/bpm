@@ -60,11 +60,11 @@
 
 
     $(document).ready(function () {
-
-        //加载列表
-        loadOrderListDatagrid();
         //初始化工单类型下拉框
         getAllProBase();
+        //加载列表
+        loadOrderListDatagrid();
+
         $('#startDate').datebox().datebox('calendar').calendar({
             validator: function(date){
                 var endDate = new Date($('#endDate').datebox('getValue'));
@@ -117,6 +117,9 @@
             striped:true,
             fitColumns:true,
             border:false,
+            queryParams: {
+                proc_code: $("#proc_task_code").combobox('getValue'),
+            },
             fit:true,
             toolbar: '#toolbar1',
             singleSelect:true,
@@ -420,7 +423,7 @@
             valueField:'proc_code',
             textField:'proc_name'
         });
-
+        $("#proc_task_code").combobox("setValue","p-109");
     }
 
     //查询

@@ -13,6 +13,7 @@ router.route('/list').post(function(req,res){
     var work_order_number = req.body.work_order_number;
     var proc_start_time = req.body.proc_start_time;
     var proc_inst_task_complete_time = req.body.proc_inst_task_complete_time;
+    var proc_code = req.body.proc_code;
     var is_overtime = req.body.is_overtime;
     var page = req.body.page;//页码
     var length = req.body.rows;//每页条数
@@ -27,7 +28,7 @@ router.route('/list').post(function(req,res){
     userService.getUsreRolesByUserNo(userNo).then(function(result){
         console.log(result);
         if(result){
-            service.getMyArchiveTaskQuery4Eui(page,length,userNo,work_order_number,proc_start_time,proc_inst_task_complete_time,is_overtime).then(function(taskresult){
+            service.getMyArchiveTaskQuery4Eui(page,length,userNo,work_order_number,proc_start_time,proc_inst_task_complete_time,is_overtime,proc_code).then(function(taskresult){
                 utils.respJsonData(res, taskresult);
             }).catch(function(err_inst){
                 // console.log(err_inst);

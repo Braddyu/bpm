@@ -72,10 +72,11 @@
 
 
     $(document).ready(function () {
-        //加载我的待办列表
-        loadOrderTodaoListDatagrid();
         //初始化工单类型下拉框
         getAllProBase();
+        //加载我的待办列表
+        loadOrderTodaoListDatagrid();
+
 
     });
 
@@ -105,6 +106,9 @@
             striped:true,
             fitColumns:true,
             border:false,
+            queryParams: {
+                proc_code: $("#proc_task_code").combobox('getValue'),
+            },
             fit:true,
             toolbar: '#toolbar1',
             pageSize: 20,
@@ -185,7 +189,7 @@
             valueField:'proc_code',
             textField:'proc_name'
         });
-
+        $("#proc_task_code").combobox("setValue","p-109");
     }
     //查询
     function  doSearch(){

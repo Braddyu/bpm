@@ -16,7 +16,7 @@ var utils = require('../../../../lib/utils/app_utils');
  * @param conditionMap
  * @returns {Promise}
  */
-exports.getMyArchiveTaskQuery4Eui = function (page, size, userNo, work_order_number,proc_start_time,proc_inst_task_complete_time,is_overtime) {
+exports.getMyArchiveTaskQuery4Eui = function (page, size, userNo, work_order_number,proc_start_time,proc_inst_task_complete_time,is_overtime,proc_code) {
 
     var p = new Promise(function (resolve, reject) {
         var match = {'proc_inst_task_assignee': userNo};
@@ -33,6 +33,10 @@ exports.getMyArchiveTaskQuery4Eui = function (page, size, userNo, work_order_num
         }
         if (is_overtime) {
             inst_search.is_overtime = is_overtime;
+        }
+
+        if (proc_code) {
+            inst_search.proc_code = proc_code;
         }
         page = parseInt(page);
         size = parseInt(size);
