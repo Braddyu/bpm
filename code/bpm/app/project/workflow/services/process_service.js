@@ -324,9 +324,10 @@ exports.checkCode= function(flag,code,id) {
                 logger.error("checkCode","编码唯一性验证时出现异常",err);
                 resolve(utils.returnMsg(false, '1001', '编码唯一性验证时出现异常。', null, err));
             }else{
-                if(rs.length > 0){
+                if(rs.length > 0 && rs[0]._id != id){
                     // resolve({'success':false, 'code':'1002', 'msg':'编码重复'});
                     logger.error("checkCode","编码重复",code);
+                    console.log(rs);
                     resolve(utils.returnMsg(false, '1002', '编码重复。', null, null));
                 }else {
                     resolve({'success':true});
