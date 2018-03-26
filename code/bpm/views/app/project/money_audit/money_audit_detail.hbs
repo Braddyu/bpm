@@ -1,10 +1,3 @@
-<link rel="stylesheet" type="text/css" href="{{projcfg.appurl}}/static/order/css/order_detail.css">
-<link rel="stylesheet" type="text/css" href="{{projcfg.appurl}}/static/{{projcfg.theme}}js/uploadify/uploadify.css">
-<script src="{{projcfg.appurl}}/static/js/ajaxfileupload.js"></script>
-<script src="{{projcfg.appurl}}/static/{{projcfg.theme}}js/uploadify/jquery.uploadify.min.js"></script>
-
-
-
     <div class="easyui-tabs" id="tabs" >
         <div title="工单信息" style="padding:10px">
         <legend ><b>任务基本信息</b></legend>
@@ -165,6 +158,7 @@
 </script>
 <script type="text/javascript">
     $(function() {
+
         $('#files').uploadify({
             'swf'      : '{{projcfg.appurl}}/static/{{projcfg.theme}}js/uploadify/uploadify.swf',
             'uploader' : '{{projcfg.appurl}}/api/order_manage/order_list/uploadFile?_csrf='+'{{_csrfToken}}',
@@ -179,22 +173,22 @@
             //浏览按钮的高度
             'height':'30',
             'onQueueComplete' : function(queueData) {
-                parent.msgSuccess('处理成功');
-                parent.$("#dd").dialog('close');
-                parent.$('#orderTablelist').datagrid('reload');
+                msgSuccess('处理成功');
+                $("#dd").dialog('close');
+                $('#orderTablelist').datagrid('reload');
             }
         });
 
     });
+
     //是否属于归档节点
     var endFlag=false;
     $(document).ready(function () {
         //状态1:已发起的工单,2：我的待办,3:我的已办，4：新增操作
-        var status=GetQueryString("status");
-
-        //状态为2时表示任务id，1和3时为实例id
-        var change_id=GetQueryString("change_id");
-
+//        var status=GetQueryString("status");
+//
+//        //状态为2时表示任务id，1和3时为实例id
+//        var change_id=GetQueryString("change_id");
         if(status==1 ||status==3){
             //隐藏处理操作
             $("#detail").hide();
@@ -261,7 +255,7 @@
                         var proc_inst_task_name= data.data.proc_inst_task_name;
                         $("#proc_inst_task_name").textbox("setValue",proc_inst_task_name);
                         //操作下拉框初始化
-                        isEndNode(GetQueryString("proc_code"),node_code,task_id,inst_id,proc_vars_json.user_no,proc_vars_json.user_name);
+                        isEndNode(proc_code,node_code,task_id,inst_id,proc_vars_json.user_no,proc_vars_json.user_name);
 
                         $("#node_code").val(node_code);
                         $("#proc_inst_id").val(inst_id);
@@ -276,7 +270,7 @@
                     $('#orderDetailForm').form('load', proc_vars_json);
                     $("#proc_inst_name").textbox('setValue','资金稽核工单') ;
                     $("#proc_inst_task_title").textbox("setValue",proc_title);
-                    $("#proc_task_code").val(GetQueryString("proc_code"));
+                    $("#proc_task_code").val(proc_code);
 
                     //重新加载流程图
                     $('#tabs').tabs({
@@ -555,8 +549,8 @@
                             $('#files').uploadify('upload','*')
                         }else {
                             $.messager.alert('提示','归档成功');
-                            parent.$("#dd").dialog('close');
-                            parent.$('#orderTablelist').datagrid('reload');
+                            $("#dd").dialog('close');
+                            $('#orderTablelist').datagrid('reload');
                         }
                     }else{
                         $.messager.alert('错误提示',data.msg);
@@ -584,9 +578,9 @@
                                     {'status':1,'id':proc_task_id});
                             $('#files').uploadify('upload','*')
                         }else {
-                            parent.msgSuccess('处理成功');
-                            parent.$("#dd").dialog('close');
-                            parent.$('#orderTablelist').datagrid('reload');
+                            msgSuccess('处理成功');
+                            $("#dd").dialog('close');
+                            $('#orderTablelist').datagrid('reload');
                         }
                     }else{
                         $.messager.alert('错误提示',data.error);
