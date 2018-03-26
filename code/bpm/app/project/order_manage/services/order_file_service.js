@@ -16,12 +16,23 @@ var utils = require('../../../../lib/utils/app_utils');
  * @param conditionMap
  * @returns {Promise}
  */
-exports.getMyArchiveTaskQuery4Eui = function (page, size, userNo, work_order_number) {
+exports.getMyArchiveTaskQuery4Eui = function (page, size, userNo, work_order_number,proc_start_time,proc_inst_task_complete_time,is_overtime) {
 
     var p = new Promise(function (resolve, reject) {
         var match = {'proc_inst_task_assignee': userNo};
+        var inst_search={};
         if (work_order_number) {
             match.work_order_number = work_order_number;
+        }
+
+        if (proc_start_time) {
+            inst_search.proc_start_time =  {$gte: new Date(proc_start_time),$lte:new Date(new Date(proc_start_time).setDate(new Date(proc_start_time).getDate()+1))};
+        }
+        if (proc_inst_task_complete_time) {
+            inst_search.proc_inst_task_complete_time = {$gte: new Date(proc_inst_task_complete_time),$lte:new Date(new Date(proc_inst_task_complete_time).setDate(new Date(proc_inst_task_complete_time).getDate()+1))};
+        }
+        if (is_overtime) {
+            inst_search.is_overtime = is_overtime;
         }
         page = parseInt(page);
         size = parseInt(size);
@@ -30,16 +41,27 @@ exports.getMyArchiveTaskQuery4Eui = function (page, size, userNo, work_order_num
         }
 
         console.log(match);
+        console.log(inst_search);
         model.$ProcessTaskHistroy.aggregate([
             {
                 $match: match
             },
-            {
+         /*   {
                 $lookup: {
                     from: "common_bpm_proc_inst",
                     localField: 'proc_inst_id',
                     foreignField: "_id",
                     as: "inst"
+                }
+            },*/
+            {
+                $graphLookup: {
+                    from: "common_bpm_proc_inst",
+                    startWith: "$proc_inst_id",
+                    connectFromField: "proc_inst_id",
+                    connectToField: "_id",
+                    as: "inst",
+                    restrictSearchWithMatch: inst_search
                 }
             },
             {
@@ -84,11 +106,13 @@ exports.getMyArchiveTaskQuery4Eui = function (page, size, userNo, work_order_num
                         $match: match
                     },
                     {
-                        $lookup: {
+                        $graphLookup: {
                             from: "common_bpm_proc_inst",
-                            localField: 'proc_inst_id',
-                            foreignField: "_id",
-                            as: "inst"
+                            startWith: "$proc_inst_id",
+                            connectFromField: "proc_inst_id",
+                            connectToField: "_id",
+                            as: "inst",
+                            restrictSearchWithMatch: inst_search
                         }
                     },
                     {

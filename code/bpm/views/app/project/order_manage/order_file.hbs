@@ -149,7 +149,7 @@
                 }},
             ]],
             onDblClickRow:function(rowIndex, rowData){
-                var url='{{projcfg.appurl}}/api/order_manage/order_list/showDetailView?proc_code='+rowData.proc_code+'&change_id='+rowData._id+'&status=1';
+                var url='{{projcfg.appurl}}/api/order_manage/order_list/showDetailView?proc_code='+rowData.proc_code;
                 var content = '<iframe src="'+url+'" width="100%" height="99%" frameborder="0" scrolling="yes"></iframe>';
 
 
@@ -159,7 +159,12 @@
                     height : 650,
                     closed : false,
                     cache : false,
-                    content :content ,
+                    href :url ,
+                    onOpen:function(){
+                        status=1;
+                        change_id=rowData._id
+                        proc_code=rowData.proc_code
+                    },
                     modal : true
                 });
 
@@ -200,8 +205,9 @@
            queryParams: {
                proc_code: $("#proc_task_code").combobox('getValue'),
                proc_start_time:$('#proc_start_time').datebox('getValue'),
-               proc_start_time:$('#proc_start_time').datebox('getValue'),
+               proc_inst_task_complete_time:$('#proc_inst_task_complete_time').datebox('getValue'),
                work_order_number:$("#work_order_number").val(),
+               is_overtime:$("#is_overtime").combobox('getValue'),
 
            }
        });

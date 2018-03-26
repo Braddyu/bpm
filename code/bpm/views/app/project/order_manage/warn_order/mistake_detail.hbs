@@ -102,15 +102,6 @@
 
                         </td>
                     </tr>
-                    <!-- <tr id="tr_5">
-                         <td align="right" class="tdLabel">下一节点处理人:</td>
-                         <td colspan="3"><select class="easyui-combobox"
-                                                 id="nextJobHandler" name="assign_user_no"  style="width: 180px;">
-
-                         </select> </td>
-
-
-                     </tr>-->
 
 
                     <tr>
@@ -162,13 +153,14 @@
     </div>
 </div>
 <script>
+
     $.ajaxSettings.beforeSend = function (xhr, request) {
         xhr.setRequestHeader('csrf-token', '{{_csrfToken}}');
     }
 </script>
+
 <script type="text/javascript">
     $(function () {
-
         $('#files').uploadify({
             'swf': '{{projcfg.appurl}}/static/{{projcfg.theme}}js/uploadify/uploadify.swf',
             'uploader': '{{projcfg.appurl}}/api/order_manage/order_list/uploadFile?_csrf=' + '{{_csrfToken}}',
@@ -184,8 +176,8 @@
             'height': '30',
             'onQueueComplete': function (queueData) {
                 $.messager.alert('提示', '处理成功');
-                parent.$("#dd").dialog('close');
-                parent.$('#orderTablelist').datagrid('reload');
+               $("#dd").dialog('close');
+               $('#orderTablelist').datagrid('reload');
             }
         });
 
@@ -193,11 +185,15 @@
     //是否属于归档节点
     var endFlag = false;
     var proc_inst_task_sign = 1;
+
+
     $(document).ready(function () {
-        //状态1:归档,2：我的待办,3:我的已办，4：新增操作
-        var status = GetQueryString("status");
+
+     /*   //状态1:归档,2：我的待办,3:我的已办，4：新增操作
+        var status = '2';
         //状态为2时表示任务id，1和3时为实例id
-        var change_id = GetQueryString("change_id");
+        var change_id = '5ab35e64a967be2344eb8aff'*/
+
         if (status == 1 || status == 3) {
             //隐藏处理操作
             $("#detail").hide();
@@ -241,7 +237,7 @@
             },
             success: function (data) {
                 if (data.success) {
-                    console.log(JSON.stringify(data.data));
+
                     //业务数据
                     var proc_vars = data.data.proc_vars;
                     //工单标题
@@ -270,7 +266,7 @@
                         var proc_inst_task_name = data.data.proc_inst_task_name;
                         $("#proc_inst_task_name").textbox("setValue", proc_inst_task_name);
                         //操作下拉框初始化
-                        isEndNode(GetQueryString("proc_code"), node_code, task_id, inst_id);
+                        isEndNode(proc_code, node_code, task_id, inst_id);
                         $("#node_code").val(node_code);
                         $("#proc_inst_id").val(inst_id);
                         $("#proc_task_id").val(task_id);
@@ -283,7 +279,7 @@
                     }
                     $('#orderDetailForm').form('load', proc_vars_json);
                     $("#proc_inst_task_title").textbox("setValue", proc_title);
-                    $("#proc_task_code").combobox("setValue", GetQueryString("proc_code"));
+                    $("#proc_task_code").combobox("setValue", proc_code);
 
                     //重新加载流程图
                     $('#tabs').tabs({
@@ -420,15 +416,6 @@
 
     });
 
-
-    function GetQueryString(name) {
-        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
-        var r = window.location.search.substr(1).match(reg);
-        if (r != null)
-            return unescape(r[2]);
-        return null;
-    }
-
     /**
      * 初始化工单类型下拉框
      */
@@ -496,7 +483,7 @@
                     $("#handle").combobox('loadData', comboboxData);
                     $("#handle").combobox('select', comboboxData[0].value)
                 } else {
-                    $.messager.alert('错误提示', data.error);
+                    $.messager.alert('错误提示', data.msg);
                 }
             }
         });
@@ -552,8 +539,12 @@
             });
         } else {
             $("#task_title").val($("#proc_inst_task_title").textbox('getValue'));
-            var ajax_option = {
-                url: "{{projcfg.appurl}}/api/order_manage/order_list/complete?_csrf=" + '{{_csrfToken}}',//默认是form action
+            var formData = $('#orderDetailForm').serializeArray();
+            $.ajax({
+                url: "{{projcfg.appurl}}/api/order_manage/order_list/complete?_csrf=" + '{{_csrfToken}}',
+                type: 'post',
+                dataType: 'json',
+                data: formData,
                 success: function (data) {
                     if (data.success) {
                         //如果有选择文件
@@ -563,18 +554,16 @@
                             $('#files').uploadify('upload', '*')
                         }else{
                             $.messager.alert('提示', '处理成功');
-                            parent.$("#dd").dialog('close');
-                            parent.$('#orderTablelist').datagrid('reload');
+                            $("#dd").dialog('close');
+                            $('#orderTablelist').datagrid('reload');
                         }
 
                     } else {
                         $.messager.alert('错误提示', data.msg);
                     }
-                  $('#submitButton').attr("onclick", "submitTask();")
-
+                    $('#submitButton').attr("onclick", "submitTask();")
                 }
-            }
-            $('#orderDetailForm').ajaxSubmit(ajax_option);
+            });
         }
 
     }

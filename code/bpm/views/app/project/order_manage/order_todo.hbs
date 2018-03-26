@@ -142,7 +142,7 @@
             onDblClickRow:function(rowIndex, rowData){
                 //待办传状态为2
                 var url='{{projcfg.appurl}}/api/order_manage/order_list/showDetailView?proc_code='+rowData.proc_code+'&change_id='+rowData._id+'&status=2';
-                var content = '<iframe src="'+url+'" width="100%" height="99%" frameborder="0" scrolling="yes"></iframe>';
+               // var content = '<iframe src="'+url+'" width="100%" height="99%" frameborder="0" scrolling="yes"></iframe>';
 
 
                 $('#dd').dialog({
@@ -151,7 +151,12 @@
                     height : 650,
                     closed : false,
                     cache : false,
-                    content :content ,
+                    href :url ,
+                    onOpen:function(){
+                        status=2;
+                        change_id=rowData._id
+                        proc_code=rowData.proc_code
+                    },
                     modal : true
                 });
 

@@ -27,8 +27,12 @@
                                 <div class="btn-group" role="group" aria-label="...">
 
                                         <button class="btn btn-default" type="button" onclick="doSearch()"><i class="fa fa-search"></i>查询</button>
-                                        <button class="btn btn-default" type="button" id="exportData"><i class="glyphicon glyphicon-open"></i>导出</button>
-                                      <!-- <button class="btn btn-default" type="button" id="exportChannelData"><i class="glyphicon glyphicon-open"></i>导出渠道信息</button>-->
+
+
+                                </div>
+                                <div class="btn-group" role="group" aria-label="...">
+
+                                    <button class="btn btn-default" type="button" id="exportData"><i class="glyphicon glyphicon-open"></i>导出</button>
 
                                 </div>
                                 <div class="btn-group" role="group" aria-label="...">
@@ -79,7 +83,7 @@
     var level;
     var org_id;
     //是否返回当前机构
-    var status=0;
+    var org_status=0;
     //当前登录用户的区域级别
     var top_level;
     //当前登录用户的区域id
@@ -91,7 +95,7 @@
             dataType:'json',
             success: function (data) {
                 if(data.success){
-                    status=1;
+                    org_status=1;
                     top_level=data.data.level;
                     top_org_id=data.data.org_id.join(",");
 
@@ -159,7 +163,7 @@
             url:'{{projcfg.appurl}}/api/order_manage/order_statistics/list',
             method:'post',
             queryParams: {
-                status:status,
+                status:org_status,
                 level: level,
                 org_id: org_id,
                 proc_code:"p-109"
@@ -336,7 +340,7 @@
     }
     //点击表格的区域名称进行下钻
     function doSearchOrg(org_id_){
-        status=0;
+        org_status=0;
         level=level+1;
         org_id=org_id_;
         export_org_id=org_id_;
@@ -351,7 +355,7 @@
         }else{
             //这里对当前机构的下一级做统一处理,如果到地市级，直接赋值，因为与省公司同级的机构有很多，无法具体指定
             if(level==(top_level+1)){
-                status=1;
+                org_status=1;
                 level=top_level;
                 org_id=top_org_id;
                 doSearch();
@@ -380,7 +384,7 @@
     }
     //返回顶级
     function return_first_org(){
-        status=1;
+        org_status=1;
         level=top_level;
         org_id=top_org_id;
         doSearch();
@@ -392,7 +396,7 @@
        $('#orderTablelist').datagrid({
             url: '{{projcfg.appurl}}/api/order_manage/order_statistics/list',
             queryParams: {
-                status:status,
+                status:org_status,
                 level: level,
                 org_id: org_id,
                 proc_code: $("#proc_code").combobox('getValue'),
@@ -449,7 +453,7 @@
         downloadExcelIng = true;
 
         var downloadUrl = '{{projcfg.appurl}}/api/order_manage/order_statistics/export_excel?status='
-                +status+'&level='+level+'&org_id='+org_id+'&proc_code='+$("#proc_code").combobox('getValue')
+                +org_status+'&level='+level+'&org_id='+org_id+'&proc_code='+$("#proc_code").combobox('getValue')
                 +'&startDate='+$("#startDate").datebox('getValue')+'&endDate='+$("#endDate").datebox('getValue');
 
 
@@ -474,9 +478,9 @@
     var export_org_id;
     var export_status;
     //打开明细
-    function openDetail(status,org_id_){
+    function openDetail(o_status,org_id_){
         export_org_id=org_id_;
-        export_status=status;
+        export_status=o_status;
         var field=[
             {"field":"_id",hidden:true},
             {"field": "work_order_number","title":"工单编号","width":"160px"},
@@ -599,7 +603,7 @@
             url:'{{projcfg.appurl}}/api/order_manage/order_statistics/detail_list',
             method:'post',
             queryParams: {
-                status: status,
+                status: org_status,
                 level: level,
                 org_id: org_id_,
                 proc_code: $("#proc_code").combobox('getValue'),
@@ -627,7 +631,12 @@
                     height : 550,
                     closed : false,
                     cache : false,
-                    content :content ,
+                    href :url ,
+                    onOpen:function(){
+                        status=3;
+                        change_id=rowData.proc_inst_id
+                        proc_code=rowData.proc_code
+                    },
                     modal : true
                 });
 
