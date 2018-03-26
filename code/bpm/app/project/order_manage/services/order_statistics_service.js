@@ -73,7 +73,7 @@ exports.getStatisticsListPage= function(org_id,proc_code,level,status,startDate,
         //结束时间
         if(endDate){
             //结束时间追加至当天的最后时间
-            compare['$lte']=new Date(endDate+' 23:59:59');
+            compare['$lte']=new Date(new Date(endDate).setDate(new Date(endDate).getDate()+1));
         }
         //时间查询
         if(!isEmptyObject(compare)){
@@ -225,7 +225,7 @@ exports.exportStatisticsList= function(org_id,proc_code,level,status,startDate,e
         //结束时间
         if(endDate){
             //结束时间追加至当天的最后时间
-            compare['$lte']=new Date(endDate+' 23:59:59');
+            compare['$lte']=new Date(new Date(new Date(endDate).setDate(new Date(endDate).getDate()+1)));
         }
         //时间查询
         if(!isEmptyObject(compare)){
@@ -358,7 +358,7 @@ exports.exportDetailList= function(org_id,proc_code,level,status,startDate,endDa
         //结束时间
         if(endDate){
             //结束时间追加至当天的最后时间
-            compare['$lte']=new Date(endDate+' 23:59:59');
+            compare['$lte']=new Date(new Date(new Date(endDate).setDate(new Date(endDate).getDate()+1)));
         }
         console.log("channel_work_id",channel_work_id,"channel_code",channel_code);
         //渠道编码
@@ -797,7 +797,7 @@ exports.detail_list= function(page,size,org_id,level,status,proc_code,startDate,
         //结束时间
         if(endDate){
             //结束时间追加至当天的最后时间
-            compare['$lte']=new Date(endDate+' 23:59:59');
+            compare['$lte']=new Date(new Date(new Date(endDate).setDate(new Date(endDate).getDate()+1)));
         }
 
         var task_flag=true;

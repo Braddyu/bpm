@@ -367,7 +367,7 @@ function insertMistake(mistake, three_node_config, proc_code, user_name, role_na
                         mistake.user_phone = res[0].user_phone;
                         var proc_vars = JSON.stringify(mistake);
                         var biz_vars;
-                        var memo = '差错工单派发成功';
+                        var memo =  mistake.remark;
 
                         //创建工单，分发任务
                         inst.createInstance(proc_code, proc_ver, proc_title, "", proc_vars, biz_vars, user_code, userName, "errorSys_node")

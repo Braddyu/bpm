@@ -11,6 +11,10 @@ router.route('/list').post(function(req,res){
 
     var userNo = req.session.current_user.user_no;//用户编号
     var work_order_number = req.body.work_order_number;
+    var proc_start_time = req.body.proc_start_time;
+    var proc_inst_task_complete_time = req.body.proc_inst_task_complete_time;
+    var proc_code = req.body.proc_code;
+    var is_overtime = req.body.is_overtime;
     var page = req.body.page;//页码
     var length = req.body.rows;//每页条数
     console.log("开始获取我的已归档集合,用户编号",userNo,work_order_number)
@@ -24,7 +28,7 @@ router.route('/list').post(function(req,res){
     userService.getUsreRolesByUserNo(userNo).then(function(result){
         console.log(result);
         if(result){
-            service.getMyArchiveTaskQuery4Eui(page,length,userNo,work_order_number).then(function(taskresult){
+            service.getMyArchiveTaskQuery4Eui(page,length,userNo,work_order_number,proc_start_time,proc_inst_task_complete_time,is_overtime,proc_code).then(function(taskresult){
                 utils.respJsonData(res, taskresult);
             }).catch(function(err_inst){
                 // console.log(err_inst);

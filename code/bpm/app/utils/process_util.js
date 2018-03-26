@@ -15,7 +15,8 @@ var http=require('http');
 exports.sendSMS=function(mobile,params,tmplet_key){
     return  new Promise(function(resolve,reject){
         try{
-                let isOpen = config.OPEN_SMS_ALL;
+            let isOpen = config.OPEN_SMS_ALL;
+            let open=false;
             if(tmplet_key){
 
                 //是否开启短信服务
@@ -27,7 +28,7 @@ exports.sendSMS=function(mobile,params,tmplet_key){
 
                 //是否开通短信登录
                 if(tmplet_key == 'VALIDATION' && OPEN_LOGIN_SMS){
-                    isOpen = true;
+                    open = true;
                 }else if(tmplet_key == 'VALIDATION'){
                     reject("短信服务未开启");
                     return;
@@ -35,7 +36,7 @@ exports.sendSMS=function(mobile,params,tmplet_key){
 
                 //是否开通工单派发接收短信
                 if(tmplet_key == 'SMS_TEMPLET_ORDER' && OPEN_SMS){
-                    isOpen = true;
+                    open = true;
                 }else if(tmplet_key == 'SMS_TEMPLET_ORDER'){
                     reject("短信服务未开启");
                     return;
@@ -43,14 +44,14 @@ exports.sendSMS=function(mobile,params,tmplet_key){
 
                 //是否开通工单抄送接收短信
                 if(tmplet_key == 'GRID_COPY' && GRID_COPY_SMS){
-                    isOpen = true;
+                    open = true;
                 }else if(tmplet_key == 'GRID_COPY'){
                     reject("短信服务未开启");
                     return;
                 }
             }
 
-            if(isOpen){
+            if(isOpen && open){
                 //获取请求内容
                 var postContent=config.SMS.postContent;
                 var SMS_TEMPLET;
