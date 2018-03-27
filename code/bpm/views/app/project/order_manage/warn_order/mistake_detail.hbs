@@ -190,7 +190,6 @@
         var status = '2';
         //状态为2时表示任务id，1和3时为实例id
         var change_id = '5ab35e64a967be2344eb8aff'*/
-
         if (status == 1 || status == 3) {
             //隐藏处理操作
             $("#order_detail").hide();
@@ -247,7 +246,7 @@
                     if (data.data.proc_inst_task_sign == 0) {
                         proc_inst_task_sign = 0;
                         $("#submitButton").text('认领');
-                        $("#detail").hide();
+                        $("#order_detail").hide();
                     }
 
                     //待办标题字段不同
@@ -508,7 +507,7 @@
                     if (data.success) {
                         parent.$("#dd").dialog('close');
                         parent.$('#orderTablelist').datagrid('reload');
-                        $.messager.alert('提示', '归档成功');
+                        $.messager.alert('提示', '处理成功');
                     } else {
                         $.messager.alert('错误提示', data.error);
                     }
