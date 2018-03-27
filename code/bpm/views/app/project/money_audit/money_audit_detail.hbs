@@ -1,7 +1,8 @@
+
     <div class="easyui-tabs" id="tabs" >
         <div title="工单信息" style="padding:10px">
         <legend ><b>任务基本信息</b></legend>
-        <form id="orderDetailForm" method="post" enctype="multipart/form-data">
+        <form id="orderDetailForm1" method="post" enctype="multipart/form-data">
             <table cellpadding="5" align="center" style="border-collapse:separate; border-spacing:0px 5px;">
 
                 <input  type="hidden"id="node_code"  name="proc_inst_task_code"/>
@@ -18,7 +19,7 @@
                     <td align="right" class="tdLabel">工单类型:</td>
                     <td>
                         <input disabled style="width: 280px"class="easyui-textbox"
-                               id="proc_inst_name" name="proc_inst_name"></input>
+                               id="proc_inst_name1" name="proc_inst_name"></input>
                     </td>
 
                     <td align="right" class="tdLabel">工作天数:</td>
@@ -135,11 +136,11 @@
         </div>
         <div title="附件" style="padding:10px">
             <table cellpadding="5" align="center">
-                <tr  id="fileUpload1" style="display: none">
+                <!--<tr  id="fileUpload1" style="display: none">-->
 
-                    <td>  <input type="file"labelPosition="top"id="files1" name="files1" multiple="true" data-options="prompt:'选择文件...',buttonText:'选择'" style="width:250px"/>
-                    </td>
-                </tr>
+                    <!--<td>  <input type="file"labelPosition="top"id="files1" name="files1" multiple="true" data-options="prompt:'选择文件...',buttonText:'选择'" style="width:250px"/>-->
+                    <!--</td>-->
+                <!--</tr>-->
                 <tr>
                     <td colspan="4">
                         <table id="file_dg"></table>
@@ -200,29 +201,6 @@
 
         }
 
-        $('#files1').uploadify({
-            'swf'      : '{{projcfg.appurl}}/static/{{projcfg.theme}}js/uploadify/uploadify.swf',
-            'uploader' : '{{projcfg.appurl}}/api/order_manage/order_list/uploadFile?_csrf='+'{{_csrfToken}}',
-            'formData':{
-                'status':0,
-                'id':change_id,
-            },
-            'auto'           :true,
-            'multi'          :true,
-            'buttonText':'附件补传',
-            'fileTypeExts' : '*.gif; *.jpg; *.png;*.mp3;*.wav;*.wma;*.pdf;*.txt;*.xls;*.xlsx',
-            'checkExisting':true,
-            'fileSizeLimit':'5MB',
-            //浏览按钮的宽度
-            'width':'100',
-            //浏览按钮的高度
-            'height':'30',
-            'onQueueComplete' : function(queueData) {
-                $.messager.alert('提示','补传成功!');
-                $('#file_dg').datagrid('reload');//刷新
-            }
-        });
-
 
         $.ajax({
             url: '{{projcfg.appurl}}/api/order_manage/order_list/orderDetail',
@@ -267,8 +245,8 @@
                         inst_id=change_id;
 
                     }
-                    $('#orderDetailForm').form('load', proc_vars_json);
-                    $("#proc_inst_name").textbox('setValue','资金稽核工单') ;
+                    $('#orderDetailForm1').form('load', proc_vars_json);
+                    $("#proc_inst_name1").textbox('setValue','资金稽核工单') ;
                     $("#proc_inst_task_title").textbox("setValue",proc_title);
                     $("#proc_task_code").val(proc_code);
 
@@ -520,7 +498,7 @@
     function submitTask(){
 
         // 验证表单
-       var validate = $('#orderDetailForm').form('validate');
+       var validate = $('#orderDetailForm1').form('validate');
         if(!validate) {
             return false;
         }
@@ -530,7 +508,7 @@
             return false;
         }
 
-        var formData=$('#orderDetailForm').serializeArray();
+        var formData=$('#orderDetailForm1').serializeArray();
         console.log("formData",formData);
         //归档
         if(endFlag){

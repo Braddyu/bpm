@@ -29,7 +29,7 @@ router.route('/list').post(function(req,res){
     userService.getUsreRolesByUserNo(userNo).then(function(result){
         console.log(result);
         if(result){
-            inst.getMyTaskQuery4Eui(page,length,userNo,proc_code,"",work_order_number,proc_inst_task_sign).then(function(taskresult){
+            inst.getMyTaskQuery4Eui(page,length,userNo,"",proc_code,work_order_number,proc_inst_task_sign).then(function(taskresult){
                 console.log(taskresult)
                 utils.respJsonData(res, taskresult);
             }).catch(function(err_inst){
