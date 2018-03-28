@@ -3,11 +3,39 @@
     <div class="col-xs-12 col-md-12">
         <div class="widget">
             <div class="widget-body">
-                <div id="processLayout" class="easyui-layout" data-options="fit:true" style="width:1000px;height:666px;">
+                <div id="processLayout" class="easyui-layout" data-options="fit:true" style="padding-bottom:35px;background:#eee;width:1000px;height:666px;"  >
+
+
+                    <div id="toolbar1" class="row tbRow">
+                        <div class="col-xs-8 col-md-8">
+
+                            <div class="btn-group" role="group" aria-label="...">
+                                <label for="filterParam3">工单类型：</label>
+                                <select class="easyui-combobox"id="SCLASS_ID"  style="width: 180px;height:31px;">
+                                    <option value="">--请选择工单类型--</option>
+                                    <option value="643">工单稽核差错处理流程</option>
+                                    <option value="644">预警工单流程</option>
+                                </select>
+                            </div>
+
+
+                        </div>
+                        <div class="col-xs-4 col-md-4 text-right">
+                            <form class="form-inline">
+                                <div class="form-group">
+
+                                    <div class="input-group">
+                                        <span class="input-group-btn">
+                                                <button class="btn btn-default" type="button" onclick="doSearch()"><i class="fa fa-search"></i>查询</button>
+                                        </span>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
 
                     <table id="orderTablelist">
                     </table>
-
 
                 </div>
             </div>
@@ -29,53 +57,49 @@
             method:'post',
             rownumbers:true,
             striped:true,
-            fitColumns:true,
             border:false,
+            fitColumns:true,
             fit:true,
-            pageSize: 50,
+            pageSize: 30,
             selectOnCheck:true,
             checkOnSelect:true,
             columns:[[
                 {"field":"id",checkbox:true},
-                {"field": "task_id","title":"任务id","width":55},
-                {"field": "job_id","title":"工单id","width":100,
+                {"field": "task_id","title":"任务id","width":"80px"},
+                {"field": "job_id","title":"工单id","width":"180px",
                     formatter:function(value,row,index){
                         return "<span title='" + value + "'>" + value + "</span>";
                     }},
-                {"field": "title","title":"标题","width":120},
-                {"field": "PRE_SOLVEMETH","title":"派单内容","width":100},
-                {"field": "stepName","title":"派单内容","width":100},
-                {"field": "statusName","title":"类型","width":50},
-                {"field": "bossId","title":"当前处理人BOSS工号","width":80},
-                {"field": "caller","title":"当前处理人","width":80},
-                {"field": "FINISH_FLAG","title":"当前状态","width":80},
-                {"field": "timeout","title":"是否超时","width":80},
-               // {"field": "","title":"超时时间","width":50},
-                {"field": "created","title":"创建时间","width":80},
-                // {"field": "","title":"工单事件","width":50},
-                // {"field": "","title":"工单发起人id","width":50},
-                // {"field": "caller","title":"工单发起人","width":50},
-                // {"field": "","title":"工单发起人手机号码","width":50},
-                // {"field": "","title":"被派单渠道id","width":50},
-                // {"field": "","title":"被派单渠道名称","width":50},
-                // {"field": "","title":"被派单渠道负责人BOSS工号","width":50},
-                // {"field": "","title":"被派单渠道负责人","width":50},
-                // {"field": "","title":"被派单渠道负责人手机号码","width":50},
-                // {"field": "/","title":"整改天数","width":50},
-                // {"field": "/","title":"被派单渠道处理意见","width":50},
-                // {"field": "/","title":"省级id","width":50},
-                // {"field": "/","title":"省级名称","width":50,
-                //     formatter:function(value,row,index){
-                //     if(value){
-                //         return value;
-                //     }else{
-                //         return '/';
-                //     }
-                // }},
-                // {"field": "/","title":"省级负责人BOSS工号","width":50},
-                // {"field": "/","title":"省级负责人","width":50},
-                // {"field": "/","title":"负责人手机号码","width":50},
-                // {"field": "/","title":"省级处理意见","width":50},
+                {"field": "title","title":"标题","width":"350px"},
+                {"field": "orderTxt","title":"派单内容","width":"500px"},
+                {"field": "wfName","title":"类型","width":"150px"},
+
+                {"field": "month","title":"当前处理人BOSS工号","width":"150px"},//--
+                {"field": "caller","title":"当前处理人","width":"90px"},        //--
+                {"field": "statusName","title":"当前状态","width":"70px"},
+                {"field": "timeout","title":"是否超时","width":"70px"},
+                {"field": "finish_date","title":"超时时间","width":"160px"},   //--
+                {"field": "created","title":"创建时间","width":"160px"},
+                {"field": "orderTpye","title":"工单事件","width":"100px"},
+                {"field": "INITIATOR","title":"工单发起人id","width":"100px"},
+                {"field": "initiator_name","title":"工单发起人","width":"80px"},
+                {"field": "initiatorPhone","title":"工单发起人手机号码","width":"140px"},
+
+                {"field": "chlId","title":"被派单渠道id","width":"100px"},
+                {"field": "chlName","title":"被派单渠道名称","width":"360px"},
+                {"field": "month","title":"被派单渠道负责人BOSS工号","width":"80px"}, //--
+                {"field": "caller","title":"被派单渠道负责人","width":"400px"},
+                {"field": "chlCallerTel","title":"被派单渠道负责人手机号码","width":"250px"},
+                {"field": "field_1","title":"整改天数","width":"80px"},
+                {"field": "chlSolvemeth","title":"被派单渠道处理意见","width":"900px"},
+
+
+                {"field": "mngId","title":"省级id","width":"50px"},
+                {"field": "mngName","title":"省级名称","width":"150px"},
+                {"field": "mngId","title":"省级负责人BOSS工号","width":"160px"},
+                {"field": "mngCaller","title":"省级负责人","width":"120px"},
+                {"field": "mngCallerTel","title":"负责人手机号码","width":"120px"},
+                {"field": "mngSolvemeth","title":"省级处理意见","width":"100px"},
             ]],
 
             onLoadError:function() {
@@ -86,4 +110,19 @@
         });
     }
 
+
+
+    //查询
+    function  doSearch(){
+        $('#orderTablelist').datagrid({
+            url:'{{projcfg.appurl}}/api/order_manage/order_history/list',
+            queryParams: {
+                //wfName: $("#wfName").combobox('getValue'),
+                // startDate: $("#startDate").datebox('getValue'),
+                // endDate: $("#endDate").datebox('getValue'),
+                SCLASS_ID:$("#SCLASS_ID").val(),
+
+            }
+        });
+    }
 </script>
