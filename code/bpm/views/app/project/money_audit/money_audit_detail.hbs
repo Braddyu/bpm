@@ -508,7 +508,6 @@
         }
 
         var formData=$('#orderDetailForm1').serializeArray();
-        console.log("formData",formData);
         //归档
         if(endFlag){
             $.ajax({
@@ -525,7 +524,7 @@
                                     {'status':1,'id':proc_task_id});
                             $('#files').uploadify('upload','*')
                         }else {
-                            $.messager.alert('提示','归档成功');
+                            msgSuccess('处理成功');
                             $("#dd").dialog('close');
                             $('#orderTablelist').datagrid('reload');
                         }
@@ -540,8 +539,6 @@
             //easyui textbox 设置为禁用 serializeJson 不能获取json
             formData.push({"name":"proc_inst_task_title",
                         "value":$("#proc_inst_task_title").textbox('getValue')});
-            console.log("formData",formData);
-
           $.ajax({
                 url: '{{projcfg.appurl}}/api/order_manage/order_list/assignTask',
                 type: 'post',
