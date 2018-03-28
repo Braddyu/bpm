@@ -959,6 +959,7 @@ exports.getMyTaskQuery4Eui= function(page,size,userCode,joinup_sys,proc_code,wor
                 }
 
                 conditionMap['$and'] = [match,match5];
+                console.log(conditionMap)
                 //查询当前用户所有的待办任务和需要认领的任务
                model.$ProcessInstTask.find(conditionMap,function(err,res){
                    if(err){

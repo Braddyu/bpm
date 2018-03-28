@@ -292,12 +292,10 @@ router.post('/complete', function (req, res, next) {
 router.get('/showDetailView', function (req, res, next) {
 
     var proc_code = req.query.proc_code;
-
-    console.log("proc_code", proc_code);
     //获取字典中配置对应流程的详细处理界面
     service.getViewUrl(proc_code)
         .then(function (result) {
-            console.log(result);
+
             if (result.success) {
                 //界面跳转
                 res.render(config.project.appviewurl + result.data, {

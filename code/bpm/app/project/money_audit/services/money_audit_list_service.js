@@ -98,7 +98,7 @@ exports.moneyAudit= function(proc_title, user_code,userName,role_name, assign_us
                             var node_code = three_node_config.item_code;
                             var memo = '资金稽核派发成功';
                             //创建实例,并生成任务
-                            inst.createInstance(proc_code, proc_ver, proc_title, "", proc_vars, biz_vars, user_code, userName, "errorSys_node")
+                            inst.createInstance(proc_code, proc_ver, proc_title, "", proc_vars, biz_vars, user_code, userName, "moneyAudit_node")
                                 .then(function (result) {
                                     if (result.success) {
                                         var task_id = result.data[0]._id;

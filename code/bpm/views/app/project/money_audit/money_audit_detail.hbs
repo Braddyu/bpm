@@ -1,14 +1,8 @@
-<link rel="stylesheet" type="text/css" href="{{projcfg.appurl}}/static/order/css/order_detail.css">
-<link rel="stylesheet" type="text/css" href="{{projcfg.appurl}}/static/{{projcfg.theme}}js/uploadify/uploadify.css">
-<script src="{{projcfg.appurl}}/static/js/ajaxfileupload.js"></script>
-<script src="{{projcfg.appurl}}/static/{{projcfg.theme}}js/uploadify/jquery.uploadify.min.js"></script>
-
-
 
     <div class="easyui-tabs" id="tabs" >
         <div title="工单信息" style="padding:10px">
         <legend ><b>任务基本信息</b></legend>
-        <form id="orderDetailForm" method="post" enctype="multipart/form-data">
+        <form id="orderDetailForm1" method="post" enctype="multipart/form-data">
             <table cellpadding="5" align="center" style="border-collapse:separate; border-spacing:0px 5px;">
 
                 <input  type="hidden"id="node_code"  name="proc_inst_task_code"/>
@@ -25,7 +19,7 @@
                     <td align="right" class="tdLabel">工单类型:</td>
                     <td>
                         <input disabled style="width: 280px"class="easyui-textbox"
-                               id="proc_inst_name" name="proc_inst_name"></input>
+                               id="proc_inst_name1" name="proc_inst_name"></input>
                     </td>
 
                     <td align="right" class="tdLabel">工作天数:</td>
@@ -142,11 +136,11 @@
         </div>
         <div title="附件" style="padding:10px">
             <table cellpadding="5" align="center">
-                <tr  id="fileUpload1" style="display: none">
+                <!--<tr  id="fileUpload1" style="display: none">-->
 
-                    <td>  <input type="file"labelPosition="top"id="files1" name="files1" multiple="true" data-options="prompt:'选择文件...',buttonText:'选择'" style="width:250px"/>
-                    </td>
-                </tr>
+                    <!--<td>  <input type="file"labelPosition="top"id="files1" name="files1" multiple="true" data-options="prompt:'选择文件...',buttonText:'选择'" style="width:250px"/>-->
+                    <!--</td>-->
+                <!--</tr>-->
                 <tr>
                     <td colspan="4">
                         <table id="file_dg"></table>
@@ -165,6 +159,7 @@
 </script>
 <script type="text/javascript">
     $(function() {
+
         $('#files').uploadify({
             'swf'      : '{{projcfg.appurl}}/static/{{projcfg.theme}}js/uploadify/uploadify.swf',
             'uploader' : '{{projcfg.appurl}}/api/order_manage/order_list/uploadFile?_csrf='+'{{_csrfToken}}',
@@ -179,22 +174,22 @@
             //浏览按钮的高度
             'height':'30',
             'onQueueComplete' : function(queueData) {
-                parent.$("#dd").dialog('close');
-                parent.$('#orderTablelist').datagrid('reload');
-                $.messager.alert('提示','处理成功');
+                msgSuccess('处理成功');
+                $("#dd").dialog('close');
+                $('#orderTablelist').datagrid('reload');
             }
         });
 
     });
+
     //是否属于归档节点
     var endFlag=false;
     $(document).ready(function () {
         //状态1:已发起的工单,2：我的待办,3:我的已办，4：新增操作
-        var status=GetQueryString("status");
-
-        //状态为2时表示任务id，1和3时为实例id
-        var change_id=GetQueryString("change_id");
-
+//        var status=GetQueryString("status");
+//
+//        //状态为2时表示任务id，1和3时为实例id
+//        var change_id=GetQueryString("change_id");
         if(status==1 ||status==3){
             //隐藏处理操作
             $("#detail").hide();
@@ -205,29 +200,6 @@
             //待办操作
 
         }
-
-        $('#files1').uploadify({
-            'swf'      : '{{projcfg.appurl}}/static/{{projcfg.theme}}js/uploadify/uploadify.swf',
-            'uploader' : '{{projcfg.appurl}}/api/order_manage/order_list/uploadFile?_csrf='+'{{_csrfToken}}',
-            'formData':{
-                'status':0,
-                'id':change_id,
-            },
-            'auto'           :true,
-            'multi'          :true,
-            'buttonText':'附件补传',
-            'fileTypeExts' : '*.gif; *.jpg; *.png;*.mp3;*.wav;*.wma;*.pdf;*.txt;*.xls;*.xlsx',
-            'checkExisting':true,
-            'fileSizeLimit':'5MB',
-            //浏览按钮的宽度
-            'width':'100',
-            //浏览按钮的高度
-            'height':'30',
-            'onQueueComplete' : function(queueData) {
-                $.messager.alert('提示','补传成功!');
-                $('#file_dg').datagrid('reload');//刷新
-            }
-        });
 
 
         $.ajax({
@@ -246,7 +218,6 @@
                     var proc_title='';
                     //实例id
                     var inst_id;
-                    console.log(proc_vars);
                     var proc_vars_json=JSON.parse(proc_vars);
                     //待办标题字段不同
                     if(status==2){
@@ -261,7 +232,7 @@
                         var proc_inst_task_name= data.data.proc_inst_task_name;
                         $("#proc_inst_task_name").textbox("setValue",proc_inst_task_name);
                         //操作下拉框初始化
-                        isEndNode(GetQueryString("proc_code"),node_code,task_id,inst_id,proc_vars_json.user_no,proc_vars_json.user_name);
+                        isEndNode(proc_code,node_code,task_id,inst_id,proc_vars_json.user_no,proc_vars_json.user_name);
 
                         $("#node_code").val(node_code);
                         $("#proc_inst_id").val(inst_id);
@@ -273,10 +244,10 @@
                         inst_id=change_id;
 
                     }
-                    $('#orderDetailForm').form('load', proc_vars_json);
-                    $("#proc_inst_name").textbox('setValue','资金稽核工单') ;
+                    $('#orderDetailForm1').form('load', proc_vars_json);
+                    $("#proc_inst_name1").textbox('setValue','资金稽核工单') ;
                     $("#proc_inst_task_title").textbox("setValue",proc_title);
-                    $("#proc_task_code").val(GetQueryString("proc_code"));
+                    $("#proc_task_code").val(proc_code);
 
                     //重新加载流程图
                     $('#tabs').tabs({
@@ -526,7 +497,7 @@
     function submitTask(){
 
         // 验证表单
-       var validate = $('#orderDetailForm').form('validate');
+       var validate = $('#orderDetailForm1').form('validate');
         if(!validate) {
             return false;
         }
@@ -536,8 +507,7 @@
             return false;
         }
 
-        var formData=$('#orderDetailForm').serializeArray();
-        console.log("formData",formData);
+        var formData=$('#orderDetailForm1').serializeArray();
         //归档
         if(endFlag){
             $.ajax({
@@ -554,9 +524,9 @@
                                     {'status':1,'id':proc_task_id});
                             $('#files').uploadify('upload','*')
                         }else {
-                            $.messager.alert('提示','归档成功');
-                            parent.$("#dd").dialog('close');
-                            parent.$('#orderTablelist').datagrid('reload');
+                            msgSuccess('处理成功');
+                            $("#dd").dialog('close');
+                            $('#orderTablelist').datagrid('reload');
                         }
                     }else{
                         $.messager.alert('错误提示',data.msg);
@@ -569,8 +539,6 @@
             //easyui textbox 设置为禁用 serializeJson 不能获取json
             formData.push({"name":"proc_inst_task_title",
                         "value":$("#proc_inst_task_title").textbox('getValue')});
-            console.log("formData",formData);
-
           $.ajax({
                 url: '{{projcfg.appurl}}/api/order_manage/order_list/assignTask',
                 type: 'post',
@@ -584,9 +552,9 @@
                                     {'status':1,'id':proc_task_id});
                             $('#files').uploadify('upload','*')
                         }else {
-                            $.messager.alert('提示','处理成功');
-                            parent.$("#dd").dialog('close');
-                            parent.$('#orderTablelist').datagrid('reload');
+                            msgSuccess('处理成功');
+                            $("#dd").dialog('close');
+                            $('#orderTablelist').datagrid('reload');
                         }
                     }else{
                         $.messager.alert('错误提示',data.error);

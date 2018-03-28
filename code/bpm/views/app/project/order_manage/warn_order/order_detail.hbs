@@ -1,6 +1,3 @@
-<link rel="stylesheet" type="text/css" href="{{projcfg.appurl}}/static/order/css/order_detail.css">
-
-
 
     <div class="easyui-tabs" id="tabs" >
         <div title="工单信息" style="padding:10px">
@@ -67,7 +64,7 @@
 
             </table>
 
-            <fieldset id="detail">
+            <fieldset id="order_detail">
             <legend><b>节点处理</b></legend>
 
             <table  cellpadding="5" align="center" style="border-collapse:separate; border-spacing:0px 5px;">
@@ -135,17 +132,15 @@
     $(document).ready(function () {
 
         //状态1:已发起的工单,2：我的待办,3:我的已办，4：新增操作
-        var status=GetQueryString("status");
+/*        var status=GetQueryString("status");
 
         //状态为2时表示任务id，1和3时为实例id
-        var change_id=GetQueryString("change_id");
-
+        var change_id=GetQueryString("change_id");*/
         if(status==1 ||status==3){
             //隐藏处理操作
-            $("#detail").hide();
+            $("#order_detail").hide();
         }else if(status==2){
             //待办操作
-
         }
 
 
@@ -180,7 +175,7 @@
                         var proc_inst_task_name= data.data.proc_inst_task_name;
                         $("#proc_inst_task_name").textbox("setValue",proc_inst_task_name);
                         //操作下拉框初始化
-                        isEndNode(GetQueryString("proc_code"),node_code,task_id,inst_id);
+                        isEndNode(proc_code,node_code,task_id,inst_id);
 
                         $("#node_code").val(node_code);
                         $("#proc_inst_id").val(inst_id);
@@ -194,7 +189,7 @@
                     }
                     $('#orderDetailForm').form('load', proc_vars_json);
                     $("#proc_inst_task_title").textbox("setValue",proc_title);
-                    $("#proc_task_code").combobox("setValue",GetQueryString("proc_code"));
+                    $("#proc_task_code").combobox("setValue",proc_code);
 
                     //重新加载流程图
                     $('#tabs').tabs({

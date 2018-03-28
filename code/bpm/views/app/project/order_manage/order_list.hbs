@@ -60,11 +60,11 @@
 
 
     $(document).ready(function () {
-
-        //加载列表
-        loadOrderListDatagrid();
         //初始化工单类型下拉框
         getAllProBase();
+        //加载列表
+        loadOrderListDatagrid();
+
         $('#startDate').datebox().datebox('calendar').calendar({
             validator: function(date){
                 var endDate = new Date($('#endDate').datebox('getValue'));
@@ -117,6 +117,9 @@
             striped:true,
             fitColumns:true,
             border:false,
+            queryParams: {
+                proc_code: $("#proc_task_code").combobox('getValue'),
+            },
             fit:true,
             toolbar: '#toolbar1',
             singleSelect:true,
@@ -166,7 +169,7 @@
             ]],
             onDblClickRow:function(rowIndex, rowData){
                 var url='{{projcfg.appurl}}/api/order_manage/order_list/showDetailView?proc_code='+rowData.proc_code+'&change_id='+rowData._id+'&status=1';
-                var content = '<iframe src="'+url+'" width="100%" height="99%" frameborder="0" scrolling="yes"></iframe>';
+               // var content = '<iframe src="'+url+'" width="100%" height="99%" frameborder="0" scrolling="yes"></iframe>';
 
 
                 $('#dd').dialog({
@@ -175,7 +178,12 @@
                     height : 650,
                     closed : false,
                     cache : false,
-                    content :content ,
+                    href :url ,
+                    onOpen:function(){
+                        status=1;
+                        change_id=rowData._id
+                        proc_code=rowData.proc_code
+                    },
                     modal : true
                 });
 
@@ -415,7 +423,7 @@
             valueField:'proc_code',
             textField:'proc_name'
         });
-
+        $("#proc_task_code").combobox("setValue","p-109");
     }
 
     //查询
