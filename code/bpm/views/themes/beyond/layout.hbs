@@ -419,7 +419,7 @@
                                         <div class="col-sm-9">
                                             <div class="last-form-group">
                                                 <span class="input-icon icon-right">
-                                                    <input type="text" class="form-control"  id="org_name"  disabled="disabled">
+                                                    <textarea  class="form-control"  id="org_name" style=" height:70px;overflow:hidden;resize:none;" disabled="disabled"></textarea>
                                                     <!--<i class="fa fa-user"></i>-->
                                                 </span>
                                             </div>
@@ -608,8 +608,14 @@
             },
             success: function (data) {
                 if (data.success == true) {
-                    $("#org_code").val(data.data[0].org_code);
-                    $("#org_name").val(data.data[0].org_name);
+                    var org_code=[];
+                    var org_name=[];
+                     for(var i in data.data){
+                         org_code.push(data.data[i].org_code)
+                         org_name.push(data.data[i].org_name)
+                     }
+                    $("#org_code").val(org_code);
+                    $("#org_name").val(org_name);
                     //msgSuccess(data.msg);
                     flag = true;
                 } else {
