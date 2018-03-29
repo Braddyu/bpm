@@ -803,9 +803,9 @@ function createExcelOvertimeList(list) {
         var now = new Date().getTime();
         var time;
         if (c.proc_inst_status == 4) {
-            var json = JSON.parse(value)
+            var json = JSON.parse(c.proc_vars)
             var end_time = new Date(json.end_time).getTime();
-            var complete_time = new Date(row.proc_inst_task_complete_time).getTime();
+            var complete_time = new Date(c.proc_inst_task_complete_time).getTime();
             time = formatDuring(complete_time - end_time);
         } else {
             var now = new Date().getTime();
