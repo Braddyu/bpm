@@ -180,14 +180,15 @@ router.route('/export_overtimeList').get(function(req,res){
     var page = req.body.page;
     var size = req.body.rows;
 
-    var city_code = req.body.city_code;
-    var work_order_number = req.body.work_order_number;
+    var city_code = req.query.city_code;
+    var work_order_number = req.query.work_order_number;
 
     var conditionMap = {}
 
     if(city_code){
         conditionMap['statistics.city_code']=city_code;
     }
+
     // 调用分页
     service.export_overtimeList(page,size,conditionMap,work_order_number)
         .then(service.createExcelOvertimeList)
