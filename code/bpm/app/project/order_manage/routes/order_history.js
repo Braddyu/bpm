@@ -76,7 +76,7 @@ router.route('/orderHistoryDetail').post(function(req,res){
 router.get('/downloadAnnex',function(req, res, next){
     if(res.length=1){
         var filePath = req.query.filePath;
-        var filePath= req.query.fileName;
+        var fileName = req.query.fileName;
         var stats = fs.statSync(filePath);
         if(stats.isFile()){
             res.set({
