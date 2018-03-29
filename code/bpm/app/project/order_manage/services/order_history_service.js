@@ -4,7 +4,7 @@ var utils = require('../../../../lib/utils/app_utils');
 var mysql  = require('mysql');
 var pool_hh_history = mysql.createPool(config.hh_mysql);
 /**
- * 工单列表分页
+ * 历史工单列表分页
  * @param page
  * @param size
  * @param conditionMap
@@ -12,7 +12,13 @@ var pool_hh_history = mysql.createPool(config.hh_mysql);
  */
 exports.getHistoryList= function(condition,pageNow,pageSize) {
     var p = new Promise(async function(resolve,reject){
-        let start =(parseInt(pageNow)-1)*parseInt(pageSize);
+        var tableName="wf_max_data_t";
+        var SCLASS_ID=" =643 ";
+        if (condition.SCLASS_ID=="644"){
+            tableName="wf_warning_max_data_t";
+            SCLASS_ID = " in (603, 604, 605, 463) ";
+        }
+        let start =(pageNow-1)*pageSize;
         var  sql ="select distinct j.id,\n" +
             "                j.task_id,\n" +
             "                j.sclass_id,\n" +
@@ -51,43 +57,63 @@ exports.getHistoryList= function(condition,pageNow,pageSize) {
             "       wf_job_status ja,\n" +
             "       wf3_job_sclass jc,\n" +
             "       wm_user u,\n" +
-            "       provinces_cities_order p,\n" +
-            "       wf_max_data_t t\n" +
+            "       provinces_cities_order p, " +tableName+" t \n"+
+
             " where 1 = 1\n" +
             "   and j.cur_step = js.id\n" +
             "   and j.cur_status = ja.id\n" +
             "   and j.SCLASS_ID = jc.id\n" +
             "   and j.caller = u.id\n" +
             "   and j.JOB_ID = t.job_id\n" +
-            "   and j.JOB_ID = p.job_id";
-        if (condition.SCLASS_ID){
-            sql +=" and j.SCLASS_ID="+condition.SCLASS_ID;
+            "   and j.JOB_ID = p.job_id\n"+
+            "   and j.SCLASS_ID "+SCLASS_ID;
+        if (condition.job_id){
+            sql +="\n and j.job_id like "+"'%"+condition.job_id+"%'";
         }
-         // if (condition.title){
-         //    sql +="and j.title="+condition.title;
-         // }
-        sql += " limit "+start+","+parseInt(pageSize);
+        if (condition.chlId){
+            sql +="\n and t.chlId="+condition.chlId;
+        }
+        if (condition.startDate && condition.endDate){
+            sql +="\n and  DATE_FORMAT(j.created,\"%Y-%m-%d\") BETWEEN "+"'"+condition.startDate+"'"+" And "+"'"+condition.endDate+"'";
+        }
+        if (condition.startDate && !condition.endDate){
+            sql +="\n and  DATE_FORMAT(j.created,\"%Y-%m-%d\") BETWEEN "+"'"+condition.startDate+"'"+" And "+"'"+"DATE_FORMAT("+new Date().toLocaleString()+",\"%Y-%m-%d\")"+"'";
+        }
+        if (!condition.startDate && condition.endDate){
+            sql +="\n and  DATE_FORMAT(j.created,\"%Y-%m-%d\") < "+"'"+condition.endDate+"'";
+            //console.log(sql);
+        }
+        sql += " limit "+start+","+pageSize;
 
          var countsql="select count(*) as totalnum   from wf_view_total_data j,\n" +
              "       wf_job_step js,\n" +
              "       wf_job_status ja,\n" +
              "       wf3_job_sclass jc,\n" +
              "       wm_user u,\n" +
-             "       provinces_cities_order p,\n" +
-             "       wf_max_data_t t\n" +
+             "       provinces_cities_order p, " +tableName+" t \n"+
              " where 1 = 1\n" +
              "   and j.cur_step = js.id\n" +
              "   and j.cur_status = ja.id\n" +
              "   and j.SCLASS_ID = jc.id\n" +
              "   and j.caller = u.id\n" +
              "   and j.JOB_ID = t.job_id\n" +
-             "   and j.JOB_ID = p.job_id";
-        if (condition.SCLASS_ID){
-            countsql +=" and j.SCLASS_ID="+condition.SCLASS_ID;
+             "   and j.JOB_ID = p.job_id\n" +
+             "   and j.SCLASS_ID "+SCLASS_ID;
+        if (condition.job_id){
+            countsql +="\n and j.job_id like "+"'%"+condition.job_id+"%'";
         }
-        // if (condition.title){
-        //     countsql +=" and j.title="+condition.title;
-        // }
+        if (condition.chlId){
+            countsql +="\n and t.chlId="+condition.chlId;
+        }
+        if (condition.startDate && condition.endDate){
+            countsql +="\n and  DATE_FORMAT(j.created,\"%Y-%m-%d\") BETWEEN "+"'"+condition.startDate+"'"+" And "+"'"+condition.endDate+"'";
+        }
+        if (condition.startDate && !condition.endDate){
+            countsql +="\n and  DATE_FORMAT(j.created,\"%Y-%m-%d\") BETWEEN "+"'"+condition.startDate+"'"+" And "+"'"+"DATE_FORMAT("+new Date().toLocaleString()+",\"%Y-%m-%d\")"+"'";
+        }
+        if (!condition.startDate && condition.endDate){
+            countsql +="\n and  DATE_FORMAT(j.created,\"%Y-%m-%d\") < "+"'"+condition.endDate+"'";
+        }
         pool_hh_history.query(sql,function (err, result) {
             if (err) {
                 console.log('[SELECT ERROR] - ', err.message);
@@ -98,58 +124,16 @@ exports.getHistoryList= function(condition,pageNow,pageSize) {
                         console.log('[SELECT ERROR] - ', err.message);
                         return;
                     }else{
-                        //console.log(rescount[0].totalnum,'=======');
                         resolve(utils.returnMsg4EasyuiPaging(true, '0000', '分页查询成功。', result, rescount[0].totalnum));
                     }
                 });
 
             }
         });
-
     });
     return p;
 };
 
-
-// text();
-// function text() {
-//
-//     var  sql = "select distinct j.id,\n" +
-//         "                j.task_id,\n" +
-//         "                j.job_id,\n" +
-//         "                j.title,\n" +
-//         "                jc.name as wfName,\n" +
-//         "                js.name as stepName,\n" +
-//         "                ja.name as statusName,\n" +
-//         "                j.FINISH_FLAG,\n" +
-//         "                u.user_name as caller,\n" +
-//         "                j.caller_role,\n" +
-//         "                j.created,\n" +
-//         "                j.finish_date as finish_date,\n" +
-//         "                j.last_solvedate,\n" +
-//         "                j.JOB_TIMEOUT as timeout\n" +
-//         "  from v_wf3_job_all_t j,\n" +
-//         "       wf_job_step     js,\n" +
-//         "       wf_job_status   ja,\n" +
-//         "       wf3_job_sclass  jc,\n" +
-//         "       wm_user         u\n" +
-//         " where 1 = 1\n" +
-//         "   and j.cur_step = js.id \n" +
-//         "   and j.cur_status = ja.id \n" +
-//         "   and j.SCLASS_ID = jc.id \n" +
-//         "   and j.caller = u.id\n" +
-//         "   and j.CALLER_ROLE=999\n" +
-//         "   order by j.created desc";
-//
-//     pool_hh_history.query(sql,function (err, result) {
-//         if (err) {
-//             console.log('[SELECT ERROR] - ', err.message);
-//             return;
-//         }
-//         console.log(result);
-//
-//     });
-// }
 
 
 
