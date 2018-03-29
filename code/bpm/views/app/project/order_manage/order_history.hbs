@@ -261,3 +261,258 @@
         });
     }
 </script>
+
+// ---------------------------------------工单详情-------------------------------------
+<style type="text/css">
+ .th{
+     background-color:#EBF6FA;
+ }
+ #baseInfo,#curStepInfo,#rectTimeTitle,#dispatchContent{
+     border-top: 0px solid #ddd;
+ }
+ #orderHistoryDetail{
+     font-size:12px;
+     background-color: #F3F3F3;
+     padding:0px;
+     height:auto;
+     overflow-y: scroll;
+ }
+.td,.tdLabel{
+    border-right: 1px solid #e5e5e5;;
+}
+.table{
+    height: auto;
+    margin:0px;
+    width:100%;
+}
+ .dialog-button{
+     display: none;
+ }
+.important {
+    color: red;
+}
+.fileName{
+    float: left;
+    margin:0px 20px 0px 0px;
+    color:red;
+}
+.download-btn{
+    float: right;
+    background-color:#61A7C7;
+    color:white;
+    padding: 3px 6px;
+    border-radius: 5px;
+    border: none;
+}
+.file{
+    width:100%;
+    display:inline-block;
+}
+#files{
+}
+ .file:hover{
+     background-color:#FFFAE3;
+ }
+</style>
+<div id="dd"></div>
+<div id="orderHistoryDetail"  class="mydialog">
+    <!--
+    <form id="orderHistoryDetailForm" method="post" enctype="multipart/form-data">
+        -->
+        <table class ="table datagrid-btable" cellpadding="5" align="center" style="border-collapse:separate;">
+            <tr>
+                <th id="baseInfo" class="th" colspan="4">任务基本信息</th>
+            </tr>
+            <tr>
+                <td align="right" class="tdLabel">标题：</td>
+                <td id="title" class="td" colspan="3" ></td>
+            </tr>
+            <tr>
+                <td align="right" class="tdLabel">来源系统：</td>
+                <td id="origin_sys" class="td" colspan="3" ></td>
+            </tr>
+            <tr>
+                <td align="right" class="tdLabel">发生时间：</td>
+                <td id="happened_time" class="td"></td>
+                <td align="right" class="tdLabel">发起人角色：</td>
+                <td id="initiator_role" class="td"></td>
+            </tr>
+            <tr>
+                <td align="right" class="tdLabel">开始时间：</td>
+                <td id="start_date" class="td"></td>
+                <td align="right" class="tdLabel">发起人：</td>
+                <td id="initiator" class="td"></td>
+            </tr>
+            <tr>
+                <td align="right" class="tdLabel">工作天数：</td>
+                <td id="work_days" class="td"></td>
+                <td align="right" class="tdLabel">处理期限：</td>
+                <td id="dueTime" class="td"></td>
+            </tr>
+            <tr>
+                <td align="right" class="tdLabel">发起人信息：</td>
+                <td id="initiator_info" class="td"></td>
+                <td align="right" class="tdLabel">备注：</td>
+                <td id="remark" class="td"></td>
+            </tr>
+            <tr>
+                <th id="dispatchContent" class="th" colspan="4">派单内容</th>
+            </tr>
+            <tr>
+                <td align="right" class="tdLabel">
+                    <span class="important">*</span>工单类型：
+                </td>
+                <td id="orderType" class="td" colspan="3"></td>
+            </tr>
+            <tr>
+                <td align="right" class="tdLabel">
+                    <span class="important">*</span>派单内容：
+                </td>
+                <td id="orderContent" class="td" colspan="3"></td>
+            </tr>
+            <!--
+            <tr>
+                <th id="rectTimeTitle" class="th" colspan="4">整改时间</th>
+            </tr>
+            <tr>
+                <td align="right" class="tdLabel">
+                    <span class="important">*</span>整改时间：
+                </td>
+                <td id="rectTime" class="td"></td>
+                <td align="right" class="tdLabel">整改天数展示：</td>
+                <td id="" class="td"></td>
+            </tr>
+            <tr>
+                <th id="curStepInfo" class="th" colspan="4">当前步骤信息</th>
+            </tr>
+            <tr>
+                <td align="right" class="tdLabel">
+                    <span class="important">*</span>下一步完成天数：
+                </td>
+                <td id="preDayCount" class="td"></td>
+                <td align="right" class="tdLabel">
+                    <span class="important">*</span>下一步完成时间：
+                </td>
+                <td id="preFinishDate" class="td"></td>
+            </tr>-->
+            <th class="th" colspan="4">附件信息</th>
+            <tr>
+                <td id="files" colspan="4"></td>
+            </tr>
+        </table>
+        <table  id="hisTask" class ="table datagrid-btable">
+
+        </table>
+    <!--
+    </form>
+        -->
+</div>
+<script type="text/javascript">
+    // 历史工单详情
+    function orderHistoryDetail(rowData){
+        $.ajax({
+            url:"{{projcfg.appurl}}/api/order_manage/order_history/orderHistoryDetail",
+            type:"post",
+            data:{orderId:rowData.job_id},
+            dataType:"json",
+            success:function(data){
+                var obj = data[0];
+                $("#title").text(obj.TITLE);
+                $("#initiator_role").text(obj.roleName);
+                //$("#origin_sys").text(obj.ORIGIN_SYS);
+                $("#origin_sys").text("crm系统");
+                $("#happened_time").text(obj.happenDate);
+                $("#start_date").text(obj.startDate);
+                $("#initiator").text(obj.userName);
+                $("#work_days").text(7);
+                //$("#work_days").text(obj.WORK_DAY);
+
+                $("#dueTime").text(obj.finishDate);
+                $("#initiator_info").text(obj.INITIATOR_INFO);
+                //$("#remark").text(obj.REMARKS);
+
+               // $("#orderType").text(obj.className);
+                $("#orderType").text("工单稽核差错处理流程");
+                $("#orderContent").text(obj.DESC_TEXT);
+
+                $("#rectTime").text(obj.FIELD_1);
+
+                $("#preDayCount").text(obj.PRE_DAYCOUNT);
+                $("#preFinishDate").text(obj.preFinishDate);
+                $("#handleOpinion").text(obj.handleOpinion);
+                // 附件信息
+                var files = obj.files;
+                $("#files").html("");
+                for(var i=0;i<files.length;i++){
+                    var str = "<div class='file'>" +
+                                //"<div class='fileIcon'>文件</div>" +
+                                "<div class='fileName'>" + files[i].LOCAL_NAME + "</div>" +
+                                "<input type='button'class='download-btn' onclick='downloadFile(this)' value='立即下载' data-value='"+files[i].SAVE_PATH+"'/>"
+                              "</div>";
+                    $("#files").append(str)
+                }
+                // 加载处理历史
+                var historyTasks = obj.historyTasks;
+                $("#hisTask").html("");
+                var headerStr = "<tr><th id=\"task_history\" class=\"th\" colspan=\"6\">处理历史</th></tr>\n" +
+                        "<tr style=\"background-color:#61A7C7;\">\n" +
+                            "<td class=\"td\">步骤</td>\n" +
+                            "<td class=\"td\">负责人</td>\n" +
+                            "<td class=\"td\">操作</td>\n" +
+                            " <td class=\"td\">派单时间</td>\n" +
+                            " <td class=\"td\">完成时间</td>\n" +
+                            " <td class=\"td\">处理意见</td>\n" +
+                        "</tr>";
+                var str = "";
+                for(var i=0;i<historyTasks.length;i++){
+                    str += "<tr><td>"+historyTasks[i].stepName+"</td>";
+                    str += "<td>"+historyTasks[i].userName+"</td>";
+                    if(historyTasks[i].action){
+                        str += "<td>"+historyTasks[i].action+"</td>";
+                    }else{
+                        str += "<td></td>";
+                    }
+                    str += "<td>"+historyTasks[i].startDate+"</td>";
+                    str += "<td>"+historyTasks[i].finishDate+"</td>";
+                    str += "<td>"+historyTasks[i].solvemeth+"</td>";
+                    str +="</tr>";
+                }
+                $("#hisTask").append(headerStr + str);
+                $('#orderHistoryDetail').show();
+                $('#orderHistoryDetail').mydialog({
+                    title: "工单详情",
+                    width: 900,
+                    height: 660,
+                    top: 0,
+                    modal: true,
+                    myButtons: []
+                })
+            },
+            error:function(status){
+
+            }
+        });
+    }
+    function downloadByIframe(obj){
+        //var url = obj.value();
+        var url = "{{projcfg.appurl}}/api/order_manage/order_history/downloadAnnex?filePath=E:/test&fileName=test.text";
+        //window.href = url;
+        /*var iframe = document.getElementById("myIframe");
+        if(iframe){
+			iframe.src = url;
+        }else{
+			iframe = document.createElement("iframe");
+			iframe.style.display = "none";
+			iframe.src = url;
+			iframe.id = "myIframe";
+			document.body.appendChild(iframe);
+        }*/
+	}
+	// 文件下载
+    function downloadFile(obj){
+        var $span = $(obj);
+        var path = $span.attr("data-value");
+        var name = $span.prev().text();
+        window.location.href = "{{projcfg.appurl}}/api/order_manage/order_history/downloadAnnex?filePath="+path+"&fileName="+name;
+    }
+</script>

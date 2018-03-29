@@ -134,6 +134,89 @@ exports.getHistoryList= function(condition,pageNow,pageSize) {
     return p;
 };
 
+/**
+ *  历史工单详情
+ * @param orderId
+ */
+exports.getOrderHistoryDetail = function(orderId) {
+    var p = new Promise(async function(resolve,reject){
+        var rtnInfo = [];
+        var  sql =
+                    "SELECT "+
+                        "j.`TITLE`,"+
+                        "j.`ORIGIN_SYS`,"+
+                        "DATE_FORMAT( j.`HAPPEN_DATE`,'%Y-%m-%d %H:%i:%s') AS happenDate,"+
+                        "wr.`NAME` AS roleName,"+
+                        "DATE_FORMAT( j.`STARTDATE`,'%Y-%m-%d %H:%i:%s') AS startDate,"+
+                        "wu.`USER_NAME` AS userName,"+
+                        "j.`WORK_DAY` as workDay,"+
+                        "DATE_FORMAT(j.finish_date,'%Y-%m-%d %H:%i:%s') AS finishDate,"+
+                        "j.`INITIATOR_INFO` ,"+
+                        "j.`REMARKS`,"+
+                        "pco.`ORDER_TYPE`,"+
+                        "pco.`DESC_TEXT`,"+
+                        "pco.`FIELD_1`,"+
+                        "wjt.`PRE_DAYCOUNT`,"+
+                        "DATE_FORMAT(wjt.`PRE_FINISHDATE`,'%Y-%m-%d %H:%i:%s') AS preFinishDate,"+
+                        "wjt.`REMARKS` AS handleOpinion "+
+                        //"wjs.`NAME` AS className " +
+                     "FROM "+
+                         "wf3_job j "+
+                            "LEFT JOIN wm_user wu ON wu.`ID` = j.`INITIATOR` "+
+                            "LEFT JOIN `wm_role` wr ON wr.`ID` = j.`INITIATOR_ROLE` "+
+                            "LEFT JOIN `provinces_cities_order` pco ON pco.`JOB_ID` = j.`JOB_ID` "+
+                            "LEFT JOIN `wf3_job_task` wjt ON wjt.`JOB_ID` = j.`JOB_ID`" +
+                            //"LEFT JOIN `wf3_job_sclass` wjs ON wjs.`ID` = j.`SCLASS_ID`"
+                    "WHERE j.job_id = "+ orderId;
+
+        var hisTaskSql =
+            "SELECT \n" +
+            "   wjs.`NAME` AS 'stepName',\n" +
+            "   wu.`USER_NAME` AS 'userName',\n" +
+            "   wja.`NAME` AS 'action',\n" +
+            "   wjs.`CREATED` AS 'startDate',\n" +
+            "   DATE_FORMAT(wjth.`created`,'%Y-%m-%d %H:%i:%s') AS 'finishDate',\n" +
+            "   wjth.`cur_solvemeth` AS 'solvemeth'\n" +
+            "FROM\n" +
+            "  `wf3_job_task_his` wjth \n" +
+            "  LEFT JOIN `wf_job_step` wjs \n" +
+            "    ON wjs.`ID` = wjth.`cur_step` \n" +
+            "  LEFT JOIN `wm_user` wu ON wu.`ID` = wjth.`caller`\n" +
+            "  LEFT JOIN `wf_job_action` wja ON wja.`id` = wjth.`cur_action`\n" +
+            "WHERE " +
+            "   wjth.`job_id` = " + orderId +
+            " ORDER BY wjth.`created` ASC;\n";
+
+        var fileSql = "SELECT s.`SAVE_PATH`,s.`LOCAL_NAME` FROM `sp_sys_annex` s WHERE s.`ATTR_1` = " + orderId;
+
+        pool_hh_history.query(sql,function (err, result) {
+            if (err) {
+                console.log('[SELECT ERROR] - ', err.message);
+                return;
+            }else{
+                rtnInfo[0] = result[0];
+                pool_hh_history.query(hisTaskSql,function (err, result) {
+                    if (err) {
+                        console.log('[SELECT ERROR] - ', err.message);
+                        return;
+                    }else{
+                        rtnInfo[0].historyTasks = result;
+                            pool_hh_history.query(fileSql,function (err, result) {
+                                if (err) {
+                                    console.log('[SELECT ERROR] - ', err.message);
+                                    return;
+                                }else{
+                                    rtnInfo[0].files = result;
+                                    resolve(rtnInfo);
+                                }
+                            })
+                    }
+                });
+            }
+        });
+    });
+    return p;
+};
 
 
 
