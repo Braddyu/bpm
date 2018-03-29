@@ -13,8 +13,8 @@ var pool_hh_history = mysql.createPool(config.hh_mysql);
 exports.getHistoryList= function(condition,pageNow,pageSize) {
     var p = new Promise(async function(resolve,reject){
         var tableName="wf_max_data_t";
-        var SCLASS_ID=" =643 ";
-        if (condition.SCLASS_ID=="644"){
+        var SCLASS_ID=" = 643 ";//差错工单
+        if (condition.SCLASS_ID=="644"){//预警工单
             tableName="wf_warning_max_data_t";
             SCLASS_ID = " in (603, 604, 605, 463) ";
         }
@@ -85,7 +85,7 @@ exports.getHistoryList= function(condition,pageNow,pageSize) {
         }
         sql += " limit "+start+","+pageSize;
 
-         var countsql="select count(*) as totalnum   from wf_view_total_data j,\n" +
+         var countsql="select count(1) as totalnum   from wf_view_total_data j,\n" +
              "       wf_job_step js,\n" +
              "       wf_job_status ja,\n" +
              "       wf3_job_sclass jc,\n" +
