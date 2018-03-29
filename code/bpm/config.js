@@ -104,6 +104,7 @@ var config = {
             '/project/workflow/routes/':project_url_prefix+'/api/workflow/',//用于平台页面接口的访问
             '/project/order_manage/routes/':project_url_prefix+'/api/order_manage/',
             '/project/money_audit/routes/':project_url_prefix+'/api/money_audit/',
+			'/project/suggestion/routes/':project_url_prefix+'/api/suggestion/',// 意见意见路由匹配路径
 
 
         },

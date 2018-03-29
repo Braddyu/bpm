@@ -3,27 +3,38 @@
     <div class="col-xs-12 col-md-12">
         <div class="widget">
             <div class="widget-body">
-                <div id="processLayout" class="easyui-layout" data-options="fit:true" style="padding-bottom:35px;background:#eee;width:1000px;height:666px;"  >
-
-
+                <div id="processLayout" class="easyui-layout" data-options="fit:true" style="padding-bottom:60px;background:#eee;width:1000px;height:666px;"  >
                     <div id="toolbar1" class="row tbRow">
-                        <div class="col-xs-8 col-md-8">
-
+                        <div class="col-xs-11 col-md-11">
                             <div class="btn-group" role="group" aria-label="...">
-                                <label for="filterParam3">工单类型：</label>
-                                <select class="easyui-combobox"id="SCLASS_ID"  style="width: 180px;height:31px;">
-                                    <option value="">--请选择工单类型--</option>
+                                <label for="filterParam3">工单id：</label>
+                                <input class="easyui-textbox"id="job_id"  style="width: 130px;height:25px;">
+                                </input>
+                            </div>
+                            <div class="btn-group" role="group" aria-label="...">
+                                <label for="filterParam3">被派单渠道id：</label>
+                                <input class="easyui-textbox"id="chlId"  style="width: 100px;height:25px;">
+                                </input>
+                            </div>
+                            <div class="btn-group" role="group" aria-label="...">
+                                <label for="filterParam3">类型：</label>
+                                <select class="easyui-combobox"id="SCLASS_ID"  style="width: 140px;height:25px;">
                                     <option value="643">工单稽核差错处理流程</option>
                                     <option value="644">预警工单流程</option>
                                 </select>
                             </div>
-
-
+                            <div class="btn-group" role="group" aria-label="...">
+                                <label for="filterParam3">开始时间：</label>
+                                <input id="startDate" class="easyui-datebox" label="Start Date:" labelPosition="top" style="width:100px;height:25px">
+                            </div>
+                            <div class="btn-group" role="group" aria-label="...">
+                                <label for="filterParam3">结束时间：</label>
+                                <input id="endDate" class="easyui-datebox" label="Start Date:" labelPosition="top" style="width:100px;height:25px">
+                            </div>
                         </div>
-                        <div class="col-xs-4 col-md-4 text-right">
+                        <div class="col-xs-1 col-md-1 text-right">
                             <form class="form-inline">
                                 <div class="form-group">
-
                                     <div class="input-group">
                                         <span class="input-group-btn">
                                                 <button class="btn btn-default" type="button" onclick="doSearch()"><i class="fa fa-search"></i>查询</button>
@@ -33,10 +44,8 @@
                             </form>
                         </div>
                     </div>
-
                     <table id="orderTablelist">
                     </table>
-
                 </div>
             </div>
         </div>
@@ -44,14 +53,52 @@
 </div>
 
 <script type="text/javascript">
-
     $(document).ready(function () {
         //加载我的待办列表
         loadOrderTodaoListDatagrid();
+        $('#startDate').datebox().datebox('calendar').calendar({
+            validator: function(date){
+                var endDate = new Date($('#endDate').datebox('getValue'));
+                if($('#endDate').datebox('getValue')){
+                    var d1 = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate());
+                    return  date<=d1;
+                }else{
+                    return true;
+                }
+            }
+        });
+        $('#endDate').datebox().datebox('calendar').calendar({
+            validator: function(date){
+                var startDate = new Date($('#startDate').datebox('getValue'));
+                if($('#startDate').datebox('getValue')){
+                    var d1 = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
+                    return  date>=d1;
+                }else{
+                    return true;
+                }
+            }
+        });
+
     });
 
+    //时间格式化:new Date().Format("yyyy-MM-dd hh:mm:ss");
+    Date.prototype.Format = function (fmt) { //author: meizz
+        var o = {
+            "M+": this.getMonth() + 1, //月份
+            "d+": this.getDate(), //日
+            "h+": this.getHours(), //小时
+            "m+": this.getMinutes(), //分
+            "s+": this.getSeconds(), //秒
+            "q+": Math.floor((this.getMonth() + 3) / 3), //季度
+            "S": this.getMilliseconds() //毫秒
+        };
+        if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+        for (var k in o)
+            if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+        return fmt;
+    }
+    // 加载工单基本属性列表
     function loadOrderTodaoListDatagrid(){
-        // 加载工单基本属性列表
         $('#orderTablelist').datagrid({
             url:'{{projcfg.appurl}}/api/order_manage/order_history/list',
             method:'post',
@@ -70,38 +117,129 @@
                     formatter:function(value,row,index){
                         return "<span title='" + value + "'>" + value + "</span>";
                     }},
-                {"field": "title","title":"标题","width":"350px"},
-                {"field": "orderTxt","title":"派单内容","width":"500px"},
+                {"field": "title","title":"标题","width":"200px", formatter: function (value) {
+                        return "<span title='" + value + "'>" + value + "</span>";
+                    },},
+                {"field": "orderTxt","title":"派单内容","width":"200px", formatter: function (value) {
+                        return "<span title='" + value + "'>" + value + "</span>";
+                    }},
+
                 {"field": "wfName","title":"类型","width":"150px"},
 
-                {"field": "month","title":"当前处理人BOSS工号","width":"150px"},//--
-                {"field": "caller","title":"当前处理人","width":"90px"},        //--
-                {"field": "statusName","title":"当前状态","width":"70px"},
-                {"field": "timeout","title":"是否超时","width":"70px"},
-                {"field": "finish_date","title":"超时时间","width":"160px"},   //--
-                {"field": "created","title":"创建时间","width":"160px"},
-                {"field": "orderTpye","title":"工单事件","width":"100px"},
-                {"field": "INITIATOR","title":"工单发起人id","width":"100px"},
-                {"field": "initiator_name","title":"工单发起人","width":"80px"},
-                {"field": "initiatorPhone","title":"工单发起人手机号码","width":"140px"},
+                {"field": "login_name","title":"当前处理人BOSS工号","width":"150px",formatter: function (value) {
+                        return "<span title='" + value + "'>" + value + "</span>";
+                    }},
+                {"field": "caller","title":"当前处理人","width":"90px",formatter: function (value) {
+                        return "<span title='" + value + "'>" + value + "</span>";
+                    }},
+                {"field": "statusName","title":"当前状态","width":"70px",formatter: function (value) {
+                        return "<span title='" + value + "'>" + value + "</span>";
+                    }},
+                {"field": "timeout","title":"是否超时","width":"70px",formatter: function (value) {
+                        return "<span title='" + value + "'>" + value + "</span>";
+                    }},
+                {"field": "finish_date","title":"超时时间","width":"160px",formatter: function (value) {
+                        return "<span title='" + value + "'>" + value + "</span>";
+                    }},
+                {"field": "created","title":"创建时间","width":"160px",formatter: function (value) {
+                        return "<span title='" + value + "'>" + value + "</span>";
+                    }},
+                {"field": "orderTpye","title":"工单事件","width":"100px",formatter: function (value) {
+                        return "<span title='" + value + "'>" + value + "</span>";
+                    }},
+                {"field": "INITIATOR","title":"工单发起人id","width":"100px",formatter: function (value) {
+                        return "<span title='" + value + "'>" + value + "</span>";
+                    }},
+                {"field": "initiator_name","title":"工单发起人","width":"80px",formatter: function (value) {
+                        return "<span title='" + value + "'>" + value + "</span>";
+                    }},
+                {"field": "initiatorPhone","title":"工单发起人手机号码","width":"140px",formatter: function (value) {
+                        if (!value){
+                            return "<span style='text-align: center;display:block'>/</span>";
+                        }else{
+                            return "<span title='" + value + "'>" + value + "</span>";
+                        }
+                    }},
 
-                {"field": "chlId","title":"被派单渠道id","width":"100px"},
-                {"field": "chlName","title":"被派单渠道名称","width":"360px"},
-                {"field": "month","title":"被派单渠道负责人BOSS工号","width":"80px"}, //--
-                {"field": "caller","title":"被派单渠道负责人","width":"400px"},
-                {"field": "chlCallerTel","title":"被派单渠道负责人手机号码","width":"250px"},
+                {"field": "chlId","title":"被派单渠道id","width":"100px",formatter: function (value) {
+                        if (!value){
+                            return "<span style='text-align: center;display:block'>/</span>";
+                        }else{
+                            return "<span title='" + value + "'>" + value + "</span>";
+                        }
+                    }},
+                {"field": "chlName","title":"被派单渠道名称","width":"100px",formatter: function (value) {
+                        if (!value){
+                            return "<span style='text-align: center;display:block'>/</span>";
+                        }else{
+                            return "<span title='" + value + "'>" + value + "</span>";
+                        }
+                    }},
+                {"field": "chlCallerNum","title":"被派单渠道负责人BOSS工号","width":"180px",formatter: function (value) {
+                        if (!value){
+                            return "<span style='text-align: center;display:block'>/</span>";
+                        }else{
+                            return "<span title='" + value + "'>" + value + "</span>";
+                        }                    }},
+                {"field": "chlCaller","title":"被派单渠道负责人","width":"120px",formatter: function (value) {
+                        if (!value){
+                            return "<span style='text-align: center;display:block'>/</span>";
+                        }else{
+                            return "<span title='" + value + "'>" + value + "</span>";
+                        }                    }},
+                {"field": "chlCallerTel","title":"被派单渠道负责人手机号码","width":"180px",formatter: function (value) {
+                        if (!value){
+                            return "<span style='text-align: center;display:block'>/</span>";
+                        }else{
+                            return "<span title='" + value + "'>" + value + "</span>";
+                        }                    }},
+
                 {"field": "field_1","title":"整改天数","width":"80px"},
-                {"field": "chlSolvemeth","title":"被派单渠道处理意见","width":"900px"},
+                {"field": "chlSolvemeth","title":"被派单渠道处理意见","width":"150px",formatter: function (value) {
+                        if (!value){
+                            return "<span style='text-align: center;display:block'>/</span>";
+                        }else{
+                            return "<span title='" + value + "'>" + value + "</span>";
+                        }                    }},
+                {"field": "mngId","title":"省级id","width":"50px",formatter: function (value) {
+                        if (!value){
+                            return "<span style='text-align: center;display:block'>/</span>";
+                        }else{
+                            return "<span title='" + value + "'>" + value + "</span>";
+                        }                    }},
+                {"field": "mngName","title":"省级名称","width":"100px",formatter: function (value) {
+                        if (!value){
+                            return "<span style='text-align: center;display:block'>/</span>";
+                        }else{
+                            return "<span title='" + value + "'>" + value + "</span>";
+                        }                    }},
+                {"field": "mngCallerNum","title":"省级负责人BOSS工号","width":"140px",formatter: function (value) {
+                        if (!value){
+                            return "<span style='text-align: center;display:block'>/</span>";
+                        }else{
+                            return "<span title='" + value + "'>" + value + "</span>";
+                        }                    }},
+                {"field": "mngCaller","title":"省级负责人","width":"80px",formatter: function (value) {
+                        if (!value){
+                            return "<span style='text-align: center;display:block'>/</span>";
+                        }else{
+                            return "<span title='" + value + "'>" + value + "</span>";
+                        }
 
-
-                {"field": "mngId","title":"省级id","width":"50px"},
-                {"field": "mngName","title":"省级名称","width":"150px"},
-                {"field": "mngId","title":"省级负责人BOSS工号","width":"160px"},
-                {"field": "mngCaller","title":"省级负责人","width":"120px"},
-                {"field": "mngCallerTel","title":"负责人手机号码","width":"120px"},
-                {"field": "mngSolvemeth","title":"省级处理意见","width":"100px"},
+                    }},
+                {"field": "mngCallerTel","title":"负责人手机号码","width":"120px",formatter: function (value) {
+                        if (!value){
+                            return "<span style='text-align: center;display:block'>/</span>";
+                        }else{
+                            return "<span title='" + value + "'>" + value + "</span>";
+                        }                    }},
+                {"field": "mngSolvemeth","title":"省级处理意见","width":"100px",formatter: function (value) {
+                        if (!value){
+                            return "<span style='text-align: center;display:block'>/</span>";
+                        }else{
+                            return "<span title='" + value + "'>" + value + "</span>";
+                        }                    }},
             ]],
-
             onLoadError:function() {
                 msgError('加载数据出现时发生错误,请稍候重试...');
             },
@@ -109,20 +247,272 @@
             loadMsg:'正在加载...'
         });
     }
-
-
-
     //查询
     function  doSearch(){
         $('#orderTablelist').datagrid({
             url:'{{projcfg.appurl}}/api/order_manage/order_history/list',
             queryParams: {
-                //wfName: $("#wfName").combobox('getValue'),
-                // startDate: $("#startDate").datebox('getValue'),
-                // endDate: $("#endDate").datebox('getValue'),
-                SCLASS_ID:$("#SCLASS_ID").val(),
+                startDate: $("#startDate").datebox('getValue'),
+                endDate: $("#endDate").datebox('getValue'),
+                SCLASS_ID:$("#SCLASS_ID").combobox('getValue'),
+                job_id:$("#job_id").val(),
+                chlId:$("#chlId").val(),
+            }
+        });
+    }
+</script>
+
+// ---------------------------------------工单详情-------------------------------------
+<style type="text/css">
+ .th{
+     background-color:#EBF6FA;
+ }
+ #baseInfo,#curStepInfo,#rectTimeTitle,#dispatchContent{
+     border-top: 0px solid #ddd;
+ }
+ #orderHistoryDetail{
+     font-size:12px;
+     background-color: #F3F3F3;
+     padding:0px;
+     height:auto;
+     overflow-y: scroll;
+ }
+.td,.tdLabel{
+    border-right: 1px solid #e5e5e5;;
+}
+.table{
+    height: auto;
+    margin:0px;
+    width:100%;
+}
+ .dialog-button{
+     display: none;
+ }
+.important {
+    color: red;
+}
+.fileName{
+    float: left;
+    margin:0px 20px 0px 0px;
+    color:red;
+}
+.download-btn{
+    float: right;
+    background-color:#61A7C7;
+    color:white;
+    padding: 3px 6px;
+    border-radius: 5px;
+    border: none;
+}
+.file{
+    width:100%;
+    display:inline-block;
+}
+#files{
+}
+ .file:hover{
+     background-color:#FFFAE3;
+ }
+</style>
+<div id="dd"></div>
+<div id="orderHistoryDetail"  class="mydialog">
+    <!--
+    <form id="orderHistoryDetailForm" method="post" enctype="multipart/form-data">
+        -->
+        <table class ="table datagrid-btable" cellpadding="5" align="center" style="border-collapse:separate;">
+            <tr>
+                <th id="baseInfo" class="th" colspan="4">任务基本信息</th>
+            </tr>
+            <tr>
+                <td align="right" class="tdLabel">标题：</td>
+                <td id="title" class="td" colspan="3" ></td>
+            </tr>
+            <tr>
+                <td align="right" class="tdLabel">来源系统：</td>
+                <td id="origin_sys" class="td" colspan="3" ></td>
+            </tr>
+            <tr>
+                <td align="right" class="tdLabel">发生时间：</td>
+                <td id="happened_time" class="td"></td>
+                <td align="right" class="tdLabel">发起人角色：</td>
+                <td id="initiator_role" class="td"></td>
+            </tr>
+            <tr>
+                <td align="right" class="tdLabel">开始时间：</td>
+                <td id="start_date" class="td"></td>
+                <td align="right" class="tdLabel">发起人：</td>
+                <td id="initiator" class="td"></td>
+            </tr>
+            <tr>
+                <td align="right" class="tdLabel">工作天数：</td>
+                <td id="work_days" class="td"></td>
+                <td align="right" class="tdLabel">处理期限：</td>
+                <td id="dueTime" class="td"></td>
+            </tr>
+            <tr>
+                <td align="right" class="tdLabel">发起人信息：</td>
+                <td id="initiator_info" class="td"></td>
+                <td align="right" class="tdLabel">备注：</td>
+                <td id="remark" class="td"></td>
+            </tr>
+            <tr>
+                <th id="dispatchContent" class="th" colspan="4">派单内容</th>
+            </tr>
+            <tr>
+                <td align="right" class="tdLabel">
+                    <span class="important">*</span>工单类型：
+                </td>
+                <td id="orderType" class="td" colspan="3"></td>
+            </tr>
+            <tr>
+                <td align="right" class="tdLabel">
+                    <span class="important">*</span>派单内容：
+                </td>
+                <td id="orderContent" class="td" colspan="3"></td>
+            </tr>
+            <!--
+            <tr>
+                <th id="rectTimeTitle" class="th" colspan="4">整改时间</th>
+            </tr>
+            <tr>
+                <td align="right" class="tdLabel">
+                    <span class="important">*</span>整改时间：
+                </td>
+                <td id="rectTime" class="td"></td>
+                <td align="right" class="tdLabel">整改天数展示：</td>
+                <td id="" class="td"></td>
+            </tr>
+            <tr>
+                <th id="curStepInfo" class="th" colspan="4">当前步骤信息</th>
+            </tr>
+            <tr>
+                <td align="right" class="tdLabel">
+                    <span class="important">*</span>下一步完成天数：
+                </td>
+                <td id="preDayCount" class="td"></td>
+                <td align="right" class="tdLabel">
+                    <span class="important">*</span>下一步完成时间：
+                </td>
+                <td id="preFinishDate" class="td"></td>
+            </tr>-->
+            <th class="th" colspan="4">附件信息</th>
+            <tr>
+                <td id="files" colspan="4"></td>
+            </tr>
+        </table>
+        <table  id="hisTask" class ="table datagrid-btable">
+
+        </table>
+    <!--
+    </form>
+        -->
+</div>
+<script type="text/javascript">
+    // 历史工单详情
+    function orderHistoryDetail(rowData){
+        $.ajax({
+            url:"{{projcfg.appurl}}/api/order_manage/order_history/orderHistoryDetail",
+            type:"post",
+            data:{orderId:rowData.job_id},
+            dataType:"json",
+            success:function(data){
+                var obj = data[0];
+                $("#title").text(obj.TITLE);
+                $("#initiator_role").text(obj.roleName);
+                //$("#origin_sys").text(obj.ORIGIN_SYS);
+                $("#origin_sys").text("crm系统");
+                $("#happened_time").text(obj.happenDate);
+                $("#start_date").text(obj.startDate);
+                $("#initiator").text(obj.userName);
+                $("#work_days").text(7);
+                //$("#work_days").text(obj.WORK_DAY);
+
+                $("#dueTime").text(obj.finishDate);
+                $("#initiator_info").text(obj.INITIATOR_INFO);
+                //$("#remark").text(obj.REMARKS);
+
+               // $("#orderType").text(obj.className);
+                $("#orderType").text("工单稽核差错处理流程");
+                $("#orderContent").text(obj.DESC_TEXT);
+
+                $("#rectTime").text(obj.FIELD_1);
+
+                $("#preDayCount").text(obj.PRE_DAYCOUNT);
+                $("#preFinishDate").text(obj.preFinishDate);
+                $("#handleOpinion").text(obj.handleOpinion);
+                // 附件信息
+                var files = obj.files;
+                $("#files").html("");
+                for(var i=0;i<files.length;i++){
+                    var str = "<div class='file'>" +
+                                //"<div class='fileIcon'>文件</div>" +
+                                "<div class='fileName'>" + files[i].LOCAL_NAME + "</div>" +
+                                "<input type='button'class='download-btn' onclick='downloadFile(this)' value='立即下载' data-value='"+files[i].SAVE_PATH+"'/>"
+                              "</div>";
+                    $("#files").append(str)
+                }
+                // 加载处理历史
+                var historyTasks = obj.historyTasks;
+                $("#hisTask").html("");
+                var headerStr = "<tr><th id=\"task_history\" class=\"th\" colspan=\"6\">处理历史</th></tr>\n" +
+                        "<tr style=\"background-color:#61A7C7;\">\n" +
+                            "<td class=\"td\">步骤</td>\n" +
+                            "<td class=\"td\">负责人</td>\n" +
+                            "<td class=\"td\">操作</td>\n" +
+                            " <td class=\"td\">派单时间</td>\n" +
+                            " <td class=\"td\">完成时间</td>\n" +
+                            " <td class=\"td\">处理意见</td>\n" +
+                        "</tr>";
+                var str = "";
+                for(var i=0;i<historyTasks.length;i++){
+                    str += "<tr><td>"+historyTasks[i].stepName+"</td>";
+                    str += "<td>"+historyTasks[i].userName+"</td>";
+                    if(historyTasks[i].action){
+                        str += "<td>"+historyTasks[i].action+"</td>";
+                    }else{
+                        str += "<td></td>";
+                    }
+                    str += "<td>"+historyTasks[i].startDate+"</td>";
+                    str += "<td>"+historyTasks[i].finishDate+"</td>";
+                    str += "<td>"+historyTasks[i].solvemeth+"</td>";
+                    str +="</tr>";
+                }
+                $("#hisTask").append(headerStr + str);
+                $('#orderHistoryDetail').show();
+                $('#orderHistoryDetail').mydialog({
+                    title: "工单详情",
+                    width: 900,
+                    height: 660,
+                    top: 0,
+                    modal: true,
+                    myButtons: []
+                })
+            },
+            error:function(status){
 
             }
         });
+    }
+    function downloadByIframe(obj){
+        //var url = obj.value();
+        var url = "{{projcfg.appurl}}/api/order_manage/order_history/downloadAnnex?filePath=E:/test&fileName=test.text";
+        //window.href = url;
+        /*var iframe = document.getElementById("myIframe");
+        if(iframe){
+			iframe.src = url;
+        }else{
+			iframe = document.createElement("iframe");
+			iframe.style.display = "none";
+			iframe.src = url;
+			iframe.id = "myIframe";
+			document.body.appendChild(iframe);
+        }*/
+	}
+	// 文件下载
+    function downloadFile(obj){
+        var $span = $(obj);
+        var path = $span.attr("data-value");
+        var name = $span.prev().text();
+        window.location.href = "{{projcfg.appurl}}/api/order_manage/order_history/downloadAnnex?filePath="+path+"&fileName="+name;
     }
 </script>
