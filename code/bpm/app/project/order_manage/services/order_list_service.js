@@ -327,7 +327,7 @@ exports.repare= function(result1,proc_code,proc_inst_id,memo) {
     var p = new Promise(function(resolve,reject){
         console.log(result1);
         //如果是差错工单归档则进行回传黄河数据,注：暂时不回传和不对调
-        if(false && result1.success && proc_code=='p-201'){
+        if( result1.success && proc_code=='p-201'){
             //获取附件信息
             process_extend_model.$ProcessTaskFile.find({"proc_inst_id":proc_inst_id},function(err,fileRes){
                 if(err){

@@ -157,7 +157,8 @@
 </script>
 
 <script type="text/javascript">
-    $(function () {
+
+
         $('#files').uploadify({
             'swf': '{{projcfg.appurl}}/static/{{projcfg.theme}}js/uploadify/uploadify.swf',
             'uploader': '{{projcfg.appurl}}/api/order_manage/order_list/uploadFile?_csrf=' + '{{_csrfToken}}',
@@ -178,18 +179,16 @@
             }
         });
 
-    });
     //是否属于归档节点
     var endFlag = false;
     var proc_inst_task_sign = 1;
 
 
-    $(document).ready(function () {
-
      /*   //状态1:归档,2：我的待办,3:我的已办，4：新增操作
         var status = '2';
         //状态为2时表示任务id，1和3时为实例id
         var change_id = '5ab35e64a967be2344eb8aff'*/
+
         if (status == 1 || status == 3) {
             //隐藏处理操作
             $("#order_detail").hide();
@@ -409,8 +408,6 @@
         //初始化工单类型下拉框
         getAllProBase();
 
-
-    });
 
     /**
      * 初始化工单类型下拉框

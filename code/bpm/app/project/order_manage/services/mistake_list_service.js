@@ -573,83 +573,31 @@ exports.overtimeList = function (page, size, conditionMap, work_order_number) {
             {
                 $match: match
             },
+
             {
                 $lookup: {
-                    from: "common_bpm_mistake",
+                    from: "common_bpm_proc_task_statistics",
                     localField: '_id',
                     foreignField: "proc_inst_id",
-                    as: "mistake"
+                    as: "statistics"
                 }
             },
             {
-                $unwind: {path: "$mistake", preserveNullAndEmptyArrays: true}
+                $unwind: {path: "$statistics", preserveNullAndEmptyArrays: true}
             },
             {
                 $match: conditionMap
             },
-            {
-                $graphLookup: {
-                    from: "common_bpm_org_info",
-                    startWith: "$channel_id",
-                    connectFromField: "channel_id",
-                    connectToField: "company_code",
-                    as: "channel_org",
-                    restrictSearchWithMatch: {level: 6}
-                }
-            },
 
-            {
-                $graphLookup: {
-                    from: "common_bpm_org_info",
-                    startWith: "$mistake.channel_id",
-                    connectFromField: "mistake.channel_id",
-                    connectToField: "company_code",
-                    as: "channel",
-                    restrictSearchWithMatch: {level: 6}
-                }
-            },
-            {
-                $unwind: {path: "$channel", preserveNullAndEmptyArrays: true}
-            },
-            {
-                $graphLookup: {
-                    from: "common_bpm_org_info",
-                    startWith: "$mistake.country_code",
-                    connectFromField: "mistake.country_code",
-                    connectToField: "company_code",
-                    as: "country",
-                    restrictSearchWithMatch: {level: 4}
-                }
-            },
-            {
-                $unwind: {path: "$country", preserveNullAndEmptyArrays: true}
-            },
-            {
-                $graphLookup: {
-                    from: "common_bpm_org_info",
-                    startWith: "$mistake.city_code",
-                    connectFromField: "mistake.city_code",
-                    connectToField: "company_code",
-                    as: "city",
-                    restrictSearchWithMatch: {level: 3}
-                }
-            },
-            {
-                $unwind: {path: "$city", preserveNullAndEmptyArrays: true}
-            },
             {
                 $addFields: {
-                    city_code: "$mistake.city_code",
-                    city_name: "$city.org_fullname",
-                    country_code: "$mistake.country_code",
-                    country_name: "$country.org_fullname",
-                    channel_id: "$mistake.channel_id",
-                    channel_name: "$channel.org_fullname",
-                    salesperson_code: "$mistake.salesperson_code",
-                    business_name: "$mistake.business_name",
-                    remark: "$mistake.remark",
-
-
+                    city_code: "$statistics.city_code",
+                    city_name: "$statistics.city_name",
+                    country_code: "$statistics.country_code",
+                    country_name: "$statistics.county_name",
+                    channel_code: "$statistics.channel_code",
+                    channel_name: "$statistics.channel_name",
+                    work_id: "$statistics.work_id",
                 }
             },
             {
@@ -663,7 +611,7 @@ exports.overtimeList = function (page, size, conditionMap, work_order_number) {
                 reject(utils.returnMsg(false, '1000', '查询统计失败。', null, err));
             } else {
 
-                console.log(res);
+                //console.log(res);
                 var result = {rows: res, success: true};
                 process_model.$ProcessInst.aggregate([
                     {
@@ -671,44 +619,36 @@ exports.overtimeList = function (page, size, conditionMap, work_order_number) {
                     },
                     {
                         $lookup: {
-                            from: "common_bpm_mistake",
+                            from: "common_bpm_proc_task_statistics",
                             localField: '_id',
                             foreignField: "proc_inst_id",
-                            as: "mistake"
+                            as: "statistics"
                         }
                     },
                     {
-                        $unwind: {path: "$mistake", preserveNullAndEmptyArrays: true}
+                        $unwind: {path: "$statistics", preserveNullAndEmptyArrays: true}
                     },
                     {
                         $match: conditionMap
                     },
                     {
-                        $lookup: {
-                            from: "common_bpm_org_info",
-                            localField: 'mistake.channel_id',
-                            foreignField: "company_code",
-                            as: "org"
+                        $addFields: {
+                            "isCount": "1"
                         }
                     },
                     {
-                        $unwind: {path: "$org", preserveNullAndEmptyArrays: true}
-                    },
-                    {
-                        $group: {
-                            _id: null,
-                            count: {$sum: 1}
-                        }
+                        $sortByCount: "$isCount"
                     }
 
                 ]).exec(function (err, res) {
                     if (err) {
                         reject(utils.returnMsg(false, '1000', '查询统计失败。', null, err));
                     } else {
-                        if (res.length == 0) {
-                            result.total = 0;
+                       // console.log(res)
+                        if (res.length > 0) {
+                            result.total= res[0].count;
                         } else {
-                            result.total = res[0].count;
+                            result.total = 0;
                         }
                         resolve(result);
                     }
@@ -737,51 +677,97 @@ exports.export_overtimeList = function (page, size, conditionMap, work_order_num
         }
         process_model.$ProcessInst.aggregate([
             {
-                $match: match
+                $match: {"is_overtime": 1, "proc_code": "p-201"}
             },
             {
                 $lookup: {
-                    from: "common_bpm_mistake",
+                    from: "common_bpm_proc_task_statistics",
                     localField: '_id',
                     foreignField: "proc_inst_id",
-                    as: "mistake"
+                    as: "statistics"
                 }
             },
             {
-                $unwind: {path: "$mistake", preserveNullAndEmptyArrays: true}
+                $unwind: {path: "$statistics", preserveNullAndEmptyArrays: true}
             },
             {
                 $match: conditionMap
             },
             {
-                $lookup: {
-                    from: "common_bpm_org_info",
-                    localField: 'mistake.channel_id',
-                    foreignField: "company_code",
-                    as: "org"
-                }
-            },
-            {
-                $unwind: {path: "$org", preserveNullAndEmptyArrays: true}
-            },
-            {
                 $addFields: {
-                    city_code: "$mistake.city_code",
-                    country_code: "$mistake.country_code",
-                    channel_id: "$mistake.channel_id",
-                    org_fullname: "$org.org_fullname",
-                    salesperson_code: "$mistake.salesperson_code",
-                    business_name: "$mistake.business_name",
-                    remark: "$mistake.remark",
-
+                    "isCount": "1"
                 }
             },
+            {
+                $sortByCount: "$isCount"
+            }
 
         ]).exec(function (err, res) {
             if (err) {
                 reject(utils.returnMsg(false, '1000', '查询统计失败。', null, err));
             } else {
-                resolve(res);
+                if (res.length > 0) {
+                    let count = res[0].count;
+                    console.log("总数：",count);
+                    let batch_size = 500;
+                    let size = Math.ceil(count / batch_size);
+                    let arr=[];
+                    for (let i = 0; i < size; i++) {
+
+                        process_model.$ProcessInst.aggregate([
+                            {
+                                $match: match
+                            },
+                            {
+                                $skip: i * batch_size
+                            },
+                            {
+                                $limit: batch_size
+                            },
+                            {
+                                $lookup: {
+                                    from: "common_bpm_proc_task_statistics",
+                                    localField: '_id',
+                                    foreignField: "proc_inst_id",
+                                    as: "statistics"
+                                }
+                            },
+                            {
+                                $unwind: {path: "$statistics", preserveNullAndEmptyArrays: true}
+                            },
+                            {
+                                $match: conditionMap
+                            },
+
+                            {
+                                $addFields: {
+                                    city_code: "$statistics.city_code",
+                                    city_name: "$statistics.city_name",
+                                    country_code: "$statistics.country_code",
+                                    country_name: "$statistics.county_name",
+                                    channel_code: "$statistics.channel_code",
+                                    channel_name: "$statistics.channel_name",
+                                    work_id: "$statistics.work_id",
+                                }
+                            },
+
+                        ]).exec(function (err, res) {
+                            if (err) {
+                                reject(utils.returnMsg(false, '1000', '查询统计失败。', null, err));
+                            } else {
+                                arr=arr.concat(res);
+                                console.log("長度:",res.length);
+                                console.log(arr.length,count);
+                                if(arr.length ==count){
+                                    resolve({arr});
+                                }
+
+                            }
+                        })
+                    }
+                } else {
+                    resolve();
+                }
             }
         })
 
@@ -808,6 +794,7 @@ function createExcelOvertimeList(list) {
     ];
 
     var data = [headers];
+    list=list.arr;
 
     list.map(c => {
 
@@ -825,15 +812,15 @@ function createExcelOvertimeList(list) {
             time = formatDuring(now - end_time);
         }
         const tmp = [
-            c.city_code,
-            c.country_code,
-            c.channel_id,
-            c.org_fullname,
-            c.salesperson_code,
-            '',
+            c.city_name,
+            c.country_name,
+            c.channel_code,
+            c.channel_name,
+            c.work_id,
+            JSON.parse(c.proc_vars).client_tel,
             c.work_order_number,
-            c.business_name,
-            c.remark,
+            JSON.parse(c.proc_vars).business_name,
+            JSON.parse(c.proc_vars).remark,
             time,
             c.refuse_number,
             c.proc_inst_status == '4' ? '归档' : '未归档'
@@ -846,7 +833,7 @@ function createExcelOvertimeList(list) {
             "!row": [{wpx: 67}]
         }
     };
-    ws['!cols'] = [{wpx: 100}, {wpx: 100}, {wpx: 100}, {wpx: 150}, {wpx: 100}, {wpx: 100}, {wpx: 120}, {wpx: 100}, {wpx: 100}, {wpx: 120}, {wpx: 100}];
+    ws['!cols'] = [{wpx: 100}, {wpx: 100}, {wpx: 100}, {wpx: 150}, {wpx: 100}, {wpx: 100}, {wpx: 120}, {wpx: 100}, {wpx: 300}, {wpx: 120}, {wpx: 100}];
 
 
     return xlsx.build([{name: 'Sheet1', data: data}], ws);
