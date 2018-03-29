@@ -19,10 +19,10 @@ var utils = require('../../../../lib/utils/app_utils');
 exports.getMyArchiveTaskQuery4Eui = function (page, size, userNo, work_order_number,proc_start_time,proc_inst_task_complete_time,is_overtime,proc_code) {
 
     var p = new Promise(function (resolve, reject) {
-        var match = {'proc_inst_task_assignee': userNo};
+
         var inst_search={};
         if (work_order_number) {
-            match.work_order_number = work_order_number;
+            inst_search.work_order_number = work_order_number;
         }
 
         if (proc_start_time) {
@@ -32,65 +32,52 @@ exports.getMyArchiveTaskQuery4Eui = function (page, size, userNo, work_order_num
             inst_search.proc_inst_task_complete_time = {$gte: new Date(proc_inst_task_complete_time),$lte:new Date(new Date(proc_inst_task_complete_time).setDate(new Date(proc_inst_task_complete_time).getDate()+1))};
         }
         if (is_overtime) {
-            inst_search.is_overtime = is_overtime;
+            inst_search.is_overtime = parseInt(is_overtime);
         }
 
         if (proc_code) {
             inst_search.proc_code = proc_code;
         }
+        inst_search.proc_inst_status=4;
         page = parseInt(page);
         size = parseInt(size);
         if (page == 0) {
             page = 1;
         }
 
-        console.log(match);
         console.log(inst_search);
-        model.$ProcessTaskHistroy.aggregate([
+        model.$ProcessInst.aggregate([
             {
-                $match: match
+                $match: inst_search
             },
-         /*   {
-                $lookup: {
-                    from: "common_bpm_proc_inst",
-                    localField: 'proc_inst_id',
-                    foreignField: "_id",
-                    as: "inst"
-                }
-            },*/
-            {
-                $graphLookup: {
-                    from: "common_bpm_proc_inst",
-                    startWith: "$proc_inst_id",
-                    connectFromField: "proc_inst_id",
-                    connectToField: "_id",
-                    as: "inst",
-                    restrictSearchWithMatch: inst_search
+            {  $lookup: {
+                    from: "common_bpm_proc_task_histroy",
+                     localField:"_id",
+                    foreignField: "proc_inst_id",
+                    as: "his"
                 }
             },
             {
-                $unwind: {path: "$inst", preserveNullAndEmptyArrays: true}
+                $match: {"his.proc_inst_task_assignee":userNo}
             },
             {
-                $match: {'inst.proc_inst_status': 4}
-            }
-            ,
-            {
-                $group: {
-                    _id: "$proc_inst_id",
-                    proc_title: {$first: "$proc_inst_task_title"},
-                    proc_name: {$first: "$proc_name"},
-                    proc_code: {$first: "$proc_code"},
-                    proc_start_time: {$first: "$inst.proc_start_time"},
-                    proc_cur_task_name: {$first: "$inst.proc_cur_task_name"},
-                    refuse_number: {$first: "$inst.refuse_number"},
-                    is_overtime: {$first: "$inst.is_overtime"},
-                    proc_vars: {$first: "$inst.proc_vars"},
-                    proc_start_user_name: {$first: "$inst.proc_start_user_name"},
-                    proc_inst_task_complete_time: {$first: "$inst.proc_inst_task_complete_time"},
-                    work_order_number: {$first: "$inst.work_order_number"},
+                $project: {
+                    _id: 1,
+                    proc_title: 1,
+                    proc_name: 1,
+                    proc_code: 1,
+                    proc_start_time: 1,
+                    proc_cur_task_name: 1,
+                    refuse_number: 1,
+                    is_overtime: 1,
+                    proc_vars: 1,
+                    proc_start_user_name: 1,
+                    proc_inst_task_complete_time: 1,
+                    work_order_number: 1,
+
                 }
-            }, {
+            },
+            {
                 $sort: {"proc_inst_task_complete_time": -1}
             },
             {
@@ -103,50 +90,39 @@ exports.getMyArchiveTaskQuery4Eui = function (page, size, userNo, work_order_num
             if (err) {
                 reject(utils.returnMsg(false, '1000', '查询统计失败。', null, err));
             } else {
-
                 var result = {rows: res, success: true};
-                model.$ProcessTaskHistroy.aggregate([
+                model.$ProcessInst.aggregate([
                     {
-                        $match: match
+                        $match: inst_search
+                    },
+                    {  $lookup: {
+                        from: "common_bpm_proc_task_histroy",
+                        localField:"_id",
+                        foreignField: "proc_inst_id",
+                        as: "his"
+                    }
                     },
                     {
-                        $graphLookup: {
-                            from: "common_bpm_proc_inst",
-                            startWith: "$proc_inst_id",
-                            connectFromField: "proc_inst_id",
-                            connectToField: "_id",
-                            as: "inst",
-                            restrictSearchWithMatch: inst_search
+                        $match: {"his.proc_inst_task_assignee":userNo}
+                    },
+                    {
+                        $addFields: {
+                            "isCount": "1"
                         }
                     },
                     {
-                        $unwind: {path: "$inst", preserveNullAndEmptyArrays: true}
-                    },
-                    {
-                        $match: {'inst.proc_inst_status': 4}
-                    },
-                    {
-                        $group: {
-                            _id: "$proc_inst_id"
-
-                        }
-                    },
-                    {
-                        $group: {
-                            _id: "$_id",
-                            count: {$sum: 1}
-                        }
+                        $sortByCount: "$isCount"
                     }
                 ]).exec(function (err, res) {
                     if (err) {
                         reject(utils.returnMsg(false, '1000', '查询统计失败。', null, err));
                     } else {
-                        if (res.length == 0) {
-                            result.total = 0;
-                        } else {
-                            result.total = res[0].count;
-                        }
-                        resolve(result);
+                        console.log("数量",res);
+                        if(res.length > 0)
+                            result.total=res[0].count;
+                        else
+                            result.total=0;
+                        resolve(result)
 
                     }
                 })
