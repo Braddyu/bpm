@@ -150,20 +150,13 @@ router.route('/overtimeList').post(function(req,res){
     console.log("开始超时工单...");
     var page = req.body.page;
     var size = req.body.rows;
-    var check_status = req.body.check_status;
-    var business_name = req.body.business_name;
+
     var city_code = req.body.city_code;
     var work_order_number = req.body.work_order_number;
 
     var conditionMap = {}
-    if(check_status){
-        conditionMap['mistake.remark']=check_status;
-    }
-    if(business_name){
-        conditionMap['mistake.business_name']=business_name;
-    }
     if(city_code){
-        conditionMap['mistake.city_code']=city_code;
+        conditionMap['statistics.city_code']=city_code;
     }
     // 调用分页
     service.overtimeList(page,size,conditionMap,work_order_number)
@@ -186,20 +179,14 @@ router.route('/export_overtimeList').get(function(req,res){
     console.log("开始超时工单...");
     var page = req.body.page;
     var size = req.body.rows;
-    var check_status = req.body.check_status;
-    var business_name = req.body.business_name;
+
     var city_code = req.body.city_code;
     var work_order_number = req.body.work_order_number;
 
     var conditionMap = {}
-    if(check_status){
-        conditionMap['mistake.remark']=check_status;
-    }
-    if(business_name){
-        conditionMap['mistake.business_name']=business_name;
-    }
+
     if(city_code){
-        conditionMap['mistake.city_code']=city_code;
+        conditionMap['statistics.city_code']=city_code;
     }
     // 调用分页
     service.export_overtimeList(page,size,conditionMap,work_order_number)
