@@ -181,7 +181,7 @@ var config = {
         // port:3307,
         user: 'root',
         password: 'root',//repLcmc0613
-        database: 'hh_history',
+        database: 'hh_history_gd',
         insecureAuth:true
     },
 
