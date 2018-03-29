@@ -12,7 +12,7 @@ var pool_hh_history = mysql.createPool(config.hh_mysql);
  */
 exports.getHistoryList= function(condition,pageNow,pageSize) {
     var p = new Promise(async function(resolve,reject){
-        let start =(pageNow-1)*pageSize;
+        let start =(parseInt(pageNow)-1)*parseInt(pageSize);
         var  sql ="select distinct j.id,\n" +
             "                j.task_id,\n" +
             "                j.sclass_id,\n" +
@@ -66,7 +66,7 @@ exports.getHistoryList= function(condition,pageNow,pageSize) {
          // if (condition.title){
          //    sql +="and j.title="+condition.title;
          // }
-        sql += " limit "+start+","+pageSize;
+        sql += " limit "+start+","+parseInt(pageSize);
 
          var countsql="select count(*) as totalnum   from wf_view_total_data j,\n" +
              "       wf_job_step js,\n" +
