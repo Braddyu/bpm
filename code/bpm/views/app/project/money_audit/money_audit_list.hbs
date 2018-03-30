@@ -147,6 +147,7 @@
                 msgSuccess('派单成功');
                 $('#orderDetail').dialog("close");
                 $('#orderTablelist').datagrid('reload');
+                $.messager.progress('close');
             }
         });
 
@@ -549,7 +550,6 @@
                     data: $('#orderDetailForm').serializeJson(),
                     success: function (data) {
 
-                        $.messager.progress('close');
                         if(data.success){
                             if($('#files').data('uploadify').queueData.queueLength > 0) {
                                 var proc_task_id = data.data;
@@ -560,8 +560,10 @@
                                 msgSuccess('派单成功');
                                 $('#orderDetail').dialog("close");
                                 $('#orderTablelist').datagrid('reload');
+                                $.messager.progress('close');
                             }
                         }else{
+                            $.messager.progress('close');
                             $.messager.alert('错误提示',data.error);
 
                         }

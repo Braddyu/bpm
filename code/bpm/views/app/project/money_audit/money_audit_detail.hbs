@@ -177,6 +177,7 @@
                 msgSuccess('处理成功');
                 $("#dd").dialog('close');
                 $('#orderTablelist').datagrid('reload');
+                $.messager.progress('close');
             }
         });
 
@@ -496,7 +497,6 @@
 
     //提交任务
     function submitTask(){
-
         // 验证表单
        var validate = $('#orderDetailForm1').form('validate');
         if(!validate) {
@@ -522,8 +522,6 @@
                 dataType:'json',
                 data: formData,
                 success: function (data) {
-                    $.messager.progress('close');
-
                     if(data.success){
                         if($('#files').data('uploadify').queueData.queueLength > 0) {
                             var proc_task_id = $("#proc_task_id").val();
@@ -534,8 +532,10 @@
                             msgSuccess('处理成功');
                             $("#dd").dialog('close');
                             $('#orderTablelist').datagrid('reload');
+                            $.messager.progress('close');
                         }
                     }else{
+                        $.messager.progress('close');
                         $.messager.alert('错误提示',data.msg);
                     }
                 }
@@ -552,7 +552,6 @@
                 dataType:'json',
                 data: formData,
                 success: function (data) {
-                    $.messager.progress('close');
                     if(data.success){
                         if($('#files').data('uploadify').queueData.queueLength > 0) {
                             var proc_task_id = $("#proc_task_id").val();
@@ -563,8 +562,10 @@
                             msgSuccess('处理成功');
                             $("#dd").dialog('close');
                             $('#orderTablelist').datagrid('reload');
+                            $.messager.progress('close');
                         }
                     }else{
+                        $.messager.progress('close');
                         $.messager.alert('错误提示',data.error);
                     }
                 }
