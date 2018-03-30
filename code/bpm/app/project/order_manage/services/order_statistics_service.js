@@ -491,10 +491,12 @@ exports.exportDetailList = function (org_id, proc_code, level, status, startDate
             } else {
                 if (res.length > 0) {
                     let count = res[0].count;
-                    console.log("总数：",count);
-                    let batch_size = 500;
+                    console.log("总数：", count);
+                    let batch_size = 200;
                     let size = Math.ceil(count / batch_size);
-                    let arr=[];
+                    let arr = [];
+                    let counter = 0;
+                    console.log("查询次数:", size);
                     for (let i = 0; i < size; i++) {
                         process_extend_model.$ProcessTaskStatistics.aggregate([
                             {
@@ -567,7 +569,6 @@ exports.exportDetailList = function (org_id, proc_code, level, status, startDate
                             },
                             {
                                 $addFields: {
-
                                     proc_title: "$inst.proc_title",
                                     proc_name: "$inst.proc_name",
                                     proc_vars: "$inst.proc_vars",
@@ -590,11 +591,18 @@ exports.exportDetailList = function (org_id, proc_code, level, status, startDate
                             if (err) {
                                 reject(utils.returnMsg(false, '1000', '查询统计失败。', null, err));
                             } else {
-                                arr=arr.concat(res);
-                                console.log("長度:",res.length);
-                                console.log(arr.length,count);
-                                if(arr.length ==count){
-                                 resolve({"data": arr, "proc_code": proc_code});
+                                var hash = {};
+                                res = res.reduce(function (item, next) {
+                                    hash[next.work_order_number] ? '' : hash[next.work_order_number] = true && item.push(next);
+                                    return item
+                                }, [])
+                                console.log("長度:", res.length);
+                                arr = arr.concat(res);
+                                counter++;
+                                console.log("查询进度：", Math.round(parseFloat(counter / size) * 100) + "%");
+                                console.log(arr.length);
+                                if (counter == size) {
+                                    resolve({"data": arr, "proc_code": proc_code});
                                 }
                             }
                         })
@@ -786,6 +794,7 @@ exports.createExcelOrderList = createExcelOrderList;
 
 
 exports.createExcelOrderDetail = function createExcelOrderDetail(data) {
+    console.log("开始生成excel");
     let list = data.data;
     let proc_code = data.proc_code;
     const headers = [
@@ -873,6 +882,8 @@ exports.createExcelOrderDetail = function createExcelOrderDetail(data) {
         ]
         data.push(tmp);
     });
+
+
     var ws = {
         s: {
             "!row": [{wpx: 67}]
@@ -884,8 +895,11 @@ exports.createExcelOrderDetail = function createExcelOrderDetail(data) {
         {wpx: 100}, {wpx: 100}, {wpx: 400}, {wpx: 120}, {wpx: 200},
         {wpx: 200}, {wpx: 100}, {wpx: 100}, {wpx: 100}, {wpx: 100},
         {wpx: 100}, {wpx: 100}, {wpx: 200}, {wpx: 120}];
-
-    return xlsx.build([{name: 'Sheet1', data: data}], ws);
+    var start = new Date().getTime();
+    var  file=xlsx.build([{name: 'Sheet1', data: data}], ws);
+    var end = new Date().getTime();
+    console.log((end-start));
+    return file
 }
 
 
