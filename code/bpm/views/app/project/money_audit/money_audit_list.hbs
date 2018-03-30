@@ -536,12 +536,20 @@
 
         $.messager.confirm('提示','确定提交工单吗?',function(r){
             if (r){
+                $.messager.progress({
+                    title: '提示',
+                    msg: '处理中，请稍候……',
+                    text: ''
+                });
+
                 $.ajax({
                     url: '{{projcfg.appurl}}/api/money_audit/money_audit_list/moneyAudit',
                     type: 'post',
                     dataType:'json',
                     data: $('#orderDetailForm').serializeJson(),
                     success: function (data) {
+
+                        $.messager.progress('close');
                         if(data.success){
                             if($('#files').data('uploadify').queueData.queueLength > 0) {
                                 var proc_task_id = data.data;

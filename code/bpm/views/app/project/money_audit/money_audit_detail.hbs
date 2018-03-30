@@ -96,7 +96,7 @@
                 <tr id="tr_5">
                     <td align="right" class="tdLabel">下一节点处理人:</td>
                     <td colspan="3"><select class="easyui-combobox"
-                                            id="nextJobHandler" name="assign_user_no"  style="width: 180px;">
+                                            id="assign_user_no" name="assign_user_no"  style="width: 180px;">
                         <!--<option value="admin">系统管理员</option>-->
                     </select> </td>
 
@@ -152,7 +152,7 @@
 
     </div>
 
-<script>
+    <script>
     $.ajaxSettings.beforeSend = function(xhr, request) {
         xhr.setRequestHeader('csrf-token', '{{_csrfToken}}');
     }
@@ -434,7 +434,7 @@
             success: function (data) {
                 if(data.success){
                     //初始化加载
-                    $("#nextJobHandler").combobox({
+                    $("#assign_user_no").combobox({
                         method: 'get',
                         valueField:'user_no',
                         textField:'user_name',
@@ -444,7 +444,7 @@
 
                         }
                     });
-                    $("#nextJobHandler").combobox("loadData",data.data);
+                    $("#assign_user_no").combobox("loadData",data.data);
                 }else{
                     $.messager.alert('错误提示','获取下一节点处理人失败，请联系管理员');
                 }
@@ -493,6 +493,7 @@
         });
     }
 
+
     //提交任务
     function submitTask(){
 
@@ -501,11 +502,16 @@
         if(!validate) {
             return false;
         }
-        var nextNodeUser= $('#nextJobHandler').combobox('getValues');
-        if(!nextNodeUser && !endFlag){
+        if(!$("#assign_user_no").combobox('getValue')&& !endFlag){
             $.messager.alert('提示','请选择下一节点处理人');
             return false;
         }
+
+        $.messager.progress({
+            title: '提示',
+            msg: '处理中，请稍候……',
+            text: ''
+        });
 
         var formData=$('#orderDetailForm1').serializeArray();
         //归档
@@ -516,7 +522,8 @@
                 dataType:'json',
                 data: formData,
                 success: function (data) {
-                
+                    $.messager.progress('close');
+
                     if(data.success){
                         if($('#files').data('uploadify').queueData.queueLength > 0) {
                             var proc_task_id = $("#proc_task_id").val();
@@ -545,6 +552,7 @@
                 dataType:'json',
                 data: formData,
                 success: function (data) {
+                    $.messager.progress('close');
                     if(data.success){
                         if($('#files').data('uploadify').queueData.queueLength > 0) {
                             var proc_task_id = $("#proc_task_id").val();
