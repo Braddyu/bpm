@@ -111,7 +111,7 @@
 
             </table>
                 <div style="padding:5px 0;" align="center" id="button_group">
-                    <a href="javascript:void(0);" class="easyui-linkbutton" onclick="submitTask()" style="width: 100px;">提交</a>
+                    <a href="javascript:void(0);" id="submitButton" class="easyui-linkbutton" onclick="submitTask()" style="width: 100px;">提交</a>
                 </div>
             </fieldset>
 
@@ -382,7 +382,8 @@
             return false;
 
         }
-
+        //点击后点击按钮失效
+        $('#submitButton').removeAttr('onclick');
         var formData=$('#orderDetailForm').serializeArray();
         //归档
         if(endFlag){
@@ -400,6 +401,7 @@
                     }else{
                         $.messager.alert('错误提示',data.msg);
                     }
+                    $('#submitButton').attr("onclick", "submitTask();")
                 }
             });
         }else{
@@ -422,6 +424,7 @@
                     }else{
                         $.messager.alert('错误提示',data.error);
                     }
+                    $('#submitButton').attr("onclick", "submitTask();")
                 }
             });
         }
