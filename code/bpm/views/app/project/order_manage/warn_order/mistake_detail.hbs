@@ -1,5 +1,5 @@
-
-
+<link rel="stylesheet" type="text/css" href="{{projcfg.appurl}}/static/{{projcfg.theme}}webuploade/webuploader.css">
+<script src="{{projcfg.appurl}}/static/{{projcfg.theme}}webuploade/webuploader.js"></script>
 <div class="easyui-tabs" id="tabs">
     <div title="工单信息" style="padding:10px">
         <legend><b>任务基本信息</b></legend>
@@ -111,9 +111,20 @@
                     </tr>
                     <tr id="fileUpload">
                         <td align="right" class="tdLabel">附件上传:</td>
+                        <td>
+                        <div id="uploader" class="wu-example">
+                            <!--用来存放文件信息-->
+
+
+                            <div id="picker"  >选择文件</div>
+
+                            <div id="thelist" class="uploader-list" ></div>
+                        </div>
+                        </td>
+                      <!--  <td align="right" class="tdLabel">附件上传:</td>
                         <td><input type="file" labelPosition="top" id="files" name="files" multiple="true"
                                    data-options="prompt:'选择文件...',buttonText:'选择'" style="width:250px"/>
-                        </td>
+                        </td>-->
                     </tr>
                 </table>
 
@@ -135,11 +146,7 @@
     </div>
     <div title="附件" style="padding:10px">
         <table cellpadding="5" align="center">
-            <tr id="fileUpload1" style="display: none">
-                <td><input type="file" labelPosition="top" id="files1" name="files1" multiple="true"
-                           data-options="prompt:'选择文件...',buttonText:'选择'" style="width:250px"/>
-                </td>
-            </tr>
+
             <tr>
                 <td colspan="4">
                     <table id="file_dg"></table>
@@ -157,27 +164,93 @@
 </script>
 
 <script type="text/javascript">
+   var $list=$("#thelist");
+    var uploader = WebUploader.create({
+        auto:false,
+        // swf文件路径
+        swf: '{{projcfg.appurl}}/static/{{projcfg.theme}}webuploade/Uploader.swf',
+        method:'POST',
+        // 文件接收服务端。
+        server: '{{projcfg.appurl}}/api/order_manage/order_list/uploadFile?_csrf=' + '{{_csrfToken}}',
+
+        // 选择文件的按钮。可选。
+        // 内部根据当前运行是创建，可能是input元素，也可能是flash.
+        pick: '#picker',
+
+        // 不压缩image, 默认如果是jpeg，文件上传前会压缩一把再上传！
+        resize: false,
+        // 只允许选择图片文件。
+        accept: {
+            title: '文件错误',
+            extensions: 'gif,jpg,jpeg,bmp,png,mp3,wav,wma,pdf',
+            mimeTypes: '*'
+        },
+        fileNumLimit: 8, //限制上传个数
+        fileSingleSizeLimit: 2048000 //限制单个上传图片的大小
+    });
+    // 当有文件被添加进队列的时候
+    uploader.on( 'fileQueued', function( file ) {
+        var $li = $(
+                '<div id="' + file.id + '" class="file-item thumbnail">' +
+                '<img>' +
+                '<div class="info">' + file.name + '</div>' +
+                '</div>'
+                ),
+                $img = $li.find('img');
 
 
-        $('#files').uploadify({
-            'swf': '{{projcfg.appurl}}/static/{{projcfg.theme}}js/uploadify/uploadify.swf',
-            'uploader': '{{projcfg.appurl}}/api/order_manage/order_list/uploadFile?_csrf=' + '{{_csrfToken}}',
-            'auto': false,
-            'multi': true,
-            'buttonText': '附件上传',
-            'fileTypeExts': '*.gif; *.jpg; *.png;*.mp3;*.wav;*.wma;*.pdf',
-            'checkExisting': true,
-            'fileSizeLimit': '5MB',
-            //浏览按钮的宽度
-            'width': '100',
-            //浏览按钮的高度
-            'height': '30',
-            'onQueueComplete': function (queueData) {
-                $.messager.alert('提示', '处理成功');
-               $("#dd").dialog('close');
-               $('#orderTablelist').datagrid('reload');
+        // $list为容器jQuery实例
+        $list.append( $li );
+        var thumbnailWidth = 100;   //缩略图高度和宽度 （单位是像素），当宽高度是0~1的时候，是按照百分比计算，具体可以看api文档
+        var thumbnailHeight = 100;
+        // 创建缩略图
+        // 如果为非图片文件，可以不用调用此方法。
+        // thumbnailWidth x thumbnailHeight 为 100 x 100
+        uploader.makeThumb( file, function( error, src ) {   //webuploader方法
+            if ( error ) {
+                $img.replaceWith('<span>不能预览</span>');
+                return;
             }
-        });
+
+            $img.attr( 'src', src );
+        }, thumbnailWidth, thumbnailHeight );
+    });
+   // 文件上传过程中创建进度条实时显示。
+   uploader.on( 'uploadProgress', function( file, percentage ) {
+       var $li = $( '#'+file.id ),
+               $percent = $li.find('.progress span');
+
+       // 避免重复创建
+       if ( !$percent.length ) {
+           $percent = $('<p class="progress"><span></span></p>')
+                   .appendTo( $li )
+                   .find('span');
+       }
+
+       $percent.css( 'width', percentage * 100 + '%' );
+   });
+   // 文件上传成功，给item添加成功class, 用样式标记上传成功。
+   uploader.on('uploadSuccess', function (file) {
+       $('#' + file.id).find('p.state').text('已上传');
+   });
+   // 文件上传失败，显示上传出错。
+   uploader.on('uploadError', function (file) {
+       $('#' + file.id).find('p.state').text('上传出错');
+   });
+
+   // 完成上传完了，成功或者失败，先删除进度条。
+   uploader.on( 'uploadComplete', function( file ) {
+       $( '#'+file.id ).find('.progress').remove();
+       //文件的id的最后是当前文件的下表
+       var length=file.id.toString().substring(file.id.toString().length-1);
+       if((parseInt(length)+1)==uploader.getFiles().length){
+            $.messager.alert('提示', '处理成功');
+              $("#dd").dialog('close');
+              $('#orderTablelist').datagrid('reload');
+              $.messager.progress('close');
+       }
+   });
+
 
     //是否属于归档节点
     var endFlag = false;
@@ -200,28 +273,7 @@
             //待办操作
             $("#fileUpload1").show();
         }
-        $('#files1').uploadify({
-            'swf': '{{projcfg.appurl}}/static/{{projcfg.theme}}js/uploadify/uploadify.swf',
-            'uploader': '{{projcfg.appurl}}/api/order_manage/order_list/uploadFile?_csrf=' + '{{_csrfToken}}',
-            'formData': {
-                'status': 0,
-                'id': change_id,
-            },
-            'auto': true,
-            'multi': true,
-            'buttonText': '附件补传',
-            'fileTypeExts': '*.gif; *.jpg; *.png;*.mp3;*.wav;*.wma;*.pdf',
-            'checkExisting': true,
-            'fileSizeLimit': '5MB',
-            //浏览按钮的宽度
-            'width': '100',
-            //浏览按钮的高度
-            'height': '30',
-            'onQueueComplete': function (queueData) {
-                $.messager.alert('提示', '补传成功!');
-                $('#file_dg').datagrid('reload');//刷新
-            }
-        });
+
         $.ajax({
             url: '{{projcfg.appurl}}/api/order_manage/order_list/orderDetail',
             type: 'post',
@@ -323,7 +375,7 @@
                                 field: 'proc_inst_task_remark', title: '处理意见', width: 350,
                                 halign: 'center',
                                 formatter: function (value) {
-                                    return "<span title='" + value + "'>" + value + "</span>";
+                                    return "<span style='width:80%;word-break:normal;display:block;white-space:pre-wrap;overflow:hidden;' title='" + value + "'>" + value + "</span>";
                                 }
                             }
                         ]]
@@ -485,13 +537,16 @@
 
     //提交任务
     function submitTask() {
-        // 验证表单
+       // 验证表单
         var validate = $('#orderDetailForm').form('validate');
         if (!validate) {
             return false;
         }
-        //点击后点击按钮失效
-      $('#submitButton').removeAttr('onclick');
+        $.messager.progress({
+            title: '提示',
+            msg: '处理中，请稍候……',
+            text: ''
+        });
         //归档
         if (endFlag && proc_inst_task_sign == 1) {
             var formData = $('#orderDetailForm').serializeArray();
@@ -506,9 +561,9 @@
                         parent.$('#orderTablelist').datagrid('reload');
                         $.messager.alert('提示', '处理成功');
                     } else {
-                        $.messager.alert('错误提示', data.error);
+                        $.messager.alert('错误提示', data.msg);
                     }
-                    $('#submitButton').attr("onclick", "submitTask();")
+                    $.messager.progress('close');
                 }
             });
         } else if (proc_inst_task_sign == 0) {
@@ -525,9 +580,9 @@
                         var href = parent.$("#dd").dialog('options').href;
                         parent.$("#dd").dialog({href: href});
                     } else {
-                        $.messager.alert('错误提示', data.error);
+                        $.messager.alert('错误提示', data.msg);
                     }
-                    $('#submitButton').attr("onclick", "submitTask();")
+                    $.messager.progress('close');
                 }
             });
         } else {
@@ -541,20 +596,23 @@
                 success: function (data) {
                     if (data.success) {
                         //如果有选择文件
-                        if($('#files').data('uploadify').queueData.queueLength > 0){
-                            $('#files').uploadify('settings', "formData",
-                                    {'status': 1, 'id': $("#proc_task_id").val()});
-                            $('#files').uploadify('upload', '*')
+                        if(uploader.getFiles().length > 0){
+                            var obj = new Object();
+                            obj.status = 1;
+                            obj.proc_task_id = $("#proc_task_id").val();
+                            uploader.options.formData = obj;
+                            uploader.upload()
                         }else{
                             $.messager.alert('提示', '处理成功');
                             $("#dd").dialog('close');
                             $('#orderTablelist').datagrid('reload');
+                            $.messager.progress('close');
                         }
 
                     } else {
                         $.messager.alert('错误提示', data.msg);
                     }
-                    $('#submitButton').attr("onclick", "submitTask();")
+
                 }
             });
         }
@@ -583,7 +641,7 @@
         });
     }
 
-    var file_id;
+   /* var file_id;
 
     function uploadFile(id) {
 
@@ -592,9 +650,9 @@
 
     }
 
-    /**
+    /!**
      * 上传
-     */
+     *!/
     function doUploadCorrect() {
         var filepath = $("#file" + file_id).val();
         // 图片类型
@@ -629,5 +687,5 @@
             }
         })
         document.getElementById('file' + file_id).outerHTML += "";
-    }
+    }*/
 </script>

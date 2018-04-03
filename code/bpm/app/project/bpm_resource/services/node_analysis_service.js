@@ -2367,6 +2367,7 @@ function findNextHandler(user_code,proc_define_id,node_code,params,proc_inst_id)
                             return;
                         }
                         var map = [];
+
                         for(let i in but_org){
                             if(but_org[i].org_pid){
                                 map.push(but_org[i].org_pid);
@@ -2374,6 +2375,7 @@ function findNextHandler(user_code,proc_define_id,node_code,params,proc_inst_id)
                                 return map;
                             }
                         }
+
                         //let up_org = await model_user.$CommonCoreOrg.find({"_id": {$in:but_org[0].org_pid}});
                         let up_org = await model_user.$CommonCoreOrg.find({"_id": {$in:map}});
                         if (up_org.length==0) {
@@ -2382,7 +2384,7 @@ function findNextHandler(user_code,proc_define_id,node_code,params,proc_inst_id)
                         }
 
                         var map2 = [];
-                        for(let i in but_org){
+                        for(let i in up_org){
                             if(up_org[i].org_pid){
                                 map2.push(up_org[i]._id);
                             }else{
@@ -2395,6 +2397,7 @@ function findNextHandler(user_code,proc_define_id,node_code,params,proc_inst_id)
                         returnMap.proc_inst_task_assignee = "";
                         returnMap.proc_inst_task_assignee_name = "";
                         returnMap.user_org_id = arr;
+                        console.log(returnMap);
                         resolve(utils.returnMsg(true, '10000', '查询用户org', returnMap, null));
 
                     } else if (item_assignee_ref_cur_org == 4) {

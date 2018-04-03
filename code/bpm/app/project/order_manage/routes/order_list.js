@@ -223,6 +223,8 @@ router.post('/complete', function (req, res, next) {
         utils.respJsonData(res, false, '2001', '任务ID不能为空。', null, null);
         return;
     }
+
+
     inst.proving_Id(id).then(function (rs) {
         if (rs.success && rs.data[0].proc_inst_task_status == 1) {
             utils.respMsg(res, false, '0000', '任务已完成不能重复完成', null, null);
@@ -249,6 +251,7 @@ router.post('/complete', function (req, res, next) {
                                     nodeTransferService.transfer(id, node_code, user_code, true, memo, params, biz_vars, proc_vars).then(function (result1) {
                                         console.log(result1);
                                         console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", id, node_code, user_code, true, memo, params)
+
                                         //归档时,回传黄河数据
                                         if (handle == 1) {
                                             service.repare(result1, proc_code, proc_inst_id, memo).then(function (result) {
@@ -257,7 +260,12 @@ router.post('/complete', function (req, res, next) {
                                                 utils.respJsonData(res, err);
                                             })
                                         } else {
-                                            utils.respJsonData(res, result1);
+                                            //拒绝时，重置超时时间
+                                            service.updateOvertime(result1).then(function () {
+                                                utils.respJsonData(res, result1);
+                                            }).catch(function (err) {
+                                                utils.respJsonData(res, err);
+                                            })
 
                                         }
 
@@ -292,7 +300,7 @@ router.post('/complete', function (req, res, next) {
 router.get('/showDetailView', function (req, res, next) {
 
     var proc_code = req.query.proc_code;
-    //获取字典中配置对应流程的详细处理界面
+    //获取字典中配置对应流程的详proc_code细处理界面
     service.getViewUrl(proc_code)
         .then(function (result) {
 
@@ -365,8 +373,8 @@ router.get('/download/:fileID', function (req, res, next) {
                 var filePath = result[0].file_path;
                 var fileName = result[0].file_name;
                 console.log(fileName);
-                fs.exists(filePath,function(exists){
-                    if(exists){
+                fs.exists(filePath, function (exists) {
+                    if (exists) {
                         var stats = fs.statSync(filePath);
                         if (stats.isFile()) {
                             res.set({
@@ -392,36 +400,36 @@ router.get('/download/:fileID', function (req, res, next) {
 /**
  * 上传附件
  */
-router.post('/uploadFile', upload.array("Filedata"), function (req, res, next) {
+router.post('/uploadFile', upload.array("file"), function (req, res, next) {
     console.log("开始上传...");
     // 实现文件上传
     //状态为1表示新增附件，状态为0表示补传
     var status = req.body.status;
     //状态为1表示实例id，状态为0表示附件id
-    var change_id = req.body.id;
+    var change_id = req.body.proc_task_id;
     console.log("status", status, "change_id", change_id);
     var files = req.files;
     var user_name = req.session.current_user.user_name;//处理人姓名
     console.log(user_name);
-    service.upload_images(files, change_id,user_name).then(function (result) {
+    service.upload_images(files, change_id, user_name).then(function (result) {
         utils.respJsonData(res, result);
     }).catch(function (err) {
         utils.respMsg(res, false, '1000', '上传失败', null, err);
     })
-/*    if (status == 1) {
-        service.upload_images(files, change_id).then(function (result) {
-            utils.respJsonData(res, result);
-        }).catch(function (err) {
-            utils.respMsg(res, false, '1000', '上传失败', null, err);
-        })
-    } else {
-        var user_name = req.session.current_user.user_name;//处理人姓名
-        service.again_images(files, change_id, user_name).then(function (result) {
-            utils.respJsonData(res, result);
-        }).catch(function (err) {
-            utils.respMsg(res, false, '1000', '上传失败', null, err);
-        })
-    }*/
+    /*    if (status == 1) {
+            service.upload_images(files, change_id).then(function (result) {
+                utils.respJsonData(res, result);
+            }).catch(function (err) {
+                utils.respMsg(res, false, '1000', '上传失败', null, err);
+            })
+        } else {
+            var user_name = req.session.current_user.user_name;//处理人姓名
+            service.again_images(files, change_id, user_name).then(function (result) {
+                utils.respJsonData(res, result);
+            }).catch(function (err) {
+                utils.respMsg(res, false, '1000', '上传失败', null, err);
+            })
+        }*/
 
 
 });
@@ -434,27 +442,27 @@ router.post('/deleteFile', function (req, res) {
         if (err) {
             utils.respJsonData(res, {success: false});
         } else {
-            fs.exists(result[0].file_path,function(exists){
-              if(exists)  {
-                  fs.unlink(result[0].file_path, function (err) {
-                      if (err) throw err;
-                      process_extend_model.$ProcessTaskFile.remove({"_id": id}, function (err, result) {
-                          if (err) {
-                              utils.respJsonData(res, {success: false});
-                          } else {
-                              utils.respJsonData(res, {success: true});
-                          }
-                      });
-                  })
-              }else{
-                  process_extend_model.$ProcessTaskFile.remove({"_id": id}, function (err, result) {
-                      if (err) {
-                          utils.respJsonData(res, {success: false});
-                      } else {
-                          utils.respJsonData(res, {success: true});
-                      }
-                  });
-              }
+            fs.exists(result[0].file_path, function (exists) {
+                if (exists) {
+                    fs.unlink(result[0].file_path, function (err) {
+                        if (err) throw err;
+                        process_extend_model.$ProcessTaskFile.remove({"_id": id}, function (err, result) {
+                            if (err) {
+                                utils.respJsonData(res, {success: false});
+                            } else {
+                                utils.respJsonData(res, {success: true});
+                            }
+                        });
+                    })
+                } else {
+                    process_extend_model.$ProcessTaskFile.remove({"_id": id}, function (err, result) {
+                        if (err) {
+                            utils.respJsonData(res, {success: false});
+                        } else {
+                            utils.respJsonData(res, {success: true});
+                        }
+                    });
+                }
             })
 
         }
