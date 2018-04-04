@@ -105,6 +105,7 @@ var config = {
             '/project/order_manage/routes/':project_url_prefix+'/api/order_manage/',
             '/project/money_audit/routes/':project_url_prefix+'/api/money_audit/',
 			'/project/suggestion/routes/':project_url_prefix+'/api/suggestion/',// 意见意见路由匹配路径
+			  '/project/res_download/routes/':project_url_prefix+'/api/res_down/',// 资料下载路由匹配路径
 
 
         },
