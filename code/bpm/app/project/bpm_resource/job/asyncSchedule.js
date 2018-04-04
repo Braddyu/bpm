@@ -1,6 +1,7 @@
 var schedule = require("node-schedule");
 var orgasync = require("./async_athena_data");
 var peasonsync = require("./async_peason_data");
+var peasonsync_add = require("./async_peason_data_add");
 
 var config = require('../../../../config');
 
@@ -17,6 +18,6 @@ schedule.scheduleJob(config.athena_org_switch_core, function(){
 schedule.scheduleJob(config.athena_peason_switch_core, function(){
     if(peasonFlag){
         //console.log('运行了。app');
-        peasonsync.sync_data_from_Athena();
+        peasonsync_add.sync_data_from_Athena();
     }
 });
