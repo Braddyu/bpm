@@ -164,7 +164,7 @@
 </script>
 
 <script type="text/javascript">
-   var $list=$("#thelist");
+     var $list=$("#thelist");
     var uploader = WebUploader.create({
         auto:false,
         // swf文件路径
@@ -237,13 +237,14 @@
    uploader.on('uploadError', function (file) {
        $('#' + file.id).find('p.state').text('上传出错');
    });
-
+    var fileLength=0;
+     var count=0;
    // 完成上传完了，成功或者失败，先删除进度条。
    uploader.on( 'uploadComplete', function( file ) {
        $( '#'+file.id ).find('.progress').remove();
        //文件的id的最后是当前文件的下表
-       var length=file.id.toString().substring(file.id.toString().length-1);
-       if((parseInt(length)+1)==uploader.getFiles().length){
+       count++;
+       if(count==fileLength){
             $.messager.alert('提示', '处理成功');
               $("#dd").dialog('close');
               $('#orderTablelist').datagrid('reload');
@@ -597,6 +598,7 @@
                     if (data.success) {
                         //如果有选择文件
                         if(uploader.getFiles().length > 0){
+                           fileLength=  uploader.getFiles().length;
                             var obj = new Object();
                             obj.status = 1;
                             obj.proc_task_id = $("#proc_task_id").val();
