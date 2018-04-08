@@ -153,7 +153,7 @@ legend {
             columns:[[
                 {"field":"_id",checkbox:true},
                 {"field": "suggestion_title","title":"标题","width":50,"align":"center"},
-                {"field": "answer","title":"解答","width":100},
+                //{"field": "answer","title":"解答","width":100},
                 {"field": "creator","title":"创建人","width":40},
                 {"field": "create_time","title":"创建时间","width":40,"align":"center",
                     formatter:function(value,row,index){
@@ -227,7 +227,12 @@ legend {
                             if(!validate) {
                                 return false;
                             }
-                            $("#answer").val(ue.getContent());
+                            var $answer = ue.getContent();
+                            if(!$answer){
+                                alert("问题解答不能为空");
+                                return false;
+                            }
+                            $("#answer").val($answer);
                             $.ajax({
                                 //几个参数需要注意一下
                                 type: "POST",//方法类型
@@ -301,7 +306,12 @@ legend {
     }
     // save common problem
     function  saveCommProblem(){
-        $("#answer").val(ue.getContent());
+        var $answer = ue.getContent();
+        if(!$answer){
+            alert("问题解答不能为空");
+            return false;
+        }
+        $("#answer").val($answer);
         $.ajax({
             url:'{{projcfg.appurl}}/api/suggestion/common_problem/saveCommProblem',
             type:'post',

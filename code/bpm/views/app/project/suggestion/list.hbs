@@ -130,7 +130,7 @@
                     </td>
                 </tr><tr>
                     <td align="right" class="tdLabel">处理意见</td>
-                    <td colspan="3"><input style="width: 663px; height: 80px; resize: none;" cols="30" name="handle_contents" id="handle_contents" rows="4"  class="easyui-textbox"  labelPosition="top" multiline="true"/>
+                    <td colspan="3"><input style="width: 663px; height: 80px; resize: none;" cols="30" name="handle_contents" id="handle_contents" rows="4"  class="easyui-textbox"  labelPosition="top" multiline="true" data-options="required:true, missingMessage:'处理意见不能为空'"/>
                     </td>
                     </td>
                 </tr>
@@ -328,6 +328,10 @@
                         text:'提交',
                         btnCls:'btn btn-blue',
                         handler:function(){
+                            var validate = $('#orderDetailForm').form('validate');
+                            if(!validate) {
+                                return false;
+                            }
                             if(is_admin){
                                 //有权限可以提交
                                 $.ajax({
