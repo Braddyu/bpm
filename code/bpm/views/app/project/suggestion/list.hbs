@@ -22,9 +22,19 @@
                                     <input id="end_date" class="easyui-datebox" label="Start Date:" labelPosition="top" style="width:130px;height:30px">
                                 </div>
                                 <div class="btn-group" role="group" aria-label="...">
+                                    <label for="filterParam3">工单类型：</label>
+                                    <select  id="order_type_query" class="easyui-combobox combobox-f combo-f textbox-f" style="width: 180px;height:31px;">
+                                        <option value="">---请选择---</option>
+                                        <option value ="1">稽核差错工单</option>
+                                        <option value ="2">渠道指标预警工单</option>
+                                        <option value="3">资金稽核工单</option>
+                                        <option value="4">深度稽核工单</option>
+                                    </select>
+                                </div>
+                                <div class="btn-group" role="group" aria-label="...">
                                     <label for="filterParam3">处理状态：</label>
-                                    <select  id="handle_status"  style="width: 180px;height:31px;">
-                                        <option >---请选择---</option>
+                                    <select  id="handle_status"  class="easyui-combobox combobox-f combo-f textbox-f"style="width: 180px;height:31px;">
+                                        <option value="">---请选择---</option>
                                         <option value ="0">未处理</option>
                                         <option value ="1">已经处理</option>
                                     </select>
@@ -55,54 +65,89 @@
 <div id="dd"></div>
 <div id="orderDetail"  class="mydialog"  >
     <form id="orderDetailForm" method="post" enctype="multipart/form-data">
-        <fieldset>
-            <legend ><b>建议详情</b></legend>
-
-            <table cellpadding="5" align="center" style="border-collapse:separate; border-spacing:0px 5px;">
+            <table cellpadding="5" style="border-collapse:separate; border-spacing:0px 5px;">
                 <tr>
-                    <input  type="hidden"id="_id"  name="_id"/>
-                    <td align="right" class="tdLabel">建议标题:</td>
-                    <td colspan="3"><input disabled style="width: 665px" class="easyui-textbox"data-options="required:true, missingMessage:'请输入建议标题'" id="suggestion_title" name="suggestion_title" ></input></td>
-                </tr>
-                <tr>
-                    <td align="right" class="tdLabel">提议人:</td>
+                    <td align="right" class="tdLabel">工单类型</td>
+                    <td >
+                        <div class="btn-group" role="group" aria-label="...">
+                            <select  id="order_type" disabled  name="order_type" class="easyui-combobox combobox-f combo-f textbox-f" style="width: 180px;height:31px;">
+                                <option value="">---请选择---</option>
+                                <option value ="1">稽核差错工单</option>
+                                <option value ="2">渠道指标预警工单</option>
+                                <option value="3">资金稽核工单</option>
+                                <option value="4">深度稽核工单</option>
+                            </select>
+                        </div>
+                    </td>
+                </tr><tr>
+                    <td align="right" class="tdLabel">提议人</td>
                     <td><input  disabled style="width: 280px"class="easyui-textbox"
-                               id="user_name" name="user_name" readonly="readonly"></input></td>
-                </tr>
-                <tr>
-                    <td align="right" class="tdLabel">提议人机构:</td>
+                                id="user_name" name="user_name" readonly="readonly"></input></td>
+                </tr><tr>
+                    <td align="right" class="tdLabel">提议人机构</td>
                     <td><input disabled style="width: 280px"class="easyui-textbox"
                                id="user_org" name="user_org"></input></td>
-                </tr>
-                <tr>
-                    <td align="right" class="tdLabel">提议人电话:</td>
+                </tr><tr>
+                    <td align="right" class="tdLabel">提议人电话</td>
                     <td><input disabled style="width: 280px"class="easyui-textbox"
                                id="user_tel" name="user_tel"></input></td>
-                </tr>
-                <tr>
-                    <td align="right" class="tdLabel">提议时间:</td>
+                </tr><tr>
+                    <td align="right" class="tdLabel">提议时间</td>
                     <td><input disabled style="width:280px" class="easyui-textbox"
-                               id="create_date" name="create_date"></input></td>
-                </tr>
-
-                <tr>
-                    <td align="right" class="tdLabel">建议内容:</td>
-                    <td colspan="3"><input disabled style="width: 300px; height: 50px; resize: none;" cols="30" name="suggestion_contents" id="suggestion_contents" rows="4"  class="easyui-textbox"  labelPosition="top" multiline="true"/>
+                               id="create_date" name="create_date"></input>
                     </td>
-                </tr>
-                <tr>
-                    <td align="right" class="tdLabel">处理意见:</td>
-                    <td colspan="3"><input style="width: 300px; height: 50px; resize: none;" cols="30" name="handle_contents" id="handle_contents" rows="4"  class="easyui-textbox"  labelPosition="top" multiline="true"/>
+                </tr><tr>
+                    <input  type="hidden"id="_id"  name="_id"/>
+                    <td align="right" class="tdLabel">建议标题</td>
+                    <td colspan="3"><input disabled style="width: 665px" class="easyui-textbox"data-options="required:true, missingMessage:'请输入建议标题'" id="suggestion_title" name="suggestion_title" ></input></td>
+                </tr><tr>
+                    <td align="right" class="tdLabel">建议内容</td>
+                    <td colspan="3">
+                        <!-- 加载编辑器的容器 -->
+                        <script id="editor" type="text/plain"></script>
+                        <!-- 配置文件 -->
+                        <script type="text/javascript" src="{{projcfg.appurl}}/static/js/ueditor/ueditor.config.js"></script>
+                        <!-- 编辑器源码文件 -->
+                        <script type="text/javascript" src="{{projcfg.appurl}}/static/js/ueditor/ueditor.all.js"></script>
+                        <script type="text/javascript" charset="utf-8" src="{{projcfg.appurl}}/static/js/ueditor/lang/zh-cn/zh-cn.js"> </script>
+                        <!-- 实例化编辑器 -->
+                        <script type="text/javascript">
+                            var ue = UE.getEditor('editor',{
+                                autoHeightEnabled: true,
+                                autoFloatEnabled: true,
+                                initialFrameWidth:663,
+                                initialFrameHeight:200,
+                                imageScaleEnabled:false,
+                                enableContextMenu:false,
+                                imagePopup:false
+                            });
+                            ue.ready(function() {
+                                //设置编辑器的内容
+                                ue.setContent($("#sugg_content").text());
+                            });
+                        </script>
+                        <div id="sugg_content"style="display:none"></div>
+                    </td>
+                </tr><tr>
+                    <td align="right" class="tdLabel">处理意见</td>
+                    <td colspan="3"><input style="width: 663px; height: 80px; resize: none;" cols="30" name="handle_contents" id="handle_contents" rows="4"  class="easyui-textbox"  labelPosition="top" multiline="true"/>
+                    </td>
                     </td>
                 </tr>
             </table>
-
-        </fieldset>
-
     </form>
-
 </div>
-
+<style type="text/css">
+    .tdLabel{
+        padding-right:15px;
+    }
+    .panel-title{
+        padding-left:25px;
+    }
+    #edui1{
+        z-index: 9010 !important;
+    }
+</style>
 <script type="text/javascript">
     window.is_admin=false;
     $(document).ready(function () {
@@ -142,7 +187,6 @@
             type: "post",
             success: function (data) {
                 is_admin=data.isAdmin;
-                console.log(data,is_admin)
             },
         })
     }
@@ -181,7 +225,20 @@
             columns:[[
                 {"field":"_id",checkbox:true},
                 {"field": "suggestion_title","title":"建议标题","width":50},
-                {"field": "suggestion_contents","title":"建议内容","width":100},
+                {"field": "order_type","title":"工单类型","width":50,formatter(value,row ,index){
+                        var val = "";
+                        if(1 == value){
+                            val = "稽核差错工单";
+                        }else if(2 == value){
+                            val = "渠道指标预警工单";
+                        }else if(3 == value){
+                            val = "资金稽核工单";
+                        }else if(3 == value){
+                            val = "深度稽核工单";
+                        }
+                        return val;
+                    }},
+                {"field": "suggestion_contents","title":"建议内容","width":50,"hidden":true},
                 {"field": "user_name","title":"建议人","width":35},
                 {"field": "user_tel","title":"建议人电话","width":40},
                 {"field": "handle_status","title":"处理状态","width":40,formatter(value,row ,index){
@@ -201,7 +258,6 @@
                     }},
                 {"field": "operation","title":"操作","width":20,formatter(value,row,index){
                         var html= "<a  onclick=\"delete_by_id('"+row._id+"')\">删除</a> </span>"
-                        console.log(html)
                         return html;
                     }
                 }
@@ -254,16 +310,18 @@
             var fmtDate = new Date(date.replace(/-/g,'/').replace(/T|Z/g,' ')).Format("yyyy-MM-dd hh:mm:ss");
             row.create_date = fmtDate;
         }
+        $("#sugg_content").text(row.suggestion_contents);
         //---------------结束------------------
         if(row){
+            ue.setContent($("#sugg_content").text());
             $('#orderDetailForm').form('clear');
             $('#orderDetailForm').form('load', row);
             $('#orderDetail').show();
             $('#orderDetail').mydialog({
-                title:"建议详情",
-                width: 900,
-                height: 450,
-                top:100,
+                title:"意见详情",
+                width: 1000,
+                height: 600,
+                top:10,
                 modal: true,
                 myButtons:[
                     {
@@ -326,12 +384,9 @@
                user_name: $("#user_name").combobox('getValue'),
                start_date: $("#start_date").datebox('getValue'),
                end_date: $("#end_date").datebox('getValue'),
-               handle_status:$("#handle_status").val(),
+               handle_status:$("#handle_status").combobox('getValue'),
+               order_type:$("#order_type_query").combobox('getValue'),
            }
        });
     }
-
-    /**
-     * 导出数据
-     */
 </script>

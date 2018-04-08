@@ -14,6 +14,9 @@ legend {
 	font-size: 13px;
 	color: #5495A8;
 }
+#edui1{
+    z-index: 9010 !important;
+}
 </style>
 <div id="processDiv" class="row">
     <div class="col-xs-12 col-md-12">
@@ -55,7 +58,7 @@ legend {
     <form id="commProblemForm" method="post" enctype="multipart/form-data">
         <fieldset>
             <legend ><b>问题基本信息</b></legend>
-            <table cellpadding="5" align="center" style="border-collapse:separate; border-spacing:0px 5px;">
+            <table cellpadding="10" align="center" style="border-collapse:separate; border-spacing:5px 10px;">
                 <tr>
                     <input  type="hidden"id="_id"  name="_id"/>
                     <td align="right" class="tdLabel">标题:</td>
@@ -63,10 +66,35 @@ legend {
                 </tr>
                 <tr>
                     <td align="right" class="tdLabel">解答:</td>
-                    <td colspan="3"><input style="width:663px;height:100px" cols="30" rows="4" name="answer" id="answer"  labelPosition="top"  class="easyui-textbox" data-options="required:true, missingMessage:'解答内容不能为空'" multiline="true"/></td>
+                    <td colspan="3">
+                        <!-- 加载编辑器的容器 -->
+                        <script id="editor" type="text/plain"></script>
+                        <!-- 配置文件 -->
+                        <script type="text/javascript" src="{{projcfg.appurl}}/static/js/ueditor/ueditor.config.js"></script>
+                        <!-- 编辑器源码文件 -->
+                        <script type="text/javascript" src="{{projcfg.appurl}}/static/js/ueditor/ueditor.all.js"></script>
+                        <script type="text/javascript" charset="utf-8" src="{{projcfg.appurl}}/static/js/ueditor/lang/zh-cn/zh-cn.js"> </script>
+                        <!-- 实例化编辑器 -->
+                        <script type="text/javascript">
+                            var ue = UE.getEditor('editor',{
+                                autoHeightEnabled: true,
+                                autoFloatEnabled: true,
+                                initialFrameWidth:663,
+                                initialFrameHeight:200,
+                                imageScaleEnabled:false,
+                                enableContextMenu:false,
+                                imagePopup:false
+                            });
+                            // 第一加载完执行
+                            ue.ready(function() {
+                                //设置编辑器的内容
+                                ue.setContent($("#answer").val());
+                            });
+                        </script>
+                        <input type="hidden" id="answer" name="answer">
+                    </td>
                 </tr>
             </table>
-
         </fieldset>
 
     </form>
@@ -134,7 +162,6 @@ legend {
                     }},
                 {"field": "operation","title":"操作","width":20,"align":"center",formatter(value,row,index){
                         var html= "<a  onclick=\"delete_by_id('"+row._id+"')\">删除</a> </span>"
-                        console.log(html)
                         return html;
                     }
                 }
@@ -183,12 +210,13 @@ legend {
             if(!is_admin){
                 $('#commProblemForm :input').attr("disabled","disabled")
             }
+            ue.setContent($("#answer").val());
             $('#commProblem').show();
             $('#commProblem').mydialog({
                 title:"常见问题详情",
-                width: 900,
-                height: 300,
-                top:100,
+                width: 1000,
+                height: 500,
+                top:50,
                 modal: true,
                 myButtons:[
                     {
@@ -199,6 +227,7 @@ legend {
                             if(!validate) {
                                 return false;
                             }
+                            $("#answer").val(ue.getContent());
                             $.ajax({
                                 //几个参数需要注意一下
                                 type: "POST",//方法类型
@@ -238,13 +267,15 @@ legend {
     }
     //新增常见问题解答
     function addCommProblem(){
+        //设置编辑器的内容
+        ue.setContent("");
         $('#commProblemForm').form('clear');
         $('#commProblem').show();
         $('#commProblem').mydialog({
             title:"新增常见问题",
-            width: 900,
-            height: 300,
-            top:150,
+            width: 1000,
+            height: 500,
+            top:50,
             modal: true,
             myButtons:[
                 {
@@ -270,6 +301,7 @@ legend {
     }
     // save common problem
     function  saveCommProblem(){
+        $("#answer").val(ue.getContent());
         $.ajax({
             url:'{{projcfg.appurl}}/api/suggestion/common_problem/saveCommProblem',
             type:'post',

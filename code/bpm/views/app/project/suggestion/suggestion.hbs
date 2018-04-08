@@ -8,22 +8,24 @@
             text-shadow: 5px 5px 5px cadetblue;
         }
         #mian_div{
-            width: 400px;
-            height: 450px;
-            margin: 100px auto;
+            width: 800px;
+            height: 700px;
+            margin: 50px auto;
             background-color: white;
             font-family: 'Lucida Sans','trebuchet MS',Arial,Helvetica;
         }
         .mian_titie{
             width: 100%;
-            height: 60px;
+            height:80px;
             margin: auto;
             font-weight: normal;
-            line-height:60px;
-            background-color: #E6EEFB;
+            line-height:80px;
+            color:white;
+            /*background-color: #E6EEFB;*/
+            background-color:#61A7C7;
         }
         #mian_content{
-            height: 300px;
+            height: auto;
             margin: 20px auto auto auto;
         }
         input{
@@ -33,37 +35,15 @@
             border: 2px solid royalblue;
             background: #cfcfcf;
         }
-
-        .wbk{
-            height: 50px;
-            margin: auto;
-            margin-top: 15px;
-            font-size: 20px;
-            border-radius: 5px;
-            border: 2px solid royalblue;
-            background: #cfcfcf;
-        }
-        .fh{
-            width: 45%;
-            height: 40px;
-            margin-right: 0px;
-            margin-top: 15px;
-            font-size: 20px;
-            border-radius: 5px;
-            border: 2px solid royalblue;
-            background: cadetblue;
-        }
         #title_span{
             display:block;
             font-size:20px;
+            margin-left:50px;
         }
         .form-control{
-            width:260px;
+            width:400px;
             font-size:13px;
             display: inline-block;
-        }
-        #user_suggestion{
-            height:65px;
         }
         .btn{
             width:100px;
@@ -71,66 +51,109 @@
             height:30px;
             width:80px;
         }
-        #submitBtn{
-            background-color:#4285F4;
-            color: white;
-        }
-        #retunBtn{
-
+        #retunBtn:hover,#submitBtn:hover{
+            color:white;
+            background-color:#8bb4f8;
         }
         #btnsDiv{
-            margin: 15px auto auto auto;
+            position: relative;
+            top:80px;
             text-align: center;
         }
         .input-title{
             float:left;
             line-height:34px;
         }
-        .input-div{
-            margin:auto;
-            padding: 10px 50px;
-        }
-        #user_suggestion_span{
-            line-height:65px;
-        }
         .btn{
             margin:0px 20px;
+            font-size:15px;
+            background-color:#4285F4;
+            color: white;
+            padding: 3px 6px;
+            border-radius: 5px;
+            border: none;
+            line-hieght:30px;
+        }
+        #editor{
+            height:200px;
+            width:600px;
+        }
+        .tb{
+            margin-left:50px;
+            border-collapse: separate;
+            border-spacing: 0px 10px;
+        }
+        .orderType{
+            width:200px;
+        }
+        img{
+            max-width:100%
+            max-height:100%
         }
     </style>
     <div id="mian_div">
     <div class="mian_titie">
-        <span id="title_span"align="center">请您留下宝贵的建议</span>
+        <span id="title_span">请留下你宝贵的建议或遇到的问题……</span>
     </div>
     <div id="mian_content" >
-        <form  id="suggestion_from">
-            <div class="input-div">
-                <span class="input-title">名字：</span><input type="text" id="user_name" name="user_name"class="form-control" value="{{currentUser.user_name}}" placeholder="请输入用户名"/>
-            </div>
-            <div class="input-div">
-                <span class="input-title">电话：</span><input type="text"  id="user_tel"  name="user_tel" class="form-control" placeholder="请输入电话号码"/>
-            </div>
-            <div class="input-div">
-                <span class="input-title">机构：</span><input type="text" id="user_org" name="user_org" class="form-control" placeholder="请输入用户机构"/>
-            </div>
-            <div class="input-div">
-                <span class="input-title">标题：</span><input type="text" id="user_title" name="user_title" class="form-control" placeholder="请输入反馈标题"/>
-            </div>
-            <div class="input-div">
-                <span class="input-title" id="user_suggestion_span">内容：</span><textarea class="form-control"  id="user_suggestion" name="user_suggestion" placeholder="请输入建议"></textarea>
-            </div>
-            <div id="btnsDiv">
-                <input  id="submitBtn" class="btn" type="button"  onclick="doFrom()"  value="提交"  />
-                <input  id="retunBtn" class="btn" type="button"  onclick="javascript:history.go(-1)"  value="返回"  />
-            </div>
+        <form  id="suggestion_from" enctype="multipart/form-data">
+            <table class="tb">
+                <tr>
+                    <td>工单类型：</td>
+                    <td>
+                        <select id="orderType" class="orderType">
+                            <option value ="1">稽核差错工单</option>
+                            <option value ="2">渠道指标预警工单</option>
+                            <option value="3">资金稽核工单</option>
+                            <option value="4">深度稽核工单</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td><span class="input-title">名字：</span></td>
+                    <td><input type="text" id="user_name" name="user_name"class="form-control" value="{{currentUser.user_name}}" placeholder="请输入用户名"/></td>
+                </tr>
+                <tr>
+                    <td><span class="input-title">电话：</span></td>
+                    <td><input type="text"  id="user_tel"  name="user_tel" class="form-control" placeholder="请输入电话号码"/></td>
+                </tr>
+                <tr>
+                    <td> <span class="input-title">机构：</span></td>
+                    <td><input type="text" id="user_org" name="user_org" class="form-control" placeholder="请输入用户机构"/></td>
+                </tr>
+                <tr>
+                    <td><span class="input-title">标题：</span></td>
+                    <td><input type="text" id="user_title" name="user_title" class="form-control" placeholder="请输入反馈标题"/></td>
+                </tr>
+                <tr>
+                    <td><span class="input-content">内容：</span></td>
+                    <td>
+                        <!-- 加载编辑器的容器 -->
+                        <script id="editor" type="text/plain"></script>
+                        <!-- 配置文件 -->
+                        <script type="text/javascript" src="{{projcfg.appurl}}/static/js/ueditor/ueditor.config.js"></script>
+                        <!-- 编辑器源码文件 -->
+                        <script type="text/javascript" src="{{projcfg.appurl}}/static/js/ueditor/ueditor.all.js"></script>
+                        <script type="text/javascript" charset="utf-8" src="{{projcfg.appurl}}/static/js/ueditor/lang/zh-cn/zh-cn.js"> </script>
+                        <!-- 实例化编辑器 -->
+                        <script type="text/javascript">
+                            var ue = UE.getEditor('editor',{
+                                imageScaleEnabled:false,
+                                enableContextMenu:false,
+                                imagePopup:false
+                            });
+                        </script>
+                    </td>
+                </tr>
+            </table>
         </form>
-
+        <div id="btnsDiv">
+            <input  id="submitBtn" class="btn" type="button"  onclick="doFrom()"  value="提交"  />
+            <input  id="retunBtn" class="btn" type="button"  onclick="javascript:history.go(-1)"  value="返回"  />
+        </div>
     </div>
 </div>
 <script>
-    console.log('===========','{{currentUser.user_no}}');
-    console.log('===========','{{currentUser.user_phone}}');
-    console.log('===========','{{currentUser.user_name}}');
-
     //用于登陆之后查找用户组织
     $(function(){
         var user_no='{{currentUser.user_no}}';
@@ -165,7 +188,9 @@
             var user_tel =$("#user_tel").val();
             var user_org=$("#user_org").val();
             var user_title =$("#user_title").val();
-            var user_suggestion =$("#user_suggestion").val();
+            var content = ue.getContent();
+            var order_type = $("#orderType").val();
+            alert(orderType);
             if(user_name==null||user_name==""){
                 alert("用户不能为空");
                 return;
@@ -177,8 +202,9 @@
             if(user_title==null||user_title==""){
                 alert("意见标题不能为空");
                 return;
-            } if(user_suggestion==null||user_suggestion==""){
-                alert("意见不能为空");
+            }
+            if(null == content || content == ""){
+                alert("意见内容不能为空");
                 return;
             }
             $.ajax({
@@ -189,7 +215,8 @@
                     user_tel: user_tel ,
                     user_org:user_org,
                     user_title:user_title,
-                    suggestion_contents:user_suggestion
+                    suggestion_contents:content,
+                    order_type:order_type
                 },
                 success: function (date) {
                     if(date.success==true){
@@ -202,11 +229,8 @@
                 },
 
             });
-
-
-
-
         }
 </script>
+
 
 

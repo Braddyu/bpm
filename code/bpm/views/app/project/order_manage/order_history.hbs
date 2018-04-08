@@ -282,6 +282,12 @@
 .td,.tdLabel{
     border-right: 1px solid #e5e5e5;;
 }
+.tdLabel{
+    min-width: 172px;
+}
+.td-title{
+    min-width: 54px !important;
+}
 .table{
     height: auto;
     margin:0px;
@@ -428,13 +434,26 @@
                 $("#initiator").text(obj.userName);
                 $("#work_days").text(7);
                 //$("#work_days").text(obj.WORK_DAY);
-
-                $("#dueTime").text(obj.finishDate);
+                // -----------------以下是获取工作期限[开始时间+7]-------------------------
+                var arr1 = obj.startDate.split(" ");
+                var sdate = arr1[0].split('-');
+                var time = arr1[1].split(':');
+                var date = new Date(sdate[0], sdate[1]-1, sdate[2],time[0], time[1], time[2]);
+                var limitDate = new Date(date.getTime() + 7 * 24 * 3600 * 1000);
+                var year = limitDate.getFullYear();
+                var month = limitDate.getMonth() + 1;
+                var day = limitDate.getDate();
+                var hour = limitDate.getHours();
+                var minute = limitDate.getMinutes();
+                var second = limitDate.getSeconds();
+                second = second=="0"?"00":second;
+                var limitDate = year + '-' + month + '-' + day  + ' ' + hour + ':' + minute + ':' + second;
+                // ------------------------------------------------------------------------
+                $("#dueTime").text(limitDate);
                 $("#initiator_info").text(obj.INITIATOR_INFO);
                 //$("#remark").text(obj.REMARKS);
 
-               // $("#orderType").text(obj.className);
-                $("#orderType").text("工单稽核差错处理流程");
+                $("#orderType").text(obj.className);
                 $("#orderContent").text(obj.DESC_TEXT);
 
                 $("#rectTime").text(obj.FIELD_1);
@@ -448,7 +467,7 @@
                 for(var i=0;i<files.length;i++){
                     var str = "<div class='file'>" +
                                 //"<div class='fileIcon'>文件</div>" +
-                                "<div class='fileName'>" + files[i].LOCAL_NAME + "</div>" +
+                                "<div class='fileName'>" + files[i].SAVE_NAME +"."+files[i].LOCAL_EXT.toLowerCase( )+"</div>" +
                                 "<input type='button'class='download-btn' onclick='downloadFile(this)' value='立即下载' data-value='"+files[i].SAVE_PATH+"'/>"
                               "</div>";
                     $("#files").append(str)
@@ -458,12 +477,12 @@
                 $("#hisTask").html("");
                 var headerStr = "<tr><th id=\"task_history\" class=\"th\" colspan=\"6\">处理历史</th></tr>\n" +
                         "<tr style=\"background-color:#61A7C7;\">\n" +
-                            "<td class=\"td\">步骤</td>\n" +
-                            "<td class=\"td\">负责人</td>\n" +
-                            "<td class=\"td\">操作</td>\n" +
-                            " <td class=\"td\">派单时间</td>\n" +
-                            " <td class=\"td\">完成时间</td>\n" +
-                            " <td class=\"td\">处理意见</td>\n" +
+                            "<td class=\"td td-title\">步骤</td>\n" +
+                            "<td class=\"td td-title\">负责人</td>\n" +
+                            "<td class=\"td td-title\">操作</td>\n" +
+                            " <td class=\"td td-title\">派单时间</td>\n" +
+                            " <td class=\"td td-title\">完成时间</td>\n" +
+                            " <td class=\"td td-title\">处理意见</td>\n" +
                         "</tr>";
                 var str = "";
                 for(var i=0;i<historyTasks.length;i++){
