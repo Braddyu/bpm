@@ -25,6 +25,9 @@ app.use(config.project.appurl + '/file',express.static('/opt/apps/upload'));
 // 路由自动挂载
 var tree_utils = gmdp.core_tree_utils;
 
+//加载ueditor 模块
+var ueditor = require("ueditor");
+
 
 /*var logHelper = require('./app/common/log/utils/log_util.js');
  var seqHelper = require('./app/common/log/utils/sequence_util.js');
@@ -198,7 +201,29 @@ app.use('/gdgl/api/process/', require('./app/project/bpm_resource/routes/process
 app.use('/gdgl/api/process_instance/', require('./app/project/bpm_resource/routes/process_instance').process_instance())
 app.use('/gdgl/api/process_extend/', require('./app/project/bpm_resource/routes/process_extend').process_extend())
 app.use('/gdgl/api/task/', require('./app/project/bpm_resource/routes/task').task())
-
+// ---------------------------------装载ueditor中间件-----------------------------------
+app.use("/ueditor/ue", ueditor(path.join(__dirname, 'public'), function (req, res, next) {
+    // ueditor 客户发起上传图片请求
+    if (req.query.action === 'uploadimage') {
+        var foo = req.ueditor;
+        var imgname = req.ueditor.filename;
+        var img_url = '/images/ueditor/';
+        res.ue_up(img_url); //你只要输入要保存的地址 。保存操作交给ueditor来做
+        res.setHeader('Content-Type', 'text/html');//IE8下载需要设置返回头尾text/html 不然json返回文件会被直接下载打开
+    }
+    //  客户端发起图片列表请求
+    else if (req.query.action === 'listimage') {
+        var dir_url = '/images/ueditor/';
+        res.ue_list(dir_url); // 客户端会列出 dir_url 目录下的所有图片
+    }
+    // 客户端发起其它请求
+    else {
+        // console.log('config.json')
+        res.setHeader('Content-Type', 'application/json');
+        res.redirect('/gdgl/static/js/ueditor/nodejs/config.json');
+    }
+}));
+// -------------------------------------------------------------------------------------
 
 // app.use(cookieParser());
 // //防止CSRF跨站请求伪造
