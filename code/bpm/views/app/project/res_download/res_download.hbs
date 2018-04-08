@@ -1,0 +1,137 @@
+<html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="{{projcfg.appurl}}/static/css/CustomDropDownListStyling/style.css" />
+        <link href='https://fonts.googleapis.com/css?family=Open+Sans:300,400,600&subset=latin,latin-ext' rel='stylesheet'>
+    </head>
+    <script type="text/javascript">
+        function DropDown(el) {
+            this.dd = el;
+            this.placeholder = this.dd.children('span');
+            this.opts = this.dd.find('ul.dropdown > li');
+            this.val = '';
+            this.index = -1;
+            this.initEvents();
+        }
+        DropDown.prototype = {
+            initEvents: function() {
+                var obj = this;
+                obj.dd.on('click',
+                        function(event) {
+                            $(this).toggleClass('active');
+                            return false;
+                        });
+                obj.opts.on('click',
+                        function() {
+                            var opt = $(this);
+                            obj.val = opt.text();
+                            obj.index = opt.index();
+                            obj.placeholder.text('类型: ' + obj.val);
+                        });
+            },
+            getValue: function() {
+                return this.val;
+            },
+            getIndex: function() {
+                return this.index;
+            }
+        }
+
+        $(function() {
+            var dd = new DropDown($('#dd'));
+
+            $(document).click(function() {
+                // all dropdowns
+                $('.wrapper-dropdown-3').removeClass('active');
+            });
+
+        });
+    </script>
+    <style type="text/css">
+        #mainDiv{
+            width: 800px;
+            height:900px;
+            margin: 2px auto;
+            background-color: #ffffff;
+            font-family: 'Lucida Sans','trebuchet MS',Arial,Helvetica;
+        }
+        #title{
+            background-color:#61A7C7;
+            color:#FFFFFF;
+            height:40px;
+            line-height:40px;
+        }
+        .title-text{
+            padding-left:50px;
+            font-size:18px;
+        }
+        #query{
+            background-color:#EBF6FA;
+            margin: 2px auto;
+            height:50px;
+            line-height:50px;
+        }
+        .type{
+           float:right;
+        }
+        #dd{
+            padding:0px;
+            width:130px;
+            height:40px;
+            line-height:40px;
+            margin-top:5px;
+            margin-right:5px;
+        }
+        .type-title{
+            margin-left:10px;
+        }
+        ul li{
+            list-style-type:none;
+        }
+        .ul-file{
+            padding-left:20px;
+        }
+        .ul-file li{
+            margin-top:20px;
+            cursor:pointer;
+        }
+    </style>
+    <body>
+        <div id="mainDiv">
+            <div id="title"><span class="title-text">资料下载</span></div>
+            <div id="query">
+                <div id="dd" class="wrapper-dropdown-3 type" tabindex="1">
+                    <span class="type-title">类型</span>
+                    <ul class="dropdown" tabindex="1">
+                        <li>
+                            <a href="#">差错工单</a>
+                        </li>
+                        <li>
+                            <a href="#">预警工单</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="files">
+               <ul class="ul-file">
+                   <li title="点击下载">
+                       <a>差错工单流程演示.mp4</a>
+                   </li>
+                   <li title="点击下载">
+                       <a>工单统计详细功能演示.mp4</a>
+                   </li>
+                   <li title="点击下载">
+                       <a>省级稽核人员---差错工单操作手册.word</a>
+                   </li>
+                   <li title="点击下载">
+                       <a>营业员--差错工单操作手册.word</a>
+                   </li>
+                   <li title="点击下载">
+                       <a>营业员处理流程演示.mp4</a>
+                   </li>
+               </ul>
+            </div>
+            <div>
+            </div>
+        </div>
+    </body>
+</html>

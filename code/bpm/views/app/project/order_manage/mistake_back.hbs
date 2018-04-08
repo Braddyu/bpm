@@ -1,4 +1,5 @@
 <link rel="stylesheet" type="text/css" href="{{projcfg.appurl}}/static/order/css/order_detail.css">
+
 <div id="processDiv" class="row">
     <div class="col-xs-12 col-md-12">
         <div class="widget">
@@ -8,15 +9,32 @@
                         <div id="toolbar1" class="row tbRow">
                             <div class="col-xs-8 col-md-8">
                                 <div class="btn-group" role="group" aria-label="...">
-                                    <label for="filterParam3">派单时间：</label>
+                                    <label for="filterParam3">日期：</label>
                                     <input id="queryDate" class="easyui-datebox" label="Start Date:" labelPosition="top" style="width:130px;height:35px">
 
                                 </div>
                                 <div class="btn-group" role="group" aria-label="...">
+                                    <label for="filterParam3">地州：</label>
+                                    <select class="easyui-combobox"id="city_code" style="width: 100px;height:31px;">
+                                        <option value="">=全省=</option>
+                                        <option value="850">贵安</option>
+                                        <option value="851">贵阳</option>
+                                        <option value="852">遵义</option>
+                                        <option value="853">安顺</option>
+                                        <option value="854">黔南</option>
+                                        <option value="855">黔东南</option>
+                                        <option value="856">铜仁</option>
+                                        <option value="857">毕节</option>
+                                        <option value="858">六盘水</option>
+                                        <option value="859">黔西南</option>
+
+                                    </select>
+                                </div>
+                                <div class="btn-group" role="group" aria-label="...">
                                     <label for="filterParam3">回传结果：</label>
                                     <select class="easyui-combobox"id="status"  data-options="panelHeight:'auto'"style="width: 180px;height:31px;">
-                                        <option value="2">回传成功</option>
-                                        <option value="3">回传失败</option>
+                                        <option  value="3">回传成功</option>
+                                        <option value="2">回传失败</option>
                                     </select>
                                 </div>
                             </div>
@@ -59,6 +77,9 @@
 
             }
         });
+        var now = new Date();
+        var day =now.getFullYear()+"-"+(now.getMonth()+1)+"-"+(now.getDate()-1);
+        $('#queryDate').datebox('setValue',day);
     });
 
     function loadMistakeListDatagrid(){
@@ -68,7 +89,7 @@
             method:'post',
             rownumbers:true,
             queryParams:{
-                status:"2,3",
+                status:$('#status').combobox('getValue')
             },
             striped:true,
             fitColumns:true,
@@ -112,6 +133,24 @@
                     }},
 
             ]],
+            onDblClickRow:function(rowIndex, rowData){
+                var url='{{projcfg.appurl}}/api/order_manage/order_list/showDetailView?proc_code=p-201';
+                $('#dd').dialog({
+                    title : '工单详情',
+                    width : 1250,
+                    height : 650,
+                    closed : false,
+                    cache : false,
+                    href :url ,
+                    onOpen:function(){
+                        status=1;
+                        change_id=rowData.proc_inst_id
+                        proc_code='p-201'
+                    },
+                    modal : true
+                });
+
+            },
             onLoadSuccess:function(json) {
                 if(!json.success) {
                     msgError(json.msg + ',错误代码:' + json.code);
@@ -128,13 +167,12 @@
 
     //搜索
     function doSearch(){
-
      $('#mistakeTablelist').datagrid(
              {   url:'{{projcfg.appurl}}/api/order_manage/mistake_list/list',
                  queryParams:{
                      queryDate:$('#queryDate').datebox('getValue'),
                      status:$('#status').combobox('getValue'),
-
+                     city_code:$('#city_code').combobox('getValue'),
                  }
              }
      );

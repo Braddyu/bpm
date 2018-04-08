@@ -77,14 +77,14 @@ router.get('/downloadAnnex',function(req, res, next){
     if(res.length=1){
         var filePath = req.query.filePath;
         var fileName = req.query.fileName;
-        var stats = fs.statSync(filePath);
+        var stats = fs.statSync(filePath+"/"+fileName);
         if(stats.isFile()){
             res.set({
                 'Content-Type': 'application/octet-stream',
                 'Content-Disposition': 'attachment;filename='+urlencode(fileName),
                 'Content-Length': stats.size
             });
-            fs.createReadStream(filePath).pipe(res);
+            fs.createReadStream(filePath+"/"+fileName).pipe(res);
         } else {
             res.end(404);
         }

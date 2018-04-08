@@ -1,0 +1,212 @@
+    <style>
+        body:before {
+            background:url({{projcfg.appurl}}/static/images/login_bg.png);
+            background-size:100%;
+        }
+        h1
+        {
+            text-shadow: 5px 5px 5px cadetblue;
+        }
+        #mian_div{
+            width: 400px;
+            height: 450px;
+            margin: 100px auto;
+            background-color: white;
+            font-family: 'Lucida Sans','trebuchet MS',Arial,Helvetica;
+        }
+        .mian_titie{
+            width: 100%;
+            height: 60px;
+            margin: auto;
+            font-weight: normal;
+            line-height:60px;
+            background-color: #E6EEFB;
+        }
+        #mian_content{
+            height: 300px;
+            margin: 20px auto auto auto;
+        }
+        input{
+            height: 40px;
+            font-size: 20px;
+            border-radius: 50px;
+            border: 2px solid royalblue;
+            background: #cfcfcf;
+        }
+
+        .wbk{
+            height: 50px;
+            margin: auto;
+            margin-top: 15px;
+            font-size: 20px;
+            border-radius: 5px;
+            border: 2px solid royalblue;
+            background: #cfcfcf;
+        }
+        .fh{
+            width: 45%;
+            height: 40px;
+            margin-right: 0px;
+            margin-top: 15px;
+            font-size: 20px;
+            border-radius: 5px;
+            border: 2px solid royalblue;
+            background: cadetblue;
+        }
+        #title_span{
+            display:block;
+            font-size:20px;
+        }
+        .form-control{
+            width:260px;
+            font-size:13px;
+            display: inline-block;
+        }
+        #user_suggestion{
+            height:65px;
+        }
+        .btn{
+            width:100px;
+            border-radius:5px;
+            height:30px;
+            width:80px;
+        }
+        #submitBtn{
+            background-color:#4285F4;
+            color: white;
+        }
+        #retunBtn{
+
+        }
+        #btnsDiv{
+            margin: 15px auto auto auto;
+            text-align: center;
+        }
+        .input-title{
+            float:left;
+            line-height:34px;
+        }
+        .input-div{
+            margin:auto;
+            padding: 10px 50px;
+        }
+        #user_suggestion_span{
+            line-height:65px;
+        }
+        .btn{
+            margin:0px 20px;
+        }
+    </style>
+    <div id="mian_div">
+    <div class="mian_titie">
+        <span id="title_span"align="center">请您留下宝贵的建议</span>
+    </div>
+    <div id="mian_content" >
+        <form  id="suggestion_from">
+            <div class="input-div">
+                <span class="input-title">名字：</span><input type="text" id="user_name" name="user_name"class="form-control" value="{{currentUser.user_name}}" placeholder="请输入用户名"/>
+            </div>
+            <div class="input-div">
+                <span class="input-title">电话：</span><input type="text"  id="user_tel"  name="user_tel" class="form-control" placeholder="请输入电话号码"/>
+            </div>
+            <div class="input-div">
+                <span class="input-title">机构：</span><input type="text" id="user_org" name="user_org" class="form-control" placeholder="请输入用户机构"/>
+            </div>
+            <div class="input-div">
+                <span class="input-title">标题：</span><input type="text" id="user_title" name="user_title" class="form-control" placeholder="请输入反馈标题"/>
+            </div>
+            <div class="input-div">
+                <span class="input-title" id="user_suggestion_span">内容：</span><textarea class="form-control"  id="user_suggestion" name="user_suggestion" placeholder="请输入建议"></textarea>
+            </div>
+            <div id="btnsDiv">
+                <input  id="submitBtn" class="btn" type="button"  onclick="doFrom()"  value="提交"  />
+                <input  id="retunBtn" class="btn" type="button"  onclick="javascript:history.go(-1)"  value="返回"  />
+            </div>
+        </form>
+
+    </div>
+</div>
+<script>
+    console.log('===========','{{currentUser.user_no}}');
+    console.log('===========','{{currentUser.user_phone}}');
+    console.log('===========','{{currentUser.user_name}}');
+
+    //用于登陆之后查找用户组织
+    $(function(){
+        var user_no='{{currentUser.user_no}}';
+        if(user_no){
+            $.ajax({
+                url: "{{projcfg.appurl}}/api/suggestion/suggestion/find",
+                type: "post",
+                data: {
+                    user_no:user_no
+                },
+                success: function (data) {
+                    console.log(data)
+                    if(data.success){
+                        console.log(data.data.org_name)
+                        $("#user_org").val(data.data.org_name);
+                        $("#user_tel").val(data.data.user_tel);
+                    }
+                },
+            });
+        }
+    })
+
+    function GetQueryString(name) {
+        var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
+        var r = window.location.search.substr(1).match(reg);
+        if(r!=null)
+            return  unescape(r[2]);
+        return null;
+    }
+        function doFrom(){
+            var user_name =$("#user_name").val();
+            var user_tel =$("#user_tel").val();
+            var user_org=$("#user_org").val();
+            var user_title =$("#user_title").val();
+            var user_suggestion =$("#user_suggestion").val();
+            if(user_name==null||user_name==""){
+                alert("用户不能为空");
+                return;
+            }
+            if(user_tel==null||user_tel==""){
+                alert("机构不能为空");
+                return;
+            }
+            if(user_title==null||user_title==""){
+                alert("意见标题不能为空");
+                return;
+            } if(user_suggestion==null||user_suggestion==""){
+                alert("意见不能为空");
+                return;
+            }
+            $.ajax({
+                url: "{{projcfg.appurl}}/api/suggestion/suggestion/insert",
+                type: "post",
+                data: {
+                    user_name:user_name ,
+                    user_tel: user_tel ,
+                    user_org:user_org,
+                    user_title:user_title,
+                    suggestion_contents:user_suggestion
+                },
+                success: function (date) {
+                    if(date.success==true){
+                       alert("接收到意见");
+                       location.href="{{projcfg.appurl}}";
+                    }else {
+                        alert("意见填写失败");
+                    }
+
+                },
+
+            });
+
+
+
+
+        }
+</script>
+
+
