@@ -1,8 +1,31 @@
 // var inst = require('../server/api/services/instance_service');
 // var proc = require('../server/core/bpm/services/process_service');
 // var nodeTransferService=require("../server/api/services/node_transfer_service");
-// var model_user=require("../server/core/models/user_model");
+var model_user=require("../bpm_resource/models/user_model");
 // var model=require("../server/core/bpm/models/process_model");
+// updateorg();
+function updateorg(){
+
+    model_user.$CommonCoreOrg.find({"level" : {$in:[5,6]}},function (err,res) {
+        if(err){
+            console.log('---------')
+        }else{
+            if(res.length > 0){
+                for (let i in res){
+                    console.log(res[i]);
+                    model_user.$CommonCoreOrg.update( {"_id":res[i]._id},{$set: {"org_code":res[i].company_code}},{},function(err,updateRes){
+                        if(updateRes){
+                            console.log("更新org_code数据成功 ");
+                        }else{
+                            console.log("更新org_code数据失败");
+                        }
+                    });
+                }
+            }
+        }
+    })
+}
+
 //
 // var params = {};
 // // params.processDefineDiv_node_5 = { "flag": 3 }
@@ -172,4 +195,17 @@
 // // var instid = "5964b31d74ddb515bcbc82c6";
 // // setTimeout("fullTransfer("+instid+")","5000");
 
+// function getIPAdress(){
+//     var interfaces = require('os').networkInterfaces();
+//     for(var devName in interfaces){
+//         var iface = interfaces[devName];
+//         for(var i=0;i<iface.length;i++){
+//             var alias = iface[i];
+//             if(alias.family === 'IPv4' && alias.address !== '127.0.0.1' && !alias.internal){
+//                 return alias.address;
+//             }
+//         }
+//     }
+// }
 
+// console.log(getIPAdress());

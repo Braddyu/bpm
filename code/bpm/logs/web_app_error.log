@@ -37,3 +37,7 @@
 [2017-10-10 13:51:55.470] [ERROR] error - { code: 'E1105',
   info: 'uncaught_web_err',
   msg: 'MongoError: failed to connect to server [127.0.0.1:27017] on first connect\r\n' }
+[2018-03-26 12:25:14.252] [ERROR] error - { code: 'checkCode', info: '编码重复', msg: '"p-109"' }
+[2018-03-26 12:27:38.794] [ERROR] error - { code: 'checkCode', info: '编码重复', msg: '"p-109"' }
+[2018-03-26 12:54:05.063] [ERROR] error - { code: 'checkCode', info: '编码重复', msg: '"p_104"' }
+[2018-03-26 12:55:25.847] [ERROR] error - { code: 'checkCode', info: '编码重复', msg: '"p-108"' }
