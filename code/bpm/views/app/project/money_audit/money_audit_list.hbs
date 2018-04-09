@@ -1,5 +1,6 @@
 <link rel="stylesheet" type="text/css" href="{{projcfg.appurl}}/static/{{projcfg.theme}}webuploade/webuploader.css">
 <script src="{{projcfg.appurl}}/static/{{projcfg.theme}}webuploade/webuploader.js"></script>
+<link rel="stylesheet" type="text/css" href="{{projcfg.appurl}}/static/order/css/order_detail.css">
 
 <div id="processDiv" class="row">
     <div class="col-xs-12 col-md-12">
@@ -38,7 +39,7 @@
 </div>
 <div id="dd"></div>
 
-<div id="orderDetail"  class="mydialog"  >
+<div id="orderDetail"  class="mydialog"  style=" overflow-y:scroll;">
     <form id="orderDetailForm" method="post" enctype="multipart/form-data">
         <fieldset>
             <legend ><b>任务基本信息</b></legend>
@@ -108,25 +109,21 @@
                     <td colspan="3" class="tdLabel"><select class="easyui-combobox"
                                             id="assign_user_no"name="assign_user_no" style="width: 180px;">
                     </select> </td>
-
-
                 </tr>
 
-                <tr  id="fileUpload">
+                <tr id="fileUpload">
                     <td align="right" class="tdLabel">附件上传:</td>
-                    <td colspan="3" class="tdLabel"> <!-- <input type="file"labelPosition="top"id="files" name="files" multiple="true" data-options="prompt:'选择文件...',buttonText:'选择'" style="width:500px"/>-->
+                    <td>
                         <div id="uploader" class="wu-example">
                             <!--用来存放文件信息-->
 
 
-                            <div id="picker"  >选择文件</div>
+                            <div id="picker2"  >选择文件</div>
 
                             <div id="thelist" class="uploader-list" ></div>
                         </div>
                     </td>
                 </tr>
-
-                <input type='hidden' name='_csrf' value='{{ _csrfToken }}'/>
             </table>
         </fieldset>
 
@@ -140,122 +137,12 @@
     }
 </script>
 <script type="text/javascript">
-    /*$(function() {
-        $('#files').uploadify({
-            'swf'      : '{{projcfg.appurl}}/static/{{projcfg.theme}}js/uploadify/uploadify.swf',
-            'uploader' : '{{projcfg.appurl}}/api/order_manage/order_list/uploadFile?_csrf='+'{{_csrfToken}}',
-            'auto'           :false,
-            'multi'          :true,
-            'buttonText':'附件上传',
-            'fileTypeExts' : '*.gif; *.jpg; *.png;*.mp3;*.wav;*.wma;*.pdf;*.txt;*.xls;*.xlsx',
-            'checkExisting':true,
-            'fileSizeLimit':'5MB',
-            //浏览按钮的宽度
-            'width':'100',
-            //浏览按钮的高度
-            'height':'30',
-            'onQueueComplete' : function(queueData) {
-                msgSuccess('派单成功');
-                $('#orderDetail').dialog("close");
-                $('#orderTablelist').datagrid('reload');
-                $.messager.progress('close');
-            }
-        });
 
-    });*/
-
-    var $list=$("#thelist");
-    var uploader = WebUploader.create({
-        auto:false,
-        // swf文件路径
-        swf: '{{projcfg.appurl}}/static/{{projcfg.theme}}webuploade/Uploader.swf',
-        method:'POST',
-        // 文件接收服务端。
-        server: '{{projcfg.appurl}}/api/order_manage/order_list/uploadFile?_csrf=' + '{{_csrfToken}}',
-
-        // 选择文件的按钮。可选。
-        // 内部根据当前运行是创建，可能是input元素，也可能是flash.
-        pick: '#picker',
-
-        // 不压缩image, 默认如果是jpeg，文件上传前会压缩一把再上传！
-        resize: false,
-        // 只允许选择图片文件。
-        accept: {
-            title: '文件错误',
-            extensions: 'gif,jpg,jpeg,bmp,png,mp3,wav,wma,pdf,txt,xls,xlsx',
-            mimeTypes: '*'
-        },
-        fileNumLimit: 8, //限制上传个数
-        fileSingleSizeLimit: 2048000 //限制单个上传图片的大小
-    });
-    // 当有文件被添加进队列的时候
-    uploader.on( 'fileQueued', function( file ) {
-        var $li = $(
-                        '<div id="' + file.id + '" class="file-item thumbnail">' +
-                        '<img>' +
-                        '<div class="info">' + file.name + '</div>' +
-                        '</div>'
-                ),
-                $img = $li.find('img');
-
-
-        // $list为容器jQuery实例
-        $list.append( $li );
-        var thumbnailWidth = 100;   //缩略图高度和宽度 （单位是像素），当宽高度是0~1的时候，是按照百分比计算，具体可以看api文档
-        var thumbnailHeight = 100;
-        // 创建缩略图
-        // 如果为非图片文件，可以不用调用此方法。
-        // thumbnailWidth x thumbnailHeight 为 100 x 100
-        uploader.makeThumb( file, function( error, src ) {   //webuploader方法
-            if ( error ) {
-                $img.replaceWith('<span>不能预览</span>');
-                return;
-            }
-
-            $img.attr( 'src', src );
-        }, thumbnailWidth, thumbnailHeight );
-    });
-    // 文件上传过程中创建进度条实时显示。
-    uploader.on( 'uploadProgress', function( file, percentage ) {
-        var $li = $( '#'+file.id ),
-                $percent = $li.find('.progress span');
-
-        // 避免重复创建
-        if ( !$percent.length ) {
-            $percent = $('<p class="progress"><span></span></p>')
-                    .appendTo( $li )
-                    .find('span');
-        }
-
-        $percent.css( 'width', percentage * 100 + '%' );
-    });
-    // 文件上传成功，给item添加成功class, 用样式标记上传成功。
-    uploader.on('uploadSuccess', function (file) {
-        $('#' + file.id).find('p.state').text('已上传');
-    });
-    // 文件上传失败，显示上传出错。
-    uploader.on('uploadError', function (file) {
-        $('#' + file.id).find('p.state').text('上传出错');
-    });
+    var uploader;//定义全局变量
     var fileLength=0;
     var count=0;
-    // 完成上传完了，成功或者失败，先删除进度条。
-    uploader.on( 'uploadComplete', function( file ) {
-        $( '#'+file.id ).find('.progress').remove();
-        //文件的id的最后是当前文件的下表
-        count++;
-        alert(fileLength+"！！！！！！！！！！"+count);
-        if(count==fileLength){
-            msgSuccess('处理成功');
-            $("#dd").dialog('close');
-            $('#orderTablelist').datagrid('reload');
-            $.messager.progress('close');
-        }
-    });
-
-
     $(document).ready(function () {
-
+       // $('#picker2 div:eq(2)').attr('style','position: absolute; top: 0px; left: 0px; width: 82px; height: 39px; overflow: hidden; bottom: auto; right: auto;');
         //加载列表
         loadOrderListDatagrid();
         //初始化工单类型下拉框
@@ -421,6 +308,9 @@
     //新增工单
     function addDrafts(){
         $('#orderDetailForm').form('clear');
+        if(uploader){
+            uploader.destroy();
+        }
         //当前登录用户名
         var user_name = '{{currentUser.user_name}}';
         //用户角色
@@ -436,11 +326,102 @@
         var time=new Date();
         $("#start_time").textbox("setValue",time.Format("yyyy-MM-dd hh:mm:ss"));
         $('#orderDetail').show();
+
+        var $list=$("#thelist");
+        $list.empty();
+        uploader = WebUploader.create({
+            auto:false,
+            // swf文件路径
+            swf: '{{projcfg.appurl}}/static/{{projcfg.theme}}webuploade/Uploader.swf',
+            method:'POST',
+            // 文件接收服务端。
+            server: '{{projcfg.appurl}}/api/order_manage/order_list/uploadFile?_csrf=' + '{{_csrfToken}}',
+
+            // 选择文件的按钮。可选。
+            // 内部根据当前运行是创建，可能是input元素，也可能是flash.
+            pick: '#picker2',
+
+            // 不压缩image, 默认如果是jpeg，文件上传前会压缩一把再上传！
+            resize: false,
+            // 只允许选择图片文件。
+            accept: {
+                title: '文件错误',
+                extensions: 'gif,jpg,jpeg,bmp,png,mp3,wav,wma,pdf,txt,xls,xlsx',
+                mimeTypes: '*'
+            },
+            fileNumLimit: 8, //限制上传个数
+            fileSingleSizeLimit: 2048000 //限制单个上传图片的大小
+        });
+
+        // 当有文件被添加进队列的时候
+        uploader.on( 'fileQueued', function( file ) {
+            var $li = $(
+                            '<div id="' + file.id + '" class="file-item thumbnail">' +
+                            '<img>' +
+                            '<div class="info">' + file.name + '</div>' +
+                            '</div>'
+                    ),
+                    $img = $li.find('img');
+
+
+            // $list为容器jQuery实例
+            $list.append( $li );
+            var thumbnailWidth = 100;   //缩略图高度和宽度 （单位是像素），当宽高度是0~1的时候，是按照百分比计算，具体可以看api文档
+            var thumbnailHeight = 100;
+            // 创建缩略图
+            // 如果为非图片文件，可以不用调用此方法。
+            // thumbnailWidth x thumbnailHeight 为 100 x 100
+            uploader.makeThumb( file, function( error, src ) {   //webuploader方法
+                if ( error ) {
+                    $img.replaceWith('<span>不能预览</span>');
+                    return;
+                }
+
+                $img.attr( 'src', src );
+            }, thumbnailWidth, thumbnailHeight );
+        });
+        // 文件上传过程中创建进度条实时显示。
+        uploader.on( 'uploadProgress', function( file, percentage ) {
+            var $li = $( '#'+file.id ),
+                    $percent = $li.find('.progress span');
+
+            // 避免重复创建
+            if ( !$percent.length ) {
+                $percent = $('<p class="progress"><span></span></p>')
+                        .appendTo( $li )
+                        .find('span');
+            }
+
+            $percent.css( 'width', percentage * 100 + '%' );
+        });
+        // 文件上传成功，给item添加成功class, 用样式标记上传成功。
+        uploader.on('uploadSuccess', function (file) {
+            $('#' + file.id).find('p.state').text('已上传');
+        });
+        // 文件上传失败，显示上传出错。
+        uploader.on('uploadError', function (file) {
+            $('#' + file.id).find('p.state').text('上传出错');
+        });
+
+        // 完成上传完了，成功或者失败，先删除进度条。
+        uploader.on( 'uploadComplete', function( file ) {
+            $( '#'+file.id ).find('.progress').remove();
+            //文件的id的最后是当前文件的下表
+            count++;
+            if(count==fileLength){
+                msgSuccess('派单成功');
+                $('#orderDetail').dialog("close");
+                $('#orderTablelist').datagrid('reload');
+                $.messager.progress('close');
+            }
+        });
+
         $('#orderDetail').mydialog({
             title:"资金稽核工单派单",
-            width: 900,
-            height: 550,
-            top:150,
+            width : 1250,
+            height : 650,
+            closed : false,
+            cache : false,
             modal: true,
             myButtons:[
                 {
@@ -471,172 +452,40 @@
     /**
      * 初始化工单类型下拉框
      */
-    function getAllProBase(){
+    function getAllProBase() {
         $.ajax({
             url: '{{projcfg.appurl}}/api/order_manage/order_list/procDefineDetail',
             type: 'post',
-            dataType:'json',
-            data: {proc_code:"p_222",node_code:"processDefineDiv_node_3"},
+            dataType: 'json',
+            data: {proc_code: "p_222", node_code: "processDefineDiv_node_3"},
             success: function (data) {
-                if(data.success){
-                    $("#proc_inst_task_name").textbox("setValue",data.data.nodeName);
-                }else{
-                    $("#proc_inst_task_name").textbox("setValue","");
-                    $.messager.alert('错误提示',data.error);
-                }
-            }
-        });
-
-    }
-
-    /**
-     * 暂存草稿箱
-     */
-    function saveDrafts(){
-        // 验证表单
-        var validate = $('#orderDetailForm').form('validate');
-        if(!validate) {
-            return false;
-        }
-        $.ajax({
-            url: '{{projcfg.appurl}}/api/order_manage/order_drafts/saveDrafts',
-            type: 'post',
-            dataType:'json',
-            data: $('#orderDetailForm').serializeJson(),
-            success: function (data) {
-                if(data.success){
-
-                    $('#orderDetail').dialog("close");
-                    $('#orderTablelist').datagrid('reload');
-                    $.messager.alert('提示','保存成功');
-
-
-                }else{
-                    $.messager.alert('错误提示',data.error);
-
+                if (data.success) {
+                    $("#proc_inst_task_name").textbox("setValue", data.data.nodeName);
+                } else {
+                    $("#proc_inst_task_name").textbox("setValue", "");
+                    $.messager.alert('错误提示', data.error);
                 }
             }
         });
     }
 
-    // 修改草稿箱
-
-    function editDrafts(){
-        var row = $('#orderTablelist').datagrid('getSelected');
-        if(row) {
-            $('#orderDetailForm').form('clear');
-            //当前登录用户名
-            var user_name = '{{currentUser.user_name}}';
-            //用户角色
-            var user_roles = '{{currentUserRole.role_name}}';
-            //用户名
-            $("#start_name").textbox("setValue", user_name);
-            //用户角色
-            $("#user_role_names").textbox("setValue", user_roles);
-            $("#handle").combobox("setValue", "1");
-
-            //当前填单时间
-            var time = new Date();
-            $("#start_time").textbox("setValue", time.Format("yyyy-MM-dd hh:mm:ss"));
-
-            //回填当前节点
-            $.ajax({
-                url: '{{projcfg.appurl}}/api/order_manage/order_list/procDefineDetail',
-                type: 'post',
-                dataType: 'json',
-                data: {proc_code: row.proc_code},
-                success: function (data) {
-                    //回填当前节点名称
-                    if (data.success) {
-                        $("#proc_inst_task_name").textbox("setValue", data.data.nodeName);
-                    } else {
-                        $("#proc_inst_task_name").textbox("setValue", "");
-                        $.messager.alert('错误提示', data.error);
-                    }
-                }
-            });
-
-            $('#orderDetailForm').form('load', row);
-            $('#orderDetail').show();
-            $('#orderDetail').mydialog({
-                title: "新增资金稽核工单",
-                width: 900,
-                height: 550,
-                top: 150,
-                modal: true,
-                myButtons: [
-                    {
-                        text: '提交',
-                        btnCls: 'btn btn-blue',
-                        handler: function () {
-                            saveNewOrder();
-                        }
-                    },
-                    {
-                        text: '暂存',
-                        btnCls: 'btn btn-blue',
-                        handler: function () {
-                            saveDrafts();
-                        }
-                    },
-                    {
-                        text: '关闭',
-                        btnCls: 'btn btn-danger',
-                        handler: function () {
-                            $('#orderDetail').dialog("close");
-                        }
-                    }
-                ]
-            });
-        }else{
-            $.messager.alert('提示','请先选择');
-
-        }
-    }
-    /**
-     * 删除草稿箱
-     */
-    function deleteDrafts(){
-        var row = $('#orderTablelist').datagrid('getSelected');
-        if(row){
-            //删除工单
-            $.ajax({
-                url: '{{projcfg.appurl}}/api/order_manage/order_drafts/deleteDrafts',
-                type: 'post',
-                dataType:'json',
-                data: {_id:row._id},
-                success: function (data) {
-                    if(data.success){
-                        $('#orderTablelist').datagrid('reload');
-                        $.messager.alert('提示','删除成功');
-                    }else{
-                        $.messager.alert('错误提示',data.error);
-                    }
-                }
-            });
-        }else{
-            $.messager.alert('提示','请先选择');
-
-        }
-
-    }
     /**
      * 提交新工单
      */
-    function saveNewOrder(){
+    function saveNewOrder() {
         // 验证表单
         var validate = $('#orderDetailForm').form('validate');
-        if(!validate) {
+        if (!validate) {
             return false;
         }
         //下一节点处理人必选
-        if(!$("#assign_user_no").combobox('getValue')){
-            $.messager.alert('提示','请选择下一节点处理人');
+        if (!$("#assign_user_no").combobox('getValue')) {
+            $.messager.alert('提示', '请选择下一节点处理人');
             return false;
         }
 
-        $.messager.confirm('提示','确定提交工单吗?',function(r){
-            if (r){
+        $.messager.confirm('提示', '确定提交工单吗?', function (r) {
+            if (r) {
                 $.messager.progress({
                     title: '提示',
                     msg: '处理中，请稍候……',
@@ -646,35 +495,33 @@
                 $.ajax({
                     url: '{{projcfg.appurl}}/api/money_audit/money_audit_list/moneyAudit',
                     type: 'post',
-                    dataType:'json',
+                    dataType: 'json',
                     data: $('#orderDetailForm').serializeJson(),
                     success: function (data) {
-
-                        if(data.success){
-                            if(uploader.getFiles().length > 0){
+                        if (data.success) {
+                            if (uploader.getFiles().length > 0) {
                                 var proc_task_id = data.data;
-                                fileLength=  uploader.getFiles().length;
+                                fileLength = uploader.getFiles().length;
                                 var obj = new Object();
                                 obj.status = 1;
                                 obj.proc_task_id = proc_task_id;
                                 uploader.options.formData = obj;
                                 uploader.upload();
-                            }else {
+                            } else {
                                 msgSuccess('派单成功');
                                 $('#orderDetail').dialog("close");
                                 $('#orderTablelist').datagrid('reload');
                                 $.messager.progress('close');
                             }
-                        }else{
+                        } else {
                             $.messager.progress('close');
-                            $.messager.alert('错误提示',data.error);
+                            $.messager.alert('错误提示', data.error);
 
                         }
                     }
                 });
             }
         });
-
 
     }
 

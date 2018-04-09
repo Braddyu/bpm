@@ -70,7 +70,7 @@
 
             </table>
 
-            <fieldset id="detail">
+            <fieldset id="order_detail">
             <legend><b>节点处理</b></legend>
 
             <table  cellpadding="5" align="center" style="border-collapse:separate; border-spacing:0px 5px;">
@@ -167,33 +167,12 @@
     }
 </script>
 <script type="text/javascript">
-   /* $(function() {
-
-        $('#files').uploadify({
-            'swf'      : '{{projcfg.appurl}}/static/{{projcfg.theme}}js/uploadify/uploadify.swf',
-            'uploader' : '{{projcfg.appurl}}/api/order_manage/order_list/uploadFile?_csrf='+'{{_csrfToken}}',
-            'auto'           :false,
-            'multi'          :true,
-            'buttonText':'附件上传',
-            'fileTypeExts' : '*.gif; *.jpg; *.png;*.mp3;*.wav;*.wma;*.pdf;*.txt;*.xls;*.xlsx',
-            'checkExisting':true,
-            'fileSizeLimit':'5MB',
-            //浏览按钮的宽度
-            'width':'100',
-            //浏览按钮的高度
-            'height':'30',
-            'onQueueComplete' : function(queueData) {
-                msgSuccess('处理成功');
-                $("#dd").dialog('close');
-                $('#orderTablelist').datagrid('reload');
-                $.messager.progress('close');
-            }
-        });
-
-    });*/
-
     var $list=$("#thelist");
-    var uploader = WebUploader.create({
+    var uploader;
+    if(uploader){
+        uploader.destroy();
+    }
+    uploader = WebUploader.create({
         auto:false,
         // swf文件路径
         swf: '{{projcfg.appurl}}/static/{{projcfg.theme}}webuploade/Uploader.swf',
@@ -272,7 +251,6 @@
        $( '#'+file.id ).find('.progress').remove();
        //文件的id的最后是当前文件的下表
        count++;
-       alert(fileLength+"！！！！！！！！！！"+count);
        if(count==fileLength){
            msgSuccess('处理成功');
            $("#dd").dialog('close');
@@ -291,10 +269,8 @@
 //        var change_id=GetQueryString("change_id");
         if(status==1 ||status==3){
             //隐藏处理操作
-            $("#detail").hide();
-            if(status == 3){
-                $("#fileUpload1").show();
-            }
+            $("#order_detail").hide();
+            $("#submitButton").hide();
         }else if(status==2){
             //待办操作
 
