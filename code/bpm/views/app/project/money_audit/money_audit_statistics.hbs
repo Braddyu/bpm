@@ -188,7 +188,7 @@
                 },
                     formatter:function(value,row,index){
                     //大于6表示已经下砖到渠道层级
-                    if(level+1>6 || row.company_code.length==8){
+                    if(level+1>5 || row.company_code.length==8){
                         return value;
                     }else{
                         return '<a href="javascript:void(0);" onclick="doSearchOrg(\''+row._id+'\')">'+value+'</a>';
@@ -199,7 +199,7 @@
                 {"field": "org_fullname","title":"区域名称","width":"450px",
                     formatter:function(value,row,index){
                         //大于6表示已经下砖到渠道层级
-                        if(level+1>6  || row.company_code.length==8){
+                        if(level+1>5  || row.company_code.length==8){
                             return value;
                         }else{
                             return '<a href="javascript:void(0);" onclick="doSearchOrg(\''+row._id+'\')">'+value+'</a>';
@@ -335,7 +335,7 @@
     }
     //点击表格的区域名称进行下钻
     function doSearchOrg(org_id_){
-        status=0;
+        org_status=0;
         level=level+1;
         org_id=org_id_;
         export_org_id=org_id_;

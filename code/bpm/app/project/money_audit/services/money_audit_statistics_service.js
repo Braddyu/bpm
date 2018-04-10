@@ -357,19 +357,22 @@ exports.exportDetailList= function(org_id,proc_code,level,status,startDate,endDa
         //查询统计表
         var statistics={};
         if(level==2){
-            statistics['province_id']={$in:obj_org_id};
+            foreignField='province_id';
         } else if(level==3){
             //地市
-            statistics['city_id']={$in:obj_org_id};
+            foreignField='city_id';
+            //地市的编码长度要于等于3
+            //match.company_code={"$regex": /^.{1,3}$/}
         } else if(level==4){
             //区县
-            statistics['county_id']={$in:obj_org_id};
-        } else if(level==5){
+            foreignField='county_id';
+            //区县的编码长度要小于等于4
+            //match.company_code={"$regex": /^.{1,4}$/}
+        } else if(level==5) {
             //网格
-            statistics['grid_id']={$in:obj_org_id};
-        }else if(level==6){
-            //渠道
-            statistics['channel_id']={$in:obj_org_id};
+            foreignField = 'channel_id';
+            //区县的编码长度要小于等于4
+            //match.company_code = {"$regex": /^.{1,8}$/}
         }
         //流程编码
         var two_histroy={};
