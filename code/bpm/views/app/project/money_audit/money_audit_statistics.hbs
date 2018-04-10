@@ -448,7 +448,7 @@
         downloadExcelIng = true;
 
         var downloadUrl = '{{projcfg.appurl}}/api/money_audit/money_audit_statistics/export_excel?status='
-                +status+'&level='+level+'&org_id='+org_id+'&proc_code='+$("#proc_code").combobox('getValue')
+                +org_status+'&level='+level+'&org_id='+org_id+'&proc_code='+$("#proc_code").combobox('getValue')
                 +'&startDate='+$("#startDate").datebox('getValue')+'&endDate='+$("#endDate").datebox('getValue');
 
 
@@ -474,8 +474,8 @@
     var export_status;
     //打开明细
     function openDetail(o_status,org_id_){
-        export_org_id=o_status;
-        export_status=status;
+        export_org_id=org_id_;
+        export_status=o_status;
         var field=[
             {"field":"_id",hidden:true},
             {"field": "work_order_number","title":"工单编号","width":"160px"},
@@ -598,7 +598,7 @@
             url:'{{projcfg.appurl}}/api/money_audit/money_audit_statistics/detail_list',
             method:'post',
             queryParams: {
-                status: status,
+                status: export_status,
                 level: level,
                 org_id: org_id_,
                 proc_code: $("#proc_code").combobox('getValue'),

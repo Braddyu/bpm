@@ -355,35 +355,26 @@ exports.exportDetailList= function(org_id,proc_code,level,status,startDate,endDa
             obj_org_id.push(new mongoose.Types.ObjectId(org_id))
         }
         //查询统计表
-        var statistics={};
-        if(level==2){
-            foreignField='province_id';
-        } else if(level==3){
+        var statistics = {};
+        if (level == 2) {
+            statistics['province_id'] = {$in: obj_org_id};
+        } else if (level == 3) {
             //地市
-            foreignField='city_id';
-            //地市的编码长度要于等于3
-            //match.company_code={"$regex": /^.{1,3}$/}
-        } else if(level==4){
+            statistics['city_id'] = {$in: obj_org_id};
+        } else if (level == 4) {
             //区县
-            foreignField='county_id';
-            //区县的编码长度要小于等于4
-            //match.company_code={"$regex": /^.{1,4}$/}
-        } else if(level==5) {
+            statistics['county_id'] = {$in: obj_org_id};
+        } else if (level == 5) {
             //网格
-            foreignField = 'channel_id';
-            //区县的编码长度要小于等于4
-            //match.company_code = {"$regex": /^.{1,8}$/}
+            statistics['channel_id'] = {$in: obj_org_id};
         }
+
         //流程编码
         var two_histroy={};
         //流程编码
         if(proc_code){
             statistics['proc_code']=proc_code;
-            if(proc_code=='p-109'){
-                two_histroy={"proc_inst_task_type" : "网格经理审核"}
-            }else{
-                two_histroy={"proc_inst_task_type" : "省营业厅销售部稽核"}
-            }
+            two_histroy={"proc_inst_task_type" : "资金稽核负责人"}
         }
 
         var compare={};
@@ -790,23 +781,19 @@ exports.detail_list= function(page,size,org_id,level,status,proc_code,startDate,
         //查询统计表
         var statistics={};
         //等级为2表示省公司,
-        if(level==2){
-            foreignField='province_id';
-        } else if(level==3){
+        //查询统计表
+        var statistics = {};
+        if (level == 2) {
+            statistics['province_id'] = {$in: obj_org_id};
+        } else if (level == 3) {
             //地市
-            foreignField='city_id';
-            //地市的编码长度要于等于3
-            //match.company_code={"$regex": /^.{1,3}$/}
-        } else if(level==4){
+            statistics['city_id'] = {$in: obj_org_id};
+        } else if (level == 4) {
             //区县
-            foreignField='county_id';
-            //区县的编码长度要小于等于4
-            //match.company_code={"$regex": /^.{1,4}$/}
-        } else if(level==5) {
+            statistics['county_id'] = {$in: obj_org_id};
+        } else if (level == 5) {
             //网格
-            foreignField = 'channel_id';
-            //区县的编码长度要小于等于4
-            //match.company_code = {"$regex": /^.{1,8}$/}
+            statistics['channel_id'] = {$in: obj_org_id};
         }
         //}else if(level==6){
         //    //渠道
@@ -939,7 +926,7 @@ exports.detail_list= function(page,size,org_id,level,status,proc_code,startDate,
                     connectFromField: "proc_inst_id",
                     connectToField: "proc_inst_id",
                     as: "channel_histroy",
-                    restrictSearchWithMatch: {"proc_inst_task_type" : "厅店处理回复"}
+                    restrictSearchWithMatch: {"proc_inst_task_type" : "资金稽核负责人"}
                 }
             },
             {
@@ -982,7 +969,7 @@ exports.detail_list= function(page,size,org_id,level,status,proc_code,startDate,
 
                 var result={rows:res,success:true};
                 //计算总数
-                process_extend_model.$ProcessTaskStatistics.aggregate([
+                process_extend_model.$ProcessTaskMoneyAuditStatistics.aggregate([
                     {
                         $match: statistics
                     },
