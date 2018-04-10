@@ -350,7 +350,7 @@
         }else{
             //这里对当前机构的下一级做统一处理,如果到地市级，直接赋值，因为与省公司同级的机构有很多，无法具体指定
             if(level==(top_level+1)){
-                status=1;
+                org_status=1;
                 level=top_level;
                 org_id=top_org_id;
                 doSearch();
@@ -379,7 +379,7 @@
     }
     //返回顶级
     function return_first_org(){
-        status=1;
+        org_status=1;
         level=top_level;
         org_id=top_org_id;
         doSearch();
