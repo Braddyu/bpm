@@ -440,7 +440,7 @@ exports.exportDetailList= function(org_id,proc_code,level,status,startDate,endDa
         console.log("task_search",task_search,proc_inst_task_type=='complete');
         console.log("statistics",statistics);
         //依机构表为主表，关联统计表和实例表
-        process_extend_model.$ProcessTaskStatistics.aggregate([
+        process_extend_model.$ProcessTaskMoneyAuditStatistics.aggregate([
             {
                 $match: statistics
             },
