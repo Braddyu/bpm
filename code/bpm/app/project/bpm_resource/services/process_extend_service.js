@@ -139,6 +139,141 @@ exports.addStatistics = function(inst_id,dispatch_time) {
 }
 
 
+
+/**
+ * 插入统计表（资金稽核工单使用）
+ * @param inst_id 实例ID
+ * @param dispatch_time 派单时间
+ * @returns {Promise}
+ */
+exports.addStatisticsByMoneyAudit = function(inst_id,dispatch_time,orgId) {
+
+    var p = new Promise(async function(resolve,reject) {
+
+        let inst_result= await process_model.$ProcessInst.find({"_id":inst_id});
+        if(inst_result.length ==0){
+            reject(utils.returnMsg(false, '1000', '查找实例错误。',null,null));
+            return;
+        }
+        //判断统计表中是否存在工单
+        let statistics_result= await  process_extend_model.$ProcessTaskStatistics.find({"proc_inst_id":inst_id});
+        //判断统计信息是否存在
+        if(statistics_result.length > 0){
+            reject(utils.returnMsg(false, '1000', '已有的统计。',null,null));
+            return;
+        }
+
+        //查找实例ID在实例表中是否存在
+        let task_result = await  process_model.$ProcessInstTask.find({"proc_inst_id":inst_id,"proc_inst_task_type":"资金稽核负责人"})
+        if(task_result.length ==0){
+            reject(utils.returnMsg(false, '1000', '查找任务错误。',null,null));
+            return;
+        }
+        var statistics={};
+        var task=task_result[0];
+        var org_id=orgId;
+        //实例id
+        statistics.proc_inst_id=inst_id;
+        //派单时间
+        statistics.dispatch_time=dispatch_time;
+        //所属流程
+        statistics.proc_code=task.proc_code;
+        //被派单渠道所属人编号
+        statistics.user_no=task.proc_inst_task_assignee;
+        //被派单渠道所属人
+        statistics.user_name=task.proc_inst_task_assignee_name;
+        ///被派单渠道所属人电话号码，因为渠道的账号手机号和编号为同一个
+        statistics.user_phone=task.proc_inst_task_assignee;
+
+        //查找用户信息
+        let user_result= await user_model.$User.find({"user_no":task.proc_inst_task_assignee} );
+        if(user_result.length==0 ){
+            reject(utils.returnMsg(false, '1000', '查找用户错误。',null,org_id));
+            return;
+        }
+        //被派渠道工号
+        statistics.work_id=user_result[0].work_id;
+
+        //查找渠道信息
+        let orgl_result= await user_model.$CommonCoreOrg.find({"_id":org_id} );
+        if(orgl_result.length !=1 ){
+            reject(utils.returnMsg(false, '1000', '查找渠道错误。',null,org_id));
+            return;
+        }
+        console.log(orgl_result[0])
+        if(orgl_result[0].level == 5 || orgl_result[0].level == 6 || orgl_result[0].if_money_audit_org==1){//政企或自营厅才有区县
+            //所属渠道
+            statistics.channel_id=orgl_result[0].id;
+            //所属渠道
+            statistics.channel_code=orgl_result[0].company_code;
+            ///所属渠道名称
+            statistics.channel_name=orgl_result[0].org_fullname;
+            //查找区县
+            county_result  = await  user_model.$CommonCoreOrg.find({"_id":orgl_result[0].audit_org_pid,"level":4});
+            if(county_result.length !=1){
+                reject(utils.returnMsg(false, '1000', '查找网格错误。',null,orgl_result[0].audit_org_pid));
+                return;
+            }
+            statistics.county_id=county_result[0].id;
+            statistics.county_name=county_result[0].org_name;
+            statistics.county_code=county_result[0].company_code;
+
+            //查找地州
+            let city_result= await  user_model.$CommonCoreOrg.find({"_id":county_result[0].org_pid,"level":3});
+            if(city_result.length !=1){
+                reject(utils.returnMsg(false, '1000', '查找地州错误。',null,county_result[0].org_pid));
+                return;
+            }
+            statistics.city_id=city_result[0].id;
+            statistics.city_name=city_result[0].org_name;
+            statistics.city_code=city_result[0].company_code;
+
+            //查找省
+            let province_result= await  user_model.$CommonCoreOrg.find({"_id":city_result[0].org_pid,"level":2});
+            if(province_result.length !=1){
+                reject(utils.returnMsg(false, '1000', '查找地州错误。',null,city_result[0].org_pid));
+                return;
+            }
+            statistics.province_id=province_result[0].id;
+            statistics.insert_time=new Date();
+        }else if(orgl_result[0].level == 4){
+            statistics.county_id=orgl_result[0].id;
+            statistics.county_name=orgl_result[0].org_name;
+            statistics.county_code=orgl_result[0].company_code;
+
+
+            //查找地州
+            let city_result= await  user_model.$CommonCoreOrg.find({"_id":county_result[0].org_pid,"level":3});
+            if(city_result.length !=1){
+                reject(utils.returnMsg(false, '1000', '查找地州错误。',null,county_result[0].org_pid));
+                return;
+            }
+            statistics.city_id=city_result[0].id;
+            statistics.city_name=city_result[0].org_name;
+            statistics.city_code=city_result[0].company_code;
+
+            //查找省
+            let province_result= await  user_model.$CommonCoreOrg.find({"_id":city_result[0].org_pid,"level":2});
+            if(province_result.length !=1){
+                reject(utils.returnMsg(false, '1000', '查找地州错误。',null,city_result[0].org_pid));
+                return;
+            }
+
+
+        }
+
+        var arr=[];
+        arr.push(statistics);
+        let insert= await process_extend_model.$ProcessTaskMoneyAuditStatistics.create(arr);
+        if(insert.length!=0)
+            resolve(utils.returnMsg(true, '2000', '插入统计表成功。',null,insert));
+        else
+            reject(utils.returnMsg(false, '1000', '插入统计表错误。',null,insert));
+    });
+    return p;
+}
+
+
 /**
  * 抄送信息给网格经理
  * @param inst_id

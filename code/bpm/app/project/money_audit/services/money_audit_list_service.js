@@ -14,6 +14,7 @@ var ObjectID = require('mongodb').ObjectID;
 var inst = require('../../bpm_resource/services/instance_service');
 var nodeTransferService=require("../../bpm_resource/services/node_transfer_service");
 var tree = require('../../../../lib/utils/tree_utils');
+var process_extend_service = require("../../bpm_resource/services/process_extend_service");
 
 /**
  * 工单列表分页
@@ -40,7 +41,7 @@ exports.getOrderListPage= function(page, size, conditionMap) {
  * @param conditionMap
  * @returns {Promise}
  */
-exports.moneyAudit= function(proc_title, user_code,userName,role_name, assign_user_no,proc_vars_parm) {
+exports.moneyAudit= function(proc_title, user_code,userName,role_name, assign_user_no,proc_vars_parm,orgId) {
 
     var p = new Promise(function(resolve,reject){
         var proc_code = "zj_101";
@@ -90,7 +91,7 @@ exports.moneyAudit= function(proc_title, user_code,userName,role_name, assign_us
                         }
                     }
 
-                    console.log(three_node_config);
+                    //console.log(three_node_config);
                     /** 其次根据第三节点配置就是，然后依据每条差错工单的渠道编码查找对应的指派账号，进行工单指派**/
                     if (three_node_config) {
                         //只能配置参照角色
@@ -108,8 +109,13 @@ exports.moneyAudit= function(proc_title, user_code,userName,role_name, assign_us
                                                 //  nodeTransferService.assign_transfer(task_id,node_code,user_code,assign_user_no,proc_title,biz_vars,proc_vars,memo).then(function(results){
                                                 //批量派发
                                                 nodeTransferService.do_payout(task_id, node_code, user_code, assign_user_no, proc_title, biz_vars, proc_vars, memo).then(function (results) {
-                                                    resolve({'success':true,'code':'1001','msg':'资金稽核派发成功',"data":task_id,"error":null});
-
+                                                    //将差错工单结果插入统计表
+                                                    process_extend_service.addStatisticsByMoneyAudit(results.data[0]._id, proc_vars_parm.start_time,orgId).then(function (rs) {
+                                                        console.log("插入统计表成功", rs);
+                                                        resolve({'success':true,'code':'1001','msg':'资金稽核派发成功',"data":task_id,"error":null});
+                                                    }).catch(function (e) {
+                                                        console.log("插入统计表失败", e);
+                                                    });
                                                 }).catch(function (err_inst) {
                                                     // console.log(err_inst);
                                                     reject({'success':false,'code':'1000','msg':'资金稽核派发失败',"error":err_inst});

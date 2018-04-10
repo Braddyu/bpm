@@ -76,6 +76,8 @@ router.route('/moneyAudit').post(function(req,res){
     var start_time= req.body.start_time;//业务名称
     var end_time= req.body.end_time;//业务名称
     var proc_content= req.body.proc_content;//业务名称
+    var orgId= req.body.orgId;//机构id
+    console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"+orgId)
     var proc_vars_parm = {};
     proc_vars_parm.proc_title=proc_title;
     proc_vars_parm.proc_inst_name=proc_inst_name;
@@ -91,7 +93,7 @@ router.route('/moneyAudit').post(function(req,res){
     proc_vars_parm.user_name=user_name;
     proc_vars_parm.user_no=user_no;
 
-    service.moneyAudit(proc_title, user_no,user_name,role_name, assign_user_no,proc_vars_parm)
+    service.moneyAudit(proc_title, user_no,user_name,role_name, assign_user_no,proc_vars_parm,orgId)
         .then(function(result){
             console.log("派发工单成功",result);
             utils.respJsonData(res, result);
@@ -106,7 +108,7 @@ router.route('/moneyAudit').post(function(req,res){
 
 
 /**
- * 资金稽核工单派单
+ * 资金稽核工单处理
  */
 router.route('/nextNodeAnduser').post(function(req,res){
     var node_code = req.body.node_code;
