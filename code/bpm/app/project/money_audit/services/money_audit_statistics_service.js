@@ -629,37 +629,25 @@ exports.createExcelOrderDetail =function createExcelOrderDetail(data) {
     let proc_code=data.proc_code;
     const headers =  [
         '工单编号',
-        '派单时间',
         '标题',
-        '派单内容',
         '类型',
+        '派单内容',
+        '派单时间',
         '当前处理人BOOS工号',
         '当前处理人',
         '当前状态',
         '是否超时',
         '超时时间',
         '工单发起人',
-        '渠道编码',
-        '渠道名称',
-        '渠道负责人BOSS工号',
-        '渠道负责人姓名',
-        '渠道负责人手机号码',
-        '所属网格编码',
-        '所属网格名称',
+        '资金稽核处理人机构编码',
+        '资金稽核处理人机构名称',
+        '资金稽核负责人BOSS工号',
+        '资金稽核负责人姓名',
+        '资金稽核负责人手机号码', 
         '所属区县编码',
         '所属区县名称',
         '渠道处理意见',
-
     ];
-    if(proc_code=='p-109'){
-        headers.push("网格负责人");
-        headers.push("网格负责人手机号码");
-        headers.push("网格处理人意见");
-    }else if(proc_code=='p-201'){
-        headers.push("省级稽核处理人");
-        headers.push("省级稽核处理人手机号码");
-        headers.push("省级稽核处理人意见");
-    }
 
     var data = [headers];
 
@@ -686,10 +674,10 @@ exports.createExcelOrderDetail =function createExcelOrderDetail(data) {
 
         const tmp = [
             c.work_order_number,
-            moment(new Date(c.proc_start_time)).format('YYYY-MM-DD'),
             c.proc_title,
-            JSON.parse(c.proc_vars).remark,
             c.proc_name,
+            JSON.parse(c.proc_vars).proc_content,
+            moment(new Date(c.proc_start_time)).format('YYYY-MM-DD'),
             work_id ,
             proc_inst_task_assignee_name,
             proc_inst_task_type,
@@ -701,8 +689,6 @@ exports.createExcelOrderDetail =function createExcelOrderDetail(data) {
             c.channel_work_id,
             c.user_name,
             c.user_phone,
-            c.grid_code,
-            c.grid_name,
             c.county_code,
             c.county_name,
             c.channel_histroy ? c.channel_histroy[0] : "",
