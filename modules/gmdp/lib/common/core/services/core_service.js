@@ -428,7 +428,7 @@ exports.userLogin = function(account, password, cb) {
             else {
                 // 根据账号名获取用户信息并关联用户所在机构，所属系统，所拥有权限
                 //userModel.$.find({'login_account':account})
-                userModel.$.find({'$or':[{'login_account':account}],user_status:1})
+                userModel.$.find({'$or':[{'login_account':account},{'user_no':account}],user_status:1})
                                .populate(['user_org', 'user_sys', {path: 'user_roles', match: { 'role_status': { $eq: 1 }}}])
                                .exec(function(error, result){
                                    // console.log("查询用户表--》",result);

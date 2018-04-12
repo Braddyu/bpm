@@ -166,56 +166,13 @@ var config = {
         options:{debug: true}
     },
     mysql:{
-        host: '10.201.253.110',
-        // host: '10.201.253.111',
-        port:3306,
-        // port:3307,
-        user: 'root',
-        password: 'repLcmc0613',//repLcmc0613
-        database: 'channel2',
-        insecureAuth:true
-    },
-
-    hh_mysql:{
         host: '192.168.9.48',
-        // host: '10.201.253.111',
         port:3306,
-        // port:3307,
         user: 'root',
-        password: 'root',//repLcmc0613
+        password: 'root',
         database: 'hh_history_gd',
         insecureAuth:true
     },
-
-    mysql_athena:{
-        host: '135.10.59.62',
-        // host: '10.201.253.111',
-        port:3306,
-        // port:3307,
-        user: 'root',
-        password: 'GzzyYfs-2016',//repLcmc0613
-        database: 'channel2',
-        insecureAuth:true
-    },
-    mysql_48:{
-        host: '192.168.9.48',
-        // host: '10.201.253.111',
-        port:3306,
-        // port:3307,
-        user: 'root',
-        password: 'root',//repLcmc0613
-        database: 'yadianna',
-        insecureAuth:true
-    },
-    ydn_mysql:{
-        //雅典娜数据库
-        host: '10.201.253.110',//测试环境：10.201.253.110;正式环境：135.10.59.62
-        port:3306,
-        user: 'root',//测试：root ;正式：readonly
-        password: 'repLcmc0613',//测试：repLcmc0613 ;正式：repLcmc0613
-        database: 'channel2'
-    },
-
     auth:{
         auth_type:'local',// local：本地认证；cas：单点登录认证
         //cas_server_url             : 'http://117.135.196.139:65080/cas',
@@ -232,31 +189,7 @@ var config = {
         // 密码每日允许错误次数
         password_daily_err_count:5
     },
-    mqtt:{
-        is_use:false,// 是否使用mqtt
-        server:{// mqtt服务器端配置
-            is_load:true,// 是否需要加载mqtt服务器模块，若为false，则不启用mqtt服务器
-            host:'127.0.0.1',// mqtt服务器地址
-            port:1883,// mqtt服务器端口
-            is_persistence:false,// 是否需要持久化mqtt消息,持久化会将消息保存在mongodb中
-            mongo_settings:{// 如果需要持久化mqtt消息，则此配置有效
-                url:'mongodb://127.0.0.1:27017/mqtt',
-                collection:'pubsub'
-            }
-        },
-        pub_client:{
-            is_load:true,// 是否需要加载mqtt发布客户端模块，若为false，则不启用mqtt发布客户端
-            server_host:'127.0.0.1',// mqtt服务器的host
-            server_port:1883,// mqtt服务器的port
-            client_ip:'127.0.0.1'// mqtt发布客户端的ip
-        },
-        sub_client:{// mqtt订阅客户端配置
-            is_load:true,// 是否需要加载mqtt订阅客户端模块，若为false，则不启用mqtt订阅客户端
-            server_host:'127.0.0.1',// mqtt服务器的host
-            server_port:1883,// mqtt服务器的port
-            client_ip:'127.0.0.1'// mqtt订阅客户端的ip
-        }
-    },
+
     //系统日志采集配置
     logger:{
         app_group : 'ywcj',
@@ -271,72 +204,6 @@ var config = {
     },
     //中间表名
     res_mapping : {table_name :"common_org_major_mapping"},
-    //定义ftp/sftp 远程地址：
-    sftpUtil1:{
-        host:'192.168.1.109',
-        port:'2121',
-        basePath:'/home/zyjhpt/exception_data/real_name_illegal/id_5_phone/',
-        start:'0001_',
-        end:'.txt',
-        flag:1,
-        charset:'',
-        temDir:'public/files/',
-        split:'|'
-    },
-    sftpUtil2:{
-        host:'192.168.1.109',
-        port:'2121',
-        basePath:'/home/zyjhpt/exception_data/real_name_illegal/other_province_id/',
-        start:'0002_',
-        end:'.txt',
-        flag:2,
-        charset:'utf-8',
-        temDir:'public/files/',
-        split:'|'
-    },
-    sftpUtil3:{
-        host:'192.168.1.109',
-        port:'2121',
-        basePath:'/home/zyjhpt/exception_data/real_name_illegal/no_second_id/',
-        start:'0003_',
-        end:'.txt',
-        flag:3,
-        charset:'utf-8',
-        temDir:'public/files/',
-        split:'|'
-    },
-    sftpUtil4:{
-        host:'192.168.1.109',
-        port:'2121',
-        basePath:'/home/zyjhpt/exception_data/job_number_exception/',
-        start:'0004_',
-        end:'.txt',
-        flag:4,
-        charset:'utf-8',
-        temDir:'public/files/',
-        split:'|'
-    },
-    ftpUtilD30173:{
-        host:'192.168.1.137',//135.10.53.110
-        //port:'2121',
-        user:"channel",
-        password : "tNi0eNL%@j",
-        basePath:'/appdata/channel/YwjhData/zdyw',
-        start:'D30173_',
-        end:'.AVL',
-        flag:0,
-        charset:'utf-8',//GBK
-        temDir:'public/files/',
-        //split:''
-    },
-    ftpUtil1:{
-        host:'192.168.1.13',
-        basePath:'/myftp/',
-        start:'D30174',
-        end:'.AVL',
-        charset:'utf-8',
-        temDir:'../public/files/'
-    },
     SMS:{
         http:'http://135.10.51.8:41500/CRMService',
         postContent:{
@@ -397,7 +264,7 @@ var config = {
     //定时任务开关明细
     switchDetail:{
         oa_switch:false,   //同步OA数据(省、地市、区县级)作业任务开关
-        athena_switch:false,  //同步雅典娜数据(网格、渠道级)作业任务开关
+        athena_switch:falsemget,  //同步雅典娜数据(网格、渠道级)作业任务开关
         athena_app_switch:false,  //同步雅典娜app数据(网格经理、厅经理、营业员)作业任务开关
         huanghe_switch:false , //差错工单同步黄河数据
         mistake_switch:false  //差错工单任务是否超时定时任务

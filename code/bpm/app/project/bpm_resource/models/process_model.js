@@ -4,7 +4,7 @@
 // 引入mongoose工具类
 var mongoUtils  = require('../../../common/core/mongodb/mongoose_utils');
 var mongoose = mongoUtils.init();
-mongoose.set("debug",false)
+mongoose.set("debug",true)
 var Schema = mongoose.Schema;
 mongoose.Promise=Promise;
 //构造触发事件，访问接口基本属性Schema对象

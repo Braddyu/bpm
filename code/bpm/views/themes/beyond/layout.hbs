@@ -10,10 +10,10 @@
     <meta name="description" content="{{projcfg.appdescription}}">
 
     <!--Basic Styles-->
-    <link href="{{projcfg.appurl}}/static/{{projcfg.theme}}css/bootstrap.min.css" rel="stylesheet" />
+    <link href="{{projcfg.appurl}}/static/{{projcfg.theme}}css/bootstrap.min.css" rel="stylesheet"/>
 
     <!-- font awesome -->
-    <link href="{{projcfg.appurl}}/static/css/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="{{projcfg.appurl}}/static/css/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet"/>
 
     <!-- Google Fonts
     <link href="{{projcfg.appurl}}/static/css/font-google/font-google.css" rel="stylesheet" />
@@ -21,14 +21,15 @@
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
-    <script src="{{projcfg.appurl}}/static/js/html5shiv/3.7.2/html5shiv.js"></script>
-    <script src="{{projcfg.appurl}}/static/js/respond/1.4.2/respond.js"></script>
-    <script src="{{projcfg.appurl}}/static/{{projcfg.theme}}js/jquery-1.11.0.js"></script>
+    <script src="{{projcfg.appurl}}                                       "></script>
+    <script src="{{projcfg.appurl}}                                   "></script>
+    <script src="{{projcfg.appurl}}        {{projcfg.theme}}                   "></script>
     <![endif]-->
 
     <!--Beyond styles-->
-    <link id="beyond-link-bak" href="{{projcfg.appurl}}/static/{{projcfg.theme}}css/beyond.min.css" rel="stylesheet" type="text/css" />
-<!--
+    <link id="beyond-link-bak" href="{{projcfg.appurl}}/static/{{projcfg.theme}}css/beyond.min.css" rel="stylesheet"
+          type="text/css"/>
+    <!--
 
     <link href="{{projcfg.appurl}}/static/{{projcfg.theme}}css/demo.min.css" rel="stylesheet" />
     <link href="{{projcfg.appurl}}/static/{{projcfg.theme}}css/typicons.min.css" rel="stylesheet" />
@@ -51,7 +52,7 @@
     <script type="text/javascript" src="{{projcfg.appurl}}/static/js/easyui/locale/easyui-lang-zh_CN.js"></script>
     <link rel="stylesheet" type="text/css" href="{{projcfg.appurl}}/static/css/common/style.css">
     <script>
-        $.ajaxSettings.beforeSend = function(xhr, request) {
+        $.ajaxSettings.beforeSend = function (xhr, request) {
             xhr.setRequestHeader('csrf-token', '{{_csrfToken}}');
         };
         $(function () {
@@ -60,12 +61,12 @@
     </script>
 </head>
 <style type="text/css">
-    .help-res:hover{
-        box-shadow:0 2px 40px rgba(0,0,0,.4);
-        border-top:2px solid #ffffff;
+    .help-res:hover {
+        box-shadow: 0 2px 40px rgba(0, 0, 0, .4);
+        border-top: 2px solid #ffffff;
     }
 </style>
-<body class="{{projcfg.skin}}" style="font-family:'Microsoft YaHei'" >
+<body class="{{projcfg.skin}}" style="font-family:'Microsoft YaHei'">
 <!-- Loading Container -->
 <div class="hidden loading-container">
     <div class="loader"></div>
@@ -78,7 +79,7 @@
             <!-- Navbar Barnd -->
             <div class="navbar-header pull-left">
                 <a href="#" class="navbar-brand">
-                    <img src="{{projcfg.appurl}}/static/images/top_logo.png" alt="" />
+                    <img src="{{projcfg.appurl}}/static/images/top_logo.png" alt=""/>
                 </a>
 
             </div>
@@ -92,9 +93,16 @@
             <div class="navbar-header pull-right">
                 <div class="navbar-account">
                     <ul class="account-area ">
+<<<<<<< HEAD
                         <li >
                             <a class="help-res"style=" padding: 8px 20px 10px 20px;height: 45px;cursor:pointer;" href="{{projcfg.appurl}}/api/res_down/res_download/list">
                                 <div style="height:100%;width:100%;line-height:25px;color:white;font-size:14px;"><span>帮助</span></div>
+=======
+                        <li>
+                            <a class="help-res" style=" padding: 8px 20px 10px 20px;height: 45px;cursor:pointer;">
+                                <div style="height:100%;width:100%;line-height:25px;color:white;font-size:14px;"><span>求助</span>
+                                </div>
+>>>>>>> b6d7593777e92ab27785c57056c50ba7f9b7cd80
                             </a>
                         </li>
                         <li>
@@ -103,63 +111,92 @@
                                     <img src="{{projcfg.appurl}}/static/{{projcfg.theme}}img/avatars/adam-jansen.jpg">
                                 </div>
                                 <section>
-                                    <h2><span class="profile"><span>{{currentUser.user_name}}&nbsp;&nbsp;</span></span></h2>
+                                    <h2><span class="profile"><span>{{currentUser.user_name}}&nbsp;&nbsp;</span></span>
+                                    </h2>
                                 </section>
                             </a>
                             {{#if currentUser.login_account}}
 
 
-                            <!--Login Area Dropdown-->
-                            <ul class="pull-right dropdown-menu dropdown-arrow dropdown-login-area">
-                                <li class="username"><a>{{currentUser.login_account}}</a></li>
-                                <li class="email"><a>{{currentUser.login_account}}</a></li>
-                              <!--  <li class="email"><a href="javascript:openCurtUserRoleModal()">(点击查看角色:{{currentUserRole.role_name}})</a></li>-->
-                               <li class="email"><a href="javascript:openCurtUserRoleModal()">(点击查看角色)</a></li>
+                                <!--Login Area Dropdown-->
+                                <ul class="pull-right dropdown-menu dropdown-arrow dropdown-login-area">
+                                    <li class="username"><a>{{currentUser.login_account}}</a></li>
+                                    <li class="email"><a>{{currentUser.login_account}}</a></li>
+                                    <!--  <li class="email"><a href="javascript:openCurtUserRoleModal()">(点击查看角色:{{currentUserRole.role_name}})</a></li>-->
+                                    <li class="email"><a href="javascript:openCurtUserRoleModal()">(点击查看角色)</a></li>
 
-                                <!--Avatar Area-->
-                                <li class="hidden">
-                                    <div class="avatar-area">
-                                        <img src="{{projcfg.appurl}}/static/{{projcfg.theme}}img/avatars/adam-jansen.jpg" class="avatar">
-                                        <span class="caption">Change Photo</span>
-                                    </div>
-                                </li>
-                                <!--Avatar Area-->
-                                <!--<li class="edit">-->
-                                    <!--<a href="{{projcfg.appurl}}{{__ "link_profile"}}" class="pull-left">{{__ "btn_profile"}}</a>-->
-                                    <!--<a href="{{projcfg.appurl}}{{__ "link_setting"}}" class="pull-right">{{__ "btn_setting"}}</a>-->
-                                <!--</li>-->
-                                <!--<li class="edit">-->
-                                <!--<a href="{{__ "link_profile"}}" class="pull-left">{{__ "btn_profile"}}</a>-->
-                                <!--<a href="{{__ "link_setting"}}" class="pull-right">{{__ "btn_setting"}}</a>-->
-                                <!--</li>-->
-                                <li class="edit">
-                                    <!--<a href="{{projcfg.appurl}}/api/common_user_profile/user_profile/to_profile" class="pull-left">{{__
+                                    <!--Avatar Area-->
+                                    <li class="hidden">
+                                        <div class="avatar-area">
+                                            <img src="{{projcfg.appurl}}/static/{{projcfg.theme}}img/avatars/adam-jansen.jpg"
+                                                 class="avatar">
+                                            <span class="caption">Change Photo</span>
+                                        </div>
+                                    </li>
+                                    <!--Avatar Area-->
+                                    <!--<li class="edit">-->
+                                    <!--<a href="{{projcfg.appurl}}{{__ "link_profile"}}" class="pull-left">{{__
                                             "btn_profile"}}</a>-->
-                                    <a href="javascript:openMyProfileModal();" class="pull-left">{{__
-                                            "btn_profile"}}</a>
-                                    <!--<a href="{{projcfg.appurl}}/api/common_user_profile/user_profile/to_edit" class="pull-right">{{__
+                                    <!--<a href="{{projcfg.appurl}}{{__ "link_setting"}}" class="pull-right">{{__
                                             "btn_setting"}}</a>-->
-                                    <a href="javascript:openEditProfileModal()" class="pull-right">{{__
-                                            "btn_setting"}}</a>
-                                </li>
-                                <!--Theme Selector Area-->
-                                <li class="theme-area">
-                                    <ul class="colorpicker" id="skin-changer">
-                                        <li><a class="colorpick-btn" href="#" style="background-color:#5DB2FF;" rel="{{projcfg.appurl}}/static/{{projcfg.theme}}css/skins/blue.min.css"></a></li>
-                                        <li><a class="colorpick-btn" href="#" style="background-color:#2dc3e8;" rel="{{projcfg.appurl}}/static/{{projcfg.theme}}css/skins/azure.min.css"></a></li>
-                                        <li><a class="colorpick-btn" href="#" style="background-color:#03B3B2;" rel="{{projcfg.appurl}}/static/{{projcfg.theme}}css/skins/teal.min.css"></a></li>
-                                        <li><a class="colorpick-btn" href="#" style="background-color:#53a93f;" rel="{{projcfg.appurl}}/static/{{projcfg.theme}}css/skins/green.min.css"></a></li>
-                                        <li><a class="colorpick-btn" href="#" style="background-color:#FF8F32;" rel="{{projcfg.appurl}}/static/{{projcfg.theme}}css/skins/orange.min.css"></a></li>
-                                        <li><a class="colorpick-btn" href="#" style="background-color:#cc324b;" rel="{{projcfg.appurl}}/static/{{projcfg.theme}}css/skins/pink.min.css"></a></li>
-                                        <li><a class="colorpick-btn" href="#" style="background-color:#AC193D;" rel="{{projcfg.appurl}}/static/{{projcfg.theme}}css/skins/darkred.min.css"></a></li>
-                                        <li><a class="colorpick-btn" href="#" style="background-color:#8C0095;" rel="{{projcfg.appurl}}/static/{{projcfg.theme}}css/skins/purple.min.css"></a></li>
-                                        <li><a class="colorpick-btn" href="#" style="background-color:#0072C6;" rel="{{projcfg.appurl}}/static/{{projcfg.theme}}css/skins/darkblue.min.css"></a></li>
-                                        <li><a class="colorpick-btn" href="#" style="background-color:#585858;" rel="{{projcfg.appurl}}/static/{{projcfg.theme}}css/skins/gray.min.css"></a></li>
-                                        <li><a class="colorpick-btn" href="#" style="background-color:#474544;" rel="{{projcfg.appurl}}/static/{{projcfg.theme}}css/skins/black.min.css"></a></li>
-                                        <li><a class="colorpick-btn" href="#" style="background-color:#001940;" rel="{{projcfg.appurl}}/static/{{projcfg.theme}}css/skins/deepblue.min.css"></a></li>
-                                    </ul>
-                                </li>
+                                    <!--</li>-->
+                                    <!--<li class="edit">-->
+                                    <!--<a href="{{__ "link_profile"}}" class="pull-left">{{__ "btn_profile"}}</a>-->
+                                    <!--<a href="{{__ "link_setting"}}" class="pull-right">{{__ "btn_setting"}}</a>-->
+                                    <!--</li>-->
+                                    <li class="edit">
+                                        <!--<a href="{{projcfg.appurl}}/api/common_user_profile/user_profile/to_profile" class="pull-left">{{__
+                                                "btn_profile"}}</a>-->
+                                        <a href="javascript:openMyProfileModal();" class="pull-left">{{__
+                                                "btn_profile"}}</a>
+                                        <!--<a href="{{projcfg.appurl}}/api/common_user_profile/user_profile/to_edit" class="pull-right">{{__
+                                                "btn_setting"}}</a>-->
+                                        <a href="javascript:openEditProfileModal()" class="pull-right">{{__
+                                                "btn_setting"}}</a>
+                                    </li>
+                                    <!--Theme Selector Area-->
+                                    <li class="theme-area">
+                                        <ul class="colorpicker" id="skin-changer">
+                                            <li><a class="colorpick-btn" href="#" style="background-color:#5DB2FF;"
+                                                   rel="{{projcfg.appurl}}/static/{{projcfg.theme}}css/skins/blue.min.css"></a>
+                                            </li>
+                                            <li><a class="colorpick-btn" href="#" style="background-color:#2dc3e8;"
+                                                   rel="{{projcfg.appurl}}/static/{{projcfg.theme}}css/skins/azure.min.css"></a>
+                                            </li>
+                                            <li><a class="colorpick-btn" href="#" style="background-color:#03B3B2;"
+                                                   rel="{{projcfg.appurl}}/static/{{projcfg.theme}}css/skins/teal.min.css"></a>
+                                            </li>
+                                            <li><a class="colorpick-btn" href="#" style="background-color:#53a93f;"
+                                                   rel="{{projcfg.appurl}}/static/{{projcfg.theme}}css/skins/green.min.css"></a>
+                                            </li>
+                                            <li><a class="colorpick-btn" href="#" style="background-color:#FF8F32;"
+                                                   rel="{{projcfg.appurl}}/static/{{projcfg.theme}}css/skins/orange.min.css"></a>
+                                            </li>
+                                            <li><a class="colorpick-btn" href="#" style="background-color:#cc324b;"
+                                                   rel="{{projcfg.appurl}}/static/{{projcfg.theme}}css/skins/pink.min.css"></a>
+                                            </li>
+                                            <li><a class="colorpick-btn" href="#" style="background-color:#AC193D;"
+                                                   rel="{{projcfg.appurl}}/static/{{projcfg.theme}}css/skins/darkred.min.css"></a>
+                                            </li>
+                                            <li><a class="colorpick-btn" href="#" style="background-color:#8C0095;"
+                                                   rel="{{projcfg.appurl}}/static/{{projcfg.theme}}css/skins/purple.min.css"></a>
+                                            </li>
+                                            <li><a class="colorpick-btn" href="#" style="background-color:#0072C6;"
+                                                   rel="{{projcfg.appurl}}/static/{{projcfg.theme}}css/skins/darkblue.min.css"></a>
+                                            </li>
+                                            <li><a class="colorpick-btn" href="#" style="background-color:#585858;"
+                                                   rel="{{projcfg.appurl}}/static/{{projcfg.theme}}css/skins/gray.min.css"></a>
+                                            </li>
+                                            <li><a class="colorpick-btn" href="#" style="background-color:#474544;"
+                                                   rel="{{projcfg.appurl}}/static/{{projcfg.theme}}css/skins/black.min.css"></a>
+                                            </li>
+                                            <li><a class="colorpick-btn" href="#" style="background-color:#001940;"
+                                                   rel="{{projcfg.appurl}}/static/{{projcfg.theme}}css/skins/deepblue.min.css"></a>
+                                            </li>
+                                        </ul>
+                                    </li>
 
+<<<<<<< HEAD
                                 <li class="edit">
                                     <!--<a href="{{projcfg.appurl}}/api/common_user_profile/user_profile/to_profile" class="pull-left">{{__
                                             "btn_profile"}}</a>-->
@@ -175,6 +212,23 @@
                                     </a>
                                 </li>
                             </ul>
+=======
+                                    <li class="edit">
+                                        <!--<a href="{{projcfg.appurl}}/api/common_user_profile/user_profile/to_profile" class="pull-left">{{__
+                                                "btn_profile"}}</a>-->
+                                        <a href="{{projcfg.appurl}}/api/suggestion/suggestion/list" class="pull-left">意见填写</a>
+                                        <!--<a href="{{projcfg.appurl}}/api/common_user_profile/user_profile/to_edit" class="pull-right">{{__
+                                                "btn_setting"}}</a>-->
+                                        <a href="#" class="pull-right">常见解答</a>
+                                    </li>
+                                    <!--/Theme Selector Area-->
+                                    <li class="dropdown-footer">
+                                        <a href="javascript:InitSys.logout('{{projcfg.appurl}}')">
+                                            {{__ "btn_logout"}}
+                                        </a>
+                                    </li>
+                                </ul>
+>>>>>>> b6d7593777e92ab27785c57056c50ba7f9b7cd80
                             {{/if}}
                             <!--/Login Area Dropdown-->
                         </li>
@@ -184,28 +238,28 @@
                         <!-- Settings -->
                     </ul>
                     <div class="setting">
-                    <a id="btn-setting" title="{{__ "tips_setting"}}" href="#">
-                        <i class="icon glyphicon glyphicon-cog"></i>
-                    </a>
-                </div>
+                        <a id="btn-setting" title="{{__ "tips_setting"}}" href="#">
+                            <i class="icon glyphicon glyphicon-cog"></i>
+                        </a>
+                    </div>
                     <div class="setting-container">
-                    <label>
-                        <input type="checkbox" id="checkbox_fixednavbar">
-                        <span class="text">{{__ "tips_fixed_navbar"}}</span>
-                    </label>
-                    <label>
-                        <input type="checkbox" id="checkbox_fixedsidebar">
-                        <span class="text">{{__ "tips_fixed_sideBar"}}</span>
-                    </label>
-                    <label>
-                        <input type="checkbox" id="checkbox_fixedbreadcrumbs">
-                        <span class="text">{{__ "tips_fixed_breadcrumbs"}}</span>
-                    </label>
-                    <label>
-                        <input type="checkbox" id="checkbox_fixedheader">
-                        <span class="text">{{__ "tips_fixed_header"}}</span>
-                    </label>
-                </div>
+                        <label>
+                            <input type="checkbox" id="checkbox_fixednavbar">
+                            <span class="text">{{__ "tips_fixed_navbar"}}</span>
+                        </label>
+                        <label>
+                            <input type="checkbox" id="checkbox_fixedsidebar">
+                            <span class="text">{{__ "tips_fixed_sideBar"}}</span>
+                        </label>
+                        <label>
+                            <input type="checkbox" id="checkbox_fixedbreadcrumbs">
+                            <span class="text">{{__ "tips_fixed_breadcrumbs"}}</span>
+                        </label>
+                        <label>
+                            <input type="checkbox" id="checkbox_fixedheader">
+                            <span class="text">{{__ "tips_fixed_header"}}</span>
+                        </label>
+                    </div>
                     <!-- Settings -->
                 </div>
             </div>
@@ -233,53 +287,59 @@
                     {{#ifCond @key ../currentUserRole.sys_id}}
                         {{#each this}}
                             {{#containKey ../../../currentUserRoleMenus menu_code ../../../currentUser.login_account}}
-                    <li>
-                        {{#if children}}
-                        <a href="#" class="menu-dropdown">
-                        {{else}}
-                        <a target="{{menu_target}}" href="{{../../../../../projcfg.appurl}}/{{menu_code}}">
-                        {{/if}}
-                        <i class="{{menu_cls}}"></i>
-                        <span class="menu-text"> {{menu_name}} </span>
-                        {{#if children}}
-                            <i class="menu-expand"></i>
-                        {{/if}}
-                    </a>
-                        {{#if children}}
-                            <ul class="submenu">
-                                {{#each children}}
-                                    {{#containKey ../../../../../../currentUserRoleMenus menu_code ../../../../../../currentUser.login_account}}
-                                    <li>
-                                        {{#if children}}
-                                        <a href="#" class="menu-dropdown">
-                                        {{else}}
-                                        <a target="{{menu_target}}" href="{{../../../../../../../../projcfg.appurl}}/{{menu_code}}">
-                                        {{/if}}
-                                        <span class="menu-text">{{menu_name}}</span>
-                                        {{#if children}}
-                                            <i class="menu-expand"></i>
-                                        {{/if}}
-                                    </a>
-                                        {{#if children}}
-                                            <ul class="submenu">
-                                                {{#each children}}
-                                                    {{#containKey ../../../../../../../../../currentUserRoleMenus menu_code ../../../../../../../../../currentUser.login_account}}
+                                <li>
+                                    {{#if children}}
+                                    <a href="#" class="menu-dropdown">
+                                    {{else}}
+                                    <a target="{{menu_target}}" href="{{../../../../../projcfg.appurl}}/{{menu_code}}">
+                                    {{/if}}
+                                    <i class="{{menu_cls}}"></i>
+                                    <span class="menu-text"> {{menu_name}} </span>
+                                    {{#if children}}
+                                        <i class="menu-expand"></i>
+                                    {{/if}}
+                                </a>
+                                    {{#if children}}
+                                        <ul class="submenu">
+                                            {{#each children}}
+                                                {{#containKey ../../../../../../currentUserRoleMenus menu_code
+                                                              ../../../../../../currentUser.login_account}}
                                                     <li>
-                                                        <a target="{{menu_target}}" href="{{../../../../../../../../../../projcfg.appurl}}/{{menu_code}}">
-                                                            <i class="{{menu_cls}}"></i>
-                                                            <span class="menu-text">{{menu_name}}</span>
-                                                        </a>
+                                                        {{#if children}}
+                                                        <a href="#" class="menu-dropdown">
+                                                        {{else}}
+                                                        <a target="{{menu_target}}"
+                                                           href="{{../../../../../../../../projcfg.appurl}}/{{menu_code}}">
+                                                        {{/if}}
+                                                        <span class="menu-text">{{menu_name}}</span>
+                                                        {{#if children}}
+                                                            <i class="menu-expand"></i>
+                                                        {{/if}}
+                                                    </a>
+                                                        {{#if children}}
+                                                            <ul class="submenu">
+                                                                {{#each children}}
+                                                                    {{#containKey
+                                                                            ../../../../../../../../../currentUserRoleMenus
+                                                                            menu_code
+                                                                            ../../../../../../../../../currentUser.login_account}}
+                                                                        <li>
+                                                                            <a target="{{menu_target}}"
+                                                                               href="{{../../../../../../../../../../projcfg.appurl}}/{{menu_code}}">
+                                                                                <i class="{{menu_cls}}"></i>
+                                                                                <span class="menu-text">{{menu_name}}</span>
+                                                                            </a>
+                                                                        </li>
+                                                                    {{/containKey}}
+                                                                {{/each}}
+                                                            </ul>
+                                                        {{/if}}
                                                     </li>
-                                                    {{/containKey}}
-                                                {{/each}}
-                                            </ul>
-                                        {{/if}}
-                                    </li>
-                                    {{/containKey}}
-                                {{/each}}
-                            </ul>
-                        {{/if}}
-                    </li>
+                                                {{/containKey}}
+                                            {{/each}}
+                                        </ul>
+                                    {{/if}}
+                                </li>
                             {{/containKey}}
                         {{/each}}
                     {{/ifCond}}
@@ -322,9 +382,9 @@
                         <i class="glyphicon glyphicon-fullscreen"></i>
                     </a>
                     {{#if can_customize}}
-                    <a id="setting-toggler" href="javascript:openModuleDialog();">
-                        <i class="glyphicon glyphicon-plus"></i>
-                    </a>
+                        <a id="setting-toggler" href="javascript:openModuleDialog();">
+                            <i class="glyphicon glyphicon-plus"></i>
+                        </a>
                     {{/if}}
                 </div>
                 <!--Header Buttons End-->
@@ -356,21 +416,21 @@
         <div class="tickets-container padding-0" style="background-color:#fff;padding-top: 0px;">
             <ul class="tickets-list">
                 {{#each currentUser.user_roles}}
-                   <li class="ticket-item margin-10"style="width:29%;float:left;cursor: pointer;">
-                <!--<li class="ticket-item margin-10" onclick="switchRole('{{../projcfg.appurl}}','{{_id}}')" style="width:29%;float:left;cursor: pointer;">-->
-                    <div class="row">
-                        <div class="ticket-type">
-                            <i class="fa fa-users blue"></i>
-                            <span class="type">{{role_name}}</span>
-                        </div>
-                        <!--<div class="ticket-state {{#ifCond _id ../currentUserRole._id}}bg-palegreen{{/ifCond}}">
+                    <li class="ticket-item margin-10" style="width:29%;float:left;cursor: pointer;">
+                        <!--<li class="ticket-item margin-10" onclick="switchRole('{{../projcfg.appurl}}','{{_id}}')" style="width:29%;float:left;cursor: pointer;">-->
+                        <div class="row">
+                            <div class="ticket-type">
+                                <i class="fa fa-users blue"></i>
+                                <span class="type">{{role_name}}</span>
+                            </div>
+                            <!--<div class="ticket-state {{#ifCond _id ../currentUserRole._id}}bg-palegreen{{/ifCond}}">
                             <i class="fa fa-check"></i>
                         </div>-->
-                        <div class="ticket-state bg-palegreen">
-                            <i class="fa fa-check"></i>
+                            <div class="ticket-state bg-palegreen">
+                                <i class="fa fa-check"></i>
+                            </div>
                         </div>
-                    </div>
-                </li>
+                    </li>
                 {{/each}}
             </ul>
         </div>
@@ -417,6 +477,18 @@
                                     </div>
                                     <div class="row">
                                         <label class="col-sm-3 control-label no-padding-right"
+                                               style="line-height: 34px">工号：</label>
+                                        <div class="col-sm-9">
+                                            <div class="last-form-group">
+                                        <span class="input-icon icon-right">
+                                            <input type="text" class="form-control" value="{{currentUser.user_no}}"
+                                                   id="" disabled="disabled" placeholder="">
+                                        </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <label class="col-sm-3 control-label no-padding-right"
                                                style="line-height: 34px">邮　　箱：</label>
                                         <div class="col-sm-9">
                                             <div class="last-form-group">
@@ -434,7 +506,8 @@
                                         <div class="col-sm-9">
                                             <div class="last-form-group">
                                                 <span class="input-icon icon-right">
-                                                    <input type="text" class="form-control"  id="org_name"  disabled="disabled">
+                                                    <input type="text" class="form-control" id="org_name"
+                                                           disabled="disabled">
                                                     <!--<i class="fa fa-user"></i>-->
                                                 </span>
                                             </div>
@@ -569,22 +642,32 @@
     </div>
 </div>
 <script>
+    /**/
     var user_tag = '{{currentUser.user_tag}}';
     var user_id = '{{currentUser._id}}';
+    var login_password = '{{currentUser.login_password}}';
+    if (login_password == 'd23d703e0eb4b14f1e16e83908c10868') {
+        msgConfirm("您的密码为初始密码，请尽快修改！", function (r) {
+            if (r) {
+                openEditProfileModal()
+            }
+        });
+    }
+
     function openMyProfileModal() {
         info();
         $('#myProfileModal').show();
         $('#myProfileModal').mydialog({
-            title:"个人信息",
+            title: "个人信息",
             width: 700,
             height: 425,
-            top:100,
+            top: 100,
             modal: true,
-            myButtons:[
+            myButtons: [
                 {
-                    text:'关闭',
-                    btnCls:'btn btn-danger',
-                    handler:function(){
+                    text: '关闭',
+                    btnCls: 'btn btn-danger',
+                    handler: function () {
                         $('#myProfileModal').dialog('close');
                     }
                 }
@@ -628,6 +711,7 @@
         });
         return flag;
     }
+
     function openEditProfileModal() {
         bootbox.dialog({
             message: $("#editProfileModal").html(),
@@ -650,6 +734,7 @@
             }
         });
     }
+
     function submitPwdInfo() {
         /*var edit_user_name = $("input[id='edit_user_name']").get(1).value;
         var edit_user_phone = $("input[id='edit_user_phone']").get(1).value;*/
@@ -665,9 +750,14 @@
             msgError("请输入新密码！");
             return false;
         }
-        var reg = /^(?:(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!@$%^&*])(?=.*[^A-Za-z0-9])).{6,18}$/;
-        if (!reg.test(new_password)) {
-            msgError("密码格式需要长度在6~18之间，必须包含大写、小写、数字、特殊字符(特殊字符不能是#号)！");
+        //var reg = /^(?:(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!@$%^&*])(?=.*[^A-Za-z0-9])).{6,18}$/;
+//        if (!reg.test(new_password)) {
+//            msgError("密码格式需要长度在6~18之间，必须包含大写、小写、数字、特殊字符(特殊字符不能是#号)！");
+//            return false;
+//        }
+
+        if (new_password.length < 6 || new_password.length >18) {
+            msgError("密码格式需要长度在6~18之间！");
             return false;
         }
         if (new_password != confirm_password) {
@@ -693,7 +783,12 @@
             },
             success: function (data) {
                 if (data.success == true) {
-                    msgSuccess(data.msg);
+                    if(login_password == 'd23d703e0eb4b14f1e16e83908c10868'){
+                        msgSuccess(data.msg+",请重新登录");
+                    }else{
+                        msgSuccess(data.msg);
+                    }
+
                     flag = true;
                 } else {
                     msgError(data.msg);
@@ -702,6 +797,7 @@
         });
         return flag;
     }
+
 </script>
 </body>
 </html>

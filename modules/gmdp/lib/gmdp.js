@@ -15,7 +15,6 @@ exports.init_gmdp = function() {
         uum_role_services : require('./common/uum/services/role_service'),
         uum_login_services : require('./common/uum/services/login_service'),
         core_user_model : require('./common/core/models/user_model'),
-        mysql_utils : require('./common/core/utils/mysql_utils'),
         role_menu_model : require('./common/core/models/role_menu_model'),
 
         // 初始化系统

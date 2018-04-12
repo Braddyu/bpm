@@ -108,12 +108,15 @@ exports.getMistakeListPage = function (page, size, conditionMap) {
  * @param queryDate
  * @returns {Promise}
  */
-exports.dispatch = function (queryDate, check_status, user_no, user_name, role_name, business_name, city_code, work_id) {
+exports.dispatch = function (queryDate, check_status, user_no, user_name, role_name, business_name, city_code, work_id,status) {
     //处理流程
     var proc_code = 'p-201';
 
     var p = new Promise(function (resolve, reject) {
-        var queryJson = {"mistake_time": queryDate, "status": 0};
+        var queryJson = { "status": status};
+        if(queryDate){
+            queryJson.mistake_time=queryDate
+        }
         if (check_status)
             queryJson.remark = check_status;
         if (business_name)
@@ -337,8 +340,8 @@ function insertMistake(mistake, three_node_config, proc_code, user_name, role_na
     return new Promise(function (resolve, reject) {
         //工号和业务名称必须存在
         if (mistake.salesperson_code && mistake.business_name) {
-            //查找用户
-            user_model.$User.find({"work_id": mistake.salesperson_code}, function (err, res) {
+            //查找用户,存在相同工号不同角色的人，这里限制只能营业员
+            user_model.$User.find({"work_id": mistake.salesperson_code,"user_roles":{$in:["5a26418c5eb3fe1068448753"]}}, function (err, res) {
                 if (err) {
                     reject({'success': false, 'code': '1000', 'msg': '找用户系统错误', "error": err});
                 } else {
@@ -400,7 +403,7 @@ function insertMistake(mistake, three_node_config, proc_code, user_name, role_na
                                                             });
                                                         } else {
                                                             //将差错工单结果插入统计表
-                                                            process_extend_service.addStatistics(results.data[0]._id, queryDate).then(function (rs) {
+                                                            process_extend_service.addStatistics(results.data[0]._id, queryDate,mistake.channel_id).then(function (rs) {
                                                                 console.log("插入统计表成功", rs);
                                                             }).catch(function (e) {
                                                                 console.log("插入统计表失败", e);
