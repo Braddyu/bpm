@@ -41,3 +41,42 @@
 [2018-03-26 12:27:38.794] [ERROR] error - { code: 'checkCode', info: '编码重复', msg: '"p-109"' }
 [2018-03-26 12:54:05.063] [ERROR] error - { code: 'checkCode', info: '编码重复', msg: '"p_104"' }
 [2018-03-26 12:55:25.847] [ERROR] error - { code: 'checkCode', info: '编码重复', msg: '"p-108"' }
+[2018-04-12 13:25:56.601] [ERROR] error - { code: 'getProcessDefineByConditionMap',
+  info: '获取流程定义信息时出现异常',
+  msg: '{"name":"MongoError","message":"connection 14 to 192.168.9.48:27017 timed out"}' }
+[2018-04-12 13:25:56.618] [ERROR] error - { code: 'getProcessDefineByConditionMap',
+  info: '获取流程定义信息时出现异常',
+  msg: '{"name":"MongoError","message":"connection 14 to 192.168.9.48:27017 timed out"}' }
+[2018-04-12 13:25:56.623] [ERROR] error - { code: 'getProcessDefineByConditionMap',
+  info: '获取流程定义信息时出现异常',
+  msg: '{"name":"MongoError","message":"connection 27 to 192.168.9.48:27017 timed out"}' }
+[2018-04-12 13:25:56.624] [ERROR] error - { code: 'getProcessDefineByConditionMap',
+  info: '获取流程定义信息时出现异常',
+  msg: '{"name":"MongoError","message":"connection 27 to 192.168.9.48:27017 timed out"}' }
+[2018-04-12 13:25:56.624] [ERROR] error - { code: 'getProcessDefineByConditionMap',
+  info: '获取流程定义信息时出现异常',
+  msg: '{"name":"MongoError","message":"connection 1 to 192.168.9.48:27017 timed out"}' }
+[2018-04-12 13:25:56.624] [ERROR] error - { code: 'getProcessDefineByConditionMap',
+  info: '获取流程定义信息时出现异常',
+  msg: '{"name":"MongoError","message":"connection 1 to 192.168.9.48:27017 timed out"}' }
+[2018-04-12 13:25:56.624] [ERROR] error - { code: 'getProcessDefineByConditionMap',
+  info: '获取流程定义信息时出现异常',
+  msg: '{"name":"MongoError","message":"connection 12 to 192.168.9.48:27017 timed out"}' }
+[2018-04-12 13:25:56.625] [ERROR] error - { code: 'getProcessDefineByConditionMap',
+  info: '获取流程定义信息时出现异常',
+  msg: '{"name":"MongoError","message":"connection 21 to 192.168.9.48:27017 timed out"}' }
+[2018-04-12 13:25:56.625] [ERROR] error - { code: 'getProcessDefineByConditionMap',
+  info: '获取流程定义信息时出现异常',
+  msg: '{"name":"MongoError","message":"connection 11 to 192.168.9.48:27017 timed out"}' }
+[2018-04-12 13:25:56.625] [ERROR] error - { code: 'getProcessDefineByConditionMap',
+  info: '获取流程定义信息时出现异常',
+  msg: '{"name":"MongoError","message":"connection 9 to 192.168.9.48:27017 timed out"}' }
+[2018-04-12 13:25:56.625] [ERROR] error - { code: 'getProcessDefineByConditionMap',
+  info: '获取流程定义信息时出现异常',
+  msg: '{"name":"MongoError","message":"connection 16 to 192.168.9.48:27017 timed out"}' }
+[2018-04-12 13:25:56.625] [ERROR] error - { code: 'getProcessDefineByConditionMap',
+  info: '获取流程定义信息时出现异常',
+  msg: '{"name":"MongoError","message":"connection 16 to 192.168.9.48:27017 timed out"}' }
+[2018-04-12 13:25:56.625] [ERROR] error - { code: 'getProcessDefineByConditionMap',
+  info: '获取流程定义信息时出现异常',
+  msg: '{"name":"MongoError","message":"connection 16 to 192.168.9.48:27017 timed out"}' }
