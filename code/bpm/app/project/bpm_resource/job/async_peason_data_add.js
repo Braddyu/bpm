@@ -14,8 +14,6 @@ exports.sync_data_from_Athena = function () {
     sync_data_from_Athena();
 }
 
-update_data();
-
 function sync_data_from_Athena() {
     update_data();
 }
