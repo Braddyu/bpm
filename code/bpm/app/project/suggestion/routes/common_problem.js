@@ -83,4 +83,32 @@ router.route("/update_problem").post(function(req,res){
     })
 })
 
+
+//列出常见问题
+router.route("/common_answer").get(function(req,res){
+    res.render(config.project.appviewurl+'/project/suggestion/common_answer',{
+        title: '意见填写' ,
+        subtitle: 'Hello',
+        layout:'themes/admin/layout',
+        currentUser:req.session.current_user
+    });
+});
+
+//列出常见问题
+router.route("/list_answer").post(function(req,res){
+    var condition={};
+    var suggestion_title = req.body.suggestion_title;
+    if (suggestion_title) {
+        condition.suggestion_title = suggestion_title;
+    }
+    var page = req.body.page;
+    var size = req.body.rows;
+    service.list_answers(condition,page,size).then(function(rs){
+        utils.respJsonData(res,rs);
+    }).catch(function(err) {
+        console.log(err);
+        utils.respJsonData(res, {"data": null, "error": err, "code": "2000", "msg": "查询数据错误", "success": false});
+    })
+});
+
 module.exports = router;

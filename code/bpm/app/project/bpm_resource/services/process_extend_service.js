@@ -17,7 +17,7 @@ var process_util = require('../../../utils/process_util');
  * @param dispatch_time 派单时间
  * @returns {Promise}
  */
-exports.addStatistics = function(inst_id,dispatch_time) {
+exports.addStatistics = function(inst_id,dispatch_time,channel_id) {
 
     var p = new Promise(async function(resolve,reject) {
 
@@ -65,7 +65,13 @@ exports.addStatistics = function(inst_id,dispatch_time) {
         //被派渠道工号
         statistics.work_id=user_result[0].work_id;
         //查找渠道信息
-        let channel_result= await user_model.$CommonCoreOrg.find({"_id":org_id,"level":6} );
+        let channel_result;
+        if(channel_id){
+            channel_result = await user_model.$CommonCoreOrg.find({"company_code":channel_id} );
+        }else{
+             channel_result= await user_model.$CommonCoreOrg.find({"company_code":org_id,"level":6} );
+
+        }
         if(channel_result.length !=1 ){
             reject(utils.returnMsg(false, '1000', '查找渠道错误。',null,org_id));
             return;

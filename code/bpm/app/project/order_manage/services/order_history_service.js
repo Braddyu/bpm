@@ -2,7 +2,7 @@ var config = require('../../../../config');
 var history_model = require('../models/history_model');
 var utils = require('../../../../lib/utils/app_utils');
 var mysql  = require('mysql');
-var pool_hh_history = mysql.createPool(config.hh_mysql);
+var pool_hh_history = mysql.createPool(config.mysql);
 /**
  * 历史工单列表分页
  * @param page

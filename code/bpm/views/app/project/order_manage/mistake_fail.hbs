@@ -15,6 +15,7 @@
                                 <div class="btn-group" role="group" aria-label="...">
                                     <label for="filterParam3">地市：</label>
                                     <select class="easyui-combobox"id="city_code"  data-options="panelHeight:'auto'"style="width: 180px;height:31px;">
+                                        <option value="">===全部===</option>
                                         <option value="850">贵安</option>
                                         <option value="851">贵阳</option>
                                         <option value="852">遵义</option>
@@ -33,6 +34,7 @@
                                     <div class="form-group">
                                         <div class="input-group">
                                             <span class="input-group-btn">
+                                                 <button class="btn btn-default" type="button" onclick="dispatch()"><i class="fa fa-search"></i>派单</button>
                                                 <button class="btn btn-default" type="button" onclick="doSearch()"><i class="fa fa-search"></i>查询</button>
                                             </span>
                                         </div>
@@ -143,4 +145,43 @@
              }
      );
  }
+    //派单
+    function dispatch(){
+            $.messager.confirm('提示', '您确定派单吗?', function(r){
+                if (r){
+                    $.ajax({
+                        url: '{{projcfg.appurl}}/api/order_manage/mistake_list/dispatch',
+                        type: 'post',
+                        dataType:'json',
+                        timeout: 100000000,
+                        data: {
+                            queryDate:$('#queryDate').datebox('getValue'),
+                            _csrf: '{{ _csrfToken }}',
+                            city_code:$('#city_code').combobox('getValue'),
+                            status:-1
+                        },
+                        beforeSend: ajaxLoading,
+                        success: function (data) {
+                            ajaxLoadEnd();
+                            if(data.success){
+                                $("#mistakeTablelist").datagrid('reload')
+                                $.messager.alert('提示',data.msg);
+                            }else{
+                                $.messager.alert('错误提示',data.msg);
+                            }
+                        }
+                    });
+                }
+            });
+
+
+    }
+    function ajaxLoading(){
+        $("<div class=\"datagrid-mask\"></div>").css({display:"block",width:"100%",height:"50px"}).appendTo("body");
+        $("<div class=\"datagrid-mask-msg\"></div>").html("正在派单，请稍候...").appendTo("body").css({display:"block",height:"50px",left:($(document.body).outerWidth(true) - 190) / 2,top:($(window).height() - 45) / 2});
+    }
+    function ajaxLoadEnd(){
+        $(".datagrid-mask").remove();
+        $(".datagrid-mask-msg").remove();
+    }
 </script>

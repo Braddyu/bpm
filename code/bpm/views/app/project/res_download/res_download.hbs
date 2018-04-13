@@ -4,6 +4,7 @@
         <link href='https://fonts.googleapis.com/css?family=Open+Sans:300,400,600&subset=latin,latin-ext' rel='stylesheet'>
     </head>
     <script type="text/javascript">
+
         function DropDown(el) {
             this.dd = el;
             this.placeholder = this.dd.children('span');
@@ -45,8 +46,36 @@
             });
 
         });
+
+        function cc() {
+            $("#cc").show();
+            $("#yj").hide();
+            $("#zj").hide();
+        }
+
+        function yj() {
+            $("#cc").hide();
+            $("#yj").show();
+            $("#zj").hide();
+        }
+
+        function zj() {
+            $("#cc").hide();
+            $("#yj").hide();
+            $("#zj").show();
+        }
+
+        //下载
+        function downloadFile(name){
+            //alert(name);
+            window.location.href = "{{projcfg.appurl}}/api/res_down/res_download/downloadAnnex?fileName="+name;
+        }
     </script>
     <style type="text/css">
+        #bj{
+            background-color: #1E90FF;
+        }
+
         #mainDiv{
             width: 800px;
             height:900px;
@@ -96,42 +125,106 @@
         }
     </style>
     <body>
+    <div id="bj">
         <div id="mainDiv">
             <div id="title"><span class="title-text">资料下载</span></div>
             <div id="query">
-                <div id="dd" class="wrapper-dropdown-3 type" tabindex="1">
+                <input id="retunBtn"  style="float: right;top: 7px" class="btn" onclick="javascript:history.go(-1)" value="返回" type="button">
+
+                <div id="dd" style="width: 200px" class="wrapper-dropdown-3 type" tabindex="1">
                     <span class="type-title">类型</span>
                     <ul class="dropdown" tabindex="1">
                         <li>
-                            <a href="#">差错工单</a>
+                            <a href="#" onclick="cc()">差错工单帮助材料</a>
                         </li>
                         <li>
-                            <a href="#">预警工单</a>
+                            <a href="#" onclick="yj()">预警工单帮助材料</a>
+                        </li>
+                        <li>
+                            <a href="#" onclick="zj()">资金稽核帮助材料</a>
                         </li>
                     </ul>
                 </div>
             </div>
+
             <div class="files">
-               <ul class="ul-file">
-                   <li title="点击下载">
-                       <a>差错工单流程演示.mp4</a>
+               <ul class="ul-file" id="cc">
+
+                   <li>
+                       <div>
+                           <a onclick='downloadFile("差错工单流程演示.mp4")'>差错工单流程演示.mp4</a>
+                           <input type='button'   style="position: relative ;left:300px;" onclick='downloadFile("差错工单流程演示.mp4")' value='立即下载'/>
+                       </div>
                    </li>
-                   <li title="点击下载">
-                       <a>工单统计详细功能演示.mp4</a>
+
+                   <li>
+                       <a onclick='downloadFile("工单统计详细功能演示.mp4")'>工单统计详细功能演示.mp4</a>
+                       <input type='button'   style="position: relative ;left:275px;" onclick='downloadFile("工单统计详细功能演示.mp4")' value='立即下载'/>
+
                    </li>
-                   <li title="点击下载">
-                       <a>省级稽核人员---差错工单操作手册.word</a>
+
+                   <li>
+                       <a onclick='downloadFile("省级稽核人员---差错工单操作手册.docx")'>省级稽核人员---差错工单操作手册.docx</a>
+                       <input type='button'   style="position: relative ;left:205px;" onclick='downloadFile("省级稽核人员---差错工单操作手册.docx")' value='立即下载'/>
                    </li>
-                   <li title="点击下载">
-                       <a>营业员--差错工单操作手册.word</a>
+
+                   <li>
+                       <a onclick='downloadFile("营业员--差错工单操作手册.docx")'>营业员--差错工单操作手册.docx</a>
+                       <input type='button'   style="position: relative ;left:249px;" onclick='downloadFile("营业员--差错工单操作手册.docx")' value='立即下载'/>
+
                    </li>
-                   <li title="点击下载">
-                       <a>营业员处理流程演示.mp4</a>
+
+                   <li>
+                       <a onclick='downloadFile("营业员处理流程演示.mp4")'>营业员处理流程演示.mp4</a>
+                       <input type='button'  style="position: relative ;left:287px;" onclick='downloadFile("营业员处理流程演示.mp4")' value='立即下载'/>
+
                    </li>
+
                </ul>
+
+
+                <ul class="ul-file" id="yj" style="display:none">
+
+                    <li>
+                        <a onclick='downloadFile("工单统计详细功能演示.mp4")'>工单统计详细功能演示.mp4</a>
+                        <input type='button'  style="position: relative ;left:274px;" onclick='downloadFile("工单统计详细功能演示.mp4")' value='立即下载'/>
+
+                    </li>
+
+                    <li>
+                        <a onclick='downloadFile("差错工单流程演示.mp4")' >厅经理处理演示.mp4</a>
+                        <input type='button'   style="position: relative ;left:313px;" onclick='downloadFile("差错工单流程演示.mp4")' value='立即下载'/>
+
+                    </li>
+
+                    <li>
+                        <a onclick='downloadFile("网格经理处理演示.mp4")'>网格经理处理演示.mp4</a>
+                        <input type='button'   style="position: relative ;left:300px;" onclick='downloadFile("网格经理处理演示.mp4")' value='立即下载'/>
+
+                    </li>
+
+                    <li>
+                        <a onclick='downloadFile("预警工单操作手册.docx")'>预警工单操作手册.docx</a>
+                        <input type='button'   style="position: relative ;left:299px;" onclick='downloadFile("预警工单操作手册.docx")' value='立即下载'/>
+
+                    </li>
+
+                </ul>
+
+
+                <ul class="ul-file" id="zj" style="display:none">
+                    <li>
+                        <a onclick='downloadFile("资金稽核操作文档.docx")'>资金稽核操作文档.docx</a>
+                        <input type='button'  style="position: relative ;left:350px;" onclick='downloadFile("资金稽核操作文档.docx")' value='立即下载'/>
+
+                    </li>
+                </ul>
+
+
             </div>
             <div>
             </div>
         </div>
+    </div>
     </body>
 </html>
