@@ -277,6 +277,11 @@
  function dispatch(){
 
         if($('#queryDate').datebox('getValue')){
+            var data=$('#mistakeTablelist').datagrid('getData');
+            if(data.total == 0){
+                $.messager.alert('提示','当前列表无数据，请查询有数据后再派单。');
+                return;
+            }
             $.messager.confirm('提示', '您确定派单吗?', function(r){
                 if (r){
                     $.ajax({
