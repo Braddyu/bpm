@@ -21,7 +21,7 @@ router.route('/')
         var conditionMap = {};
         // or 查询
         if(org_name){
-            conditionMap['$or'] = [{'org_code':new RegExp(org_name)},{'org_name':new RegExp(org_name)}];
+            conditionMap['$or'] = [{'company_code':new RegExp(org_name)},{'org_name':new RegExp(org_name)}];
         }
         if(org_pid) {
             conditionMap.org_pid = org_pid;
@@ -35,7 +35,7 @@ router.route('/')
     .post(function(req,res){
 
         // 获取提交信息
-        var orgCode = req.body.org_code;//机构编号
+        var company_code = req.body.company_code;//机构编号
         var orgName = req.body.org_name;//机构名
         var orgFullname = req.body.org_fullname;//机构全名
         var orgOrder = req.body.org_order;//排序号
@@ -48,7 +48,7 @@ router.route('/')
         var if_money_audit_org = req.body.if_money_audit_org;//是否属于资金稽核工单机构
 
         // 验证机构编号是否为空
-        if(!orgCode) {
+        if(!company_code) {
             utils.respMsg(res, false, '2001', '机构编号不能为空。', null, null);
         }
         // 验证机构名是否为空
@@ -82,7 +82,7 @@ router.route('/')
 
         //构造机构保存参数
         var orgEntity = {};
-        orgEntity.org_code = orgCode;
+        orgEntity.company_code = company_code;
         orgEntity.org_name = orgName;
         orgEntity.org_fullname = orgFullname;
         orgEntity.org_order = orgOrder;
@@ -128,7 +128,7 @@ router.route('/:id')
     // -------------------------------update修改-------------------------------
     .put(function(req,res) {
         var id = req.params.id;//机构id
-        var orgCode = req.body.org_code;//机构编号
+        var company_code = req.body.company_code;//机构编号
         var orgName = req.body.org_name;//机构名
         var orgFullname = req.body.org_fullname;//机构全名
         var orgOrder = req.body.org_order;//排序号
@@ -179,7 +179,7 @@ router.route('/:id')
 
         //构造机构保存参数
         var orgEntity = {};
-        orgEntity.org_code = orgCode;
+        orgEntity.company_code = company_code;
         orgEntity.org_name = orgName;
         orgEntity.org_fullname = orgFullname;
         orgEntity.org_order = orgOrder;
@@ -199,7 +199,9 @@ router.route('/:id')
 
         var conditions = {_id: id};
         var update = {$set: orgEntity};
+
         service.updateOrg(conditions,update,function(result){
+
             utils.respJsonData(res, result);
         });
     })
@@ -211,7 +213,7 @@ router.route('/:id')
             utils.respMsg(res, false, '1009', 'id不能为空。', null, null);
         }
         var criteria = {_id: id}; // 查询条件
-        var fields = {_id:0, org_code: 1, org_name: 1, org_fullname: 1, org_order: 1, org_type: 1, org_pid: 1, org_status: 1, org_remark: 1, org_belong:1,audit_org_pid:1,if_money_audit_org:1}; // 待返回的字段
+        var fields = {_id:0, org_code: 1, org_name: 1, org_fullname: 1,company_code:1, org_order: 1, org_type: 1, org_pid: 1, org_status: 1, org_remark: 1, org_belong:1,audit_org_pid:1,if_money_audit_org:1}; // 待返回的字段
         var options = {};
         service.getOrg(criteria,fields,function(result){
             utils.respJsonData(res, result);

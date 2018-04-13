@@ -485,9 +485,9 @@
 
 
                 }},
+            {"field": "proc_name","title":"类型","width":"150px"},
             {"field": "proc_vars","title":"派单内容","width":"300px",
                 formatter:function(value,row,index){
-
                     if(value){
                         var json=JSON.parse(value);
                         if(json){
@@ -502,7 +502,14 @@
 
 
                 }},
-            {"field": "proc_name","title":"类型","width":"150px"},
+            {"field": "proc_start_time","title":"派单时间","width":"150px",
+                formatter:function(value,row,index){
+                    var isoDateStr = value.substring(0,value.indexOf('.'));
+                    var date=new Date(isoDateStr.replace(/-/g,'/').replace(/T|Z/g,' '));
+                    date.setHours(date.getHours()+8)
+                    return  date.Format("yyyy-MM-dd hh:mm:ss");
+
+                }},
             {"field": "work_id","title":"当前处理人BOSS工号","width":"150px"},
             {"field": "proc_inst_task_assignee_name","title":"当前处理人","width":"150px",
                 formatter:function(value,row,index){
@@ -524,23 +531,33 @@
 
 
                 }},
-            {"field": "proc_start_time","title":"派单时间","width":"150px",
+            {"field": "is_overtime","title":"是否超时","width":"150px",
                 formatter:function(value,row,index){
-                    var isoDateStr = value.substring(0,value.indexOf('.'));
-                    var date=new Date(isoDateStr.replace(/-/g,'/').replace(/T|Z/g,' '));
-                    date.setHours(date.getHours()+8)
-                    return  date.Format("yyyy-MM-dd hh:mm:ss");
-
+                    var json=JSON.parse(row.proc_vars);
+                    if(json){
+                        var end_time = json.end_time.replace("-","/");//替换字符，变成标准格式
+                        var d2=new Date();//取今天的日期
+                        var d1 = new Date(Date.parse(end_time));
+                        if(d1>d2){
+                            return  '<span style="color:green">未超时</span>';
+                        }else{
+                            return '<span style="color:red">已超时</span>';
+                        }
+                    }
                 }},
-
-            {"field": "proc_start_user_name","title":"工单发起人","width":"150px"},
-            {"field": "channel_code","title":"渠道编码","width":"100px"},
-            {"field": "channel_name","title":"渠道名称","width":"300px"},
-            {"field": "channel_work_id","title":"渠道负责人BOSS工号","width":"170px"},
-            {"field": "user_name","title":"渠道负责人","width":"150px"},
-            {"field": "user_phone","title":"渠道负责人手机号码","width":"150px"},
-            {"field": "grid_code","title":"所属网格编码","width":"150px"},
-            {"field": "grid_name","title":"所属网格","width":"150px"},
+            {"field": "end_time","title":"超时时间","width":"300px",
+                formatter:function(value,row,index){
+                    var json=JSON.parse(row.proc_vars);
+                    if(json){
+                        return "<span title='" + json.end_time + "'>" + json.end_time + "</span>";
+                    }
+                }},
+            {"field": "proc_start_user_name","title":"派单人","width":"150px"},
+            {"field": "channel_code","title":"资金稽核处理人机构编码","width":"100px"},
+            {"field": "channel_name","title":"资金稽核处理人机构名称","width":"300px"},
+            {"field": "channel_work_id","title":"资金稽核负责人BOSS工号","width":"170px"},
+            {"field": "user_name","title":"资金稽核负责人姓名","width":"150px"},
+            {"field": "user_phone","title":"资金稽核负责人手机号码","width":"150px"},
             {"field": "county_code","title":"所属区县编码","width":"150px"},
             {"field": "county_name","title":"所属区县","width":"150px"},
             {"field": "channel_histroy","title":"被派单渠道处理意见","width":"150px",
@@ -552,47 +569,28 @@
                     }
                 }}
         ];
-        if($("#proc_code").combobox('getValue')=='p-109'){
-            field.push({"field": "two_histroy","title":"网格负责人","width":"150px",
-                formatter:function(value,row,index){
-                    if(value && value.length > 0){
-                        return value[0].proc_inst_task_assignee_name;
-                    }
-                }});
-            field.push( {"field": "two_histroy1","title":"网格负责人手机号码","width":"150px",
-                formatter:function(value,row,index){
-                    if(row.two_histroy && row.two_histroy.length > 0){
-                        return row.two_histroy[0].proc_inst_task_assignee;
-                    }
-                }});
-            field.push( {"field": "two_histroy2","title":"网格处理人意见","width":"150px",
-                formatter:function(value,row,index){
-                    if(row.two_histroy  && row.two_histroy.length > 0 ){
-                        return row.two_histroy[0].proc_inst_task_remark;
-                    }
-                }})
-        }else{
 
-            field.push({"field": "two_histroy","title":"省级稽核负责人","width":"150px",
-                formatter:function(value,row,index){
-                    if(value && value.length > 0){
-                        return value[0].proc_inst_task_assignee_name;
-                    }
-                }});
-            field.push( {"field": "two_histroy1","title":"省级稽核负责人手机号码","width":"150px",
-                formatter:function(value,row,index){
-                    if(row.two_histroy && row.two_histroy.length > 0){
-                        return row.two_histroy[0].proc_inst_task_assignee;
-                    }
-                }});
-            field.push({"field": "two_histroy2","title":"省级稽核处理人意见","width":"150px",
-                formatter:function(value,row,index){
-                    if(row.two_histroy  && row.two_histroy.length > 0 ){
-                        return row.two_histroy[0].proc_inst_task_remark;
-                    }
-                }});
 
-        }
+//        /*field.push({"field": "two_histroy","title":"省级稽核负责人","width":"150px",
+//            formatter:function(value,row,index){
+//                if(value && value.length > 0){
+//                    return value[0].proc_inst_task_assignee_name;
+//                }
+//            }});
+//        field.push( {"field": "two_histroy1","title":"省级稽核负责人手机号码","width":"150px",
+//            formatter:function(value,row,index){
+//                if(row.two_histroy && row.two_histroy.length > 0){
+//                    return row.two_histroy[0].proc_inst_task_assignee;
+//                }
+//            }});
+//        field.push({"field": "two_histroy2","title":"省级稽核处理人意见","width":"150px",
+//            formatter:function(value,row,index){
+//                if(row.two_histroy  && row.two_histroy.length > 0 ){
+//                    return row.two_histroy[0].proc_inst_task_remark;
+//                }
+//            }});*/
+
+
 
         $('#detailTable').datagrid({
             url:'{{projcfg.appurl}}/api/money_audit/money_audit_statistics/detail_list',
@@ -634,6 +632,18 @@
                     },
                     modal : true
                 });
+
+            },
+            rowStyler: function (index, row) {
+                var json=JSON.parse(row.proc_vars);
+                if(json){
+                    var end_time = json.end_time.replace("-","/");//替换字符，变成标准格式
+                    var d2=new Date();//取今天的日期
+                    var d1 = new Date(Date.parse(end_time));
+                    if(d1<d2){
+                        return 'background-color:red;';
+                    }
+                }
 
             },
             onLoadSuccess:function(json) {

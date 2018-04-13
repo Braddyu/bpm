@@ -10,6 +10,7 @@ var mongoUtils = require('../../../common/core/mongodb/mongoose_utils');
 var mongoose = mongoUtils.init();
 var xlsx = require('node-xlsx');
 var config = require('../../../../config');
+var nodegrass = require("nodegrass");
 /**
  * 查询差错工单列表
  * @param page
@@ -216,7 +217,91 @@ exports.dispatch = function (queryDate, check_status, user_no, user_name, role_n
     return p;
 };
 
+/**
+ * 查询是否有派单日志
+ * @param conditionMap
+ */
+exports.dispatch_logs_date = function(conditionMap){
+    return new Promise(function (resolve, reject) {
+        console.log(conditionMap);
+        mistake_model.$ProcessMistakeLogs.find(conditionMap, function (err,result) {
+            if (err) {
+                reject({'success': false, 'code': '1000', 'msg': '按条件查询派单日志失败', "error": err});
+            } else {
+                var flag = false;
+                if(result.length == 0){
+                    flag = true;
+                }else{
+                    for(var i=0;i<result.length;i++){
+                        if(result[i]._doc.status == 0){//派单中
+                            flag = false;
+                            continue;
+                        }
+                    }
+                }
+                resolve({
+                    'success': true,
+                    'code': '1000',
+                    'msg': '查询日志成功',
+                    'data':flag
+                });
 
+            }
+        });
+    });
+};
+
+/**
+ * 调用派单接口
+ * @param datas
+ */
+exports.getInterface = function(queryDate,check_status,user_no,user_name,role_name,business_name,city_code,work_id,status,mlog_id){
+    var REQUST_HEADERS = {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'token':'MdHk08AaAwif7X9s6VHPiDkKZ'
+    };
+    var p = new Promise(function (resolve, reject) {
+        nodegrass.post(config.api_interface_url+"/gdgl/api/task/dispatch",
+            function (resp, status, headers) {
+                if(status=='200'){
+                    resolve(JSON.parse(resp));
+                }else{
+                    resolve({'success':false,'code':status,'msg':'差错工单派单异常'});
+                }
+            },
+            REQUST_HEADERS,
+            {'queryDate': queryDate,'check_status':check_status,'user_no': user_no,'user_name':user_name,'role_name':role_name,'work_id':work_id,'city_code':city_code,'business_name':business_name,'mlog_id':mlog_id,'status':status,time:new Date()},
+            'utf8').on('error', function (e) {
+            console.log("Got error: " + e.message);
+            resolve({'success':false,'code':'1000','msg':'差错工单派单异常'});
+        });
+    });
+    return p;
+};
+
+/**
+ * 新增派单日志
+ * @param datas
+ * @returns {Promise}
+ */
+exports.addMistakeLog = function(datas){
+    return new Promise(function (resolve, reject) {
+        //将派发结果插入日志表中
+        mistake_model.$ProcessMistakeLogs.create(datas, function (err,result) {
+            if (err) {
+                resolve({'success': false, 'code': '1000', 'msg': '新增派单日志表失败', "error": err});
+            } else {
+                resolve({
+                    'success': true,
+                    'code': '1000',
+                    'msg': '派单日志新增成功',
+                    'data':result
+                });
+
+            }
+        });
+    });
+};
 /**
  * 获取派单日志详情
  * @param page
@@ -341,8 +426,8 @@ function insertMistake(mistake, three_node_config, proc_code, user_name, role_na
     return new Promise(function (resolve, reject) {
         //工号和业务名称必须存在
         if (mistake.salesperson_code && mistake.business_name) {
-            //查找用户
-            user_model.$User.find({"work_id": mistake.salesperson_code}, function (err, res) {
+            //查找用户,存在相同工号不同角色的人，这里限制只能营业员
+            user_model.$User.find({"work_id": mistake.salesperson_code,"user_roles":{$in:["5a26418c5eb3fe1068448753"]}}, function (err, res) {
                 if (err) {
                     reject({'success': false, 'code': '1000', 'msg': '找用户系统错误', "error": err});
                 } else {
@@ -404,7 +489,7 @@ function insertMistake(mistake, three_node_config, proc_code, user_name, role_na
                                                             });
                                                         } else {
                                                             //将差错工单结果插入统计表
-                                                            process_extend_service.addStatistics(results.data[0]._id, queryDate).then(function (rs) {
+                                                            process_extend_service.addStatistics(results.data[0]._id, queryDate,mistake.channel_id).then(function (rs) {
                                                                 console.log("插入统计表成功", rs);
                                                             }).catch(function (e) {
                                                                 console.log("插入统计表失败", e);

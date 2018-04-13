@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var utils = require('../../../../lib/utils/app_utils');
 var service = require('../services/mistake_list_service');
+var config = require('../../../../config');
 var xss = require('xss');
 
 /**
@@ -12,7 +13,6 @@ router.route('/list').post(function(req,res){
     console.log("开始获取所有工单列表...");
     var queryDate = req.body.queryDate;//查询时间
     var status = req.body.status;//查询状态
-    var city_code= req.body.city_code;//地市编码
     var check_status= req.body.check_status;//稽核状态
     var business_name= req.body.business_name;//业务名称
     var city_code= req.body.city_code;//地州
@@ -61,7 +61,7 @@ router.route('/list').post(function(req,res){
 /**
  * 差错工单派单
  */
-router.route('/dispatch').post(function(req,res){
+router.route('/dispatch').post(function(req,resp){
     console.log("开始派单...");
     var queryDate = req.body.queryDate.replace(/\-/g,'');//查询时间
     var check_status= req.body.check_status;//稽核状态
@@ -78,19 +78,66 @@ router.route('/dispatch').post(function(req,res){
     var work_id=req.session.current_user.work_id;
     var user_name=req.session.current_user.user_name;
     var role_name=req.session.current_user.user_roles[0].role_name;
-    console.log(queryDate,check_status,user_no,user_name,role_name,business_name,city_code,work_id,mlog_id);
-    // 调用分页
-    service.dispatch(queryDate,check_status,user_no,user_name,role_name,business_name,city_code,work_id,status,mlog_id)
-        .then(function(result){
-            console.log("派发工单成功",result);
-            utils.respJsonData(res, result);
-        })
-        .catch(function(err){
-            utils.respJsonData(res, err);
-            console.log('派发工单失败',err);
 
+    var mlog_id ='';
+
+    var datas = [];
+    var data = {};
+    data.proc_code = config.mistake_proc_code;
+    data.proc_name = config.mistake_proc_name;
+    data.dispatch_time = queryDate;
+    data.create_user_no = work_id?work_id:user_no;
+    data.create_user_name = user_name;
+    data.update_user_no = '';
+    data.dispatch_cond_one = check_status?check_status:'';
+    data.dispatch_cond_two = city_code?city_code:'';
+    data.dispatch_cond_thr = business_name?business_name:'';
+    data.create_time = new Date();
+    //0表示派单中，1表示：派单全部成功。2表示：派单部分成功。3表示：派单全部失败。
+    data.status = 0;
+    data.dispatch_remark = '';
+    datas.push(data);
+
+    service.addMistakeLog(datas).then(function(result){
+        mlog_id = result.data[0]._id.toString();
+        service.getInterface(queryDate,data.dispatch_cond_one,user_no,user_name,role_name,data.dispatch_cond_thr,data.dispatch_cond_two,data.create_user_no,status,mlog_id).then(function(dispres){
+            utils.respJsonData(resp, dispres);
         });
+    });
+
 })
+
+/**
+ * 根据条件查询是否有派单的日志
+ */
+router.route('/mistakelog').post(function(req,res){
+    var queryDate = req.body.queryDate;//查询时间
+    var city_code= req.body.city_code;//地市编码
+    var check_status= req.body.check_status;//稽核状态
+    var business_name= req.body.business_name;//业务名称
+    var city_code= req.body.city_code;//地州
+    var conditionMap = {};
+    if(queryDate){
+        conditionMap.dispatch_time =queryDate.replace(/\-/g,'');
+    }
+    if(city_code){
+        conditionMap.dispatch_cond_two=city_code;
+    }
+    if(check_status){
+        conditionMap.dispatch_cond_one=check_status;
+    }
+    if(business_name){
+        conditionMap.dispatch_cond_thr=business_name;
+    }
+    conditionMap.proc_code = config.mistake_proc_code;
+    conditionMap.proc_name = config.mistake_proc_name;
+    service.dispatch_logs_date(conditionMap).then(function (result) {
+        utils.respJsonData(res, result);
+    }).catch(function(err){
+        console.log('获取所有工单列表失败',err);
+
+    });
+});
 
 /**
  * 删除

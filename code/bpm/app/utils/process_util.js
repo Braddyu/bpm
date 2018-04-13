@@ -140,6 +140,10 @@ exports.httpPost=function(postContent,options){
     return  new Promise(function(resolve,reject){
         try{
                 console.log("postContent",JSON.stringify(postContent));
+                options.headers={
+                    'Content-Type':'application/x-www-form-urlencoded; charset=UTF-8',
+                        'Content-Length':Buffer.byteLength(JSON.stringify(postContent))
+                }
                 console.log("options",JSON.stringify(options));
                 //返回结果
                 var result={};

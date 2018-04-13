@@ -11,7 +11,7 @@ var proc = require('../services/process_service');
 var config = require('../../../../config');
 
 
-    // -------------------------------查询我的待办数据接口-------------------------------
+// -------------------------------查询我的待办数据接口-------------------------------
 exports.task=function() {
 
     //中间件
@@ -195,148 +195,130 @@ exports.task=function() {
 
 // -------------------------------完成任务接口-------------------------------
     router.route('/complete').post(function (req, res) {
-            var id = req.body.id;//任务id
-            var memo = req.body.memo;//处理意见
-            var user_code = req.body.user_no;//处理人编码
-            var params = req.body.params;//流转参数
-            var biz_vars = req.body.biz_vars;//业务变量
-            var proc_vars = req.body.proc_vars;//流程变量
-            var next_name = req.body.next_name;
-            // 任务是否为空
-            if (!id) {
-                utils.respMsg(res, false, '2001', '任务ID不能为空。', null, null);
-                return;
-            }else{
-                inst.proving_Id(id).then(function (rs) {
-                    if(rs.success&&rs.data[0].proc_inst_task_status==1){
-                        utils.respMsg(res,false, '0000', '任务已完成不能重复完成', null, null);
-                        return ;
-                    }else{
-                        try{
-                            if (!user_code) {
-                                utils.respMsg(res, false, '2001', '处理人编码不能为空。', null, null);
-                                return ;
-                            } else {
-                                //判断用户是否存在
-                                inst.userInfo(user_code).then(function (rs) {
-                                    if (rs.success && rs.data.length == 1) {
-                                        inst.getTaskById(id).then(function (taskresult) {
-                                            if (taskresult.success) {
-                                                var node_code = taskresult.data._doc.proc_inst_task_code;
-                                                //流程流转方法
-                                                nodeTransferService.transfer(id, node_code, user_code, true, memo, params, biz_vars, proc_vars,next_name).then(function (result1) {
-                                                    utils.respJsonData(res, result1);
-                                                }).catch(function (err_inst) {
-                                                    // console.log(err_inst);
-                                                    logger.error("route-transfer", "流程流转异常", err_inst);
-                                                    utils.respMsg(res, false, '1000', '流程流转异常', null, err_inst);
-                                                });
-                                            } else {
-                                                utils.respJsonData(res, taskresult);
-                                            }
-                                        }).catch(function (err_inst) {
-                                            logger.error("route-getTaskById", "获取任务异常", err_inst);
-                                            utils.respMsg(res, false, '1000', '获取任务异常', null, err_inst);
-                                        });
-                                    } else {
-                                        utils.respMsg(res, false, '1000', '用户不存在', null, null);
-                                    }
-                                });
-                            }
-                        }catch(e){
-                            utils.respMsg(res, false, '1000', '查询错误', null, e);
+        var id = req.body.id;//任务id
+        var memo = req.body.memo;//处理意见
+        var user_code = req.body.user_no;//处理人编码
+        var params = req.body.params;//流转参数
+        var biz_vars = req.body.biz_vars;//业务变量
+        var proc_vars = req.body.proc_vars;//流程变量
+        var next_name = req.body.next_name;
+        // 任务是否为空
+        if (!id) {
+            utils.respMsg(res, false, '2001', '任务ID不能为空。', null, null);
+            return;
+        }else{
+            inst.proving_Id(id).then(function (rs) {
+                if(rs.success&&rs.data[0].proc_inst_task_status==1){
+                    utils.respMsg(res,false, '0000', '任务已完成不能重复完成', null, null);
+                    return ;
+                }else{
+                    try{
+                        if (!user_code) {
+                            utils.respMsg(res, false, '2001', '处理人编码不能为空。', null, null);
+                            return ;
+                        } else {
+                            //判断用户是否存在
+                            inst.userInfo(user_code).then(function (rs) {
+                                if (rs.success && rs.data.length == 1) {
+                                    inst.getTaskById(id).then(function (taskresult) {
+                                        if (taskresult.success) {
+                                            var node_code = taskresult.data._doc.proc_inst_task_code;
+                                            //流程流转方法
+                                            nodeTransferService.transfer(id, node_code, user_code, true, memo, params, biz_vars, proc_vars,next_name).then(function (result1) {
+                                                utils.respJsonData(res, result1);
+                                            }).catch(function (err_inst) {
+                                                // console.log(err_inst);
+                                                logger.error("route-transfer", "流程流转异常", err_inst);
+                                                utils.respMsg(res, false, '1000', '流程流转异常', null, err_inst);
+                                            });
+                                        } else {
+                                            utils.respJsonData(res, taskresult);
+                                        }
+                                    }).catch(function (err_inst) {
+                                        logger.error("route-getTaskById", "获取任务异常", err_inst);
+                                        utils.respMsg(res, false, '1000', '获取任务异常', null, err_inst);
+                                    });
+                                } else {
+                                    utils.respMsg(res, false, '1000', '用户不存在', null, null);
+                                }
+                            });
                         }
+                    }catch(e){
+                        utils.respMsg(res, false, '1000', '查询错误', null, e);
                     }
-                });
-            }
-        });
+                }
+            });
+        }
+    });
 
 // -------------------------------获取指定任务接口-------------------------------
-    router.route('/query').post(function (req, res) {
+    router.route('/query').post(function(req,res){
         var taskid = req.body.taskId;//任务id
         var flag = req.body.flag;//标识
-        if (taskid) {
-            inst.getCompTaskById(taskid, flag).then(function (result) {
-                utils.respJsonData(res, result);
-            }).catch(function (err_inst) {
+        if(taskid){
+            inst.getCompTaskById(taskid,flag).then(function(result){
+                utils.respJsonData(res,result);
+            }).catch(function(err_inst){
                 // console.log(err_inst);
-                logger.error("route-getCompTaskById", "获取任务异常", err_inst);
+                logger.error("route-getCompTaskById","获取任务异常",err_inst);
                 utils.respMsg(res, false, '1000', '获取任务异常', null, err_inst);
             });
-        } else {
+        }else{
             utils.respMsg(res, false, '2001', '任务ID为空', null, null);
         }
     });
 
-
-// -------------------------------获取指定任务接口-------------------------------
-router.route('/query').post(function(req,res){
-    var taskid = req.body.taskId;//任务id
-    var flag = req.body.flag;//标识
-    if(taskid){
-        inst.getCompTaskById(taskid,flag).then(function(result){
-            utils.respJsonData(res,result);
-        }).catch(function(err_inst){
-            // console.log(err_inst);
-            logger.error("route-getCompTaskById","获取任务异常",err_inst);
-            utils.respMsg(res, false, '1000', '获取任务异常', null, err_inst);
-        });
-    }else{
-        utils.respMsg(res, false, '2001', '任务ID为空', null, null);
-    }
-});
-
 // -------------------------------指派任务的方法的接口-------------------------------
-router.route("/assign/task").post(function(req,res){
-    var task_id=req.body.task_id;//当前任务id
-    var node_code=req.body.node_code;//下一节点编号
-    var user_no=req.body.user_no;//当前用户编号
-    var assign_user_no=req.body.assign_user_no;//下一节点处理人编号
-    var proc_title=req.body.proc_title;//标题
-    var biz_vars=req.body.biz_vars;//业务变量
-    var proc_vars=req.body.proc_vars;//流程变量
-    var memo=req.body.memo;//处理意见
-    var next_name = req.body.next_name;//下一节点处理人姓名
-    var proc_back = req.body.proc_back;//回退标识1-回退 0-正常流转
-    if(!assign_user_no){
-        utils.respMsg(res, false, '2001', '下一节点处理人编号为空', null, null);
-        return;
-    }
-    if(!node_code){
-        utils.respMsg(res, false, '2001', '下一节点编号为空', null, null);
-        return;
-    }
-    if(!task_id){
-        utils.respMsg(res, false, '2001', '任务ID为空', null, null);
-        return;
-    }
-    try{
-        if(!user_no){
-            utils.respMsg(res, false, '2001', '当前处理人编号为空', null, null);
-        }else{
-            inst.proving_taskId(task_id).then(function (rs) {
-                if(rs.data!=1){
-                    inst.userInfo(user_no).then(function(rs){
-                        if(rs.success && rs.data.length == 1){
-                            nodeTransferService.assign_transfer(task_id,node_code,user_no,assign_user_no,proc_title,biz_vars,proc_vars,memo,next_name,proc_back).then(function(rs){
-                                utils.respJsonData(res,rs);
-                            }).catch(function(err){
-                                logger.error("route-assign_transfer","信息异常",err);
-                                utils.respMsg(res, false, '1000', 'route-assign_transfer', null, err);
-                            });
-                        }else{
-                            utils.respMsg(res, false, '1000', '用户不存在', null, null);
-                        }
-                    });
-                }else{
-                    utils.respMsg(res,true, '0000', '任务已完成', null, null);
-                }
-            });
+    router.route("/assign/task").post(function(req,res){
+        var task_id=req.body.task_id;//当前任务id
+        var node_code=req.body.node_code;//下一节点编号
+        var user_no=req.body.user_no;//当前用户编号
+        var assign_user_no=req.body.assign_user_no;//下一节点处理人编号
+        var proc_title=req.body.proc_title;//标题
+        var biz_vars=req.body.biz_vars;//业务变量
+        var proc_vars=req.body.proc_vars;//流程变量
+        var memo=req.body.memo;//处理意见
+        var next_name = req.body.next_name;//下一节点处理人姓名
+        var proc_back = req.body.proc_back;//回退标识1-回退 0-正常流转
+        if(!assign_user_no){
+            utils.respMsg(res, false, '2001', '下一节点处理人编号为空', null, null);
+            return;
         }
-    }catch(e){
-        utils.respMsg(res, false, '1000', '查询错误', null, e);
-    }
-});
+        if(!node_code){
+            utils.respMsg(res, false, '2001', '下一节点编号为空', null, null);
+            return;
+        }
+        if(!task_id){
+            utils.respMsg(res, false, '2001', '任务ID为空', null, null);
+            return;
+        }
+        try{
+            if(!user_no){
+                utils.respMsg(res, false, '2001', '当前处理人编号为空', null, null);
+            }else{
+                inst.proving_taskId(task_id).then(function (rs) {
+                    if(rs.data!=1){
+                        inst.userInfo(user_no).then(function(rs){
+                            if(rs.success && rs.data.length == 1){
+                                nodeTransferService.assign_transfer(task_id,node_code,user_no,assign_user_no,proc_title,biz_vars,proc_vars,memo,next_name,proc_back).then(function(rs){
+                                    utils.respJsonData(res,rs);
+                                }).catch(function(err){
+                                    logger.error("route-assign_transfer","信息异常",err);
+                                    utils.respMsg(res, false, '1000', 'route-assign_transfer', null, err);
+                                });
+                            }else{
+                                utils.respMsg(res, false, '1000', '用户不存在', null, null);
+                            }
+                        });
+                    }else{
+                        utils.respMsg(res,true, '0000', '任务已完成', null, null);
+                    }
+                });
+            }
+        }catch(e){
+            utils.respMsg(res, false, '1000', '查询错误', null, e);
+        }
+    });
 
 
 // -------------------------------获取任务处理日志的接口-------------------------------
@@ -543,153 +525,172 @@ router.route("/assign/task").post(function(req,res){
 
 // -------------------------------查询流程信息接口-------------------------------
 
-router.route("/process_info").post(function(req,res){
-    var proc_code = req.body.proc_code; //流程编码
-    if(proc_code){
-        nodeTransferService.process_infomation(proc_code).then(function(rs){
-            utils.respJsonData(res,rs);
-        }).catch (function(err){
-            logger.error("route-process_infomation","获取流程信息异常",err);
-            utils.respMsg(res, false, '1000', '获取流程信息异常', null, null);
-        });
-    }else{
-        utils.respMsg(res, false, '2001', '流程编码为空', null, null);
-    }
+    router.route("/process_info").post(function(req,res){
+        var proc_code = req.body.proc_code; //流程编码
+        if(proc_code){
+            nodeTransferService.process_infomation(proc_code).then(function(rs){
+                utils.respJsonData(res,rs);
+            }).catch (function(err){
+                logger.error("route-process_infomation","获取流程信息异常",err);
+                utils.respMsg(res, false, '1000', '获取流程信息异常', null, null);
+            });
+        }else{
+            utils.respMsg(res, false, '2001', '流程编码为空', null, null);
+        }
 
-});
+    });
 
 
-/*
-区县公司调账(营业员--非销户)归档接口(慧眼系统)
- */
-router.route("/pigeonhole").post(function(req,res){
-    var proc_inst_id=req.body.proc_inst_id;//流程实例id
-    if(proc_inst_id){
-        inst.goPigeonhole(proc_inst_id).then(function(rs){
-            utils.respJsonData(res,rs);
-        }).catch(function(err_inst){
-            logger.error("route-goPigeonhole","流程归档异常",err_inst);
-            utils.respMsg(res, false, '1000', '流程归档异常', null, err_inst);
-        });
-    }else{
-        utils.respMsg(res, false, '2001', '实例编号不能为空', null, null);
-    }
-});
-/**
- * 任务回退接口(慧眼系统)
- */
-router.route("/back").post(function(req,res){
-    var _id=req.body.task_id;//当前任务id
-    var user_no = req.body.user_no;//当前用户编号
-    var memo=req.body.memo;//处理意见
-    var node_code = req.body.node_code;//当前节点编码
-    var node_name = req.body.node_name;//当前节点名称
-    if(!_id){
-        utils.respMsg(res, false, '2001', '任务编号不能为空', null, null);
-        return;
-    }
-    if(!user_no){
-        utils.respMsg(res, false, '2001', '当前节点处理人编码不能为空', null, null);
-        return;
-    }
-    if(!node_code){
-        utils.respMsg(res, false, '2001', '当前节点编码不能为空', null, null);
-        return;
-    }
-    if(!node_name){
-        utils.respMsg(res, false, '2001', '当前节点名称不能为空', null, null);
-        return;
-    }
-    try{
-        inst.proving_taskId(_id).then(function (rs){
-            if(rs.data!=1){
-                inst.return_task(_id,user_no,memo,node_code,node_name).then(function(rs){
-                    utils.respJsonData(res,rs);
-                }).catch(function(err_inst){
-                    logger.error("return_task","任务回退异常",err_inst);
-                    utils.respMsg(res, false, '1000', '任务回退异常', null, err_inst);
-                });
-            }else{
-                utils.respMsg(res,true, '0000', '任务已完成', null, null);
-            }
-        });
-    }catch(e){
-        utils.respMsg(res,true, '1000', '查询错误', null, e);
-    }
-});
-
-/**
- * 完成任务(慧眼系统)
- */
-router.route("/finish/task").post(async (req,res)=>{
-    let user_no=req.body.user_no;
-    let task_id=req.body.task_id;
-    if(task_id&&user_no){
-        utils.respJsonData(res, utils.returnMsg(false, '1000', "传入参数不正确" , null, null));
-    }
-    try{
-        let rs=await nodeTransferService.finish_task(task_id,user_no);
-        utils.respJsonData(res, rs);
-    }catch(err){
-        logger.error("route-/finish/task", "完成任务失败", err);
-        utils.respMsg(res, false, '1000', '完成任务失败', null, );
-    }
-});
-
-/**
- * 用户参与过的流程(慧眼系统)
- * gdgl/api/task/find/instanceId
- */
-router.route("/find/instanceId").post(function(req,res){
-    let user_no=req.body.user_no;//用户编号
-    let joinup_sys=req.body.joinup_sys;//所属流程编号
+    /*
+    区县公司调账(营业员--非销户)归档接口(慧眼系统)
+     */
+    router.route("/pigeonhole").post(function(req,res){
+        var proc_inst_id=req.body.proc_inst_id;//流程实例id
+        if(proc_inst_id){
+            inst.goPigeonhole(proc_inst_id).then(function(rs){
+                utils.respJsonData(res,rs);
+            }).catch(function(err_inst){
+                logger.error("route-goPigeonhole","流程归档异常",err_inst);
+                utils.respMsg(res, false, '1000', '流程归档异常', null, err_inst);
+            });
+        }else{
+            utils.respMsg(res, false, '2001', '实例编号不能为空', null, null);
+        }
+    });
+    /**
+     * 任务回退接口(慧眼系统)
+     */
+    router.route("/back").post(function(req,res){
+        var _id=req.body.task_id;//当前任务id
+        var user_no = req.body.user_no;//当前用户编号
+        var memo=req.body.memo;//处理意见
+        var node_code = req.body.node_code;//当前节点编码
+        var node_name = req.body.node_name;//当前节点名称
+        if(!_id){
+            utils.respMsg(res, false, '2001', '任务编号不能为空', null, null);
+            return;
+        }
+        if(!user_no){
+            utils.respMsg(res, false, '2001', '当前节点处理人编码不能为空', null, null);
+            return;
+        }
+        if(!node_code){
+            utils.respMsg(res, false, '2001', '当前节点编码不能为空', null, null);
+            return;
+        }
+        if(!node_name){
+            utils.respMsg(res, false, '2001', '当前节点名称不能为空', null, null);
+            return;
+        }
         try{
-           inst.find_instanceId(user_no,joinup_sys).then(function (rs) {
-               utils.respJsonData(res,rs);
-           }).catch(function(err_inst){
-               logger.error("return_task","查询流程异常",err_inst);
-               utils.respMsg(res, false, '1000', '查询流程异常', null, err_inst);
-           });
+            inst.proving_taskId(_id).then(function (rs){
+                if(rs.data!=1){
+                    inst.return_task(_id,user_no,memo,node_code,node_name).then(function(rs){
+                        utils.respJsonData(res,rs);
+                    }).catch(function(err_inst){
+                        logger.error("return_task","任务回退异常",err_inst);
+                        utils.respMsg(res, false, '1000', '任务回退异常', null, err_inst);
+                    });
+                }else{
+                    utils.respMsg(res,true, '0000', '任务已完成', null, null);
+                }
+            });
         }catch(e){
-           utils.respMsg(res, false, '1000', '查询流程异常', null, e);
-         }
-});
+            utils.respMsg(res,true, '1000', '查询错误', null, e);
+        }
+    });
 
-/**
- * 差错工单派单
- */
-router.route('/dispatch').post(function(req,res){
-    console.log("开始派单...");
-    var queryDate = req.body.queryDate.replace(/\-/g,'');//查询时间
-    var check_status= req.body.check_status;//稽核状态
-    var business_name= req.body.business_name;//业务名称
-    var city_code= req.body.city_code;//地州
-    var mlog_id= req.body.mlog_id;//预先插入的日志ID
-    var status= req.body.status;//派单状态
-    if(!queryDate){
-        var result={"success":false,"msg":"查询时间不得为空"};
-        utils.respJsonData(res, result);
-        return;
-    }
-    var user_no=req.body.user_no;
-    var work_id=req.body.work_id;
-    var user_name=req.body.user_name;
-    var role_name=req.body.role_name;
+    /**
+     * 完成任务(慧眼系统)
+     */
+    router.route("/finish/task").post(async (req,res)=>{
+        let user_no=req.body.user_no;
+        let task_id=req.body.task_id;
+        if(task_id&&user_no){
+            utils.respJsonData(res, utils.returnMsg(false, '1000', "传入参数不正确" , null, null));
+        }
+        try{
+            let rs=await nodeTransferService.finish_task(task_id,user_no);
+            utils.respJsonData(res, rs);
+        }catch(err){
+            logger.error("route-/finish/task", "完成任务失败", err);
+            utils.respMsg(res, false, '1000', '完成任务失败', null, );
+        }
+    });
 
-    console.log(queryDate,check_status,user_no,user_name,role_name,business_name,city_code,work_id,mlog_id);
-    // 调用分页
-    mistakeService.dispatch(queryDate,check_status,user_no,user_name,role_name,business_name,city_code,work_id,status,mlog_id)
-        .then(function(result){
-            console.log("派发工单成功",result);
+    /**
+     * 用户参与过的流程(慧眼系统)
+     * gdgl/api/task/find/instanceId
+     */
+    router.route("/find/instanceId").post(function(req,res){
+        let user_no=req.body.user_no;//用户编号
+        let joinup_sys=req.body.joinup_sys;//所属流程编号
+        try{
+            inst.find_instanceId(user_no,joinup_sys).then(function (rs) {
+                utils.respJsonData(res,rs);
+            }).catch(function(err_inst){
+                logger.error("return_task","查询流程异常",err_inst);
+                utils.respMsg(res, false, '1000', '查询流程异常', null, err_inst);
+            });
+        }catch(e){
+            utils.respMsg(res, false, '1000', '查询流程异常', null, e);
+        }
+    });
+
+    /*
+     将单元测试产生的数据删除
+     */
+
+    router.route("/delete").post(function(req,res){
+        let joinup_sys='unitTest_node';//所属流程编号
+        try{
+            inst.delete(joinup_sys).then(function (rs) {
+                utils.respJsonData(res,rs);
+            }).catch(function(err_inst){
+                logger.error("return_task","查询流程异常",err_inst);
+                utils.respMsg(res, false, '1000', '查询流程异常', null, err_inst);
+            });
+        }catch(e){
+            utils.respMsg(res, false, '1000', '查询流程异常', null, e);
+        }
+    });
+
+    /**
+     * 差错工单派单
+     */
+    router.route('/dispatch').post(function(req,res){
+        console.log("开始派单...");
+        var queryDate = req.body.queryDate.replace(/\-/g,'');//查询时间
+        var check_status= req.body.check_status;//稽核状态
+        var business_name= req.body.business_name;//业务名称
+        var city_code= req.body.city_code;//地州
+        var mlog_id= req.body.mlog_id;//预先插入的日志ID
+        var status= req.body.status;//派单状态
+        if(!queryDate){
+            var result={"success":false,"msg":"查询时间不得为空"};
             utils.respJsonData(res, result);
-        })
-        .catch(function(err){
-            utils.respJsonData(res, err);
-            console.log('派发工单失败',err);
+            return;
+        }
+        var user_no=req.body.user_no;
+        var work_id=req.body.work_id;
+        var user_name=req.body.user_name;
+        var role_name=req.body.role_name;
 
-        });
-    utils.respJsonData(res, {'success':true,'code':'0000','msg':'系统后台正在派单中，需要一点时间请勿重复派单，在这之前您可以处理其他业务。'});
-});
+        console.log(queryDate,check_status,user_no,user_name,role_name,business_name,city_code,work_id,mlog_id);
+        // 调用分页
+        mistakeService.dispatch(queryDate,check_status,user_no,user_name,role_name,business_name,city_code,work_id,status,mlog_id)
+            .then(function(result){
+                console.log("派发工单成功",result);
+                utils.respJsonData(res, result);
+            })
+            .catch(function(err){
+                utils.respJsonData(res, err);
+                console.log('派发工单失败',err);
+
+            });
+        utils.respJsonData(res, {'success':true,'code':'0000','msg':'系统后台正在派单中，需要一点时间请勿重复派单，在这之前您可以处理其他业务。'});
+    });
+
 
     return router;
 }
