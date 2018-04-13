@@ -6,6 +6,7 @@ var inst = require('../services/instance_service');
 var nodeTransferService=require("../services/node_transfer_service");
 var userService = require('../../workflow/services/user_service');
 var nodeAnalysisService=require("../services/node_analysis_service");
+var mistakeService = require('../../order_manage/services/mistake_list_service');
 var proc = require('../services/process_service');
 var config = require('../../../../config');
 
@@ -653,5 +654,43 @@ exports.task=function() {
             utils.respMsg(res, false, '1000', '查询流程异常', null, e);
         }
     });
+
+    /**
+     * 差错工单派单
+     */
+    router.route('/dispatch').post(function(req,res){
+        console.log("开始派单...");
+        var queryDate = req.body.queryDate.replace(/\-/g,'');//查询时间
+        var check_status= req.body.check_status;//稽核状态
+        var business_name= req.body.business_name;//业务名称
+        var city_code= req.body.city_code;//地州
+        var mlog_id= req.body.mlog_id;//预先插入的日志ID
+        var status= req.body.status;//派单状态
+        if(!queryDate){
+            var result={"success":false,"msg":"查询时间不得为空"};
+            utils.respJsonData(res, result);
+            return;
+        }
+        var user_no=req.body.user_no;
+        var work_id=req.body.work_id;
+        var user_name=req.body.user_name;
+        var role_name=req.body.role_name;
+
+        console.log(queryDate,check_status,user_no,user_name,role_name,business_name,city_code,work_id,mlog_id);
+        // 调用分页
+        mistakeService.dispatch(queryDate,check_status,user_no,user_name,role_name,business_name,city_code,work_id,status,mlog_id)
+            .then(function(result){
+                console.log("派发工单成功",result);
+                utils.respJsonData(res, result);
+            })
+            .catch(function(err){
+                utils.respJsonData(res, err);
+                console.log('派发工单失败',err);
+
+            });
+        utils.respJsonData(res, {'success':true,'code':'0000','msg':'系统后台正在派单中，需要一点时间请勿重复派单，在这之前您可以处理其他业务。'});
+    });
+
+
     return router;
 }

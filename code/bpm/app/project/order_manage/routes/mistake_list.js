@@ -67,13 +67,18 @@ router.route('/dispatch').post(function(req,resp){
     var check_status= req.body.check_status;//稽核状态
     var business_name= req.body.business_name;//业务名称
     var city_code= req.body.city_code;//地州
+    var mlog_id= req.body.mlog_id;//预先插入的日志ID
     var status= req.body.status;//派单状态
-
-
+    if(!queryDate){
+        var result={"success":false,"msg":"查询时间不得为空"};
+        utils.respJsonData(res, result);
+        return;
+    }
     var user_no=req.session.current_user.user_no;
     var work_id=req.session.current_user.work_id;
     var user_name=req.session.current_user.user_name;
     var role_name=req.session.current_user.user_roles[0].role_name;
+
     var mlog_id ='';
 
     var datas = [];

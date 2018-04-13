@@ -109,7 +109,7 @@ exports.getMistakeListPage = function (page, size, conditionMap) {
  * @param queryDate
  * @returns {Promise}
  */
-exports.dispatch = function (queryDate, check_status, user_no, user_name, role_name, business_name, city_code, work_id,status) {
+exports.dispatch = function (queryDate, check_status, user_no, user_name, role_name, business_name, city_code, work_id,status,mlog_id) {
     //处理流程
     var proc_code = 'p-201';
 
@@ -183,7 +183,7 @@ exports.dispatch = function (queryDate, check_status, user_no, user_name, role_n
                                     if (three_node_config.item_assignee_type == 2) {
                                         console.log("派单数量", mistakeRes.length);
                                         //开始派单
-                                        insertMistakes(mistakeRes, three_node_config, proc_code, proc_name, user_no, user_name, role_name, queryDate, work_id).then(function (result) {
+                                        insertMistakes(mistakeRes, three_node_config, proc_code, proc_name, user_no, user_name, role_name, queryDate, work_id,mlog_id).then(function (result) {
                                             resolve(result);
                                         }).catch(function (err) {
                                             reject(err);
@@ -206,6 +206,7 @@ exports.dispatch = function (queryDate, check_status, user_no, user_name, role_n
                         }
                     })
                 } else {
+                    mistake_model.$ProcessMistakeLogs.remove({'_id':mlog_id});
                     return reject({'success': false, 'code': '1000', 'msg': '无可派差错工单', "error": err});
 
                 }
@@ -324,7 +325,7 @@ exports.dispatch_logs = function (page, size, conditionMap) {
  * @param queryJson
  * @returns {Promise.<void>}
  */
-function insertMistakes(mistakeRes, three_node_config, proc_code, proc_name, user_no, user_name, role_name, queryDate, work_id) {
+function insertMistakes(mistakeRes, three_node_config, proc_code, proc_name, user_no, user_name, role_name, queryDate, work_id,mlog_id) {
 
     return new Promise(function (resolve, reject) {
         //成功数
