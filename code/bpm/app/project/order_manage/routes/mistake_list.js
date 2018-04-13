@@ -67,6 +67,8 @@ router.route('/dispatch').post(function(req,res){
     var check_status= req.body.check_status;//稽核状态
     var business_name= req.body.business_name;//业务名称
     var city_code= req.body.city_code;//地州
+    var mlog_id= req.body.mlog_id;//预先插入的日志ID
+    var status= req.body.status;//派单状态
     if(!queryDate){
         var result={"success":false,"msg":"查询时间不得为空"};
         utils.respJsonData(res, result);
@@ -76,9 +78,9 @@ router.route('/dispatch').post(function(req,res){
     var work_id=req.session.current_user.work_id;
     var user_name=req.session.current_user.user_name;
     var role_name=req.session.current_user.user_roles[0].role_name;
-
+    console.log(queryDate,check_status,user_no,user_name,role_name,business_name,city_code,work_id,mlog_id);
     // 调用分页
-    service.dispatch(queryDate,check_status,user_no,user_name,role_name,business_name,city_code,work_id)
+    service.dispatch(queryDate,check_status,user_no,user_name,role_name,business_name,city_code,work_id,status,mlog_id)
         .then(function(result){
             console.log("派发工单成功",result);
             utils.respJsonData(res, result);

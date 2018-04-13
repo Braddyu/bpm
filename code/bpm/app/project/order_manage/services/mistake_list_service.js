@@ -108,12 +108,15 @@ exports.getMistakeListPage = function (page, size, conditionMap) {
  * @param queryDate
  * @returns {Promise}
  */
-exports.dispatch = function (queryDate, check_status, user_no, user_name, role_name, business_name, city_code, work_id) {
+exports.dispatch = function (queryDate, check_status, user_no, user_name, role_name, business_name, city_code, work_id,status,mlog_id) {
     //处理流程
     var proc_code = 'p-201';
 
     var p = new Promise(function (resolve, reject) {
-        var queryJson = {"mistake_time": queryDate, "status": 0};
+        var queryJson = { "status": status};
+        if(queryDate){
+            queryJson.mistake_time=queryDate
+        }
         if (check_status)
             queryJson.remark = check_status;
         if (business_name)
@@ -179,7 +182,7 @@ exports.dispatch = function (queryDate, check_status, user_no, user_name, role_n
                                     if (three_node_config.item_assignee_type == 2) {
                                         console.log("派单数量", mistakeRes.length);
                                         //开始派单
-                                        insertMistakes(mistakeRes, three_node_config, proc_code, proc_name, user_no, user_name, role_name, queryDate, work_id).then(function (result) {
+                                        insertMistakes(mistakeRes, three_node_config, proc_code, proc_name, user_no, user_name, role_name, queryDate, work_id,mlog_id).then(function (result) {
                                             resolve(result);
                                         }).catch(function (err) {
                                             reject(err);
@@ -202,6 +205,7 @@ exports.dispatch = function (queryDate, check_status, user_no, user_name, role_n
                         }
                     })
                 } else {
+                    mistake_model.$ProcessMistakeLogs.remove({'_id':mlog_id});
                     return reject({'success': false, 'code': '1000', 'msg': '无可派差错工单', "error": err});
 
                 }
@@ -236,7 +240,7 @@ exports.dispatch_logs = function (page, size, conditionMap) {
  * @param queryJson
  * @returns {Promise.<void>}
  */
-function insertMistakes(mistakeRes, three_node_config, proc_code, proc_name, user_no, user_name, role_name, queryDate, work_id) {
+function insertMistakes(mistakeRes, three_node_config, proc_code, proc_name, user_no, user_name, role_name, queryDate, work_id,mlog_id) {
 
     return new Promise(function (resolve, reject) {
         //成功数
@@ -270,15 +274,8 @@ function insertMistakes(mistakeRes, three_node_config, proc_code, proc_name, use
                             }
                             //全部处理完成
                             if ((failCount + successCount) == length) {
-                                var datas = [];
                                 var data = {};
-                                data.proc_code = proc_code;
-                                data.proc_name = proc_name;
-                                data.dispatch_time = queryDate;
-                                data.create_user_no = work_id;
-                                data.create_user_name = user_name;
-                                data.update_user_no = '';
-                                data.create_time = new Date();
+                                data.dispatch_finish_time = new Date();
                                 //1表示：派单全部成功。2表示：派单部分成功。3表示：派单全部失败。
                                 if (successCount == length) {
                                     data.status = 1;
@@ -288,12 +285,19 @@ function insertMistakes(mistakeRes, three_node_config, proc_code, proc_name, use
                                     data.status = 2;
                                 }
                                 data.dispatch_remark = '工单派发:成功数为' + successCount + " 失败数为" + failCount;
-                                datas.push(data);
-                                //将派发结果插入日志表中
-                                mistake_model.$ProcessMistakeLogs.create(datas, function (err) {
+                                var conditions = {_id: mlog_id};
+                                var update = {
+                                    $set: {
+                                        "status": data.status,
+                                        "dispatch_finish_time": data.dispatch_finish_time,
+                                        "dispatch_remark": data.dispatch_remark
+                                    }
+                                };
+                                var options = {};
+                                //将派发结果状态更新到日志表中
+                                mistake_model.$ProcessMistakeLogs.update(conditions,update,options, function (err) {
                                     if (err) {
-
-                                        reject({'success': false, 'code': '1000', 'msg': '插入统计表失败', "error": err});
+                                        reject({'success': false, 'code': '1000', 'msg': '更新派单日志失败', "error": err});
                                     } else {
                                         resolve({
                                             'success': true,
