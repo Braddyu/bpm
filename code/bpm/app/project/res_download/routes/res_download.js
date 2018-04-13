@@ -22,7 +22,7 @@ router.route('/list').get(function(req,res){
  */
 router.get('/downloadAnnex',function(req, res, next){
     if(res.length=1){
-        var filePath = path.join(__dirname,"../../../../")+"res_download_file\\";
+        var filePath =config.accessory_path;
         console.log(filePath);
         var fileName = req.query.fileName;
         var stats = fs.statSync(filePath+"/"+fileName);
