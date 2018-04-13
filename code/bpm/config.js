@@ -264,7 +264,7 @@ var config = {
     //定时任务开关明细
     switchDetail:{
         oa_switch:false,   //同步OA数据(省、地市、区县级)作业任务开关
-        athena_switch:falsemget,  //同步雅典娜数据(网格、渠道级)作业任务开关
+        athena_switch:false,  //同步雅典娜数据(网格、渠道级)作业任务开关
         athena_app_switch:false,  //同步雅典娜app数据(网格经理、厅经理、营业员)作业任务开关
         huanghe_switch:false , //差错工单同步黄河数据
         mistake_switch:false  //差错工单任务是否超时定时任务
