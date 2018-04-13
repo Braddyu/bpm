@@ -249,7 +249,7 @@ var config = {
         },
     },
     //所属系统编号-预警工单系统编号-差错工单系统编号-稽核工单系统编号-慧眼工单系统编号
-    joinup_sys:'warnSys_node,errorSys_node,auditorSys_node,syesightSys_node,moneyAudit_node',
+    joinup_sys:'warnSys_node,errorSys_node,auditorSys_node,syesightSys_node,moneyAudit_node,unitTest_node',
 
     AES_KEY:'1234567890ABCDEFGHIJKLMNOPQRSTUV',
 

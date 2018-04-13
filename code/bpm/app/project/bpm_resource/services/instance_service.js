@@ -360,6 +360,12 @@ exports.create_instance_only=function(proc_code,proc_ver,proc_title,user_code,jo
             var task={};
             task.proc_inst_id=results[0]._id ;//: {type: Schema.Types.ObjectId, ref: 'CommonCoreProcessInst'}, // 流程流转当前信息ID
             // task.proc_task_id:String,//task_id
+            //员工编号
+            if(res_user[0].work_id){
+                task.proc_inst_task_work_id = res_user[0].work_id;
+            }else{
+                task.proc_inst_task_work_id = '';
+            }
             task.publish_status = results[0].publish_status;
             task.work_order_number = results[0].work_order_number;
             task.proc_inst_task_code=current_detail.item_code;// : String,// 流程当前节点编码(流程任务编号)
@@ -2121,6 +2127,7 @@ exports.return_task = function(task_id,user_no,memo,node_code,node_name){
                                }else{
                                        //创建下一步流转任务
                                        var condition_task = {};
+                                       condition_task.proc_inst_task_work_id = rsu[0].proc_inst_task_work_id;
                                        condition_task.proc_task_ver = rsu[0].proc_task_ver;
                                        condition_task.work_order_number = rsu[0].work_order_number;
                                        condition_task.publish_status = rsu[0].publish_status;//1-发布 0- 未发布
