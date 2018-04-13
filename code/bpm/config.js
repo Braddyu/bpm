@@ -260,11 +260,15 @@ var config = {
     OPEN_SMS:false, //工单短信发送接口
     OPEN_LOGIN_SMS:false, //短信登录验证码
     GRID_COPY_SMS:false, //预警工单抄送给网格经理短信
+    //派单接口信息
+    api_interface_url:'https://192.168.9.66:30003',
+    mistake_proc_code:'p-201',
+    mistake_proc_name:'稽核差错工单',
 
     //定时任务开关明细
     switchDetail:{
         oa_switch:false,   //同步OA数据(省、地市、区县级)作业任务开关
-        athena_switch:falsemget,  //同步雅典娜数据(网格、渠道级)作业任务开关
+        athena_switch:false,  //同步雅典娜数据(网格、渠道级)作业任务开关
         athena_app_switch:false,  //同步雅典娜app数据(网格经理、厅经理、营业员)作业任务开关
         huanghe_switch:false , //差错工单同步黄河数据
         mistake_switch:false  //差错工单任务是否超时定时任务
