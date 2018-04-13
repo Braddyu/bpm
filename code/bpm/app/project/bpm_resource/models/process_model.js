@@ -192,6 +192,7 @@ var commonProcessInstTaskSchema = new Schema(
         proc_inst_task_status : Number,// 流程当前状态 0-未处理，1-已完成
         proc_inst_task_assignee : String,// 流程处理人code
         proc_inst_task_assignee_name : String,// 流程处理人名
+        proc_inst_task_work_id:String,// 流程处理人工号
         proc_inst_task_user_role : [{type: Schema.Types.ObjectId}],// 流程处理用户角色ID
         // proc_inst_task_handler_code:String,//实际处理人
         proc_inst_task_user_role_name : String,// 流程处理用户角色名
@@ -246,6 +247,7 @@ var commonProcessTaskHistroySchema = new Schema(
         proc_inst_task_status : Number,// 流程当前状态 0-未处理，1-已完成
         proc_inst_task_assignee : String,// 流程处理人code
         proc_inst_task_assignee_name : String,// 流程处理人名
+        proc_inst_task_work_id:String,// 流程处理人工号
         proc_inst_task_user_role :  [{type: Schema.Types.ObjectId}],// 流程处理用户角色ID
         // proc_inst_task_handler_code:String,//实际处理人
         proc_inst_task_user_role_name : String,// 流程处理用户角色名
