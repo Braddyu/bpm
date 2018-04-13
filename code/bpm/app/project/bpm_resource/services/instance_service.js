@@ -618,6 +618,13 @@ function insertTask(result,condition,resu,role){
         let result_t=await nodeAnalysisService.findParams(result.data,condition.proc_cur_task);
         if(!result_t.success){resolve(result_t);return ;}
         var proc_inst_task_params=result_t.data;
+        //流程处理人工号
+        if(resu[0].work_id){
+            task.proc_inst_task_work_id = resu[0].work_id;
+        }else{
+            task.proc_inst_task_work_id = '';
+        }
+
         task.work_order_number=condition.work_order_number//工单编号
         task.proc_inst_id=result.data;// : {type: Schema.Types.ObjectId, ref: 'CommonCoreProcessInst'}, // 流程流转当前信息ID
         task.proc_inst_task_code=condition.proc_cur_task;// : String,// 流程当前节点编码(流程任务编号)
@@ -2343,6 +2350,35 @@ exports.proving_proc_code = function (proc_code,proc_ver) {
                 }
             }
         });
+    });
+    return p;
+}
+/*
+删除单元测试产生的数据
+ */
+
+exports.delete = function (joinup_sys) {
+    var p = new Promise(function(resolve,reject){
+        model.$ProcessInstTask.remove({'joinup_sys':joinup_sys},function(er,rs){
+            if(er){
+                resolve(utils.returnMsg(false, '1000', '数据删除异常1',null ,er ));
+            }else{
+                model.$ProcessInst.remove({'joinup_sys':joinup_sys},function(err,resu){
+                    if(err){
+                        resolve(utils.returnMsg(false, '1000', '数据删除异常2',null ,err ));
+                    }else{
+                        model.$ProcessTaskHistroy.remove({'joinup_sys':joinup_sys},function(eeror,result){
+                            if(eeror){
+                                resolve(utils.returnMsg(false, '1000', '数据删除异常3',null ,eeror ));
+                            }else{
+                                resolve(utils.returnMsg(true, '0000', '删除数据成功',null,null ));
+                            }
+                        });
+                    }
+                });
+            }
+        });
+
     });
     return p;
 }

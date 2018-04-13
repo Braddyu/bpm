@@ -264,13 +264,13 @@ var config = {
     //定时任务开关明细
     switchDetail:{
         oa_switch:false,   //同步OA数据(省、地市、区县级)作业任务开关
-        athena_switch:true,  //同步雅典娜数据(网格、渠道级)作业任务开关
+        athena_switch:false,  //同步雅典娜数据(网格、渠道级)作业任务开关
         athena_app_switch:false,  //同步雅典娜app数据(网格经理、厅经理、营业员)作业任务开关
         huanghe_switch:false , //差错工单同步黄河数据
         mistake_switch:false  //差错工单任务是否超时定时任务
     },
     //定时任务表达式
-    athena_org_switch_core:"40 25 19 * * *",//秒、分、时、日、月、周几
+    athena_org_switch_core:"30 1 1 * * *",//秒、分、时、日、月、周几
     athena_peason_switch_core:"30 1 2 * * *",//秒、分、时、日、月、周几
     huanghe_switch_core:"30 11 15 * * *",//秒、分、时、日、月、周几
     mistake_switch_core:"40 14 15 * * *",//秒、分、时、日、月、周几
