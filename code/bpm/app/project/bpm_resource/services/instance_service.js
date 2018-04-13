@@ -2256,3 +2256,32 @@ exports.proving_proc_code = function (proc_code,proc_ver) {
     });
     return p;
 }
+/*
+删除单元测试产生的数据
+ */
+
+exports.delete = function (joinup_sys) {
+    var p = new Promise(function(resolve,reject){
+        model.$ProcessInstTask.remove({'joinup_sys':joinup_sys},function(er,rs){
+            if(er){
+                resolve(utils.returnMsg(false, '1000', '数据删除异常1',null ,er ));
+            }else{
+                model.$ProcessInst.remove({'joinup_sys':joinup_sys},function(err,resu){
+                    if(err){
+                        resolve(utils.returnMsg(false, '1000', '数据删除异常2',null ,err ));
+                    }else{
+                        model.$ProcessTaskHistroy.remove({'joinup_sys':joinup_sys},function(eeror,result){
+                            if(eeror){
+                                resolve(utils.returnMsg(false, '1000', '数据删除异常3',null ,eeror ));
+                            }else{
+                                resolve(utils.returnMsg(true, '0000', '删除数据成功',null,null ));
+                            }
+                        });
+                    }
+                });
+            }
+        });
+
+    });
+    return p;
+}
