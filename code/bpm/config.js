@@ -250,7 +250,7 @@ var config = {
         },
     },
     //所属系统编号-预警工单系统编号-差错工单系统编号-稽核工单系统编号-慧眼工单系统编号
-    joinup_sys:'warnSys_node,errorSys_node,auditorSys_node,syesightSys_node,moneyAudit_node',
+    joinup_sys:'warnSys_node,errorSys_node,auditorSys_node,syesightSys_node,moneyAudit_node,unitTest_node',
 
     AES_KEY:'1234567890ABCDEFGHIJKLMNOPQRSTUV',
 
@@ -261,6 +261,10 @@ var config = {
     OPEN_SMS:false, //工单短信发送接口
     OPEN_LOGIN_SMS:false, //短信登录验证码
     GRID_COPY_SMS:false, //预警工单抄送给网格经理短信
+    //派单接口信息
+    api_interface_url:'https://192.168.9.66:30003',
+    mistake_proc_code:'p-201',
+    mistake_proc_name:'稽核差错工单',
 
     //定时任务开关明细
     switchDetail:{
