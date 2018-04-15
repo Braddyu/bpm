@@ -47,7 +47,39 @@
 </div>
 
 <div id="dd"></div>
-
+<div id="win" class="easyui-window" closed="true"collapsible="false" minimizable="false" maximizable="false" title="提示">
+    <form id="workIdForm">
+        <p>请输入营业员工号: <input id="workId" type="text"class="easyui-textbox" data-options="required:true, missingMessage:'请输入营业员工号'"></p>
+        <div id="workIdBtns">
+            <a id="wordIdSubmit" class="easyui-linkbutton" icon="icon-ok" onclick="turn2SendTask()">确定</a>
+            <a id="wordIdCancel" class="easyui-linkbutton" icon="icon-cancel" onclick="$('#win').window('close');">取消</a>
+        </div>
+        <input id="instId" type="hidden"/>
+    </form>
+</div>
+<style type="text/css">
+    #workIdForm{
+        padding:30px 10px 10px 10px;
+    }
+    #wordIdSubmit,#wordIdCancel{
+        padding:0px 10px;
+    }
+    #wordIdSubmit{
+        margin-right:10px;
+    }
+    #wordIdCancel{
+        margin-left:10px;
+    }
+    #win{
+        width:320px;
+        height:150px;
+    }
+    #workIdBtns{
+        padding-top:20px;
+        text-align:center;
+    }
+</style>
+<script src="{{projcfg.appurl}}/static/js/layer/layer.js"></script>
 <script type="text/javascript">
 
     $(document).ready(function () {
@@ -55,6 +87,8 @@
         getAllProBase();
         //加载已办工单列表
         loadOrderCompleteteListDatagrid();
+		 //初始化处理节点下拉框
+        listAllTaskType();
 
     });
     //时间格式化:new Date().Format("yyyy-MM-dd hh:mm:ss");
@@ -92,7 +126,9 @@
             selectOnCheck:true,
             checkOnSelect:true,
             columns:[[
+                {"field":"id",checkbox:true},
                 {"field":"_id",hidden:true},
+                {"field":"proc_inst_id",hidden:true},
                 {"field": "work_order_number","title":"工单编号","width":55},
                 {"field": "proc_inst_task_title","title":"工单标题","width":100,
                     formatter:function(value,row,index){
@@ -161,6 +197,61 @@
                 work_order_number:$("#work_order_number").val(),
             }
         });
+    }
+	
+	 function turn2Send(){
+        var row=$('#orderTablelist').datagrid('getSelected');
+        if(!row){
+            $.messager.show({
+                title:'提示',
+                msg:'请先选择工单',
+                timeout:2000,
+                showType:'show',
+                style:{
+
+                }
+            });
+            return false;
+        }
+        $("#instId").val(row.proc_inst_id);
+        $('#win').window('open');
+    }
+
+    function turn2SendTask(){
+        var workId = $('#workId').textbox('getValue');
+        var instId = $("#instId").val();
+        $.ajax({
+            type:"post",
+            url:"{{projcfg.appurl}}/api/order_manage/order_complete/turn2SendTask",
+            dataType:"json",
+            data:{"workId":workId,"instId":instId},
+            success:function(data){
+                if(data.success){
+                    layerMsg(6,data.msg);
+                }else{
+                    layerMsg(5,data.msg);
+                }
+                $('#win').window('close');
+            },
+            error:function(XMLHttpRequest, textStatus, errorThrown){
+                layerMsg(5,"派单失败:"+textStatus);
+                $('#win').window('close');
+            }
+        });
+        $('#workId').textbox('setValue', '');
+    }
+
+    function layerMsg (icon,msg){
+        layer.msg(msg, {icon: icon,offset: 'rb',area: '250px'});
+    }
+    function listAllTaskType(){
+        $("#taskType").combobox({
+            method: 'post',
+            url: '{{projcfg.appurl}}/api/order_manage/order_complete/listAllTaskType',
+            valueField:'NAME',
+            textField:'NAME'
+        });
+        $("#taskType").combobox("setValue","省营业销售部派发");
     }
 
 </script>

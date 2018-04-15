@@ -66,9 +66,30 @@ router.route("/logs").post(function(req,res){
     });
 });
 
-
-
-
+/**
+ * 任务转派
+ */
+router.route("/turn2SendTask").post(function(req,res){
+    var workId = req.body.workId;
+    var instId = req.body.instId;
+    userService.queryUserByWorkId(workId).then(function(rs){
+        if(rs.success){
+            completeService.turn2SendTask(rs.data[0],instId).then(function(rs){
+                utils.respJsonData(res,rs);
+            });
+        }else{
+            utils.respJsonData(res,rs);
+        }
+    });
+});
+/**
+ * 列出所有任务类型
+ */
+router.route("/listAllTaskType").post(function(req,res){
+    completeService.listAllTaskType().then(function(rs){
+        utils.respJsonData(res,rs.data);
+    });
+});
 
 module.exports = router;
 
