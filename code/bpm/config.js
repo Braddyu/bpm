@@ -116,6 +116,7 @@ var config = {
             project_url_prefix + '/captcha',
             project_url_prefix +'/getVerificationcode',
             project_url_prefix +'/encverfcode',
+            project_url_prefix +'/userSearch',
             project_url_prefix + '/test/*',
             project_url_prefix +'/static/*',
             project_url_prefix + '/api/*',
@@ -287,6 +288,5 @@ var config = {
     local_haunghe_path:'E:/test/',//本地存储黄河数据
     local_path:'/upload/',//本地存储附件路径
     batch_size:2000,//差错工单每一批次数量
-    accessory_path:'C:/res_download_file/'
 }
 module.exports = config;

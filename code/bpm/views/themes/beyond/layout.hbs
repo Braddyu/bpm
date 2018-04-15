@@ -622,14 +622,7 @@
     /**/
     var user_tag = '{{currentUser.user_tag}}';
     var user_id = '{{currentUser._id}}';
-    var login_password = '{{currentUser.login_password}}';
-    if (login_password == 'd23d703e0eb4b14f1e16e83908c10868') {
-        msgConfirm("您的密码为初始密码，请尽快修改！", function (r) {
-            if (r) {
-                openEditProfileModal()
-            }
-        });
-    }
+
 
     function openMyProfileModal() {
         info();
@@ -760,11 +753,7 @@
             },
             success: function (data) {
                 if (data.success == true) {
-                    if(login_password == 'd23d703e0eb4b14f1e16e83908c10868'){
-                        msgSuccess(data.msg+",请重新登录");
-                    }else{
-                        msgSuccess(data.msg);
-                    }
+                    msgSuccess(data.msg);
 
                     flag = true;
                 } else {

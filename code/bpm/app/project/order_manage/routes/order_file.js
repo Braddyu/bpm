@@ -28,7 +28,7 @@ router.route('/list').post(function(req,res){
     userService.getUsreRolesByUserNo(userNo).then(function(result){
         console.log(result);
         if(result){
-            service.getMyArchiveTaskQuery4Eui(page,length,userNo,work_order_number,proc_start_time,proc_inst_task_complete_time,is_overtime,proc_code).then(function(taskresult){
+            service.getMyArchiveTaskQuery4Eui(page,length,userNo,work_order_number,proc_start_time,proc_inst_task_complete_time,is_overtime,proc_code,result).then(function(taskresult){
                 utils.respJsonData(res, taskresult);
             }).catch(function(err_inst){
                 // console.log(err_inst);

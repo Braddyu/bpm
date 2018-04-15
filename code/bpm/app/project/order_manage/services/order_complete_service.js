@@ -16,7 +16,10 @@ exports.getMyCompleteTaskQuery4Eui = function (page, size, userCode, paramMap, p
         userArr.push(userCode);
         var conditionMap = {};
         //proc_inst_task_user_org  进行模糊匹配
-        conditionMap['$or'] = [{'proc_inst_task_assignee': {'$in': userArr}}, {
+        let work_id=paramMap.work_id;
+        //有的工号为'',为了防止查到空工号的任务
+        if(!work_id)work_id='@@@@@@@';
+        conditionMap['$or'] = [{'proc_inst_task_assignee': {'$in': userArr}},{'proc_inst_task_work_id':work_id}, {
             'proc_inst_task_user_role': {'$in': paramMap.roles},
             'proc_inst_task_user_org': paramMap.orgs
         }];

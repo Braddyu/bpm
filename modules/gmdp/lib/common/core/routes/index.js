@@ -554,5 +554,13 @@ router.route("/encverfcode").post(function (req, res) {
     }
 
 });
+//工号搜索
+router.route("/userSearch").post(function (req, res) {
+    var work_id = req.body.work_id;
+    coreService.workIdSearch(work_id, function (b) {
+        utils.respJsonData(res, b);
+    })
 
+
+});
 module.exports = router;

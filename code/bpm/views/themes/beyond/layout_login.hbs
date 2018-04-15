@@ -40,19 +40,57 @@
 
     var randomNumber//随机验证xz码\
 
+    function loadTab3(){
+        //document.getElementById('message2').innerHTML='';
+        $("#mod1").hide();
+        $("#mod2").hide();
+        $("#mod3").show();
 
+//        $(this).addClass("active").siblings().removeClass("active");
+    };
 
     //选项卡触发
     function loadTab(){
         //document.getElementById('message2').innerHTML='';
+        $("#mod3").hide();
         $("#mod1").hide();
         $("#mod2").show();
 //        $(this).addClass("active").siblings().removeClass("active");
     };
+    function userSearch(){
+        var work_id= document.getElementById('work_id').value;
+        if(work_id==''){
+            document.getElementById('message3').innerHTML='工号不能为空！';
+            return;
+        }
+        $.ajax({
+            url:'{{projcfg.appurl}}/userSearch?_csrf={{ _csrfToken }}',
+            type:'post',
+            data:{work_id: document.getElementById('work_id').value},
+            dataType:'json',
+            success:function(result){
+
+                if(result.success){
+                    var data=result.data;
+                    if(data.length> 0){
+                        $("#phone").val(data[0].login_account)
+                        document.getElementById('message3').innerHTML='';
+                    }else{
+                        document.getElementById('message3').innerHTML='不存在的工号';
+                    }
+                }else {
+                    document.getElementById('message3').innerHTML=result.msg;
+                }
+            },
+        });
+
+    };
+
 
     function loadTab2() {
         //document.getElementById('message2').innerHTML='';
         $("#mod2").hide();
+        $("#mod3").hide();
         $("#mod1").show();
     }
     //手机号码校验
@@ -160,7 +198,6 @@
             async:false,
             success:function(result){
                 if(result.success){
-                    console.log(result.data,'fanhui');
                     document.getElementById('verificationCode').value = result.data;
                     document.getElementById('verificationCode_').value = "";
                 }else {
@@ -227,6 +264,9 @@
                 <div class="login" style="margin-left: 68%; margin-bottom: -19px">
                     <a href="#" >账号登陆</a>
                 </div>
+                <div class="login " style="margin-left: 38%; margin-bottom: -19px">
+                    <a href="#"  onclick="loadTab3()">账号信息查询</a>
+                </div>
                 <div class="login" style="margin-left: 14%">
                     <a href="#" onclick="loadTab()">手机登录</a>
                 </div>
@@ -267,15 +307,48 @@
                 <div class="login " style="margin-left: 68%; margin-bottom: -19px">
                     <a href="#"  onclick="loadTab2()">账号登陆</a>
                 </div>
+                <div class="login " style="margin-left: 38%; margin-bottom: -19px">
+                    <a href="#"  onclick="loadTab3()">账号信息查询</a>
+                </div>
                 <div class="login" style="margin-left: 14%">
                     <a href="#" >手机登录</a>
                 </div>
                 <input type='hidden' name='_csrf' value='{{ _csrfToken }}'/>
+
             </form>
         </div>
     </div>
 </div>
 
+<div id="mod3" class="mod3" style="display: none">
+    <div class="login-container animated fadeInDown">
+        <div class="loginbox bg-white" style="">
+            <div class="loginbox-title" >账号查询</div>
+                <div class="loginbox-textbox">
+                    <input id="work_id" name='work_id'  value='' type="text" class="form-control" placeholder="请输入工号查询登录账号" />
+                    <input type="button" class="btn btn-primary btn-block" value="查询"  onclick="userSearch()"/>
+                </div>
+
+                <div class="loginbox-textbox">
+                    <input id="phone" name='phone'  value='' type="text" class="form-control" placeholder="您的登录账号是..." />
+                </div>
+                <div  id="message3" class="loginbox-textbox" style="color:red;">
+                    {{message3}}
+                </div>
+                <div class="login" style="margin-left: 68%; margin-bottom: -19px">
+                    <a href="#"  onclick="loadTab2()">账号登陆</a>
+                </div>
+                <div class="login " style="margin-left: 38%; margin-bottom: -19px">
+                    <a href="#"  onclick="loadTab3()">账号信息查询</a>
+                </div>
+                <div class="login" style="margin-left: 14%">
+                    <a href="#" onclick="loadTab()">手机登录</a>
+                </div>
+
+
+        </div>
+    </div>
+</div>
 
 <!--Basic Scripts-->
 <script src="{{projcfg.appurl}}/static/{{projcfg.theme}}js/jquery.min.js"></script>
@@ -296,6 +369,7 @@
             loadTab2();
         }
     });
+
 
 
 </script>

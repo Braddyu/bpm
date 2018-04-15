@@ -1015,7 +1015,10 @@ exports.getMyTaskQuery4Eui= function(page,size,userCode,joinup_sys,proc_code,wor
             }else{
                 let user_roles=res[0].user_roles;
                 let user_org=res[0].user_org;
-
+                let work_id=res[0].work_id
+                //有的工号为'',为了防止查到空工号的任务
+                if(!work_id)
+                    if(!work_id)work_id='@@@@@@@';
                 var roles_match={};
                 var orgs_match={};
                 var match2={};
@@ -1035,7 +1038,7 @@ exports.getMyTaskQuery4Eui= function(page,size,userCode,joinup_sys,proc_code,wor
                     match5['$or'] = [match3];
                 }else if(proc_inst_task_sign && proc_inst_task_sign==1){
                     //只获取待处理任务
-                    match4.proc_inst_task_assignee=userCode;
+                    match4['$or']=[{"proc_inst_task_assignee":userCode},{"proc_inst_task_work_id":work_id}];
                     match4.proc_inst_task_status=0;
                     match5['$or'] = [match4];
                 }else{
@@ -1049,7 +1052,7 @@ exports.getMyTaskQuery4Eui= function(page,size,userCode,joinup_sys,proc_code,wor
                     match2['$or']=[roles_match,orgs_match];
                     match3['$and']=[match2,{"proc_inst_task_sign":0,"proc_inst_task_status":0}];
 
-                    match4.proc_inst_task_assignee=userCode;
+                    match4['$or']=[{"proc_inst_task_assignee":userCode},{"proc_inst_task_work_id":work_id}];
                     match4.proc_inst_task_status=0;
 
                     match5['$or'] = [match3,match4];

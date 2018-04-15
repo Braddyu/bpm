@@ -261,6 +261,7 @@ function setRoleIdArr(arr){
             result.push(roles[i].toString());
         }
         resuMap.orgs = arr[0]._doc.user_org?arr[0]._doc.user_org:null;
+        resuMap.work_id = arr[0]._doc.work_id?arr[0]._doc.work_id:null;
         resuMap.roles = result;
     }
     return resuMap;

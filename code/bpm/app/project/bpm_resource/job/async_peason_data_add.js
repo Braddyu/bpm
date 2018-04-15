@@ -1,21 +1,18 @@
 var model_org = require("../models/user_model");
-var process_model = require("../models/process_model");
 var Promise = require("bluebird");
 var utils = require('../../../../lib/utils/app_utils');
 
 var mysql_pool_promise = require("../../../../lib/mysql_pool_athena");
 var fs = require('fs');
-var ObjectID = require('mongodb').ObjectID;
 var config = require('../../../../config');
 
-var peson_sync_data_from_Athena_url = config.peson_sync_data_from_Athena_url;
 
 exports.sync_data_from_Athena = function () {
     sync_data_from_Athena();
 }
 
 function sync_data_from_Athena() {
-    update_data();
+   update_data();
 }
 
 /**
@@ -103,7 +100,7 @@ function update_data() {
         if (!result) {
             console.log("获取mysql人员总数失败");
         } else {
-           console.log(result.length);
+            console.log(result.length);
             await savePeason(result);
             console.log("获取mysql人员总数成功");
         }
@@ -140,9 +137,10 @@ function savePeason(result) {
             let orgIds = result[i].orgIds.split(",");
             let roleIds = result[i].roleIds.split(",");
             //查找人员信息
-            model_org.$User.find({"user_no":result[i].work_id}, function (err, resp) {
-
+            model_org.$User.find({"user_no": result[i].phone}, function (err, resp) {
+                console.log("user_no",result[i].phone);
                 model_org.$CommonCoreOrg.find({"company_code": {$in: orgIds}}, function (err, res) {
+                    console.log("company_code",orgIds);
                     for (let k = 0; k < res.length; k++) {
                         user_org.add(res[k]._id);
                     }
@@ -158,7 +156,7 @@ function savePeason(result) {
                         let user_org_local = resp[0].user_org;
 
                         //判断是否存在需要保留的角色
-                        for (let j =0;j< user_roles_local.length;j++) {
+                        for (let j = 0; j < user_roles_local.length; j++) {
                             //表示此角色不为同步的三种角色，保留
                             if (roles.indexOf(user_roles_local[j].toString()) == -1) {
                                 sys_roles.add(user_roles_local[j]);
@@ -166,7 +164,7 @@ function savePeason(result) {
                         }
 
                         //判断是否存在需要保留的组织
-                        for (let j =0;j< user_org_local.length;j++) {
+                        for (let j = 0; j < user_org_local.length; j++) {
                             //表示此角色在渠道和网格之外，保留
                             if (core_org_id.indexOf(user_org_local[j].toString()) > -1) {
                                 user_org.add(user_org_local[j]);
@@ -174,25 +172,25 @@ function savePeason(result) {
                         }
 
 
-                        inst.user_roles =[...sys_roles] ;
+                        inst.user_roles = [...sys_roles];
                         inst.user_org = [...user_org];
                         //以前是手机号为user_no,后来发现手机号会变，但是工号不会
                         //这里用工号做唯一标识，厅经理和网格经理的还是用手机号
-                        inst.user_no = result[i].work_id;
+                        inst.user_no = result[i].phone;
                         inst.work_id = result[i].work_id;
                         inst.user_name = result[i].NAME;
                         inst.login_account = result[i].phone;
                         inst.user_phone = result[i].phone;
                         inst.user_tel = result[i].phone;
-                        model_org.$User.update({"_id": resp[0]._id},inst,function(err){
+                        model_org.$User.update({"_id": resp[0]._id}, inst, function (err) {
                             count++;
                             if (count == result.length) {
                                 resolve();
                             }
                         })
 
-                    } else if(resp.length >1 ){
-                        model_org.$User.remove({"user_no":result[i].work_id},function(err){
+                    } else if (resp.length > 1) {
+                        model_org.$User.remove({"user_no": result[i].phone}, function (err) {
                             // 实例模型，调用保存方法
                             new model_org.$User(inst).save(function (err) {
                                 count++;
@@ -201,23 +199,20 @@ function savePeason(result) {
                                 }
                             });
                         })
-                    } else{
-
-
-
+                    } else {
                         //获取角色
                         //console.log(3);
                         inst.login_account = result[i].phone;
                         inst.user_status = 1;
                         inst.user_id = "";
                         inst.work_id = result[i].work_id;
-                        inst.user_no = result[i].work_id;
+                        inst.user_no =  result[i].phone;
                         inst.user_name = result[i].NAME;
                         inst.user_gender = "";
                         inst.user_phone = result[i].phone;
                         inst.user_tel = result[i].phone;
                         inst.user_email = "";
-                        var password = 'gdgl@cmcc';
+                        var password = result[i].phone+'@cmcc';
                         inst.login_password = utils.encryptDataByMD5(password);
                         inst.user_sys = "56f20ec0c2b4db9c2a7dfe7a";
                         inst.user_org_desc = "";
@@ -231,48 +226,43 @@ function savePeason(result) {
                         inst.token = "";
                         inst.special_sign = "";
                         inst.__v = 0;
+                        inst.user_roles = [...sys_roles];
+                        inst.user_org = [...user_org];
 
-                        model_org.$User.find({"work_id":result[i].work_id},function(err,res){
+                        model_org.$User.find({"work_id": result[i].work_id}, function (err, res) {
 
-                            if(res.length == 1){
-                                let user_no = res[0].user_no;
+                            if (res.length == 1) {
                                 let user_roles_local = res[0].user_roles;
                                 let user_org_local = res[0].user_org;
-                                process_model.$ProcessInst.update({"proc_start_user":user_no},{$set:{"proc_start_user":result[i].work_id}},{multi: true}, function(err){
-                                    process_model.$ProcessInstTask.update({"proc_inst_task_assignee":user_no},{$set:{"proc_inst_task_assignee":result[i].work_id}},{multi: true}, function(err){
-                                        process_model.$ProcessTaskHistroy.update({"proc_inst_task_assignee":user_no},{$set:{"proc_inst_task_assignee":result[i].work_id}},{multi: true}, function(err){
-                                            model_org.$User.remove({"_id":res[0]._id},function(err){
+                                model_org.$User.remove({"_id": res[0]._id}, function (err) {
+                                    //判断是否存在需要保留的角色
+                                    for (let j = 0; j < user_roles_local.length; j++) {
+                                        //表示此角色不为同步的三种角色，保留
+                                        if (roles.indexOf(user_roles_local[j].toString()) == -1) {
+                                            sys_roles.add(user_roles_local[j]);
+                                        }
+                                    }
 
-                                                //判断是否存在需要保留的角色
-                                                for (let j =0;j< user_roles_local.length;j++) {
-                                                    //表示此角色不为同步的三种角色，保留
-                                                    if (roles.indexOf(user_roles_local[j].toString()) == -1) {
-                                                        sys_roles.add(user_roles_local[j]);
-                                                    }
-                                                }
-
-                                                //判断是否存在需要保留的组织
-                                                for (let j =0;j< user_org_local.length;j++) {
-                                                    //表示此角色在渠道和网格之外，保留
-                                                    if (core_org_id.indexOf(user_org_local[j].toString()) > -1) {
-                                                        user_org.add(user_org_local[j]);
-                                                    }
-                                                }
-                                                inst.user_roles =[...sys_roles] ;
-                                                inst.user_org = [...user_org];
-                                                // 实例模型，调用保存方法
-                                                new model_org.$User(inst).save(function (err) {
-                                                    count++;
-                                                    if (count == result.length) {
-                                                        resolve();
-                                                    }
-                                                });
-                                            })
-                                        })
-                                    })
+                                    //判断是否存在需要保留的组织
+                                    for (let j = 0; j < user_org_local.length; j++) {
+                                        //表示此角色在渠道和网格之外，保留
+                                        if (core_org_id.indexOf(user_org_local[j].toString()) > -1) {
+                                            user_org.add(user_org_local[j]);
+                                        }
+                                    }
+                                    inst.user_roles = [...sys_roles];
+                                    inst.user_org = [...user_org];
+                                    // 实例模型，调用保存方法
+                                    new model_org.$User(inst).save(function (err) {
+                                        count++;
+                                        console.log("update success");
+                                        if (count == result.length) {
+                                            resolve();
+                                        }
+                                    });
                                 })
-                            }else if(res.length >1){
-                                model_org.$User.remove({"user_no":result[i].work_id},function(err){
+                            } else if (res.length > 1) {
+                                model_org.$User.remove({"work_id::": result[i].work_id}, function (err) {
                                     // 实例模型，调用保存方法
                                     new model_org.$User(inst).save(function (err) {
                                         count++;
@@ -281,34 +271,15 @@ function savePeason(result) {
                                         }
                                     });
                                 })
-                            }else{
-                                model_org.$User.find({"login_account":result[i].phone},function(err,res){
-                                    if(res.length == 1){
-                                        let user_no = res[0].user_no;
-                                        process_model.$ProcessInst.update({"proc_start_user":user_no},{$set:{"proc_start_user":result[i].work_id}},{multi: true}, function(err){
-                                            process_model.$ProcessInstTask.update({"proc_inst_task_assignee":user_no},{$set:{"proc_inst_task_assignee":result[i].work_id}},{multi: true}, function(err){
-                                                process_model.$ProcessTaskHistroy.update({"proc_inst_task_assignee":user_no},{$set:{"proc_inst_task_assignee":result[i].work_id}},{multi: true}, function(err){
-                                                    model_org.$User.remove({"_id":res[0]._id},function(err){
-                                                        // 实例模型，调用保存方法
-                                                        new model_org.$User(inst).save(function (err) {
-                                                            count++;
-                                                            if (count == result.length) {
-                                                                resolve();
-                                                            }
-                                                        });
-                                                    })
-                                                })
-                                            })
-                                        })
-                                    }else{
-                                        new model_org.$User(inst).save(function (err) {
-                                            count++;
-                                            if (count == result.length) {
-                                                resolve();
-                                            }
-                                        });
+                            } else {
+                                // 实例模型，调用保存方法
+                                new model_org.$User(inst).save(function (err) {
+                                    console.log("add success");
+                                    count++;
+                                    if (count == result.length) {
+                                        resolve();
                                     }
-                                })
+                                });
 
                             }
                         })
@@ -321,15 +292,4 @@ function savePeason(result) {
 
     })
 
-}
-
-function writeFile(file, result) {
-    fs.appendFile(file, '\r\n' + result, function (err) {
-        if (err)
-            console.log("fail " + err);
-        else {
-            console.log("写入文件ok");
-            // fs.close();
-        }
-    })
 }

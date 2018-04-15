@@ -1129,3 +1129,14 @@ exports.getShortcutMenuByUser = function(user_id, cb) {
         });
 }
 
+exports.workIdSearch = function(work_id, cb) {
+    userModel.$.find({'work_id':work_id})
+        .exec(function(error, result){
+            if(error) {
+                cb(utils.returnMsg(false, '1001', '获取个人信息失败', null, error2));
+            }
+            else {
+                cb(utils.returnMsg(true, '0000', '获取个人信息成功', result, null));
+            }
+        });
+}

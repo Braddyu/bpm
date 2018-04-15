@@ -299,6 +299,9 @@ router.post('/complete', function (req, res, next) {
 router.get('/showDetailView', function (req, res, next) {
 
     var proc_code = req.query.proc_code;
+    var status = req.query.status;
+    var change_id = req.query.change_id;
+    console.log("proc_code",proc_code,"status",status,"change_id",change_id);
     //获取字典中配置对应流程的详proc_code细处理界面
     service.getViewUrl(proc_code)
         .then(function (result) {
@@ -309,6 +312,9 @@ router.get('/showDetailView', function (req, res, next) {
                     title: '首页',
                     subtitle: 'Hello',
                     layout: 'themes/admin/layout',
+                    status: status,
+                    change_id:change_id,
+                    proc_code:proc_code,
                 });
             }
         })
@@ -330,6 +336,7 @@ router.post('/orderDetail', function (req, res) {
     var change_id = req.body.change_id;
     var user_name = req.session.current_user.user_name;//处理人姓名
     //获取对应的详情数据
+    console.log("取工单详情",change_id, status)
     service.orderDetail(change_id, status)
         .then(function (result) {
             result.userName = user_name;
@@ -337,7 +344,7 @@ router.post('/orderDetail', function (req, res) {
             utils.respJsonData(res, result);
         })
         .catch(function (err) {
-            console.log('获取字典信息失败', err);
+            console.log('获取工单详情失败', err);
 
         });
 

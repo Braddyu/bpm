@@ -156,6 +156,7 @@
         </table>
     </div>
 </div>
+
 <script>
 
     $.ajaxSettings.beforeSend = function (xhr, request) {
@@ -165,6 +166,9 @@
 
 <script type="text/javascript">
      var $list=$("#thelist");
+     var status='{{status}}'
+     var change_id='{{change_id}}'
+     var proc_code='{{proc_code}}'
     var uploader = WebUploader.create({
         auto:false,
         // swf文件路径
