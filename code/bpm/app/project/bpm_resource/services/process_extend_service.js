@@ -209,7 +209,7 @@ exports.addStatisticsByMoneyAudit = function(inst_id,dispatch_time,orgId) {
             ///所属渠道名称
             statistics.channel_name=orgl_result[0].org_fullname;
             //查找区县
-            county_result  = await  user_model.$CommonCoreOrg.find({"_id":orgl_result[0].audit_org_pid,"level":4});
+            var county_result  = await  user_model.$CommonCoreOrg.find({"_id":orgl_result[0].audit_org_pid,"level":4});
             if(county_result.length !=1){
                 reject(utils.returnMsg(false, '1000', '查找网格错误。',null,orgl_result[0].audit_org_pid));
                 return;
@@ -241,11 +241,10 @@ exports.addStatisticsByMoneyAudit = function(inst_id,dispatch_time,orgId) {
             statistics.county_name=orgl_result[0].org_name;
             statistics.county_code=orgl_result[0].company_code;
 
-
             //查找地州
-            let city_result= await  user_model.$CommonCoreOrg.find({"_id":county_result[0].org_pid,"level":3});
+            let city_result= await  user_model.$CommonCoreOrg.find({"_id":orgl_result[0].org_pid,"level":3});
             if(city_result.length !=1){
-                reject(utils.returnMsg(false, '1000', '查找地州错误。',null,county_result[0].org_pid));
+                reject(utils.returnMsg(false, '1000', '查找地州错误。',null,orgl_result[0].org_pid));
                 return;
             }
             statistics.city_id=city_result[0].id;
@@ -259,7 +258,8 @@ exports.addStatisticsByMoneyAudit = function(inst_id,dispatch_time,orgId) {
                 return;
             }
 
-
+            statistics.province_id=province_result[0].id;
+            statistics.insert_time=new Date();
         }
 
         var arr=[];
