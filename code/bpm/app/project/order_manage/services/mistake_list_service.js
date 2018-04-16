@@ -228,7 +228,7 @@ exports.dispatch_logs_date = function(conditionMap){
             if (err) {
                 reject({'success': false, 'code': '1000', 'msg': '按条件查询派单日志失败', "error": err});
             } else {
-                var flag = false;
+                var flag = true;
                 if(result.length == 0){
                     flag = true;
                 }else{
