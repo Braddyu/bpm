@@ -410,7 +410,7 @@ exports.exportDetailList = function (org_id, proc_code, level, status, startDate
             //结束时间追加至当天的最后时间
             compare['$lte'] = new Date(new Date(new Date(endDate).setDate(new Date(endDate).getDate() + 1)));
         }
-        console.log("channel_work_id", channel_work_id, "channel_code", channel_code);
+        console.log("channel_work_id", channel_work_id, "channel_code", channel_code,compare);
         //渠道编码
         if (channel_code) {
             statistics['channel_code'] = channel_code;
@@ -1002,7 +1002,7 @@ exports.detail_list = function (page, size, org_id, level, status, proc_code, st
             //结束时间追加至当天的最后时间
             compare['$lte'] = new Date(new Date(new Date(endDate).setDate(new Date(endDate).getDate() + 1)));
         }
-
+        var task_flag = true;
         var task_flag = true;
         //查询实例
         var inst_match = {};

@@ -283,12 +283,12 @@ exports.orderDetail = function (change_id, status) {
             model.$ProcessInstTask.find({"_id": change_id}, function (err, result) {
                 if (err) {
                     console.log('获取任务信息失败', err);
-                    reject({'success': false, 'code': '1000', 'msg': '获取任务信息失败', "error": err});
+                    reject({'success': false, 'code': '1000', 'msg': '获取任务信息失败1', "error": err});
                 } else {
                     if (result.length == 1) {
                         resolve({'success': true, 'code': '0000', 'msg': '获取任务信息成功', "data": result[0], "error": null});
                     } else {
-                        reject({'success': false, 'code': '1000', 'msg': '获取任务信息失败'});
+                        reject({'success': false, 'code': '1000', 'msg': '获取任务信息失败2'});
 
                     }
                 }
@@ -298,12 +298,12 @@ exports.orderDetail = function (change_id, status) {
             model.$ProcessInst.find({"_id": change_id}, function (err, result) {
                 if (err) {
                     console.log('获取工单信息失败', err);
-                    reject({'success': false, 'code': '1000', 'msg': '获取工单信息失败', "error": err});
+                    reject({'success': false, 'code': '1000', 'msg': '获取工单信息失败3', "error": err});
                 } else {
                     if (result.length == 1) {
                         resolve({'success': true, 'code': '0000', 'msg': '获取工单信息成功', "data": result[0], "error": null});
                     } else {
-                        reject({'success': false, 'code': '1000', 'msg': '获取工单信息失败'});
+                        reject({'success': false, 'code': '1000', 'msg': '获取工单信息失败4'});
 
                     }
                 }

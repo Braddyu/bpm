@@ -18,6 +18,7 @@ router.route('/list').post(function(req,res){
     var startDate = req.body.startDate;//创建时间
     var endDate = req.body.endDate;//创建时间
     var work_order_number = req.body.work_order_number;
+	var task_type = req.body.task_type;
     console.log("开始获取我的已办集合,用户编号",userNo)
 
     // 验证流程名是否为空
@@ -29,7 +30,7 @@ router.route('/list').post(function(req,res){
     userService.getUsreRolesByUserNo(userNo).then(function(result){
         console.log(result);
         if(result){
-            completeService.getMyCompleteTaskQuery4Eui(page,length,userNo,result,proc_code,startDate,endDate,work_order_number).then(function(taskresult){
+            completeService.getMyCompleteTaskQuery4Eui(page,length,userNo,result,proc_code,startDate,endDate,work_order_number,task_type).then(function(taskresult){
 
                 utils.respJsonData(res, taskresult);
             }).catch(function(err_inst){
@@ -66,9 +67,30 @@ router.route("/logs").post(function(req,res){
     });
 });
 
-
-
-
+/**
+ * 任务转派
+ */
+router.route("/turn2SendTask").post(function(req,res){
+    var workId = req.body.workId;
+    var instId = req.body.instId;
+    userService.queryUserByWorkId(workId).then(function(rs){
+        if(rs.success){
+            completeService.turn2SendTask(rs.data[0],instId).then(function(rs){
+                utils.respJsonData(res,rs);
+            });
+        }else{
+            utils.respJsonData(res,rs);
+        }
+    });
+});
+/**
+ * 列出所有任务类型
+ */
+router.route("/listAllTaskType").post(function(req,res){
+    completeService.listAllTaskType().then(function(rs){
+        utils.respJsonData(res,rs.data);
+    });
+});
 
 module.exports = router;
 

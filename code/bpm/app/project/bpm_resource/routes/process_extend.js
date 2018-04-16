@@ -51,7 +51,7 @@ exports.process_extend=function() {
             return;
         }
         //将实例信息和区域信息插入统计表
-        process_extend_service.addStatistics(inst_id, dispatch_time).then(function (rs) {
+        process_extend_service.addStatistics(inst_id, dispatch_time,'').then(function (rs) {
             utils.respJsonData(res, rs);
         }).catch(function (e) {
             utils.respJsonData(res, e);

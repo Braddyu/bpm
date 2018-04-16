@@ -16,11 +16,14 @@ var utils = require('../../../../lib/utils/app_utils');
  * @param conditionMap
  * @returns {Promise}
  */
-exports.getMyArchiveTaskQuery4Eui = function (page, size, userNo, work_order_number,proc_start_time,proc_inst_task_complete_time,is_overtime,proc_code) {
+exports.getMyArchiveTaskQuery4Eui = function (page, size, userNo, work_order_number,proc_start_time,proc_inst_task_complete_time,is_overtime,proc_code,result) {
 
     var p = new Promise(function (resolve, reject) {
 
         var inst_search={};
+        let work_id=result.work_id;
+        //有的工号为'',为了防止查到空工号的任务
+        if(!work_id)work_id='@@@@@@@';
         if (work_order_number) {
             inst_search.work_order_number = work_order_number;
         }
@@ -58,7 +61,7 @@ exports.getMyArchiveTaskQuery4Eui = function (page, size, userNo, work_order_num
                 }
             },
             {
-                $match: {"his.proc_inst_task_assignee":userNo}
+                $match: {$or:[{"his.proc_inst_task_assignee":userNo},{"his.proc_inst_task_work_id":work_id}]}
             },
             {
                 $project: {

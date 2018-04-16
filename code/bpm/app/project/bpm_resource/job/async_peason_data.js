@@ -1,8 +1,8 @@
 var model_org=require("../models/user_model");
 var Promise=require("bluebird");
 var utils = require('../../../../lib/utils/app_utils');
-var mysql_pool=require("../../../../lib/mysql_pool");
-var mysql_pool_promise=require("../../../../lib/mysql_pool_peason_athena_promise");
+
+var mysql_pool_promise=require("../../../../lib/mysql_pool_athena");
 var fs = require('fs');
 var ObjectID = require('mongodb').ObjectID;
 var config = require('../../../../config');

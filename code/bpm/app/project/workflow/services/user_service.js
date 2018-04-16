@@ -261,6 +261,7 @@ function setRoleIdArr(arr){
             result.push(roles[i].toString());
         }
         resuMap.orgs = arr[0]._doc.user_org?arr[0]._doc.user_org:null;
+        resuMap.work_id = arr[0]._doc.work_id?arr[0]._doc.work_id:null;
         resuMap.roles = result;
     }
     return resuMap;
@@ -459,5 +460,26 @@ exports.getInfo = function (tag,_id) {
     return p;
 }
 
-
+/**
+ * 根据工号获取用户信息。
+ * @param workId
+ */
+exports.queryUserByWorkId = function(workId){
+    var p = new Promise(function(resolve,reject){
+        model.$User.find({"work_id":workId},function(err,rs){
+            if(err){
+                resolve(utils.returnMsg(false, '1000', '派单失败:获取用户信息出错', null, err));
+            }else{
+                if(rs.length == 1){
+                    resolve(utils.returnMsg(true, '0000', '获取用户信息成功', rs, err));
+                }else if(rs.length == 0){
+                    resolve(utils.returnMsg(false, '1000', '派单失败:找不到营业员', null, null));
+                }else{
+                    resolve(utils.returnMsg(false, '1000', '派单失败:获取用户信息出错', null, null));
+                }
+            }
+        })
+    });
+    return p;
+}
 

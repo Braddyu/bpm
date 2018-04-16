@@ -188,7 +188,7 @@ exports.resetPwd = function(userid, cb) {
 
                 var user = result[0];
                 //var password = user.login_account + '';
-                var password = user.login_account + config.project.password_suffix;
+                var password ='gdgl' + config.project.password_suffix;
 
                 var conditions = {_id: userid};
                 var update = {$set: {login_password:utils.encryptDataByMD5(password)}};

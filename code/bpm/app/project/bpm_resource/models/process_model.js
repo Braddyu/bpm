@@ -4,7 +4,7 @@
 // 引入mongoose工具类
 var mongoUtils  = require('../../../common/core/mongodb/mongoose_utils');
 var mongoose = mongoUtils.init();
-mongoose.set("debug",false)
+mongoose.set("debug",true)
 var Schema = mongoose.Schema;
 mongoose.Promise=Promise;
 //构造触发事件，访问接口基本属性Schema对象
@@ -192,6 +192,7 @@ var commonProcessInstTaskSchema = new Schema(
         proc_inst_task_status : Number,// 流程当前状态 0-未处理，1-已完成
         proc_inst_task_assignee : String,// 流程处理人code
         proc_inst_task_assignee_name : String,// 流程处理人名
+        proc_inst_task_work_id:String,// 流程处理人工号
         proc_inst_task_user_role : [{type: Schema.Types.ObjectId}],// 流程处理用户角色ID
         // proc_inst_task_handler_code:String,//实际处理人
         proc_inst_task_user_role_name : String,// 流程处理用户角色名
@@ -246,6 +247,7 @@ var commonProcessTaskHistroySchema = new Schema(
         proc_inst_task_status : Number,// 流程当前状态 0-未处理，1-已完成
         proc_inst_task_assignee : String,// 流程处理人code
         proc_inst_task_assignee_name : String,// 流程处理人名
+        proc_inst_task_work_id:String,// 流程处理人工号
         proc_inst_task_user_role :  [{type: Schema.Types.ObjectId}],// 流程处理用户角色ID
         // proc_inst_task_handler_code:String,//实际处理人
         proc_inst_task_user_role_name : String,// 流程处理用户角色名
@@ -322,3 +324,11 @@ var processToken = new Schema(
 
 // 流程流转信息model
 exports.$ProcessToken = mongoose.model('ProcessToken ', processToken );
+
+var jobSetp = new Schema(
+    {
+        NAME:String
+    },
+    {collection: "common_bpm_wf_job_step"}// mongodb集合名
+);
+exports.$JobSetp = mongoose.model('JobSetp ', jobSetp );

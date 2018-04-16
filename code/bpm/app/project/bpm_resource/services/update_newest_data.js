@@ -2,7 +2,7 @@ var model_user=require("../models/user_model");
 var Pormise=require("bluebird");
 var utils = require('../../../../lib/utils/app_utils');
 var new_model=require("../models/newest_user_model");
-var mysql_pool=require("../../../../lib/mysql_pool");
+
 var mysql_pool_bpm=require("../../../../lib/mysql_pool_athena")
 var inst_service=require("./instance_service");
 var tranfer_service=require("./node_transfer_service");

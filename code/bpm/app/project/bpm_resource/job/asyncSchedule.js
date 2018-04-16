@@ -10,8 +10,8 @@ var peasonFlag = config.switchDetail.athena_app_switch;
 
 schedule.scheduleJob(config.athena_org_switch_core, function(){
     if(orgFlag){
-        //console.log('运行了。');
-       orgasync.sync_data_from_Athena();
+        console.log('运行了。');
+      orgasync.sync_data_from_Athena();
     }
 });
 

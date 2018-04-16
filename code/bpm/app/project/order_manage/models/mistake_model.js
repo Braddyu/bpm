@@ -4,7 +4,7 @@
 // 引入mongoose工具类
 var mongoUtils  = require('../../../common/core/mongodb/mongoose_utils');
 var mongoose = mongoUtils.init();
-mongoose.set("debug",false)
+mongoose.set("debug",true);
 var Schema = mongoose.Schema;
 
 //构造流程实例流转当前信息Schema对象
@@ -46,7 +46,11 @@ var commonCoreProcessMistakeLogs = new Schema(
         create_time:Date,//创建时间
         update_user_no :  String,//修改者工号
         status:Number,//派单状态0表示：正在派单中。1表示：派单全部成功。2表示：派单部分成功。3表示：派单全部失败。
-        dispatch_remark:String//派单描述
+        dispatch_remark:String,//派单描述
+        dispatch_cond_one:String,//派单条件1
+        dispatch_cond_two:String,//派单条件2
+        dispatch_cond_thr:String,//派单条件3
+        dispatch_finish_time:Date//派单结束时间
 
     },
     {collection: "common_bpm_mistake_logs"}// mongodb集合名

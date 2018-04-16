@@ -274,7 +274,7 @@
             columns:[field],
             onDblClickRow:function(rowIndex, rowData){
 
-                var url='{{projcfg.appurl}}/api/order_manage/order_list/showDetailView?proc_code='+rowData.proc_code;
+                var url='{{projcfg.appurl}}/api/order_manage/order_list/showDetailView?proc_code='+rowData.proc_code+'&change_id='+rowData.proc_inst_id+'&status=3';
                // var content = '<iframe src="'+url+'" width="100%" height="99%" frameborder="0" scrolling="yes"></iframe>';
 
 
@@ -285,11 +285,6 @@
                     closed : false,
                     cache : false,
                     href :url ,
-                    onOpen:function(){
-                        status=3;
-                        change_id=rowData.proc_inst_id
-                        proc_code=rowData.proc_code
-                    },
                     modal : true
                 });
 

@@ -606,7 +606,6 @@ async function normal_process(current_detail,next_detail, next_node, proc_inst_i
     let result_t=await nodeAnalysisService.findParams(proc_inst_id,current_node);
 
     var org=rs.data;
-    console.log(org);
     var proc_inst_task_params=result_t.data;
     //创建下一步流转任务
     var condition_task = {};
@@ -650,6 +649,8 @@ async function normal_process(current_detail,next_detail, next_node, proc_inst_i
                 'proc_inst_task_code': proc_cur_task
 
             });
+            let user_mes =await model_user.$User.find({'user_no':step_first[0].proc_inst_task_assignee});
+            condition_task.proc_inst_task_work_id = user_mes[0].work_id;
             condition_task.next_name = step_first[0].next_name;
             condition_task.proc_back = 1;
             condition_task.joinup_sys = step_first[0].joinup_sys;//工单所属编号
@@ -850,6 +851,12 @@ exports.assign_transfer=function(proc_task_id,node_code,user_code,assign_user_co
        var proc_inst_task_params = result_t.data;
        //创建下一步流转任务
        var condition_task = {};
+       //流程处理人工号
+       if(resultss[0].work_id){
+           condition_task.proc_inst_task_work_id = resultss[0].work_id;
+       }else{
+           condition_task.proc_inst_task_work_id = '';
+       }
        condition_task.proc_task_ver = proc_task_ver;
        condition_task.publish_status =publish_status;
        condition_task.work_order_number = work_order_number;
@@ -1100,6 +1107,11 @@ exports.do_payout=function(proc_task_id,node_code,user_code,assign_user_code,pro
                 var proc_inst_task_params = result_t.data;
                 //创建下一步流转任务
                 var condition_task = {};
+                if(resultss[0].work_id){
+                    condition_task.proc_inst_task_work_id = resultss[0].work_id;
+                }else{
+                    condition_task.proc_inst_task_work_id = '';
+                }
                 condition_task.proc_inst_id = proc_inst_id;//: {type: Schema.Types.ObjectId, ref: 'CommonCoreProcessInst'}, // 流程流转当前信息ID
                 condition_task.proc_inst_task_code = next_detail.item_code;// : String,// 流程当前节点编码(流程任务编号)
                 condition_task.proc_inst_task_name = next_node.name;//: String,// 流程当前节点名称(任务名称)
