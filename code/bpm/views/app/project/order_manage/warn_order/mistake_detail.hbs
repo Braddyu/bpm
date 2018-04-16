@@ -116,8 +116,8 @@
                             <!--用来存放文件信息-->
 
 
-                            <div id="picker"  >选择文件</div>
-
+                            <div id="picker" >选择文件
+                            </div>
                             <div id="thelist" class="uploader-list" ></div>
                         </div>
                         </td>
@@ -192,6 +192,16 @@
         fileNumLimit: 8, //限制上传个数
         fileSingleSizeLimit: 2048000 //限制单个上传图片的大小
     });
+     /**
+      * 验证文件格式
+      */
+     uploader.on("error", function (type) {
+         if (type == "Q_TYPE_DENIED") {
+             $.messager.alert('提示',"请上传GIF,JPG,JPEG,BPM,PNG,MP3,WAV,WMA,PDF格式文件");
+         }else {
+             $.messager.alert('提示', "上传出错！请检查后重新上传！错误代码"+type);
+         }
+     });
     // 当有文件被添加进队列的时候
     uploader.on( 'fileQueued', function( file ) {
         var $li = $(
@@ -255,6 +265,7 @@
               $.messager.progress('close');
        }
    });
+
 
 
     //是否属于归档节点
