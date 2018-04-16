@@ -166,6 +166,7 @@ legend {
             var time = row.create_time.substring(0,row.create_time.indexOf('.'));
             var create_time =new Date(time.replace(/-/g,'/').replace(/T|Z/g,' ')).Format("yyyy-MM-dd hh:mm:ss");
             $('#create_time').html(create_time);
+            $('#answer').html('');
             $('#answer').append(row.answer);
             if(!is_admin){
                 $('#commProblemForm :input').attr("disabled","disabled")

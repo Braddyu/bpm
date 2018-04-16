@@ -292,5 +292,6 @@ var config = {
     local_haunghe_path:'E:/test/',//本地存储黄河数据
     local_path:'/upload/',//本地存储附件路径
     batch_size:2000,//差错工单每一批次数量
+	accessory_path:'C:/res_download_file/' //帮助资料
 }
 module.exports = config;
