@@ -111,7 +111,7 @@ exports.getMistakeListPage = function (page, size, conditionMap) {
  */
 exports.dispatch = function (queryDate, check_status, user_no, user_name, role_name, business_name, city_code, work_id,status,mlog_id) {
     //处理流程
-    var proc_code = 'p-201';
+    var proc_code = config.mistake_proc_code;
 
     var p = new Promise(function (resolve, reject) {
         var queryJson = { "status": status};
