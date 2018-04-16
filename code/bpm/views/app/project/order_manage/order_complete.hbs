@@ -195,6 +195,7 @@
             queryParams: {
                 proc_code: $("#proc_task_code").combobox('getValue'),
                 work_order_number:$("#work_order_number").val(),
+				task_type:$("#taskType").combobox("getValue"),
             }
         });
     }
@@ -218,6 +219,7 @@
     }
 
     function turn2SendTask(){
+		$("#workIdForm").form("validate");
         var workId = $('#workId').textbox('getValue');
         var instId = $("#instId").val();
         $.ajax({

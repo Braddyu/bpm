@@ -11,7 +11,7 @@ var process_model = require('../../bpm_resource/models/process_model');
  * @param userCode
  * @param paramMap
  */
-exports.getMyCompleteTaskQuery4Eui = function (page, size, userCode, paramMap, proc_code, startDate, endDate, work_order_number) {
+exports.getMyCompleteTaskQuery4Eui = function (page, size, userCode, paramMap, proc_code, startDate, endDate, work_order_number,task_type) {
 
     var p = new Promise(function (resolve, reject) {
         var userArr = [];
@@ -32,6 +32,9 @@ exports.getMyCompleteTaskQuery4Eui = function (page, size, userCode, paramMap, p
         }
         if (work_order_number) {
             conditionMap.work_order_number = work_order_number;
+        }
+		if(task_type){
+            conditionMap.proc_inst_task_name = task_type;
         }
         var compare = {};
         //开始时间
