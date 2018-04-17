@@ -296,8 +296,8 @@ var config = {
         password: 'tNi0eNL%@j'
     },//集中稽核所需归档文件
     gdglFile_server_time:{
-        hour :'18',
-        minute:'4'
+        hour :'2',
+        minute:'0'
     },//同步集中稽核数据时间
     ftp_huanghe_get:'/upload/',//获取差错工单ftp路径
     ftp_huanghe_put:'/upload/',//上传差错工单附件路径
