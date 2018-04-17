@@ -52,7 +52,7 @@ function getNode(process_define_id,node_code,params,flag){
             let type = node_detail.type;
             var node_array = await getValidNode(process_define, node_code, flag);
             if (type == "chat") {
-                var valid_node = await deleteInvalidNode(process_define, item_config, node_array, node_code, params,)
+                var valid_node = await deleteInvalidNode(process_define, item_config, node_array, node_code, params)
                 if (valid_node.length != 1) {
                     resolve(utils.returnMsg(false, '9999', '有效节点删除不完全，或者错误', valid_node, null));
                 } else {
@@ -104,7 +104,7 @@ function getNextnode(inst_id,node_code,params,flag){
             let type = node_detail.type;
             var node_array = await getValidNode(process_define, node_code, flag);
             if (type == "chat") {
-                var valid_node = await deleteInvalidNode(process_define, item_config, node_array, node_code, params,)
+                var valid_node = await deleteInvalidNode(process_define, item_config, node_array, node_code, params)
                 if (valid_node.length != 1) {
                     resolve(utils.returnMsg(false, '9999', '有效节点删除不完全，或者错误', valid_node, null));
                 } else {
@@ -150,7 +150,7 @@ function getInstNode(rs,node_code,params,flag){
             let type = node_detail.type;
             var node_array = await getValidNode(process_define, node_code, flag);
             if (type == "chat") {
-                var valid_node = await deleteInvalidNode(process_define, item_config, node_array, node_code, params,)
+                var valid_node = await deleteInvalidNode(process_define, item_config, node_array, node_code, params)
                 if (valid_node.length != 1) {
                     resolve(utils.returnMsg(false, '9999', '有效节点删除不完全，或者错误', valid_node, null));
                 } else {

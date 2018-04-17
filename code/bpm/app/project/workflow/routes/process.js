@@ -104,7 +104,7 @@ router.route('/process')
         if(filterParam1){
             conditionMap['$or'] = [{'proc_code':new RegExp(filterParam1)},{'proc_name':new RegExp(filterParam1)}];
         }
-
+        conditionMap.status = '1';
         proc.getProcessList4Page(page, length, conditionMap)
             .then(function(result){
 
