@@ -273,7 +273,8 @@ var config = {
     },
     //允许发送短信的流程
     allowSMS:{
-        'zj_101':true
+        'zj_101':true,
+        'zj_102':true
     },
     //定时任务表达式
     athena_org_switch_core:"30 1 1 * * *",//秒、分、时、日、月、周几
