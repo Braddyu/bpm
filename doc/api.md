@@ -688,6 +688,38 @@ HOST: https://135.10.82.76:8080/gdgl/api
 
     {success:true, code:'0000', msg:'获取下一节点处理人信息成功。',data:[data]} 
 	
+	
+## 会签流程获取下一节点处理人 [/process_instance/conut/getNext_mes]
+### 会签流程获取下一节点处理人 [POST]
+
++ Request
+    + Body
+
+            {
+			"task_id":"5ad54f77c22de606c0aada87",//当前任务ID
+			"node_code":"processDefineDiv_node_3",//当前节点编号
+			"inst_id":"5ad54f77c22de606c0aada84",//当前实例IDid
+			"user_no":"chenzhong",//当前处理人编号
+			"params": ""(json格式如果有两条流转线路，如：flag=true或false)
+            }
+    
++ Response 200 
+
+		{
+		  "data": [
+			{
+			  "user_no": "wuya",
+			  "user_name": "吴亚",
+			  "node_name": "省公司部门领导发起会签",
+			  "node_code": "processDefineDiv_node_61"
+			}
+		  ],
+		  "msg": "查询完成",
+		  "error": null,
+		  "success": true,
+		  "next_node": "processDefineDiv_node_61"
+		} 
+			
 
 ## 流程实例列表 [/process_instance/list]
 ### 流程实例列表信息 [POST]
@@ -1254,7 +1286,84 @@ HOST: https://135.10.82.76:8080/gdgl/api
 		  }
 		}
 	
+## 会签流程指派任务接口 [/task/count/assign]
+### 会签流程指派任务接口 [POST]
 
++ Request
+    + Body
+
+            {
+				"inst_id":"5ad54f77c22de606c0aada84",//当前实例id--必填
+				"task_id":"5ad54f77c22de606c0aada87",//当前任务id--必填
+				"orgs":'',//发起会签的下一节点选择的机构id --发起会签的下一节点选择的机构,多机构以,隔开
+				"roles":'',//发起会签的下一节点选择的角色id,多角色以,隔开
+				"memo":'同意',//处理意见
+				"title":'join节点任务正常流转是否正常',//标题
+				"user_no":"chenzhong",//当前节点处理人编号--必填
+				"user_name":"陈忠",//当前节点处理人姓名--必填
+				"assign_user_no":"wuya",//下一节点处理人编号
+				"assign_user_name":"吴亚",//下一节点处理人姓名
+				"node_code":"processDefineDiv_node_3",//当前节点编号--必填
+				"next_node":"processDefineDiv_node_61",//下一节点编号
+				"proc_code":"p-count",//流程编码
+				"biz_vars":'',//业务变量
+				"proc_vars":'',//流程变量
+				"params":'',//线上条件
+            }
+    
++ Response 200
+
+		{
+		  "success": true,
+		  "code": "0000",
+		  "msg": "任务流转正常",
+		  "data": {
+			"__v": 0,
+			"count": 0,
+			"proc_inst_id": "5ad54f77c22de606c0aada84",
+			"proc_inst_task_code": "processDefineDiv_node_61",
+			"proc_inst_task_name": "省公司部门领导发起会签",
+			"proc_inst_task_type": "省公司部门领导发起会签",
+			"proc_inst_task_arrive_time": "2018-04-17T01:38:01.033Z",
+			"proc_inst_task_handle_time": "2018-04-17T01:38:01.033Z",
+			"proc_inst_task_complete_time": null,
+			"proc_inst_task_status": 0,
+			"proc_inst_task_assignee_name": "吴亚",
+			"proc_inst_task_title": "'join节点任务正常流转是否正常'",
+			"proc_inst_biz_vars": "''",
+			"proc_inst_prev_node_code": "processDefineDiv_node_3",
+			"proc_inst_prev_node_handler_user": "chenzhong",
+			"proc_inst_node_vars": "",
+			"proc_vars": "''",
+			"proc_inst_task_params": "",
+			"proc_inst_task_claim": null,
+			"proc_inst_task_sign": 1,
+			"proc_inst_task_sms": 0,
+			"proc_inst_task_remark": "",
+			"proc_inst_task_assignee": "wuya",
+			"proc_task_start_user_role_names": "普通员工",
+			"proc_task_start_name": "杨青",
+			"proc_name": "会签流程",
+			"proc_code": "p-count",
+			"joinup_sys": "unitTest_node",
+			"next_name": "",
+			"proc_back": 0,
+			"previous_step": "5ad54f77c22de606c0aada87",
+			"_id": "5ad54ff9c22de606c0aada89",
+			"count_roles": [],
+			"conut_org": [],
+			"proc_task_start_user_role_code": [
+			  "5a264057c819ed2118539070"
+			],
+			"proc_inst_task_user_org": [
+			  "5a275c0577ec2e1e84487962"
+			],
+			"proc_inst_task_user_role": [
+			  "5a264057c819ed211853906d"
+			]
+		  }
+		}
+	
 # Group 流程历史-修改
 
 ## 流程历史 [/process_instance/history]
