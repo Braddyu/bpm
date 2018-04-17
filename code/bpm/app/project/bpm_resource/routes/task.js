@@ -681,10 +681,10 @@ exports.task=function() {
         mistakeService.dispatch(queryDate,check_status,user_no,user_name,role_name,business_name,city_code,work_id,status,mlog_id)
             .then(function(result){
                 console.log("派发工单成功",result);
-                utils.respJsonData(res, result);
+                // utils.respJsonData(res, result);
             })
             .catch(function(err){
-                utils.respJsonData(res, err);
+                // utils.respJsonData(res, err);
                 console.log('派发工单失败',err);
 
             });

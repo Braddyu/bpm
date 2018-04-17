@@ -18,6 +18,11 @@
                                 <select class="easyui-combobox"id="proc_task_code"  style="width: 180px;height:31px;">
                                 </select>
                             </div>
+							<div class="btn-group" role="group" aria-label="...">
+                                <label for="filterParam3">处理节点：</label>
+                                <select class="easyui-combobox"id="taskType"  style="width: 180px;height:31px;">
+                                </select>
+                            </div>
                             <div class="btn-group" role="group" aria-label="...">
                                 <span style="color:red;font-size:13px">提示:双击查看工单</span>
 
@@ -25,6 +30,13 @@
                         </div>
                         <div class="col-xs-4 col-md-4 text-right">
                             <form class="form-inline">
+								<div class="form-group">
+                                    <div class="input-group">
+                                        <span class="input-group-btn">
+                                                <button class="btn btn-default" type="button" onclick="turn2Send()"><i class="fa fa-edit"></i>转派</button>
+                                            </span>
+                                    </div>
+                                </div>
                                 <div class="form-group">
                                     <div class="input-group">
                                         <span class="input-group-btn">

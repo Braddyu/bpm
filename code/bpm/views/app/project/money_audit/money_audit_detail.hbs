@@ -113,6 +113,13 @@
 
                 </tr>
 
+                <tr>
+                    <td align="right" class="tdLabel"></td>
+                    <td colspan="2">
+                        <span style="color:rgba(247,0,0,0.61);font-size:12px">上传附件的格式为:GIF,JPG,JPEG,BPM,PNG,MP3,WAV,WMA,PDF,TXT,XLS,XLSX</span>
+                    </td>
+                </tr>
+
                 <tr  id="fileUpload">
                     <td align="right" class="tdLabel">附件上传:</td>
                     <td>  <!--<input type="file"labelPosition="top"id="files" name="files" multiple="true" data-options="prompt:'选择文件...',buttonText:'选择'" style="width:250px"/>-->
@@ -197,6 +204,17 @@
         },
         fileNumLimit: 8, //限制上传个数
         fileSingleSizeLimit: 2048000 //限制单个上传图片的大小
+    });
+
+    /**
+     * 验证文件格式
+     */
+    uploader.on("error", function (type) {
+        if (type == "Q_TYPE_DENIED") {
+            $.messager.alert('提示', "您上传的文件格式错误，请上传GIF,JPG,JPEG,BPM,PNG,MP3,WAV,WMA,PDF,txt,xls,xlsx格式文件");
+        }else {
+            $.messager.alert('提示', "上传出错！请检查后重新上传！错误代码"+type);
+        }
     });
     // 当有文件被添加进队列的时候
     uploader.on( 'fileQueued', function( file ) {
