@@ -1,12 +1,6 @@
-﻿
-const utils = require('../../../../lib/utils/app_utils');
-const process_model = require('../../../../app/project/bpm_resource/models/process_model');
+﻿const process_model = require('../../../../app/project/bpm_resource/models/process_model');
 const user_model = require('../../../../app/project/bpm_resource/models/user_model');
-const config = require('../../../../config');
-const fs=require('fs');
-const path=require('path');
-const schedule = require("node-schedule");
-var rule = new schedule.RecurrenceRule();
+
 
 exports.task_job=function(){
     task ();
@@ -16,6 +10,7 @@ async function task() {
     try{
         //查询未归档未超时的差错工单和预警工单
         let instList=await process_model.$ProcessInst.find({"proc_inst_status":{$nin:4},"proc_code":{$in:['p-201']},"is_overtime":'0',"proc_cur_task_name" :"厅店处理回复"});
+       console.log(instList.length);
         let now=new Date().getTime();
         for(let item in instList){
             let proc_vars=JSON.parse(instList[item].proc_vars);

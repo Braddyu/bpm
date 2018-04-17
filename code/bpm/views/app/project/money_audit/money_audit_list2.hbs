@@ -1,0 +1,595 @@
+<link rel="stylesheet" type="text/css" href="{{projcfg.appurl}}/static/{{projcfg.theme}}webuploade/webuploader.css">
+<script src="{{projcfg.appurl}}/static/{{projcfg.theme}}webuploade/webuploader.js"></script>
+<link rel="stylesheet" type="text/css" href="{{projcfg.appurl}}/static/order/css/order_detail.css">
+
+<div id="processDiv" class="row">
+    <div class="col-xs-12 col-md-12">
+        <div class="widget">
+            <div class="widget-body">
+                <div id="processLayout" class="easyui-layout" data-options="fit:true" style="width:600px;height:666px;">
+                    <div id="toolbar1" class="row tbRow">
+                        <div class="col-xs-8 col-md-8">
+                            <div class="btn-group" role="group" aria-label="...">
+                                <button type="button" class="btn btn-default" onclick="addDrafts()"><i class="fa fa-plus"></i>派单</button>
+                            </div>
+                        </div>
+                        <div class="col-xs-4 col-md-4 text-right">
+                            <form class="form-inline">
+                                <div class="form-group">
+                                    <div class="input-group">
+                                        <input type="input" id="work_order_number" class="form-control" style="width:130px;" placeholder="输入工单编号查询"/>
+                                        <span class="input-group-btn">
+                                                <button class="btn btn-default" type="button" onclick="doSearch(1)"><i class="fa fa-search"></i>查询</button>
+                                            </span>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                        <table id="orderTablelist">
+
+                        </table>
+
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="dd"></div>
+
+<div id="orderDetail"  class="mydialog"  style=" overflow-y:scroll;">
+    <form id="orderDetailForm" method="post" enctype="multipart/form-data">
+        <fieldset>
+            <legend ><b>任务基本信息</b></legend>
+
+            <table cellpadding="5" align="center" style="border-collapse:separate; border-spacing:0px 5px;">
+                <tr>
+                    <input  type="hidden"id="_id"  name="_id"/>
+                    <td align="right" class="tdLabel">工单标题:</td>
+                    <td colspan="3"><input style="width: 665px" class="easyui-textbox"data-options="required:true, missingMessage:'请输入工单标题'" id="proc_title" name="proc_title" ></input></td>
+                </tr>
+                <tr>
+                    <td align="right" class="tdLabel">工单类型:</td>
+                    <td>
+                        <input disabled style="width: 280px"class="easyui-textbox"
+                               id="proc_inst_name"  name="proc_inst_name"></input>
+                    </td>
+                    <td align="right" class="tdLabel">工作天数:</td>
+                    <td><input style="width: 280px"class="easyui-numberbox" data-options="precision:0,required:true, missingMessage:'请输入工作天数'"id="proc_work_day" name="proc_work_day"
+                    ></input></td>
+                </tr>
+                <tr>
+                    <td align="right" class="tdLabel">开始时间:</td>
+                    <td><input readonly style="width: 280px"class="easyui-textbox"
+                               id="start_time" name="start_time"></input></td>
+                    <td align="right" class="tdLabel">完成时间:</td>
+                    <td><input readonly style="width: 280px"  class="easyui-textbox"
+                               id="end_time" name="end_time"></input></td>
+                    <td colspan="2"></td>
+
+
+                </tr>
+                <tr>
+                    <td align="right" class="tdLabel">发起人角色:</td>
+                    <td><input disabled style="width: 280px"class="easyui-textbox"
+                               id="user_role_names" ></input></td>
+
+                    <td align="right" class="tdLabel">发起人:</td>
+                    <td><input disabled style="width: 280px" class="easyui-textbox"
+                               id="start_name" ></input></td>
+
+                </tr>
+
+
+                <tr>
+                    <td align="right" class="tdLabel">派单内容:</td>
+                    <td colspan="3"><input
+                            style="width: 670px; height: 50px; resize: none;" cols="30"
+                            name="proc_content" id="proc_content" rows="4"  class="easyui-textbox"  labelPosition="top" multiline="true"/>
+
+                    </td>
+                </tr>
+            </table>
+
+
+            <legend><b>节点处理</b></legend>
+
+            <table cellpadding="5" align="center" style="border-collapse:separate; border-spacing:0px 5px;">
+                <input  type="hidden"id="proc_name"  name="proc_name"/>
+                <input  type="hidden"id="proc_ver"  name="proc_ver"/>
+
+                <!--<tr>
+                    <td  align="right" class="tdLabel">处理人机构：</td>
+                    <td colspan="3" class="tdLabel"><select  class="easyui-combobox" id="orgId" name="orgId"  style="width: 665px;height:40px;"></select></td>
+                </tr>-->
+                <tr id="tr_5">
+                    <td align="right" class="tdLabel">处理人:</td>
+                    <td colspan="3" class="tdLabel"><select class="easyui-combobox"
+                                            id="assign_user_no"name="assign_user_no" style="width: 180px;">
+                    </select> </td>
+                </tr>
+
+                <tr>
+                    <td align="right" class="tdLabel"></td>
+                    <td colspan="2">
+                        <span style="color:rgba(247,0,0,0.61);font-size:12px">上传附件的格式为:GIF,JPG,JPEG,BPM,PNG,MP3,WAV,WMA,PDF,TXT,XLS,XLSX</span>
+                    </td>
+                </tr>
+                <tr id="fileUpload">
+                    <td align="right" class="tdLabel">附件上传:</td>
+                    <td>
+                        <div id="uploader" class="wu-example">
+                            <!--用来存放文件信息-->
+
+
+                            <div id="picker2"  >选择文件</div>
+
+                            <div id="thelist" class="uploader-list" ></div>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </fieldset>
+
+    </form>
+
+</div>
+
+<script>
+    $.ajaxSettings.beforeSend = function(xhr, request) {
+        xhr.setRequestHeader('csrf-token', '{{_csrfToken}}');
+    }
+</script>
+<script type="text/javascript">
+
+    var uploader;//定义全局变量
+    var fileLength=0;
+    var count=0;
+    $(document).ready(function () {
+       // $('#picker2 div:eq(2)').attr('style','position: absolute; top: 0px; left: 0px; width: 82px; height: 39px; overflow: hidden; bottom: auto; right: auto;');
+        //加载列表
+        loadOrderListDatagrid();
+        //初始化工单类型下拉框
+        //getAllProBase();
+        //这里combobox默认会赋一个的选项的值
+        //loadOrgTree();//加载机构树
+       // $("#assign_user_no") .combobox('setValue','') ;
+        getNextNodeUser("processDefineDiv_node_2","","zj_102");
+        $("#handle") .combobox('setValue','') ;
+        //填写工作天数，给完成时间赋值
+        $('#proc_work_day').textbox({
+            onChange: function(value) {
+                if(value!=''&&value!=null){
+                    var time=new Date($("#start_time").textbox("getValue").replace(/-/g,'/'));
+                    var work_day= parseInt(value)  ;
+                    time.setDate(time.getDate()+work_day)
+                    $("#end_time").textbox("setValue",time.Format("yyyy-MM-dd hh:mm:ss"));
+                }else{
+                    $("#end_time").textbox("setValue","");
+                }
+            }
+        });
+    });
+
+    //时间格式化:new Date().Format("yyyy-MM-dd hh:mm:ss");
+    Date.prototype.Format = function (fmt) { //author: meizz
+        var o = {
+            "M+": this.getMonth() + 1, //月份
+            "d+": this.getDate(), //日
+            "h+": this.getHours(), //小时
+            "m+": this.getMinutes(), //分
+            "s+": this.getSeconds(), //秒
+            "q+": Math.floor((this.getMonth() + 3) / 3), //季度
+            "S": this.getMilliseconds() //毫秒
+        };
+        if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+        for (var k in o)
+            if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+        return fmt;
+    }
+
+    //加载机构树
+    function loadOrgTree(){
+        $('#orgId').combotree({
+            method: 'get',
+            url: '{{projcfg.appurl}}/api/money_audit/money_audit_list2/orgTreeDataAsyn?org_pid=0',
+            //url: '{{projcfg.appurl}}/process/orgTreeData',
+            onBeforeExpand:function(node,param){
+                $('#orgId').combotree("tree").tree("options").url =  '{{projcfg.appurl}}/api/money_audit/money_audit_list2/orgTreeDataAsyn?org_pid=' + node.id;
+            },
+            editable:false,
+//                    required:true,
+            multiple : false,
+            cascadeCheck : false,
+            onSelect:function(record){
+                $('#assign_user_no').combobox('clear');
+                loadOrgPeason(record.id);
+            }
+        });
+    }
+
+    //加载机构下的人员
+    function loadOrgPeason(orgId){
+        $("#assign_user_no").combobox({
+            method: 'get',
+            url: '{{projcfg.appurl}}/api/money_audit/money_audit_list2/getOrgPeason?orgId='+orgId,
+            valueField:'user_no',
+            textField:'user_name'
+        });
+    }
+
+    function loadOrderListDatagrid(){
+        // 加载工单基本属性列表
+        $('#orderTablelist').datagrid({
+            url:'{{projcfg.appurl}}/api/money_audit/money_audit_list2/list',
+            method:'post',
+            rownumbers:true,
+            striped:true,
+            fitColumns:true,
+            border:false,
+            fit:true,
+            toolbar: '#toolbar1',
+            singleSelect:true,
+            selectOnCheck:true,
+            checkOnSelect:true,
+            pageSize: 20,
+            columns:[[
+                {"field":"_id",checkbox:true},
+                {"field": "work_order_number","title":"工单编号","width":55},
+                {"field": "proc_title","title":"工单标题","width":100,
+                    formatter:function(value,row,index){
+                        return "<span title='" + value + "'>" + value + "</span>";
+
+                    }},
+                {"field": "proc_inst_name","title":"工单类型","width":50,
+                    formatter:function(value,row,index){
+                        return "资金稽核工单";
+                    }},
+                {"field": "proc_name","title":"所属流程","width":50},
+                {"field": "proc_ver","title":"版本","width":20},
+                {"field": "proc_cur_task_name","title":"当前处理节点","width":50},
+                {"field": "proc_inst_status","title":"状态","width":50,
+                    formatter:function(value,row,index){
+                        //1 已启用  0 已禁用,2 流转中，3子流程流转中 ,4  归档,5 回退，6 废弃
+                        if(value == '1'){
+                            return "启用";
+                        }else if(value == '2'){
+                            return "流转中";
+                        }else if(value == '3'){
+                            return "子流程流转中";
+                        }else if(value == '4'){
+                            return "归档";
+                        }else if(value == '5'){
+                            return "回退";
+                        }else if(value == '6'){
+                            return "废弃";
+                        }else if(value == '0'){
+                            return "已禁用";
+                        }
+
+                    }
+                },
+                {"field": "proc_start_user_name","title":"申请人","width":50},
+                {"field": "proc_start_time","title":"创建时间","width":80,
+                    formatter:function(value,row,index){
+                        var isoDateStr = value.substring(0,value.indexOf('.'));
+                        var date=new Date(isoDateStr.replace(/-/g,'/').replace(/T|Z/g,' '));
+                        date.setHours(date.getHours()+8)
+                        return  date.Format("yyyy-MM-dd hh:mm:ss");
+                    }}
+            ]],
+            onDblClickRow:function(rowIndex, rowData){
+
+                var url='{{projcfg.appurl}}/api/order_manage/order_list/showDetailView?proc_code='+rowData.proc_code+'&change_id='+rowData._id+'&status=1';
+                // var content = '<iframe src="'+url+'" width="100%" height="99%" frameborder="0" scrolling="yes"></iframe>';
+                $('#dd').dialog({
+                    title : '工单详情',
+                    width : 1250,
+                    height : 650,
+                    closed : false,
+                    cache : false,
+                    href :url ,
+                    onOpen:function(){
+                        status=1;
+                        change_id=rowData._id
+                        proc_code=rowData.proc_code
+                    },
+                    modal : true
+                });
+            },
+            onLoadSuccess:function(json) {
+                if(!json.success) {
+                    msgError(json.msg + ',错误代码:' + json.code);
+                }
+            },
+            onLoadError:function() {
+                msgError('加载数据出现时发生错误,请稍候重试...');
+            },
+            pagination:true,
+            loadMsg:'正在加载...'
+        });
+    }
+
+    //新增工单
+    function addDrafts(){
+        $('#orderDetailForm').form('clear');
+        if(uploader){
+            uploader.destroy();
+        }
+        //当前登录用户名
+        var user_name = '{{currentUser.user_name}}';
+        //用户角色
+        var user_roles = '{{currentUserRole.role_name}}';
+        //用户名
+        $("#start_name").textbox("setValue",user_name);
+        //用户角色
+        $("#user_role_names").textbox("setValue","资金稽核负责人");
+        $("#proc_inst_name").textbox('setValue','资金稽核工单2') ;
+        $("#handle").combobox("setValue","1");
+
+        //当前填单时间
+        var time=new Date();
+        $("#start_time").textbox("setValue",time.Format("yyyy-MM-dd hh:mm:ss"));
+        $('#orderDetail').show();
+
+        var $list=$("#thelist");
+        $list.empty();
+        uploader = WebUploader.create({
+            auto:false,
+            // swf文件路径
+            swf: '{{projcfg.appurl}}/static/{{projcfg.theme}}webuploade/Uploader.swf',
+            method:'POST',
+            // 文件接收服务端。
+            server: '{{projcfg.appurl}}/api/order_manage/order_list/uploadFile?_csrf=' + '{{_csrfToken}}',
+
+            // 选择文件的按钮。可选。
+            // 内部根据当前运行是创建，可能是input元素，也可能是flash.
+            pick: '#picker2',
+
+            // 不压缩image, 默认如果是jpeg，文件上传前会压缩一把再上传！
+            resize: false,
+            // 只允许选择图片文件。
+            accept: {
+                title: '文件错误',
+                extensions: 'gif,jpg,jpeg,bmp,png,mp3,wav,wma,pdf,txt,xls,xlsx',
+                mimeTypes: '*'
+            },
+            fileNumLimit: 8, //限制上传个数
+            fileSingleSizeLimit: 2048000 //限制单个上传图片的大小
+        });
+
+        /**
+         * 验证文件格式
+         */
+        uploader.on("error", function (type) {
+            if (type == "Q_TYPE_DENIED") {
+                $.messager.alert('提示', "您上传的文件格式错误，请上传GIF,JPG,JPEG,BPM,PNG,MP3,WAV,WMA,PDF,txt,xls,xlsx格式文件");
+            }else {
+                $.messager.alert('提示', "上传出错！请检查后重新上传！错误代码"+type);
+            }
+        });
+
+        // 当有文件被添加进队列的时候
+        uploader.on( 'fileQueued', function( file ) {
+            var $li = $(
+                            '<div id="' + file.id + '" class="file-item thumbnail">' +
+                            '<img>' +
+                            '<div class="info">' + file.name + '</div>' +
+                            '</div>'
+                    ),
+                    $img = $li.find('img');
+
+
+            // $list为容器jQuery实例
+            $list.append( $li );
+            var thumbnailWidth = 100;   //缩略图高度和宽度 （单位是像素），当宽高度是0~1的时候，是按照百分比计算，具体可以看api文档
+            var thumbnailHeight = 100;
+            // 创建缩略图
+            // 如果为非图片文件，可以不用调用此方法。
+            // thumbnailWidth x thumbnailHeight 为 100 x 100
+            uploader.makeThumb( file, function( error, src ) {   //webuploader方法
+                if ( error ) {
+                    $img.replaceWith('<span>不能预览</span>');
+                    return;
+                }
+
+                $img.attr( 'src', src );
+            }, thumbnailWidth, thumbnailHeight );
+        });
+        // 文件上传过程中创建进度条实时显示。
+        uploader.on( 'uploadProgress', function( file, percentage ) {
+            var $li = $( '#'+file.id ),
+                    $percent = $li.find('.progress span');
+
+            // 避免重复创建
+            if ( !$percent.length ) {
+                $percent = $('<p class="progress"><span></span></p>')
+                        .appendTo( $li )
+                        .find('span');
+            }
+
+            $percent.css( 'width', percentage * 100 + '%' );
+        });
+        // 文件上传成功，给item添加成功class, 用样式标记上传成功。
+        uploader.on('uploadSuccess', function (file) {
+            $('#' + file.id).find('p.state').text('已上传');
+        });
+        // 文件上传失败，显示上传出错。
+        uploader.on('uploadError', function (file) {
+            $('#' + file.id).find('p.state').text('上传出错');
+        });
+
+        // 完成上传完了，成功或者失败，先删除进度条。
+        uploader.on( 'uploadComplete', function( file ) {
+            $( '#'+file.id ).find('.progress').remove();
+            //文件的id的最后是当前文件的下表
+            count++;
+            if(count==fileLength){
+                msgSuccess('派单成功');
+                $('#orderDetail').dialog("close");
+                $('#orderTablelist').datagrid('reload');
+                $.messager.progress('close');
+            }
+        });
+
+        $('#orderDetail').mydialog({
+            title:"资金稽核工单派单",
+            width : 1250,
+            height : 650,
+            closed : false,
+            cache : false,
+            modal: true,
+            myButtons:[
+                {
+                    text:'提交',
+                    btnCls:'btn btn-blue',
+                    handler:function(){
+                        saveNewOrder();
+                    }
+                },
+//                {
+//                    text:'暂存',
+//                    btnCls:'btn btn-blue',
+//                    handler:function(){
+//                        saveDrafts();
+//                    }
+//                },
+                {
+                    text:'关闭',
+                    btnCls:'btn btn-danger',
+                    handler:function(){
+                        $('#orderDetail').dialog("close");
+                    }
+                }
+            ]
+        });
+    }
+
+    /**
+     * 初始化工单类型下拉框
+     */
+    function getAllProBase() {
+        $.ajax({
+            url: '{{projcfg.appurl}}/api/order_manage/order_list/procDefineDetail',
+            type: 'post',
+            dataType: 'json',
+            data: {proc_code: "p_222", node_code: "processDefineDiv_node_3"},
+            success: function (data) {
+                if (data.success) {
+                    $("#proc_inst_task_name").textbox("setValue", data.data.nodeName);
+                } else {
+                    $("#proc_inst_task_name").textbox("setValue", "");
+                    $.messager.alert('错误提示', data.error);
+                }
+            }
+        });
+    }
+
+    /**
+     * 提交新工单
+     */
+    function saveNewOrder() {
+        // 验证表单
+        var validate = $('#orderDetailForm').form('validate');
+        if (!validate) {
+            return false;
+        }
+        //下一节点处理人必选
+        if (!$("#assign_user_no").combobox('getValue')) {
+            $.messager.alert('提示', '请选择下一节点处理人');
+            return false;
+        }
+
+        $.messager.confirm('提示', '确定提交工单吗?', function (r) {
+            if (r) {
+                $.messager.progress({
+                    title: '提示',
+                    msg: '处理中，请稍候……',
+                    text: ''
+                });
+
+                $.ajax({
+                    url: '{{projcfg.appurl}}/api/money_audit/money_audit_list2/moneyAudit',
+                    type: 'post',
+                    dataType: 'json',
+                    data: $('#orderDetailForm').serializeJson(),
+                    success: function (data) {
+                        if (data.success) {
+                            if (uploader.getFiles().length > 0) {
+                                var proc_task_id = data.data;
+                                fileLength = uploader.getFiles().length;
+                                var obj = new Object();
+                                obj.status = 1;
+                                obj.proc_task_id = proc_task_id;
+                                uploader.options.formData = obj;
+                                uploader.upload();
+                            } else {
+                                msgSuccess('派单成功');
+                                $('#orderDetail').dialog("close");
+                                $('#orderTablelist').datagrid('reload');
+                                $.messager.progress('close');
+                            }
+                        } else {
+                            $.messager.progress('close');
+                            $.messager.alert('错误提示', data.error);
+
+                        }
+                    }
+                });
+            }
+        });
+
+    }
+
+    //查询
+    function  doSearch(){
+        $('#orderTablelist').datagrid({
+            url: '{{projcfg.appurl}}/api/order_manage/order_list/list',
+            queryParams: {
+               proc_code: "zj_102",
+                //proc_peason_type:$("#proc_peason_type").combobox('getValue'),
+//                startDate: $("#startDate").datebox('getValue'),
+//                endDate: $("#endDate").datebox('getValue'),
+                work_order_number:$("#work_order_number").val(),
+
+            }
+        });
+    }
+
+    /**
+     * 获取下一节点处理人
+     */
+    function getNextNodeUser(node_code,proc_task_id,proc_inst_id,user_no){
+        var map ={};
+        map.flag=""
+        $.ajax({
+            url: '{{projcfg.appurl}}/api/money_audit/money_audit_list2/getNodeUser',
+            type: 'post',
+            dataType:'json',
+            data: {
+            },
+            success: function (data) {
+                if(data.success){
+                    //初始化加载
+                    $("#assign_user_no").combobox({
+                        method: 'get',
+                        valueField:'user_no',
+                        textField:'user_name',
+                        onSelect:function(record){
+                            //下一节点处理编码赋值
+                            $("#next_code").val(record.node_code);
+
+                        }
+                    });
+                    $("#assign_user_no").combobox("loadData",data.data);
+                }else{
+                    $.messager.alert('错误提示','获取下一节点处理人失败，请联系管理员');
+                }
+            }
+        });
+
+
+    }
+</script>

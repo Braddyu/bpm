@@ -724,7 +724,7 @@ async function normal_process(current_detail,next_detail, next_node, proc_inst_i
                 "procName": proc_name,
                 "orderNo": condition_task.work_order_number
             }
-            process_utils.sendSMS(mobile, params, "SMS_TEMPLET_ORDER").then(function (rs) {
+            process_utils.sendSMS(mobile, params, "SMS_TEMPLET_ORDER",proc_code).then(function (rs) {
                 console.log("短信发送成功");
             }).catch(function (err) {
                 console.log("短信发送失败", err);
@@ -907,7 +907,7 @@ exports.assign_transfer=function(proc_task_id,node_code,user_code,assign_user_co
                "procName":proc_name,
                "orderNo":work_order_number
            }
-           await process_utils.sendSMS(mobile,params,"SMS_TEMPLET_ORDER").then(function(rs){
+           await process_utils.sendSMS(mobile,params,"SMS_TEMPLET_ORDER",proc_code).then(function(rs){
                console.log("短信发送成功");
            }).catch(function(err){
                console.log("短信发送失败",err);
@@ -1162,7 +1162,7 @@ exports.do_payout=function(proc_task_id,node_code,user_code,assign_user_code,pro
                         "procName": proc_name,
                         "orderNo": work_order_number
                     }
-                    process_utils.sendSMS(mobile, params, "SMS_TEMPLET_ORDER").then(function (rs) {
+                    process_utils.sendSMS(mobile, params, "SMS_TEMPLET_ORDER",proc_code).then(function (rs) {
                         console.log("短信发送成功");
                     }).catch(function (err) {
                         console.log("短信发送失败", err);
@@ -1376,7 +1376,7 @@ exports.assigntransfer=function(proc_task_id,node_code,user_code,assign_user_cod
                 "procName":proc_name,
                 "orderNo":rs_r[0].work_order_number
             }
-            process_utils.sendSMS(mobile,params,"SMS_TEMPLET_ORDER").then(function(rs){
+            process_utils.sendSMS(mobile,params,"SMS_TEMPLET_ORDER",proc_code).then(function(rs){
                 console.log("短信发送成功");
             }).catch(function(err){
                 console.log("短信发送失败",err);

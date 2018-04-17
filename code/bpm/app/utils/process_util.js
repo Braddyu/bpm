@@ -1,7 +1,7 @@
 var config = require('../../config');
 var moment = require('moment');
 var http=require('http');
-
+var model = require('../project/bpm_resource/models/process_model');
 /**
  *
  * @param mobile 电话
@@ -11,10 +11,12 @@ var http=require('http');
  * "orderNo":"100000000001"
  * }
  * @param tmplet_key 模板编码，必须在config.js定义
+ * @param proc_code 允许发送短信的流程
  */
-exports.sendSMS=function(mobile,params,tmplet_key){
+exports.sendSMS=function(mobile,params,tmplet_key,proc_code){
     return  new Promise(function(resolve,reject){
         try{
+            console.log("mobile",mobile,"params",params,"tmplet_key",tmplet_key,"proc_code",proc_code);
             let isOpen = config.OPEN_SMS_ALL;
             let open=false;
             if(tmplet_key){
@@ -36,7 +38,16 @@ exports.sendSMS=function(mobile,params,tmplet_key){
 
                 //是否开通工单派发接收短信
                 if(tmplet_key == 'SMS_TEMPLET_ORDER' && OPEN_SMS){
-                    open = true;
+                    //只有开通的流程能发送短信
+                    console.log(proc_code);
+                    if(proc_code){
+                        var allowSMS=config.allowSMS;
+                        console.log(config.allowSMS);
+                        if(allowSMS[proc_code]){
+                            open = true;
+                        }
+                    }
+
                 }else if(tmplet_key == 'SMS_TEMPLET_ORDER'){
                     reject("短信服务未开启");
                     return;
@@ -89,13 +100,20 @@ exports.sendSMS=function(mobile,params,tmplet_key){
                 //返回结果
                 var result={};
                 //发送请求
-            var req=http.request(options, function(res) {
+               var req=http.request(options, function(res) {
                     console.log('Status:',res.statusCode);
                     console.log('headers:',JSON.stringify(res.headers));
                     res.setEncoding('utf-8');
                     res.on('data',function(chun){
                         console.log('body分隔线---------------------------------\r\n');
                         console.info(chun);
+                        let sms={
+                            sms_content:SMS_TEMPLET,
+                            sms_phone:mobile,
+                            sms_create_time:new Date(),
+                            proc_code:proc_code
+                        }
+                        model.$CommonSmsInfo(sms).save();
                         resolve(chun);
                     });
                     res.on('end',function(){

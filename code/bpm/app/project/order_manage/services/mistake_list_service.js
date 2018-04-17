@@ -232,8 +232,9 @@ exports.dispatch_logs_date = function(conditionMap){
                 if(result.length == 0){
                     flag = true;
                 }else{
-                    for(var i=0;i<result.length;i++){
-                        if(result[i]._doc.status == 0){//派单中
+
+                    for(let i=0;i<result.length;i++){
+                        if(result[i].status == 0){//派单中
                             flag = false;
                             continue;
                         }
