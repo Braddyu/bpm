@@ -16,72 +16,83 @@ var mongoose = require('mongoose');
  */
 exports.getTaskHistoryList=function(condition,pageNow,pageSize){
     var p = new Promise(function (resolve, reject) {
-        // pageNow = (pageNow == '0') ? 1 : parseInt(pageNow);
-        // pageSize = parseInt(pageSize);
-        //{"proc_inst_task_name":"{ObjectId$ne:省营业销售部派发}"}
-        /*   {
-           $limit: 10
-       },*/
         var user_roles = mongoose.Types.ObjectId('5a24aab506255330b47e45e1');
-        user_model.$User.aggregate([
-            {
-                $match: {
-                    user_roles:{$in:[user_roles ]}
-                   // user_no:"admin"
+        var fields = {};
+        fields.user_roles=user_roles;
+        var user_nos=[];
+        var conditionTaskHistroy={};
+        conditionTaskHistroy.proc_inst_task_assignee={$in:user_nos};
+        if(condition.startDate){
+            conditionTaskHistroy.startDate={$gte :condition.startDate};
+        }else {
+            conditionTaskHistroy.startDate={$gte :new Date().toLocaleString()};
+        }
+        if(condition.endDate){
+            conditionTaskHistroy.endDate={$lte:condition.endDate};
+        }else {
+            conditionTaskHistroy.endDate={$lte:new Date().toLocaleString()};
+        }
+        var results=[];
+        var resultCount=[];
+        var resultcond=[];
+        user_model.$User.find(fields, function(error, result) {
+            if(error) {
+                console.log(error);
+            }else {
+                results = result;
+                for(var k in result){
+                    user_nos.push(result[k].user_no);
                 }
-            },
-            {
-                $lookup:{
-                    from: "common_bpm_proc_task_histroy",
-                    localField: "proc_inst_task_assignee",
-                    foreignField: "user_no",
-                    as: "task_histroy_data"
-                }
-            },
+                process_model.$ProcessTaskHistroy.aggregate([
+                    {
+                        $match: {
+                            proc_inst_task_assignee:{$in:user_nos}
+                        }
+                    },
+                    {
+                        $group : {
+                            _id:{
+                                proc_inst_task_assignee:"$proc_inst_task_assignee"
+                            },
+                            count : {$sum:1}
+                        }
+                    }
+                ]).exec(function (err, res) {
+                    if (err) {
+                        reject(utils.returnMsg(false, '1000', '查询统计失败。', null, err));
+                    } else {
+                        console.log(res);
+                        for(var idx in results){
+                            var user = results[idx];
+                            console.log(user.user_no);
+                            for(var ix in res){
+                                var task = res[ix];
+                                if(task._id.proc_inst_task_assignee==user.user_no){
+                                    resultCount.push({user_no: user.user_no, count: task.count,user_name:user.user_name });
+                                }else{
+                                    resultCount.push({ user_no: user.user_no, count: 0,user_name:user.user_name });
+                                    break;
+                                }
+                            }
 
-            {
-                $unwind: {path: "$task_histroy_data", preserveNullAndEmptyArrays: true}
-            },
+                        }
+                        if(condition.user_no){
+                            for(let  i in resultCount){
+                                console.log(resultCount[i]);
+                                if (resultCount[i].user_no==condition.user_no){
+                                    resultcond.push(resultCount[i]);
+                                    resolve(resultcond);
+                                }
+                            }
+                        }else {
+                            resolve(resultCount);
+                        }
+                    }
+                })
 
-            {
-                $match:{
-                    "task_histroy_data.proc_code":"p-201",
-                    "task_histroy_data.proc_inst_task_assignee":"admin"
+            }
+        });
 
-                }
-            },
-
-            {
-                $addFields : {
-                    task_histroy_data_id :"$task_histroy_data._id"
-                }
-
-            },
-
-           {
-               $group : {
-                   _id:{user_no:"$user_no",user_name:"$user_name"},
-                   count : {$sum : 1}
-                   }
-           },
-
-            {
-                $project : {
-                    "_id": 0, "user_no" : "$_id.user_no", "user_name" : "$_id.user_name", "count" : 1}
-            },
-
-            {
-              $limit: 10
-            },
-
-        ]).exec(function (err, res) {
-            if (err) {
-                reject(utils.returnMsg(false, '1000', '查询统计失败。', null, err));
-            } else {
-                resolve(res);
-                console.log(res);
-             }
-        })
     });
     return p;
 };

@@ -12,14 +12,9 @@ router.route('/list').post(function(req,res){
     var condition={};
     if (req.body.startDate) {
         condition.startDate = req.body.startDate;//开始时间
-    }else {
-        condition.startDate= new Date().toLocaleString();
     }
-
     if (req.body.endDate) {
         condition.endDate = req.body.endDate;//结束时间
-    }else{
-        condition.endDate=new Date().toLocaleString();
     }
     if (req.body.user_no) {
         condition.user_no = req.body.user_no;//boss工号
