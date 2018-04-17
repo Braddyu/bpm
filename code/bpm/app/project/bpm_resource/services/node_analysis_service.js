@@ -7,6 +7,7 @@ var utils = require('../../../utils/app_utils');
 var Promise = require("bluebird");
 var proc=require("./instance_service");
 var querystring = require('querystring');
+var ObjectID = require('mongodb').ObjectID;
 var nodeDetail,data_define;
 
 /**
@@ -3835,14 +3836,42 @@ function findNodeInfo(next_node, next_detail,user_no) {
                 array.push(map)
                 resolve({"data":array,"msg":"查询用户org","error":null,"success":true,"next_node":node_code});
             } else if (type == 2) {
-                var item_assignee_org_ids = next_detail.item_assignee_org_ids;
-                var orgs = item_assignee_org_ids.split(",")
-
-                // console.log("ccccccccccccccccccccccccccccccccccccccccccccc")
-                // console.log(orgs)
-                var i = 0;
+                //var item_assignee_org_ids = next_detail.item_assignee_org_ids;
+                //var orgs = item_assignee_org_ids.split(",")
+                //
+                //// console.log("ccccccccccccccccccccccccccccccccccccccccccccc")
+                //// console.log(orgs)
+                //var i = 0;
+                //var array = [];
+                //findUserByOrg(orgs, i, item_assignee_role, resolve, array, node_name, node_code);
+                var roles = item_assignee_role.split(",");
+                var roleIds = [];
+                for(var i=0;i<roles.length;i++){
+                    roleIds.push(ObjectID(roles[i]))
+                }
                 var array = [];
-                findUserByOrg(orgs, i, item_assignee_role, resolve, array, node_name, node_code);
+                var conta = {"user_roles":{$in:roleIds}};
+                model_user.$User.find(conta, function (err, result) {
+                    if (err) {
+                        resolve(utils.returnMsg(false, '10001', '查询用户信息错误', null, err));
+                    } else {
+                        if(result.length>0){
+                            for (var index = 0; index < result.length; index++) {
+                                var map={};
+                                map.user_no = result[index].user_no;//: "00001"
+                                map.user_name = result[index].user_name;// : "系统管理员"
+                                map.node_name=node_name;
+                                map.node_code=node_code;
+                                array.push(map)
+
+                            }
+                            resolve({"data":array,"msg":"查询用户roles","error":null,"success":true,"next_node":node_code});
+                        }else{
+                            resolve(utils.returnMsg(false, '10001', '查询用户信息错误', null, null));
+                        }
+
+                    }
+                });
 
             } else if (type == 3) {
                 // resolve(utils.returnMsg(false, '1000', '第三节点不可配置参照人', null))
