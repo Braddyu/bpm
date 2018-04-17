@@ -1,23 +1,21 @@
 var express = require('express');
+var memcached_utils = require("../../../../lib/memcached_utils");
 var router = express.Router();
 var utils = require('../../../../lib/utils/app_utils');
 var service = require('../services/order_list_service');
 var inst = require('../../bpm_resource/services/instance_service');
 var nodeTransferService = require("../../bpm_resource/services/node_transfer_service");
-var userService = require('../../workflow/services/user_service');
 var nodeAnalysisService = require("../../bpm_resource/services/node_analysis_service");
 var config = require('../../../../config');
 var multer = require('multer')
 var upload = multer({dest: config.local_path});
 var process_extend_model = require('../../bpm_resource/models/process_extend_model');
 var fs = require('fs');
-var path = require('path');
 var urlencode = require('urlencode');
 /**
  * 工单列表
  */
 router.route('/list').post(function (req, res) {
-    console.log(req.session.current_user);
     console.log("开始获取所有工单列表...");
     var userNo = req.session.current_user.user_no;//用户编号
     var page = req.body.page;
@@ -440,7 +438,23 @@ router.post('/uploadFile', upload.array("file"), function (req, res, next) {
 
 });
 
+router.post('/doBackOrderFile', function (req, res) {
+    console.log("开始回传...");
+    var status = req.body.status;
+    var queryDate = req.body.queryDate;
+    var city_code = req.body.city_code;
+    //获取对应的详情数据
+    console.log("取工单详情",status, queryDate,city_code)
+    service.doBackOrder(status, queryDate,city_code)
+        .then(function (result) {
+            utils.respJsonData(res, result);
+        })
+        .catch(function (err) {
+            console.log('获取工单详情失败', err);
 
+        });
+
+});
 router.post('/deleteFile', function (req, res) {
     console.log("开始删除附件...");
     var id = req.body.id;
