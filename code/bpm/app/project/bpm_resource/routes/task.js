@@ -9,6 +9,8 @@ var nodeAnalysisService=require("../services/node_analysis_service");
 var mistakeService = require('../../order_manage/services/mistake_list_service');
 var proc = require('../services/process_service');
 var config = require('../../../../config');
+var fs = require('fs');
+var urlencode = require('urlencode');
 
 
 // -------------------------------查询我的待办数据接口-------------------------------
@@ -691,6 +693,34 @@ exports.task=function() {
         utils.respJsonData(res, {'success':true,'code':'0000','msg':'系统后台正在派单中，需要一点时间请勿重复派单，在这之前您可以处理其他业务。'});
     });
 
+  //附件下载
+    router.route('/downLoad').post(function (req,res) {
+        var filePath  = req.body.file_path;
+        var fileName = req.body.file_name;
+        if(!filePath){
+            utils.respMsg(res, false, '2001', '文件路径不能为空', null, null);
+            return;
+        }
+        if(!fileName){
+            utils.respMsg(res, false, '2001', '文件名称不能为空', null, null);
+            return;
+        }
+        fs.exists(filePath, function (exists) {
+            if (exists) {
+                var stats = fs.statSync(filePath);
+                if (stats.isFile()) {
+                    res.set({
+                        'Content-Type': 'application/octet-stream',
+                        'Content-Disposition': 'attachment;filename=' + urlencode(fileName),
+                        'Content-Length': stats.size
+                    });
+                    fs.createReadStream(filePath).pipe(res);
+                } else {
+                    res.end(404);
+                }
+            }
+        })
+    });
 
     return router;
 }
