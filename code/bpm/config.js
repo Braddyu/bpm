@@ -269,7 +269,8 @@ var config = {
         athena_switch:false,  //同步雅典娜数据(网格、渠道级)作业任务开关
         athena_app_switch:false,  //同步雅典娜app数据(网格经理、厅经理、营业员)作业任务开关
         huanghe_switch:false , //差错工单同步黄河数据
-        mistake_switch:false  //差错工单任务是否超时定时任务
+        mistake_switch:false,  //差错工单任务是否超时定时任务
+        errData_switch:false //差错工单归档数据上传ftp
     },
     //允许发送短信的流程
     allowSMS:{
@@ -305,7 +306,8 @@ var config = {
     local_path:'/upload/',//本地存储附件路径
     batch_size:2000,//差错工单每一批次数量
 	accessory_path:'C:/res_download_file/', //帮助资料
-    writeLoad:'E:/upload/writeLoad/',
-    ftp_gdglFile_server_put:'~/gdglfile/'
+    writeLoad:'E:/upload/writeLoad/',//本地存放差错工单归档数据
+    ftp_gdglFile_server_put:'~/gdglfile/gdgl_pigeonhole/',//上传差错工单数据
+    ftp_logs_filePath:'~/gdglfile/logs_filePath/'//上传差错工单归档日志以及附件地址
 }
 module.exports = config;

@@ -46,7 +46,9 @@ exports.getTaskHistoryList=function(condition,pageNow,pageSize){
                 process_model.$ProcessTaskHistroy.aggregate([
                     {
                         $match: {
-                            proc_inst_task_assignee:{$in:user_nos}
+                            proc_inst_task_assignee:{$in:user_nos},
+                            proc_code: "p-201",
+                            proc_inst_task_code : { $ne : "processDefineDiv_node_2" }
                         }
                     },
                     {
