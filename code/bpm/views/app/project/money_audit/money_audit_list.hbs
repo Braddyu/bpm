@@ -194,7 +194,7 @@
     function loadOrgTree(){
         $('#orgId').combotree({
             method: 'get',
-            url: '{{projcfg.appurl}}/api/money_audit/money_audit_list/orgTreeDataAsyn?org_pid=0',
+            url: '{{projcfg.appurl}}/api/money_audit/money_audit_list/orgTreeDataAsyn?org_pid=5a275c0377ec2e1e844878dd',
             //url: '{{projcfg.appurl}}/process/orgTreeData',
             onBeforeExpand:function(node,param){
                 $('#orgId').combotree("tree").tree("options").url =  '{{projcfg.appurl}}/api/money_audit/money_audit_list/orgTreeDataAsyn?org_pid=' + node.id;

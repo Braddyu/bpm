@@ -88,7 +88,7 @@ router.route('/moneyAudit').post(function(req,res){
 
     var user_no=req.session.current_user.user_no;
     var user_name=req.session.current_user.user_name;
-    var role_name="省级资金稽核管理人";
+    var role_name="资金稽核负责人";
     proc_vars_parm.role_name=role_name;
     proc_vars_parm.user_name=user_name;
     proc_vars_parm.user_no=user_no;
