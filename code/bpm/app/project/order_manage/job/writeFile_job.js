@@ -56,8 +56,8 @@ async function find_write() {
 }
 async function write_file(){
     var arr = [];
-    let yesterday = moment().subtract(0, 'days').format('YYYY-MM-DD');
-    let date = moment().subtract(-1, 'days').format('YYYY-MM-DD');
+    let yesterday = moment().subtract(1, 'days').format('YYYY-MM-DD');
+    let date = moment().subtract(0, 'days').format('YYYY-MM-DD');
     let proc_code = "p-201";
     let proc_inst_status = 4;
     let result = await  inst.$ProcessInst.find({'proc_code':proc_code,'proc_inst_status':proc_inst_status,'proc_inst_task_complete_time':{$gte: new Date(yesterday), $lte: new Date(date)}});
@@ -109,7 +109,7 @@ async function write_file(){
         }
     })
     ftp_util.connect(server);
-    ftp_util.uploadFile(config.writeLoad+fileName,config.ftp_gdglFile_server_put+fileName,function(errs,result){
+    ftp_util.uploadFile(config.writeLoad+fileName,config.ftp_logs_filePath+fileName,function(errs,result){
         if(errs){
             console.log(errs);
         }else{

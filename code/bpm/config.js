@@ -306,7 +306,8 @@ var config = {
     local_path:'/upload/',//本地存储附件路径
     batch_size:2000,//差错工单每一批次数量
 	accessory_path:'C:/res_download_file/', //帮助资料
-    writeLoad:'E:/upload/writeLoad/',
-    ftp_gdglFile_server_put:'~/gdglfile/'
+    writeLoad:'E:/upload/writeLoad/',//本地存放差错工单归档数据
+    ftp_gdglFile_server_put:'~/gdglfile/gdgl_pigeonhole/',//上传差错工单数据
+    ftp_logs_filePath:'~/gdglfile/logs_filePath/'//上传差错工单归档日志以及附件地址
 }
 module.exports = config;
