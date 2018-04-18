@@ -694,9 +694,9 @@ exports.task=function() {
     });
 
   //附件下载
-    router.route('/downLoad').post(function (req,res) {
-        var filePath  = req.body.file_path;
-        var fileName = req.body.file_name;
+    router.route('/downLoad').get(function (req,res) {
+        var filePath  = req.query.file_path;
+        var fileName = req.query.file_name;
         if(!filePath){
             utils.respMsg(res, false, '2001', '文件路径不能为空', null, null);
             return;
