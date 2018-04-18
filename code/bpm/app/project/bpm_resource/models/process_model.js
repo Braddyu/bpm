@@ -332,3 +332,17 @@ var jobSetp = new Schema(
     {collection: "common_bpm_wf_job_step"}// mongodb集合名
 );
 exports.$JobSetp = mongoose.model('JobSetp ', jobSetp );
+
+//短信发送
+var commonSmsInfo = new Schema(
+    {
+        sms_content : String,// 短信内容
+        sms_create_time : Date,// 发送时间
+        sms_phone : String,// 发送号码
+        proc_code : String,// 流程编码
+    },
+    {collection: "common_sms_info"}// mongodb集合名
+);
+
+// 流程流转历史信息model
+exports.$CommonSmsInfo = mongoose.model('CommonSmsInfo', commonSmsInfo);

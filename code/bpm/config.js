@@ -251,9 +251,7 @@ var config = {
     },
     //所属系统编号-预警工单系统编号-差错工单系统编号-稽核工单系统编号-慧眼工单系统编号
     joinup_sys:'warnSys_node,errorSys_node,auditorSys_node,syesightSys_node,moneyAudit_node,unitTest_node',
-
     AES_KEY:'1234567890ABCDEFGHIJKLMNOPQRSTUV',
-
     SMS_TEMPLET_ORDER:"渠道工单系统有一张需要您处理的工单，《procName》，工单号：orderNo，请及时登陆认真处理。",
     VALIDATION:"工单系统手机号登录验证码为：randomNumber，请不要透露他人。",
     GRID_COPY:"尊敬的网格管理员，您所辖渠道:channelName,渠道编码:channelCode,有一条待处理工单《procName》,工单号：orderNo，请及时催促处理。",
@@ -262,10 +260,9 @@ var config = {
     OPEN_LOGIN_SMS:false, //短信登录验证码
     GRID_COPY_SMS:false, //预警工单抄送给网格经理短信
     //派单接口信息
-    api_interface_url:'https://192.168.9.66:30003',
+    api_interface_url:'https://127.0.0.1:30002',
     mistake_proc_code:'p-201',
     mistake_proc_name:'稽核差错工单',
-
     //定时任务开关明细
     switchDetail:{
         oa_switch:false,   //同步OA数据(省、地市、区县级)作业任务开关
@@ -273,6 +270,11 @@ var config = {
         athena_app_switch:false,  //同步雅典娜app数据(网格经理、厅经理、营业员)作业任务开关
         huanghe_switch:false , //差错工单同步黄河数据
         mistake_switch:false  //差错工单任务是否超时定时任务
+    },
+    //允许发送短信的流程
+    allowSMS:{
+        'zj_101':true,
+        'zj_102':true
     },
     //定时任务表达式
     athena_org_switch_core:"30 1 1 * * *",//秒、分、时、日、月、周几
@@ -287,11 +289,23 @@ var config = {
         user: 'test',
         password: '123456'
     },//差错工单ftp地址
+    ftp_gdglFile_server:{
+        host: '135.10.53.110',
+        port: 21,
+        user: 'channel',
+        password: 'tNi0eNL%@j'
+    },//集中稽核所需归档文件
+    gdglFile_server_time:{
+        hour :'2',
+        minute:'0'
+    },//同步集中稽核数据时间
     ftp_huanghe_get:'/upload/',//获取差错工单ftp路径
     ftp_huanghe_put:'/upload/',//上传差错工单附件路径
     local_haunghe_path:'E:/test/',//本地存储黄河数据
     local_path:'/upload/',//本地存储附件路径
     batch_size:2000,//差错工单每一批次数量
-	accessory_path:'C:/res_download_file/' //帮助资料
+	accessory_path:'C:/res_download_file/', //帮助资料
+    writeLoad:'E:/upload/writeLoad/',
+    ftp_gdglFile_server_put:'~/gdglfile/'
 }
 module.exports = config;

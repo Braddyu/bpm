@@ -329,67 +329,16 @@ exports.repare = function (result1, proc_code, proc_inst_id, memo) {
 
         //如果是差错工单归档则进行回传黄河数据,注：暂时不回传和不对调
         if (result1.success && proc_code == 'p-201') {
-            //获取附件信息
-            let fileRes = await  process_extend_model.$ProcessTaskFile.find({"proc_inst_id": proc_inst_id});
-            //获取差错工单信息
-            let mistakeRes = await  mistake_model.$ProcessMistake.find({"proc_inst_id": proc_inst_id});
-            if (mistakeRes.length == 0) {
-                reject({'success': false, 'code': '1000', 'msg': '不存在的差错工单', "error": null});
-                return;
-            }
-            let res = await model.$ProcessInst.find({"_id": proc_inst_id});
-            if (res.length == 0) {
-                reject({'success': false, 'code': '1000', 'msg': '不存在的工单', "error": null});
-                return;
-            }
-            var order_num = res[0].work_order_number;
-            //如果有上传附件
-            if (fileRes.length > 0) {
-                //文件上传至ftp服务器，然后回传结果给黄河
-                var server = config.ftp_huanghe_server;
-                ftp_util.connect(server);
-                var mistake_time = mistakeRes[0].mistake_time;
-                var path = config.ftp_huanghe_put + "/" + mistake_time.substring(0, 4) + "/" + mistake_time.substring(4, 6) + "/" + mistake_time.substring(6, 8) + "/" + order_num;
-                ftp_util.mkdirs(path, function (err, res) {
-                    if (err) {
-                        reject({'success': false, 'code': '1000', 'msg': 'ftp创建文件夹失败', "error": err});
-                    } else {
-                        var count = 0;
-                        //将当前工单的附件传到ftp上
-                        for (let index = 0; index < fileRes.length; index++) {
-                            ftp_util.uploadFile(fileRes[index].file_path, path + "/" + fileRes[index].file_name, function (err, resFile) {
-                                var conditions = {_id: fileRes[index]._id};
-                                var update = {};
-                                if (err) {
-                                    console.log(err);
-                                    update.status = -1;
-                                } else {
-                                    count++;
-                                    update.status = 1;
-                                    //全部上传成功则回调黄河接口
-                                    if (count == fileRes.length) {
-                                        postHuanghe(proc_inst_id, mistakeRes, memo, order_num).then(function (res) {
-                                            resolve(res);
-                                        }).catch(function (err) {
-                                            reject(res);
-                                        })
-                                    }
-                                }
-                                //修改状态
-                                process_extend_model.$ProcessTaskFile.update(conditions, update, {}, function (errors) {
-                                });
-                            });
-                        }
-                    }
-                })
-                ftp_util.end()
-            } else {
-                postHuanghe(proc_inst_id, mistakeRes, memo, order_num).then(function (res) {
-                    resolve(res);
-                }).catch(function (err) {
-                    reject(res);
-                })
-            }
+            var server = config.ftp_huanghe_server;
+            ftp_util.connect(server);
+            backHuangHe(proc_inst_id,memo).then(function (res) {
+                resolve(res);
+                ftp_util.end();
+            }).catch(function (err) {
+                reject(err);
+                ftp_util.end();
+            })
+
         } else if (result1.success && proc_code == 'p-109') {
             //预警工单归档回调雅典娜接口
             postChannel(proc_inst_id).then(function (res) {
@@ -415,8 +364,8 @@ function postHuanghe(proc_inst_id, mistakeRes, memo, order_num) {
         var _id = mistakeRes[0]._id;
         var postData = {
             "jobId": order_num,
-            "orderId": mistakeRes[0].BOSS_CODE,
-            "orderCode": mistakeRes[0].customer_code,
+            "orderId":  mistakeRes[0].customer_code,
+            "orderCode":mistakeRes[0].BOSS_CODE,
             "suggestion": memo,
             "crmTradeDate": mistakeRes[0].mistake_time
         };
@@ -796,6 +745,124 @@ exports.updateOvertime = function (result1) {
             await model.$ProcessInstTask.update(conditions, update, options);
             resolve(result1)
         }
+    })
+}
+
+/**
+ * 重新回传黄河
+ * @param result1
+ * @returns {Promise}
+ */
+exports.doBackOrder = function (status, queryDate, city_code) {
+
+    return new Promise(function (resolve, reject) {
+        let match={"status": status};
+        if(queryDate){
+            match.mistake_time=queryDate.replace(/\-/g,'');
+        }
+        if(city_code){
+            match.city_code=city_code
+        }
+
+        mistake_model.$ProcessMistake.find(match,function(err,resMis){
+            let count = 0;
+            if(resMis.length ==0){
+                resolve({'success': true, 'code': '1000', 'msg': '无回传数据', "error": null});
+                return;
+            }
+            var server = config.ftp_huanghe_server;
+            ftp_util.connect(server);
+            for(let i = 0;i < resMis.length; i++)
+                model.$ProcessTaskHistroy.find({"proc_inst_id":resMis[i].proc_inst_id},function(err,res){
+                backHuangHe(resMis[i].proc_inst_id,res[0].proc_inst_task_remark,ftp_util).then(function (res) {
+                    count++;
+                    if(count == resMis.length ){
+                        resolve({'success': true, 'code': '1000', 'msg': '回传成功', "error": null});
+                        ftp_util.end()
+                    }
+                }).catch(function (err) {
+                    count++;
+                    if(count == resMis.length ){
+                        resolve({'success': true, 'code': '1000', 'msg': '回传成功', "error": null});
+                        ftp_util.end()
+                    }
+                })
+            }).sort({"proc_inst_task_arrive_time":-1}).limit(1)
+
+
+        })
+
+
+
+
+    })
+}
+
+
+function backHuangHe(proc_inst_id,memo) {
+
+    return new Promise(async function (resolve, reject) {
+        //获取附件信息
+        let fileRes = await  process_extend_model.$ProcessTaskFile.find({"proc_inst_id": proc_inst_id});
+        //获取差错工单信息
+        let mistakeRes = await  mistake_model.$ProcessMistake.find({"proc_inst_id": proc_inst_id});
+        if (mistakeRes.length == 0) {
+            reject({'success': false, 'code': '1000', 'msg': '不存在的差错工单', "error": null});
+            return;
+        }
+        let res = await model.$ProcessInst.find({"_id": proc_inst_id});
+        if (res.length == 0) {
+            reject({'success': false, 'code': '1000', 'msg': '不存在的工单', "error": null});
+            return;
+        }
+        var order_num = res[0].work_order_number;
+        //如果有上传附件
+        if (fileRes.length > 0) {
+            //文件上传至ftp服务器，然后回传结果给黄河
+
+            var mistake_time = mistakeRes[0].mistake_time;
+            var path = config.ftp_huanghe_put + "/" + mistake_time.substring(0, 4) + "/" + mistake_time.substring(4, 6) + "/" + mistake_time.substring(6, 8) + "/" + order_num;
+            ftp_util.mkdirs(path, function (err, res) {
+                if (err) {
+                    reject({'success': false, 'code': '1000', 'msg': 'ftp创建文件夹失败', "error": err});
+                } else {
+                    var count = 0;
+                    //将当前工单的附件传到ftp上
+                    for (let index = 0; index < fileRes.length; index++) {
+                        ftp_util.uploadFile(fileRes[index].file_path, path + "/" + fileRes[index].file_name, function (err, resFile) {
+                            var conditions = {_id: fileRes[index]._id};
+                            var update = {};
+                            if (err) {
+                                console.log(err);
+                                update.status = -1;
+                            } else {
+                                count++;
+                                update.status = 1;
+                                //全部上传成功则回调黄河接口
+                                if (count == fileRes.length) {
+                                    postHuanghe(proc_inst_id, mistakeRes, memo, order_num).then(function (res) {
+                                        resolve(res);
+                                    }).catch(function (err) {
+                                        reject(res);
+                                    })
+                                }
+                            }
+                            //修改状态
+                            process_extend_model.$ProcessTaskFile.update(conditions, update, {}, function (errors) {
+                            });
+                        });
+                    }
+                }
+            })
+
+        } else {
+            postHuanghe(proc_inst_id, mistakeRes, memo, order_num).then(function (res) {
+                resolve(res);
+            }).catch(function (err) {
+                reject(res);
+            })
+        }
+
     })
 }
 

@@ -103,8 +103,6 @@
 
 
                 </tr>
-
-
                 <tr>
                     <td align="right" class="tdLabel">处理意见:</td>
                     <td colspan="2"><input name="memo" class="easyui-textbox"  labelPosition="top" multiline="true" style="width: 670px; height: 54px; resize: none;"/>
@@ -112,7 +110,6 @@
                     </td>
 
                 </tr>
-
                 <tr>
                     <td align="right" class="tdLabel"></td>
                     <td colspan="2">
@@ -179,9 +176,9 @@
     var change_id='{{change_id}}'
     var proc_code='{{proc_code}}'
     var uploader;
-//    if(uploader){
-//        uploader.destroy();
-//    }
+    if(uploader){
+        uploader.destroy();
+    }
     uploader = WebUploader.create({
         auto:false,
         // swf文件路径
@@ -216,6 +213,7 @@
             $.messager.alert('提示', "上传出错！请检查后重新上传！错误代码"+type);
         }
     });
+
     // 当有文件被添加进队列的时候
     uploader.on( 'fileQueued', function( file ) {
         var $li = $(
@@ -297,6 +295,7 @@
 
         }
 
+
         $.ajax({
             url: '{{projcfg.appurl}}/api/order_manage/order_list/orderDetail',
             type: 'post',
@@ -340,7 +339,7 @@
 
                     }
                     $('#orderDetailForm1').form('load', proc_vars_json);
-                    $("#proc_inst_name1").textbox('setValue','资金稽核工单') ;
+                    $("#proc_inst_name1").textbox('setValue','资金稽核工单2') ;
                     $("#proc_inst_task_title").textbox("setValue",proc_title);
                     $("#proc_task_code").val(proc_code);
 
@@ -517,7 +516,7 @@
         var map ={};
         map.flag=""
         $.ajax({
-            url: '{{projcfg.appurl}}/api/money_audit/money_audit_list/nextNodeAnduser',
+            url: '{{projcfg.appurl}}/api/money_audit/money_audit_list2/nextNodeAnduser',
             type: 'post',
             dataType:'json',
             data: {

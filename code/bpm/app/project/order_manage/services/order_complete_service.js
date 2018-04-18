@@ -34,7 +34,7 @@ exports.getMyCompleteTaskQuery4Eui = function (page, size, userCode, paramMap, p
             conditionMap.work_order_number = work_order_number;
         }
 		if(task_type){
-            conditionMap.proc_inst_task_name = task_type;
+            conditionMap.proc_inst_task_code = task_type;
         }
         var compare = {};
         //开始时间
@@ -62,11 +62,14 @@ exports.getMyCompleteTaskQuery4Eui = function (page, size, userCode, paramMap, p
 exports.turn2SendTask = function(userInfo,instId){
     var p = new Promise(function(resolve, reject){
         process_model.$ProcessInst.find({'_id':instId},function(err,rs){
+            var proc_cur_task_code_3 = "processDefineDiv_node_3";
             if(!err){
                 var inst = rs[0];
                 // 工单已归档
                 if(inst.proc_inst_status == 4){
                     resolve(utils.returnMsg(false,"0001","派单失败:工单已归档",null,null));
+                }else if(inst.proc_cur_task != proc_cur_task_code_3){
+                    resolve(utils.returnMsg(false,"0001","该工单营业员已处理，待您审核，若您审核通过归档则不能转派；若您拒绝，才能重新转派。",null,null));
                 }else{
                     // 查询任务表当前任务
                     process_model.$ProcessInstTask.find({"proc_inst_id":instId,"proc_inst_task_status":0},function(err,result){
@@ -79,7 +82,8 @@ exports.turn2SendTask = function(userInfo,instId){
                                 update.proc_inst_task_arrive_time = new Date();
                                 update.proc_inst_task_handle_time = new Date();
                                 update.proc_inst_task_assignee_name = userInfo.user_name;
-                                update.proc_inst_task_assignee = userInfo.work_id;
+                                update.proc_inst_task_assignee = userInfo.user_no;
+                                update.proc_inst_task_work_id = userInfo.work_id;
                                 update.proc_inst_task_user_org = userInfo.user_org;
                                 update.proc_inst_task_user_role = userInfo.user_roles;
                                 process_model.$ProcessInstTask.update({"_id":result[0]._id},{$set:update},{safe:true},function(err,result){

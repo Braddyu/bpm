@@ -1044,7 +1044,7 @@ exports.getMyTaskQuery4Eui= function(page,size,userCode,joinup_sys,proc_code,wor
                     match5['$or'] = [match3];
                 }else if(proc_inst_task_sign && proc_inst_task_sign==1){
                     //只获取待处理任务
-                    match4['$or']=[{"proc_inst_task_assignee":userCode},{"proc_inst_task_work_id":work_id}];
+                    match4={"proc_inst_task_assignee":userCode};
                     match4.proc_inst_task_status=0;
                     match5['$or'] = [match4];
                 }else{
@@ -1065,7 +1065,7 @@ exports.getMyTaskQuery4Eui= function(page,size,userCode,joinup_sys,proc_code,wor
                 }
 
                 conditionMap['$and'] = [match,match5];
-                console.log(conditionMap)
+                console.log(JSON.stringify(conditionMap))
                 //查询当前用户所有的待办任务和需要认领的任务
                model.$ProcessInstTask.find(conditionMap,function(err,res){
                    if(err){

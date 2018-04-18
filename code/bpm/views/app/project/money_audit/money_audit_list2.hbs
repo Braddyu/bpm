@@ -100,10 +100,10 @@
                 <input  type="hidden"id="proc_name"  name="proc_name"/>
                 <input  type="hidden"id="proc_ver"  name="proc_ver"/>
 
-                <tr>
+                <!--<tr>
                     <td  align="right" class="tdLabel">处理人机构：</td>
                     <td colspan="3" class="tdLabel"><select  class="easyui-combobox" id="orgId" name="orgId"  style="width: 665px;height:40px;"></select></td>
-                </tr>
+                </tr>-->
                 <tr id="tr_5">
                     <td align="right" class="tdLabel">处理人:</td>
                     <td colspan="3" class="tdLabel"><select class="easyui-combobox"
@@ -117,7 +117,6 @@
                         <span style="color:rgba(247,0,0,0.61);font-size:12px">上传附件的格式为:GIF,JPG,JPEG,BPM,PNG,MP3,WAV,WMA,PDF,TXT,XLS,XLSX</span>
                     </td>
                 </tr>
-
                 <tr id="fileUpload">
                     <td align="right" class="tdLabel">附件上传:</td>
                     <td>
@@ -147,7 +146,6 @@
 
     var uploader;//定义全局变量
     var fileLength=0;
-    var count=0;
     $(document).ready(function () {
        // $('#picker2 div:eq(2)').attr('style','position: absolute; top: 0px; left: 0px; width: 82px; height: 39px; overflow: hidden; bottom: auto; right: auto;');
         //加载列表
@@ -155,8 +153,9 @@
         //初始化工单类型下拉框
         //getAllProBase();
         //这里combobox默认会赋一个的选项的值
-        loadOrgTree();//加载机构树
+        //loadOrgTree();//加载机构树
        // $("#assign_user_no") .combobox('setValue','') ;
+        getNextNodeUser("processDefineDiv_node_2","","zj_102");
         $("#handle") .combobox('setValue','') ;
         //填写工作天数，给完成时间赋值
         $('#proc_work_day').textbox({
@@ -194,10 +193,10 @@
     function loadOrgTree(){
         $('#orgId').combotree({
             method: 'get',
-            url: '{{projcfg.appurl}}/api/money_audit/money_audit_list/orgTreeDataAsyn?org_pid=5a275c0377ec2e1e844878dd',
+            url: '{{projcfg.appurl}}/api/money_audit/money_audit_list2/orgTreeDataAsyn?org_pid=0',
             //url: '{{projcfg.appurl}}/process/orgTreeData',
             onBeforeExpand:function(node,param){
-                $('#orgId').combotree("tree").tree("options").url =  '{{projcfg.appurl}}/api/money_audit/money_audit_list/orgTreeDataAsyn?org_pid=' + node.id;
+                $('#orgId').combotree("tree").tree("options").url =  '{{projcfg.appurl}}/api/money_audit/money_audit_list2/orgTreeDataAsyn?org_pid=' + node.id;
             },
             editable:false,
 //                    required:true,
@@ -214,7 +213,7 @@
     function loadOrgPeason(orgId){
         $("#assign_user_no").combobox({
             method: 'get',
-            url: '{{projcfg.appurl}}/api/money_audit/money_audit_list/getOrgPeason?orgId='+orgId,
+            url: '{{projcfg.appurl}}/api/money_audit/money_audit_list2/getOrgPeason?orgId='+orgId,
             valueField:'user_no',
             textField:'user_name'
         });
@@ -223,7 +222,7 @@
     function loadOrderListDatagrid(){
         // 加载工单基本属性列表
         $('#orderTablelist').datagrid({
-            url:'{{projcfg.appurl}}/api/money_audit/money_audit_list/list',
+            url:'{{projcfg.appurl}}/api/money_audit/money_audit_list2/list',
             method:'post',
             rownumbers:true,
             striped:true,
@@ -291,6 +290,11 @@
                     closed : false,
                     cache : false,
                     href :url ,
+                    onOpen:function(){
+                        status=1;
+                        change_id=rowData._id
+                        proc_code=rowData.proc_code
+                    },
                     modal : true
                 });
             },
@@ -309,6 +313,7 @@
 
     //新增工单
     function addDrafts(){
+        var count=0;
         $('#orderDetailForm').form('clear');
         if(uploader){
             uploader.destroy();
@@ -320,8 +325,8 @@
         //用户名
         $("#start_name").textbox("setValue",user_name);
         //用户角色
-        $("#user_role_names").textbox("setValue","省级资金稽核管理人");
-        $("#proc_inst_name").textbox('setValue','资金稽核工单') ;
+        $("#user_role_names").textbox("setValue","资金稽核负责人");
+        $("#proc_inst_name").textbox('setValue','资金稽核工单2') ;
         $("#handle").combobox("setValue","1");
 
         //当前填单时间
@@ -354,6 +359,7 @@
             fileNumLimit: 8, //限制上传个数
             fileSingleSizeLimit: 2048000 //限制单个上传图片的大小
         });
+
         /**
          * 验证文件格式
          */
@@ -505,7 +511,7 @@
                 });
 
                 $.ajax({
-                    url: '{{projcfg.appurl}}/api/money_audit/money_audit_list/moneyAudit',
+                    url: '{{projcfg.appurl}}/api/money_audit/money_audit_list2/moneyAudit',
                     type: 'post',
                     dataType: 'json',
                     data: $('#orderDetailForm').serializeJson(),
@@ -542,13 +548,48 @@
         $('#orderTablelist').datagrid({
             url: '{{projcfg.appurl}}/api/order_manage/order_list/list',
             queryParams: {
-               proc_code: "zj_101",
-              //  proc_peason_type:$("#proc_peason_type").combobox('getValue'),
+               proc_code: "zj_102",
+                //proc_peason_type:$("#proc_peason_type").combobox('getValue'),
 //                startDate: $("#startDate").datebox('getValue'),
 //                endDate: $("#endDate").datebox('getValue'),
                 work_order_number:$("#work_order_number").val(),
 
             }
         });
+    }
+
+    /**
+     * 获取下一节点处理人
+     */
+    function getNextNodeUser(node_code,proc_task_id,proc_inst_id,user_no){
+        var map ={};
+        map.flag=""
+        $.ajax({
+            url: '{{projcfg.appurl}}/api/money_audit/money_audit_list2/getNodeUser',
+            type: 'post',
+            dataType:'json',
+            data: {
+            },
+            success: function (data) {
+                if(data.success){
+                    //初始化加载
+                    $("#assign_user_no").combobox({
+                        method: 'get',
+                        valueField:'user_no',
+                        textField:'user_name',
+                        onSelect:function(record){
+                            //下一节点处理编码赋值
+                            $("#next_code").val(record.node_code);
+
+                        }
+                    });
+                    $("#assign_user_no").combobox("loadData",data.data);
+                }else{
+                    $.messager.alert('错误提示','获取下一节点处理人失败，请联系管理员');
+                }
+            }
+        });
+
+
     }
 </script>
