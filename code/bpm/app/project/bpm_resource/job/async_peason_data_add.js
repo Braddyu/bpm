@@ -14,7 +14,6 @@ exports.sync_data_from_Athena = function () {
 function sync_data_from_Athena() {
    update_data();
 }
-
 /**
  *  从雅典娜更新人员数据
  * @returns {bluebird|exports|module.exports}   hall_manager_info
@@ -42,8 +41,7 @@ function update_data() {
             't.salesperson_name NAME, ' +
             't.salesperson_id work_id, ' +
             't.channel_id orgId, ' +
-            '\'5a26418c5eb3fe1068448753\' roleId, ' +
-            '\'\' count ' +
+            '\'5a26418c5eb3fe1068448753\' roleId ' +
             'FROM ' +
             'salesperson_info t ' +
             'UNION ALL ' +
@@ -52,8 +50,7 @@ function update_data() {
             't.hall_manager_name NAME, ' +
             'TRIM(t.hall_manager_tel) work_id, ' +
             't.channel_id orgId, ' +
-            '\'5a266868bfb42d1e9cdd5c6e\' roleId, ' +
-            '\'\' count ' +
+            '\'5a266868bfb42d1e9cdd5c6e\' roleId ' +
             'FROM ' +
             'hall_manager_info t ' +
             'UNION ALL ' +
@@ -62,8 +59,7 @@ function update_data() {
             't.grid_manager_name NAME, ' +
             'grid_manager_id work_id, ' +
             't.grid_coding orgId, ' +
-            '\'5a264057c819ed211853907a\' roleId, ' +
-            'max(count) ' +
+            '\'5a264057c819ed211853907a\' roleId ' +
             'FROM ' +
             '( ' +
             'SELECT ' +
@@ -74,7 +70,7 @@ function update_data() {
             'grid_coding IS NOT NULL ' +
             'GROUP BY ' +
             'grid_coding, ' +
-            'grid_manager_tel ' +
+            'grid_manager_tel ORDER BY count desc ' +
             ') t ' +
             'GROUP BY ' +
             'grid_coding ' +
@@ -86,8 +82,6 @@ function update_data() {
             'LENGTH(t1.phone) = 12 ' +
             'OR LENGTH(t1.phone) = 11 ' +
             ') ' +
-            'AND t1.work_id IS NOT NULL ' +
-            'AND LENGTH(t1.work_id) >= 8 ' +
             'AND t1.orgId IS NOT NULL ' +
             'AND t1.orgId != \'\' ' +
             'GROUP BY ' +

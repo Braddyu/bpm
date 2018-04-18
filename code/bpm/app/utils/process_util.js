@@ -158,10 +158,6 @@ exports.httpPost=function(postContent,options){
     return  new Promise(function(resolve,reject){
         try{
                 console.log("postContent",JSON.stringify(postContent));
-                options.headers={
-                    'Content-Type':'application/x-www-form-urlencoded; charset=UTF-8',
-                        'Content-Length':Buffer.byteLength(JSON.stringify(postContent))
-                }
                 console.log("options",JSON.stringify(options));
                 //返回结果
                 var result={};
@@ -185,6 +181,7 @@ exports.httpPost=function(postContent,options){
                     reject(err);
 
                 });
+                console.log(new Buffer(JSON.stringify(postContent)).toString('base64'));
                 req.write(new Buffer(JSON.stringify(postContent)).toString('base64'));
                 req.end();
 
@@ -264,16 +261,24 @@ exports.httpPostChannel=function(proc_inst_id,warn_date,options){
 //     'suggestion':'审核成功',//补录意见
 //     'crmTradeDate':'20171227'//推送的日期（黄河推送给工单系统原数据的日期）
 // }
+/*var postData={ jobId: 'GDBH201848355375',
+    orderId: '85213957521259',
+    orderCode: '85220180401202350B29078450',
+    suggestion: '通过',
+    crmTradeDate: '20180401' }
 
-// var options={
-//         // hostname:'135.10.38.80',
-//         // port:9090,
-//         path:'/ewfs/client/ewf4store/repair.do',
-//         method:'POST',
-//         headers:{
-//         'Content-Type':'text/plan; charset=UTF-8'
-//     }
-// }
+var options={
+        hostname:'135.10.38.80',
+        port:9090,
+        path:'/ewfs/client/ewf4store/repair.do',
+        method:'POST',
+        headers:{
+        'Content-Type':'text/plan; charset=UTF-8'
+    }
+}
+this.httpPost(postData,options).then(function (rs) {
+console.log(rs);
+})*/
 // var base=new Buffer(JSON.stringify(postData)).toString('base64');
 
 // var en=new Buffer(base, 'base64').toString();;

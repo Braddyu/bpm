@@ -109,15 +109,11 @@
                         </td>
 
                     </tr>
-                    <tr>
-                        <td align="right" class="tdLabel"></td>
-                        <td colspan="2">
-                         <span style="color:rgba(247,0,0,0.61);font-size:12px">上传附件的格式为:GIF,JPG,JPEG,BPM,PNG,MP3,WAV,WMA,PDF</span>
-                        </td>
-                    </tr>
+
                     <tr id="fileUpload">
                         <td align="right" class="tdLabel">附件上传:</td>
                         <td>
+                            <div> <span style="color:rgba(247,0,0,0.61);font-size:12px">上传附件的格式为:GIF,JPG,JPEG,BPM,PNG,MP3,WAV,WMA,PDF</span></div>
                         <div id="uploader" class="wu-example">
                             <!--用来存放文件信息-->
 
@@ -205,36 +201,33 @@
      uploader.on("error", function (type) {
          if (type == "Q_TYPE_DENIED") {
              $.messager.alert('提示',"请上传GIF,JPG,JPEG,BPM,PNG,MP3,WAV,WMA,PDF格式文件");
-         }else {
+         }else if (type == "F_DUPLICATE") {
+             $.messager.alert('提示',"上传文件重复");
+         }else{
              $.messager.alert('提示', "上传出错！请检查后重新上传！错误代码"+type);
          }
      });
     // 当有文件被添加进队列的时候
     uploader.on( 'fileQueued', function( file ) {
-        var $li = $(
-                '<div id="' + file.id + '" class="file-item thumbnail">' +
-                '<img>' +
-                '<div class="info">' + file.name + '</div>' +
-                '</div>'
-                ),
-                $img = $li.find('img');
+
+        if (/[\u4E00-\u9FA5]/i.test(file.name)) {
+            $.messager.alert('提示', file.name+"；文件名称不能包含中文");
+        }else{
+            var $li = $(
+                    '<div id="' + file.id + '" class="file-item thumbnail">' +
+                    '<img>' +
+                    '<div class="info">' + file.name + '</div>' +
+                    '</div>'
+                    ),
+                    $img = $li.find('img');
 
 
-        // $list为容器jQuery实例
-        $list.append( $li );
-//        var thumbnailWidth = 100;   //缩略图高度和宽度 （单位是像素），当宽高度是0~1的时候，是按照百分比计算，具体可以看api文档
-//        var thumbnailHeight = 100;
-//        // 创建缩略图
-//        // 如果为非图片文件，可以不用调用此方法。
-//        // thumbnailWidth x thumbnailHeight 为 100 x 100
-//        uploader.makeThumb( file, function( error, src ) {   //webuploader方法
-//            if ( error ) {
-//                $img.replaceWith('<span>不能预览</span>');
-//                return;
-//            }
-//
-//            $img.attr( 'src', src );
-//        }, thumbnailWidth, thumbnailHeight );
+            // $list为容器jQuery实例
+            $list.append( $li );
+        }
+
+
+
     });
    // 文件上传过程中创建进度条实时显示。
    uploader.on( 'uploadProgress', function( file, percentage ) {
@@ -565,81 +558,96 @@
         if (!validate) {
             return false;
         }
-        $.messager.progress({
-            title: '提示',
-            msg: '处理中，请稍候……',
-            text: ''
-        });
-        //归档
-        if (endFlag && proc_inst_task_sign == 1) {
-            var formData = $('#orderDetailForm').serializeArray();
-            $.ajax({
-                url: '{{projcfg.appurl}}/api/order_manage/order_list/complete',
-                type: 'post',
-                dataType: 'json',
-                data: formData,
-                success: function (data) {
-                    if (data.success) {
-                        parent.$("#dd").dialog('close');
-                        parent.$('#orderTablelist').datagrid('reload');
-                        $.messager.alert('提示', '处理成功');
-                    } else {
-                        $.messager.alert('错误提示', data.msg);
-                    }
-                    $.messager.progress('close');
-                }
-            });
-        } else if (proc_inst_task_sign == 0) {
-            //开始认领
-            $.ajax({
-                url: '{{projcfg.appurl}}/api/order_manage/order_todo/accept',
-                type: 'post',
-                dataType: 'json',
-                data: {
-                    "id": $("#proc_task_id").val()
-                },
-                success: function (data) {
-                    if (data.success) {
-                        var href = parent.$("#dd").dialog('options').href;
-                        parent.$("#dd").dialog({href: href});
-                    } else {
-                        $.messager.alert('错误提示', data.msg);
-                    }
-                    $.messager.progress('close');
-                }
-            });
-        } else {
-            $("#task_title").val($("#proc_inst_task_title").textbox('getValue'));
-            var formData = $('#orderDetailForm').serializeArray();
-            $.ajax({
-                url: "{{projcfg.appurl}}/api/order_manage/order_list/complete?_csrf=" + '{{_csrfToken}}',
-                type: 'post',
-                dataType: 'json',
-                data: formData,
-                success: function (data) {
-                    if (data.success) {
-                        //如果有选择文件
-                        if(uploader.getFiles().length > 0){
-                           fileLength=  uploader.getFiles().length;
-                            var obj = new Object();
-                            obj.status = 1;
-                            obj.proc_task_id = $("#proc_task_id").val();
-                            uploader.options.formData = obj;
-                            uploader.upload()
-                        }else{
-                            $.messager.alert('提示', '处理成功');
-                            $("#dd").dialog('close');
-                            $('#orderTablelist').datagrid('reload');
+
+        if(!endFlag && proc_inst_task_sign ==1){
+            if(uploader.getFiles().length == 0){
+                $.messager.alert('提示', '请上传附件');
+                return;
+            }
+        }
+        $.messager.confirm('提示', '确认处理么?', function(r) {
+            if(r){
+                $.messager.progress({
+                    title: '提示',
+                    msg: '处理中，请稍候……',
+                    text: ''
+                });
+
+                //归档
+                if (endFlag && proc_inst_task_sign == 1) {
+                    var formData = $('#orderDetailForm').serializeArray();
+                    $.ajax({
+                        url: '{{projcfg.appurl}}/api/order_manage/order_list/complete',
+                        type: 'post',
+                        dataType: 'json',
+                        data: formData,
+                        success: function (data) {
+                            if (data.success) {
+                                parent.$("#dd").dialog('close');
+                                parent.$('#orderTablelist').datagrid('reload');
+                                $.messager.alert('提示', '处理成功');
+                            } else {
+                                $.messager.alert('错误提示', data.msg);
+                            }
                             $.messager.progress('close');
                         }
+                    });
+                } else if (proc_inst_task_sign == 0) {
+                    //开始认领
+                    $.ajax({
+                        url: '{{projcfg.appurl}}/api/order_manage/order_todo/accept',
+                        type: 'post',
+                        dataType: 'json',
+                        data: {
+                            "id": $("#proc_task_id").val()
+                        },
+                        success: function (data) {
+                            if (data.success) {
+                                var href = parent.$("#dd").dialog('options').href;
+                                parent.$("#dd").dialog({href: href});
+                            } else {
+                                $.messager.alert('错误提示', data.msg);
+                            }
+                            $.messager.progress('close');
+                        }
+                    });
+                } else {
+                    $("#task_title").val($("#proc_inst_task_title").textbox('getValue'));
+                    var formData = $('#orderDetailForm').serializeArray();
+                    $.ajax({
+                        url: "{{projcfg.appurl}}/api/order_manage/order_list/complete?_csrf=" + '{{_csrfToken}}',
+                        type: 'post',
+                        dataType: 'json',
+                        data: formData,
+                        success: function (data) {
+                            if (data.success) {
+                                //如果有选择文件
+                                if(uploader.getFiles().length > 0){
+                                    fileLength=  uploader.getFiles().length;
+                                    var obj = new Object();
+                                    obj.status = 1;
+                                    obj.proc_task_id = $("#proc_task_id").val();
+                                    uploader.options.formData = obj;
+                                    uploader.upload()
+                                }else{
+                                    $.messager.alert('提示', '处理成功');
+                                    $("#dd").dialog('close');
+                                    $('#orderTablelist').datagrid('reload');
+                                    $.messager.progress('close');
+                                }
 
-                    } else {
-                        $.messager.alert('错误提示', data.msg);
-                    }
+                            } else {
+                                $.messager.alert('错误提示', data.msg);
+                            }
 
+                        }
+                    });
                 }
-            });
-        }
+
+            }
+
+        })
+
 
     }
 
