@@ -47,7 +47,8 @@ exports.getTaskHistoryList=function(condition,pageNow,pageSize){
                     {
                         $match: {
                             proc_inst_task_assignee:{$in:user_nos},
-                            proc_inst_task_name : { $ne : "省营业销售部派发" }
+                            proc_code: "p-201",
+                            proc_inst_task_code : { $ne : "processDefineDiv_node_2" }
                         }
                     },
                     {
