@@ -12,123 +12,100 @@ var pool_hh_history = mysql.createPool(config.mysql);
  */
 exports.getHistoryList= function(condition,pageNow,pageSize) {
     var p = new Promise(async function(resolve,reject){
-        var tableName="wf_max_data_t";
-        var SCLASS_ID=" =643 ";
-        if (condition.SCLASS_ID=="644"){
-            tableName="wf_warning_max_data_t";
+        var tableName="wf_mistake_list_data";
+        var SCLASS_ID=" = 643 ";//差错工单
+        if (condition.SCLASS_ID=="644"){//预警工单
+            tableName="wf_warning_list_data";
             SCLASS_ID = " in (603, 604, 605, 463) ";
         }
-        let start =(pageNow-1)*pageSize;
-        var  sql ="select distinct j.id,\n" +
-            "                j.task_id,\n" +
-            "                j.sclass_id,\n" +
-            "                j.job_id,\n" +
-            "                j.title,\n" +
-            "                j.created,\n" +
-            "                p.desc_text as orderTxt,\n" +
-            "                jc.name as wfName,\n" +
-            "                js.name as stepName,\n" +
-            "                ja.name as statusName,\n" +
-            "                j.bak_1 as month,\n" +
-            "                u.user_name as caller,            \n" +
-            "                DATE_FORMAT(j.finish_date,\"%Y-%m-%d %H:%i:%s\") AS finish_date,\n" +
-            "                j.last_solvedate,          \n" +
-            "                IF(j.JOB_TIMEOUT=1, '未超时','超时') AS timeout,\n" +
-            "                j.INITIATOR,\n" +
-            "                j.initiator_name,\n" +
-            "                func_sc_param('sm.aibsm.zg.st_gdlx', p.order_type) as orderTpye,\n" +
-            "                u.login_name,\n" +
-            "                t.chlCallerNum,\n" +
-            "                t.mngCallerNum,\n" +
-            "                (select p.msisdn from wm_user p where p.id = j.INITIATOR) as initiatorPhone,\n" +
-            "                t.chlId,\n" +
-            "                t.chlName,\n" +
-            "                t.chlCaller,\n" +
-            "                t.chlCallerTel,\n" +
-            "                p.field_1,\n" +
-            "                t.chlSolvemeth,\n" +
-            "                t.mngId,\n" +
-            "                t.mngName,\n" +
-            "                t.mngCaller,\n" +
-            "                t.mngCallerTel,\n" +
-            "                t.mngSolvemeth\n" +
-            "  from wf_view_total_data j,\n" +
-            "       wf_job_step js,\n" +
-            "       wf_job_status ja,\n" +
-            "       wf3_job_sclass jc,\n" +
-            "       wm_user u,\n" +
-            "       provinces_cities_order p, " +tableName+" t \n"+
+        let start =(parseInt(pageNow)-1)*parseInt(pageSize);
+        var  sql ="select distinct j.id, " +
+            "                j.task_id, " +
+            "                j.sclass_id, " +
+            "                j.job_id, " +
+            "                j.title, " +
+            "                j.created, " +
+            "                j.orderTxt, " +
+            "                j.wfName, " +
+            "                j.stepName, " +
+            "                j.statusName, " +
+            "                j.month, " +
+            "                j.caller,             " +
+            "                DATE_FORMAT(j.finish_date,\"%Y-%m-%d %H:%i:%s\") AS finish_date, " +
+            "                j.last_solvedate,           " +
+            "                j.timeout, " +
+            "                j.INITIATOR, " +
+            "                j.initiator_name, " +
+            "                j.orderTpye, " +
+            "                j.login_name, " +
+            "                j.chlCallerNum, " +
+            "                j.mngCallerNum, " +
+            "                j.initiatorPhone, " +
+            "                j.chlId, " +
+            "                j.chlName, " +
+            "                j.chlCaller, " +
+            "                j.chlCallerTel, " +
+            "                j.field_1, " +
+            "                j.chlSolvemeth, " +
+            "                j.mngId, " +
+            "                j.mngName, " +
+            "                j.mngCaller, " +
+            "                j.mngCallerTel, " +
+            "                j.mngSolvemeth " +
+            "  from  " +tableName+"  j "+
 
-            " where 1 = 1\n" +
-            "   and j.cur_step = js.id\n" +
-            "   and j.cur_status = ja.id\n" +
-            "   and j.SCLASS_ID = jc.id\n" +
-            "   and j.caller = u.id\n" +
-            "   and j.JOB_ID = t.job_id\n" +
-            "   and j.JOB_ID = p.job_id\n"+
+            " where 1 = 1 " +
             "   and j.SCLASS_ID "+SCLASS_ID;
         if (condition.job_id){
-            sql +="\n and j.job_id like "+"'%"+condition.job_id+"%'";
+            sql +="  and j.job_id like "+"'%"+condition.job_id+"%'";
         }
         if (condition.chlId){
-            sql +="\n and t.chlId="+condition.chlId;
+            sql +="  and j.chlId="+condition.chlId;
         }
         if (condition.startDate && condition.endDate){
-            sql +="\n and  DATE_FORMAT(j.created,\"%Y-%m-%d\") BETWEEN "+"'"+condition.startDate+"'"+" And "+"'"+condition.endDate+"'";
+            sql +="  and  DATE_FORMAT(j.created,\"%Y-%m-%d\") BETWEEN "+"'"+condition.startDate+"'"+" And "+"'"+condition.endDate+"'";
         }
         if (condition.startDate && !condition.endDate){
-            sql +="\n and  DATE_FORMAT(j.created,\"%Y-%m-%d\") BETWEEN "+"'"+condition.startDate+"'"+" And "+"'"+"DATE_FORMAT("+new Date().toLocaleString()+",\"%Y-%m-%d\")"+"'";
+            sql +="  and  DATE_FORMAT(j.created,\"%Y-%m-%d\") BETWEEN "+"'"+condition.startDate+"'"+" And "+"'"+"DATE_FORMAT("+new Date().toLocaleString()+",\"%Y-%m-%d\")"+"'";
         }
         if (!condition.startDate && condition.endDate){
-            sql +="\n and  DATE_FORMAT(j.created,\"%Y-%m-%d\") < "+"'"+condition.endDate+"'";
+            sql +="  and  DATE_FORMAT(j.created,\"%Y-%m-%d\") < "+"'"+condition.endDate+"'";
             //console.log(sql);
         }
-        sql += " limit "+start+","+pageSize;
+        sql += " limit "+start+","+parseInt(pageSize);
 
-         var countsql="select count(*) as totalnum   from wf_view_total_data j,\n" +
-             "       wf_job_step js,\n" +
-             "       wf_job_status ja,\n" +
-             "       wf3_job_sclass jc,\n" +
-             "       wm_user u,\n" +
-             "       provinces_cities_order p, " +tableName+" t \n"+
-             " where 1 = 1\n" +
-             "   and j.cur_step = js.id\n" +
-             "   and j.cur_status = ja.id\n" +
-             "   and j.SCLASS_ID = jc.id\n" +
-             "   and j.caller = u.id\n" +
-             "   and j.JOB_ID = t.job_id\n" +
-             "   and j.JOB_ID = p.job_id\n" +
+         var countsql="select count(*) as totalnum   from  " +tableName+" j  "+
+             " where 1 = 1 " +
              "   and j.SCLASS_ID "+SCLASS_ID;
         if (condition.job_id){
-            countsql +="\n and j.job_id like "+"'%"+condition.job_id+"%'";
+            countsql +="  and j.job_id like "+"'%"+condition.job_id+"%'";
         }
         if (condition.chlId){
-            countsql +="\n and t.chlId="+condition.chlId;
+            countsql +="  and j.chlId="+condition.chlId;
         }
         if (condition.startDate && condition.endDate){
-            countsql +="\n and  DATE_FORMAT(j.created,\"%Y-%m-%d\") BETWEEN "+"'"+condition.startDate+"'"+" And "+"'"+condition.endDate+"'";
+            countsql +="  and  DATE_FORMAT(j.created,\"%Y-%m-%d\") BETWEEN "+"'"+condition.startDate+"'"+" And "+"'"+condition.endDate+"'";
         }
         if (condition.startDate && !condition.endDate){
-            countsql +="\n and  DATE_FORMAT(j.created,\"%Y-%m-%d\") BETWEEN "+"'"+condition.startDate+"'"+" And "+"'"+"DATE_FORMAT("+new Date().toLocaleString()+",\"%Y-%m-%d\")"+"'";
+            countsql +="  and  DATE_FORMAT(j.created,\"%Y-%m-%d\") BETWEEN "+"'"+condition.startDate+"'"+" And "+"'"+"DATE_FORMAT("+new Date().toLocaleString()+",\"%Y-%m-%d\")"+"'";
         }
         if (!condition.startDate && condition.endDate){
-            countsql +="\n and  DATE_FORMAT(j.created,\"%Y-%m-%d\") < "+"'"+condition.endDate+"'";
+            countsql +="  and  DATE_FORMAT(j.created,\"%Y-%m-%d\") < "+"'"+condition.endDate+"'";
         }
         pool_hh_history.query(sql,function (err, result) {
             if (err) {
                 console.log('[SELECT ERROR] - ', err.message);
                 return;
             }else{
-                console.log(countsql);
                 pool_hh_history.query(countsql,function (err, rescount) {
                     if (err) {
                         console.log('[SELECT ERROR] - ', err.message);
                         return;
                     }else{
-                        console.log(rescount);
                         resolve(utils.returnMsg4EasyuiPaging(true, '0000', '分页查询成功。', result, rescount[0].totalnum));
                     }
                 });
+
             }
         });
     });
@@ -143,32 +120,32 @@ exports.getOrderHistoryDetail = function(orderId) {
     var p = new Promise(async function(resolve,reject){
         var rtnInfo = [];
         var  sql =
-                    "SELECT "+
-                        "j.`TITLE`,"+
-                        "j.`ORIGIN_SYS`,"+
-                        "DATE_FORMAT( j.`HAPPEN_DATE`,'%Y-%m-%d %H:%i:%s') AS happenDate,"+
-                        "wr.`NAME` AS roleName,"+
-                        "DATE_FORMAT( j.`STARTDATE`,'%Y-%m-%d %H:%i:%s') AS startDate,"+
-                        "wu.`USER_NAME` AS userName,"+
-                        "j.`WORK_DAY` as workDay,"+
-                        "DATE_FORMAT(j.finish_date,'%Y-%m-%d %H:%i:%s') AS finishDate,"+
-                        "j.`INITIATOR_INFO` ,"+
-                        "j.`REMARKS`,"+
-                        "pco.`ORDER_TYPE`,"+
-                        "pco.`DESC_TEXT`,"+
-                        "pco.`FIELD_1`,"+
-                        "wjt.`PRE_DAYCOUNT`,"+
-                        "DATE_FORMAT(wjt.`PRE_FINISHDATE`,'%Y-%m-%d %H:%i:%s') AS preFinishDate,"+
-                        "wjt.`REMARKS` AS handleOpinion,"+
-                        "wjs.`NAME` AS className " +
-                     "FROM "+
-                         "wf3_job j "+
-                            "LEFT JOIN wm_user wu ON wu.`ID` = j.`INITIATOR` "+
-                            "LEFT JOIN `wm_role` wr ON wr.`ID` = j.`INITIATOR_ROLE` "+
-                            "LEFT JOIN `provinces_cities_order` pco ON pco.`JOB_ID` = j.`JOB_ID` "+
-                            "LEFT JOIN `wf3_job_task` wjt ON wjt.`JOB_ID` = j.`JOB_ID` " +
-                            "LEFT JOIN `wf3_job_sclass` wjs ON wjs.`ID` = j.`SCLASS_ID` "+
-                    "WHERE j.job_id = "+ orderId;
+            "SELECT "+
+            "j.`TITLE`,"+
+            "j.`ORIGIN_SYS`,"+
+            "DATE_FORMAT( j.`HAPPEN_DATE`,'%Y-%m-%d %H:%i:%s') AS happenDate,"+
+            "wr.`NAME` AS roleName,"+
+            "DATE_FORMAT( j.`STARTDATE`,'%Y-%m-%d %H:%i:%s') AS startDate,"+
+            "wu.`USER_NAME` AS userName,"+
+            "j.`WORK_DAY` as workDay,"+
+            "DATE_FORMAT(j.finish_date,'%Y-%m-%d %H:%i:%s') AS finishDate,"+
+            "j.`INITIATOR_INFO` ,"+
+            "j.`REMARKS`,"+
+            "pco.`ORDER_TYPE`,"+
+            "pco.`DESC_TEXT`,"+
+            "pco.`FIELD_1`,"+
+            "wjt.`PRE_DAYCOUNT`,"+
+            "DATE_FORMAT(wjt.`PRE_FINISHDATE`,'%Y-%m-%d %H:%i:%s') AS preFinishDate,"+
+            "wjt.`REMARKS` AS handleOpinion,"+
+            "wjs.`NAME` AS className " +
+            "FROM "+
+            "wf3_job j "+
+            "LEFT JOIN wm_user wu ON wu.`ID` = j.`INITIATOR` "+
+            "LEFT JOIN `wm_role` wr ON wr.`ID` = j.`INITIATOR_ROLE` "+
+            "LEFT JOIN `provinces_cities_order` pco ON pco.`JOB_ID` = j.`JOB_ID` "+
+            "LEFT JOIN `wf3_job_task` wjt ON wjt.`JOB_ID` = j.`JOB_ID` " +
+            "LEFT JOIN `wf3_job_sclass` wjs ON wjs.`ID` = j.`SCLASS_ID` "+
+            "WHERE j.job_id = "+ orderId;
         var hisTaskSql =
             "SELECT \n" +
             "   wjs.`NAME` AS 'stepName',\n" +
@@ -201,15 +178,15 @@ exports.getOrderHistoryDetail = function(orderId) {
                         return;
                     }else{
                         rtnInfo[0].historyTasks = result;
-                            pool_hh_history.query(fileSql,function (err, result) {
-                                if (err) {
-                                    console.log('[SELECT ERROR] - ', err.message);
-                                    return;
-                                }else{
-                                    rtnInfo[0].files = result;
-                                    resolve(rtnInfo);
-                                }
-                            })
+                        pool_hh_history.query(fileSql,function (err, result) {
+                            if (err) {
+                                console.log('[SELECT ERROR] - ', err.message);
+                                return;
+                            }else{
+                                rtnInfo[0].files = result;
+                                resolve(rtnInfo);
+                            }
+                        })
                     }
                 });
             }
