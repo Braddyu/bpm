@@ -23,6 +23,7 @@ schedule.scheduleJob(rule, function(){
    }
 });
 async function find_write() {
+    var arr = [];
     let yesterday = moment().subtract(1, 'days').format('YYYY-MM-DD');
     let date = moment().subtract(0, 'days').format('YYYY-MM-DD');
     let proc_code = "p-201";
@@ -35,15 +36,16 @@ async function find_write() {
     for(let i in result){
         let inst_id = result[i].id;
         let BOSS_CODE = JSON.parse(result[i].proc_vars).BOSS_CODE;
-        let  data = (inst_id+'|'+BOSS_CODE+'|'+yesterday);
-        fs.writeFileSync(config.writeLoad+fileName,data,{encoding:'utf-8'},function(err){
-            if(err){
-                console.log("文件写入失败")
-            }else{
-                console.log("文件写入成功");
-            }
-        })
+        let  data = (inst_id+'|'+BOSS_CODE+'|'+yesterday+'\r\n');
+        arr.push(data);
     }
+    fs.writeFileSync(config.writeLoad+fileName,arr.join(''),{encoding:'utf-8'},function(err){
+        if(err){
+            console.log("文件写入失败")
+        }else{
+            console.log("文件写入成功");
+        }
+    })
     ftp_util.connect(server);
       ftp_util.uploadFile(config.writeLoad+fileName,config.ftp_gdglFile_server_put+fileName,function(errs,result){
                if(errs){
@@ -61,10 +63,7 @@ async function write_file(){
     let proc_code = "p-201";
     let proc_inst_status = 4;
     let result = await  inst.$ProcessInst.find({'proc_code':proc_code,'proc_inst_status':proc_inst_status,'proc_inst_task_complete_time':{$gte: new Date(yesterday), $lte: new Date(date)}});
-    // if (!fs.existsSync(config.writeLoad)) {
-    //     fs.mkdirSync(config.writeLoad);
-    // }
-    let fileName = 'gdgl_logs_filePath'+yesterday.replace(/-/g,'')+'.txt';
+    let fileName = 'gdgl_logs_filePath_'+yesterday.replace(/-/g,'')+'.txt';
     for(let i in result){
         let inst_id = result[i]._id;
         let logs_mes = await inst.$ProcessTaskHistroy.find({'proc_inst_id':inst_id});
