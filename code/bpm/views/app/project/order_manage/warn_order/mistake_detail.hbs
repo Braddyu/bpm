@@ -193,7 +193,7 @@
             mimeTypes: '*'
         },
         fileNumLimit: 8, //限制上传个数
-        fileSingleSizeLimit: 2048000 //限制单个上传图片的大小
+        fileSingleSizeLimit: 10048000 //限制单个上传图片的大小
     });
      /**
       * 验证文件格式
@@ -203,6 +203,8 @@
              $.messager.alert('提示',"请上传GIF,JPG,JPEG,BPM,PNG,MP3,WAV,WMA,PDF格式文件");
          }else if (type == "F_DUPLICATE") {
              $.messager.alert('提示',"上传文件重复");
+         }else if (type == "F_EXCEED_SIZE") {
+             $.messager.alert('提示',"上传文件大小不能大于10M");
          }else{
              $.messager.alert('提示', "上传出错！请检查后重新上传！错误代码"+type);
          }
