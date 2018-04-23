@@ -22,6 +22,16 @@
                                     <select class="easyui-combobox"id="proc_code" label="State:" labelPosition="top" style="width: 180px;height:31px;">
                                     </select>
                                 </div>
+
+                                <div class="btn-group" role="group" aria-label="..." id="c_e_type">
+                                    <label for="filterParam3">渠道类型：</label>
+                                    <select class="easyui-combobox"id="channel_enterprise_type" label="State:" labelPosition="top" style="width: 180px;height:31px;">
+                                        <option value="">请选择渠道类型</option>
+                                        <option value="0">实体渠道</option>
+                                        <option value="1">政企渠道</option>
+                                    </select>
+                                </div>
+
                                 <div class="btn-group" role="group" aria-label="...">
                                     <label for="filterParam3">区域编号：</label>
                                     <input class="easyui-textbox"id="area_code"  style="width: 180px;height:31px;">
@@ -493,6 +503,7 @@
                 endDate: $("#endDate").datebox('getValue'),
                 area_code:$("#area_code").textbox("getValue"),
                 is_use_org_code:is_use_org_code,
+                channel_enterprise_type:$("#channel_enterprise_type").combobox('getValue')
             },
            onLoadSuccess:function(json){
                if (json.success && json.rows.length > 0) {

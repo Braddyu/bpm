@@ -19,6 +19,8 @@ router.route('/list').post(function(req,res){
     if (req.body.user_no) {
         condition.user_no = req.body.user_no;//boss工号
     }
+    console.log(condition,"00000000000000000000000");
+
     service.getTaskHistoryList(condition,page,size).then(function (taskresult) {
         utils.respJsonData(res, taskresult);
     }).catch(function(err){

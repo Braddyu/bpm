@@ -20,21 +20,13 @@ exports.getTaskHistoryList=function(condition,pageNow,pageSize){
         var fields = {};
         fields.user_roles=user_roles;
         var user_nos=[];
-        var conditionTaskHistroy={};
-        conditionTaskHistroy.proc_inst_task_assignee={$in:user_nos};
-        if(condition.startDate){
-            conditionTaskHistroy.startDate={$gte :condition.startDate};
-        }else {
-            conditionTaskHistroy.startDate={$gte :new Date().toLocaleString()};
-        }
-        if(condition.endDate){
-            conditionTaskHistroy.endDate={$lte:condition.endDate};
-        }else {
-            conditionTaskHistroy.endDate={$lte:new Date().toLocaleString()};
-        }
         var results=[];
         var resultCount=[];
         var resultcond=[];
+        console.log("2222222222222");
+        console.log(new Date(condition.startDate),"2222222222222");
+
+
         user_model.$User.find(fields, function(error, result) {
             if(error) {
                 console.log(error);
@@ -48,7 +40,9 @@ exports.getTaskHistoryList=function(condition,pageNow,pageSize){
                         $match: {
                             proc_inst_task_assignee:{$in:user_nos},
                             proc_code: "p-201",
-                            proc_inst_task_code : { $ne : "processDefineDiv_node_2" }
+                            proc_inst_task_code : { $ne : "processDefineDiv_node_2" },
+                            proc_inst_task_arrive_time:{$gte : new Date(condition.startDate)},
+                            proc_inst_task_handle_time:{$lte: new Date(condition.endDate)}
                         }
                     },
                     {
@@ -73,7 +67,7 @@ exports.getTaskHistoryList=function(condition,pageNow,pageSize){
                                     resultCount.push({user_no: user.user_no, count: task.count,user_name:user.user_name });
                                 }else{
                                     resultCount.push({ user_no: user.user_no, count: 0,user_name:user.user_name });
-                                    break;
+                                    //break;
                                 }
                             }
 

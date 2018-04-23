@@ -21,12 +21,12 @@ router.route('/list').post(function(req,res){
     var endDate = req.body.endDate;//结束插入时间
     var areaCode = req.body.area_code;// 区域编码
     var is_use_org_code = req.body.is_use_org_code;
-    console.log("params",org_id,proc_code,level,status,startDate,endDate,areaCode);
+    var channel_enterprise_type = req.body.channel_enterprise_type;//渠道类型 0:实体  1：政企
+    console.log("params",org_id,proc_code,level,status,startDate,endDate,areaCode,channel_enterprise_type);
     // 调用分页
-    service.getStatisticsListPage(org_id,proc_code,level,status,startDate,endDate,areaCode,is_use_org_code)
+    service.getStatisticsListPage(org_id,proc_code,level,status,startDate,endDate,areaCode,is_use_org_code,channel_enterprise_type)
         .then(function(result){
-           //  console.log("获取所有工单列表成功",result);
-
+           //  console.log("获取所有工单列表成功",result);channel_enterprise_type
             utils.respJsonData(res, result);
         })
         .catch(function(err){

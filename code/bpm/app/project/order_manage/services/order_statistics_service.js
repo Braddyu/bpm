@@ -18,12 +18,12 @@ var moment = require('moment');
  * @param endDate 插入时间
  * @returns {Promise}
  */
-exports.getStatisticsListPage = function (org_id, proc_code, level, status, startDate, endDate,areaCode,is_use_org_code) {
+exports.getStatisticsListPage = function (org_id, proc_code, level, status, startDate, endDate,areaCode,is_use_org_code,channel_enterprise_type) {
 
     var p = new Promise(async function (resolve, reject) {
+        let foreignField;
         let obj_org_id = [];
         let match = {};
-        let foreignField;
         for (let item in org_id) {
             obj_org_id.push(new mongoose.Types.ObjectId(org_id[item]))
         }
@@ -48,6 +48,9 @@ exports.getStatisticsListPage = function (org_id, proc_code, level, status, star
         } else if (level == 6) {
             //渠道
             foreignField = 'channel_id';
+            if (channel_enterprise_type){
+                match.channel_enterprise_type=channel_enterprise_type;
+            }
         }
         //状态为1当前用户的所拥有的机构，为0表示下钻
         if (status == 1) {
