@@ -3,6 +3,8 @@ var Promise = require("bluebird")
 var utils = require('../../../../lib/utils/app_utils');
 var tree = require('../../../../lib/utils/tree_utils');
 var config = require('../../../../config');
+var mongoUtils = require('../../../common/core/mongodb/mongoose_utils');
+var mongoose = mongoUtils.init();
 
 
 /**
@@ -459,7 +461,6 @@ exports.getInfo = function (tag,_id) {
     });
     return p;
 }
-
 /**
  * 根据工号获取用户信息。
  * @param workId
@@ -471,7 +472,7 @@ exports.queryUserByWorkId = function(workId){
                 resolve(utils.returnMsg(false, '1000', '派单失败:获取用户信息出错', null, err));
             }else{
                 if(rs.length == 1){
-                    resolve(utils.returnMsg(true, '0000', '获取用户信息成功', rs, err));
+                    resolve(utils.returnMsg(true, '0000', '获取用户信息成功', rs, null));
                 }else if(rs.length == 0){
                     resolve(utils.returnMsg(false, '1000', '派单失败:找不到营业员', null, null));
                 }else{
@@ -482,4 +483,154 @@ exports.queryUserByWorkId = function(workId){
     });
     return p;
 }
-
+/**
+ * 根据工号获取用户信息V2。
+ * @param workId
+ */
+exports.getUserInfo = function(workId){
+    // 查询用户信息
+    var queryUserInfo = function(workId){
+        return new Promise(function (resolve, reject){
+            // 根据工号查询用户信息
+            model.$User.find({"work_id":workId},function(err,rs){
+                if(err){
+                    resolve(utils.returnMsg(false, '0000', '查询营业员信息出错', null, err));
+                }else{
+                    if(rs.length > 0){
+                        resolve(utils.returnMsg(true, '0001', '查询成功', rs, null));
+                    }else{
+                        resolve(utils.returnMsg(false, '0000', '未找到营业员', null, err));
+                    }
+                }
+            });
+        });
+    }
+    // 查询营业厅信息
+    var queryChannelInfo = function(result){
+        return new Promise(function (resolve, reject){
+            if(result.success){
+                let userInfo = result.data[0];
+                var user = {};
+                let orgs = userInfo.user_org;
+                user.name = userInfo.user_name;
+                user.mobile = userInfo.user_phone;
+                if(orgs.length > 0) {
+                    var match = {};
+                    match["_id"] = {$in: orgs};
+                    match["level"] = 6;
+                    model.$CommonCoreOrg.find(match,function (err, rs) {
+                        if(rs.length > 0) {
+                            var orgInfos = [];
+                            user.orgInfos = orgInfos;
+                            for (let i = 0; i < rs.length; i++) {
+                                let org = {};
+                                org.channel_id = rs[i]._id;
+                                org.channel_name = rs[i].org_fullname;
+                                org.grid_id = rs[i].org_pid;
+                                orgInfos.push(org);
+                            }
+                            resolve(utils.returnMsg(true, '0001', '查询成功', user, null));
+                        }else{
+                            resolve(utils.returnMsg(false, '0000', '非营业员角色不能转派', null, null));
+                        }
+                    })
+                }else{
+                    resolve(utils.returnMsg(false, '0000', '非营业员角色不能转派', null, null));
+                }
+            }else{
+                resolve(result);
+            }
+        });
+    }
+    // 查询网格信息
+    var queryGridInfo = function(result){
+        return new Promise(function (resolve, reject){
+            if(result.success){
+                let org_pids = [];
+                let user = result.data;
+                let orgs = user.orgInfos;
+                for (let item in orgs) {
+                    org_pids.push(new mongoose.Types.ObjectId(orgs[item].grid_id))
+                }
+                model.$CommonCoreOrg.find({"_id":{$in:org_pids}},function(err,rs) {
+                    if (rs.length > 0) {
+                        for (let item in orgs) {
+                            for (let item in rs) {
+                                if(orgs[item].grid_id == rs[item]._id){
+                                    orgs[item].grid_name = rs[item].org_fullname;
+                                    orgs[item].county_id = rs[item].org_pid;
+                                }
+                            }
+                        }
+                        resolve(utils.returnMsg(true, '0001', '查询成功', user, null));
+                    }
+                });
+            }else{
+                resolve(result);
+            }
+        });
+    }
+    // 查询区县信息
+    var queryCountyInfo = function(result){
+        return new Promise(function (resolve, reject){
+            if(result.success){
+                let org_pids = [];
+                let user = result.data;
+                let orgs = user.orgInfos;
+                for (let item in orgs) {
+                    org_pids.push(new mongoose.Types.ObjectId(orgs[item].county_id))
+                }
+                model.$CommonCoreOrg.find({"_id":{$in:org_pids}},function(err,rs) {
+                    if (rs.length > 0) {
+                        for (let item in orgs) {
+                            for (let item in rs) {
+                                if(orgs[item].county_id == rs[item]._id){
+                                    orgs[item].county_name = rs[item].org_fullname;
+                                    orgs[item].city_id = rs[item].org_pid;
+                                }
+                            }
+                        }
+                        resolve(utils.returnMsg(true, '0001', '查询成功', user, null));
+                    }
+                });
+            }else{
+                resolve(result);
+            }
+        });
+    }
+    // 查询城市信息
+    var queryCityInfo = function(result){
+        return new Promise(function (resolve, reject){
+            if(result.success){
+                let org_pids = [];
+                let user = result.data;
+                let orgs = user.orgInfos;
+                for (let item in orgs) {
+                    org_pids.push(new mongoose.Types.ObjectId(orgs[item].city_id))
+                }
+                model.$CommonCoreOrg.find({"_id":{$in:org_pids}},function(err,rs) {
+                    if (rs.length > 0) {
+                        for (let item in orgs) {
+                            for (let item in rs) {
+                                if(orgs[item].city_id == rs[item]._id){
+                                    orgs[item].city_name = rs[item].org_fullname;
+                                }
+                            }
+                        }
+                        resolve(utils.returnMsg(true, '0001', '查询成功', user, null));
+                    }
+                });
+            }else{
+                resolve(result);
+            }
+        });
+    }
+    var p = new Promise(function(resolve,reject){
+        resolve(workId);
+    })
+    return p.then(queryUserInfo)
+        .then(queryChannelInfo)
+        .then(queryGridInfo)
+        .then(queryCountyInfo)
+        .then(queryCityInfo);
+}

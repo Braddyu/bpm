@@ -322,6 +322,14 @@ var processToken = new Schema(
     {collection: "common_bpm_proc_token"}// mongodb集合名
 );
 
+var jobSetp = new Schema(
+    {
+        NAME:String
+    },
+    {collection: "common_bpm_wf_job_step"}// mongodb集合名
+);
+exports.$JobSetp = mongoose.model('JobSetp ', jobSetp );
+
 // 流程流转信息model
 exports.$ProcessToken = mongoose.model('ProcessToken ', processToken );
 

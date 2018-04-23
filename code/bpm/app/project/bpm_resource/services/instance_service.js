@@ -1031,6 +1031,7 @@ exports.getMyTaskQuery4Eui= function(page,size,userCode,joinup_sys,proc_code,wor
                 var match3={};
                 var match4={};
                 var match5={};
+                console.log("#########",proc_inst_task_sign);
                 //只获取待认领任务
                 if(proc_inst_task_sign && proc_inst_task_sign==0){
                     if(res[0].user_roles){

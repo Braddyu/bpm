@@ -33,7 +33,7 @@ exports.getMyCompleteTaskQuery4Eui = function (page, size, userCode, paramMap, p
         if (work_order_number) {
             conditionMap.work_order_number = work_order_number;
         }
-		if(task_type){
+        if(task_type){
             conditionMap.proc_inst_task_code = task_type;
         }
         var compare = {};
@@ -55,7 +55,6 @@ exports.getMyCompleteTaskQuery4Eui = function (page, size, userCode, paramMap, p
     });
     return p;
 };
-
 /**
  * 工单任务转派
  */
