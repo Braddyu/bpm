@@ -31,13 +31,15 @@
                         </div>
                         <div class="col-xs-4 col-md-4 text-right">
                             <form class="form-inline">
-                                <div class="form-group">
-                                    <div class="input-group">
-                                        <span class="input-group-btn">
-                                                <button id="turn2SendBtn" class="btn btn-default" type="button" onclick="turn2Send()"><i class="fa fa-edit"></i>转派</button>
-                                        </span>
+                                {{#ifAdmin}}
+                                    <div class="form-group">
+                                        <div class="input-group">
+                                            <span class="input-group-btn">
+                                                    <button id="turn2SendBtn" class="btn btn-default" type="button" onclick="turn2Send()"><i class="fa fa-edit"></i>转派{{msg}}</button>
+                                            </span>
+                                        </div>
                                     </div>
-                                </div>
+                                {{/ifAdmin}}
                                 <div class="form-group">
                                     <div class="input-group">
                                         <span class="input-group-btn">
@@ -60,14 +62,14 @@
 </div>
 
 <div id="dd"></div>
-<div id="win" class="easyui-window" closed="true"collapsible="false" minimizable="false" maximizable="false" title="工单转派">
+<div id="win" closed="true"collapsible="false" minimizable="false" maximizable="false" title="工单转派">
     <div class="easyui-layout" data-options="fit:true">
         <form id="workIdForm">
             <div data-options="region:'north'" style="padding:20px;height:80px">
-                请输入营业员工号: <input id="workId" type="text"class="easyui-textbox " data-options="required:true, missingMessage:'请输入营业员工号'">
+                请输入营业员工号: <input id="workId" type="text"class="easyui-textbox" data-options="required:true, missingMessage:'请输入营业员工号'">
                 <button style=" border-radius: 5px;height:24px;width:58px;padding:0px;font-family: 'Microsoft YaHei';font-size:12px;color: #444;left:120px;"class="btn btn-default" type="button" onclick="queryUserInfo()"><i class="fa fa-search"></i>查询</button>
             </div>
-            <div data-options="region:'south',border:false" style="text-align:right;padding:5px 0 0;">
+            <div data-options="region:'south',border:false" style="text-align:right;padding:5px 0 0;height:31px;">
                 <a id="wordIdSubmit" class="easyui-linkbutton" data-options="iconCls:'icon-ok'" href="javascript:void(0)" onclick="turn2SendTask()" style="width:80px">确定</a>
                 <a id="wordIdCancel" class="easyui-linkbutton" data-options="iconCls:'icon-cancel'" href="javascript:void(0)" onclick="$('#win').window('close'); $('#workId').textbox('setValue', '');" style="width:80px">取消</a>
             </div>
@@ -116,6 +118,9 @@
         text-align: center;
         min-width:50px;
         font-size:12px !important;
+    }
+    #workId{
+        width:160px;
     }
 </style>
 <script src="{{projcfg.appurl}}/static/js/layer/layer.js"></script>
@@ -187,6 +192,7 @@
 
                     }},
                 {"field": "proc_name","title":"工单类型","width":50},
+                {"field": "proc_code","title":"工单类型","width":50,hidden:true},
                 {"field": "proc_inst_task_remark","title":"处理意见","width":50},
                 {"field": "proc_inst_task_name","title":"处理节点","width":50},
                 {"field": "proc_inst_task_complete_time","title":"处理时间","width":80,
@@ -270,6 +276,11 @@
 
                 }
             });
+            return false;
+        }
+        var proc_code = row.proc_code;
+        if (proc_code != "p-201") {
+            $.messager.alert("提示","只能转派类型为[稽核工单差错]的工单");
             return false;
         }
         //$("#instId").val(row.proc_inst_id);
