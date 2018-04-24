@@ -57,7 +57,7 @@
                                id="proc_inst_name"  name="proc_inst_name"></input>
                     </td>
                     <td align="right" class="tdLabel">工作天数:</td>
-                    <td><input style="width: 280px"class="easyui-numberbox" data-options="precision:0,required:true, missingMessage:'请输入工作天数'"id="proc_work_day" name="proc_work_day"
+                    <td><input style="width: 280px"class="easyui-numberbox" data-options="precision:0,required:true, missingMessage:'请输入工作天数'"id="work_day" name="work_day"
                     ></input></td>
                 </tr>
                 <tr>
@@ -107,7 +107,7 @@
                 <tr id="tr_5">
                     <td align="right" class="tdLabel">处理人:</td>
                     <td colspan="3" class="tdLabel"><select class="easyui-combobox"
-                                            id="assign_user_no"name="assign_user_no" style="width: 180px;">
+                                            id="assign_user_no"name="assign_user_no" style="width: 665px;">
                     </select> </td>
                 </tr>
 
@@ -158,7 +158,7 @@
         getNextNodeUser("processDefineDiv_node_2","","zj_102");
         $("#handle") .combobox('setValue','') ;
         //填写工作天数，给完成时间赋值
-        $('#proc_work_day').textbox({
+        $('#work_day').textbox({
             onChange: function(value) {
                 if(value!=''&&value!=null){
                     var time=new Date($("#start_time").textbox("getValue").replace(/-/g,'/'));

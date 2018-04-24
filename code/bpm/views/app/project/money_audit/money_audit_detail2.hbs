@@ -24,7 +24,7 @@
                     </td>
 
                     <td align="right" class="tdLabel">工作天数:</td>
-                    <td><input disabled style="width: 280px"class="easyui-numberbox"data-options="precision:0"  name="proc_work_day" id="work_day"
+                    <td><input disabled style="width: 280px"class="easyui-numberbox"data-options="precision:0"  name="work_day" id="work_day"
                     ></input></td>
                 </tr>
                 <tr>
@@ -446,9 +446,9 @@
                                 halign:'center',
                                 formatter: function (value,row,index) {
                                     var html='';
-                                    if(status != 1){
+                                   // if(status != 1){
                                         html='<div style="text-align: center"><a href="javascript:void(0);" onclick="deleteFile(\''+row._id+'\')" >删除</a></div>';
-                                    }
+                                   // }
 
 
 
@@ -607,6 +607,7 @@
         });
 
         var formData=$('#orderDetailForm1').serializeArray();
+
         //归档
         if(endFlag){
             $.ajax({

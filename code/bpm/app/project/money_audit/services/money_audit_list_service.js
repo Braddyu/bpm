@@ -225,15 +225,73 @@ exports.getOrgTreeDataAsyn = function(condition) {
 };
 
 /**
- * 递归查询区县下的所有自营厅
+ * 查询未归档稽核工单实例
  * @param condition
  */
-exports.getOrgTreeDatadg = function(id) {
-    var condition={};
-    var org_pid = req.query.org_pid;
-    condition.org_pid = org_pid;
-   model_user.$CommonCoreOrg.find(condition, function(error, result){
+exports.getMoneyAudtiProcInsts = function() {
+    var p = new Promise(function(resolve,reject){
+        var time = new Date();
+        var t1 = new Date("2018-04-24 10:23;00")
+        exports.dateSub(t1,time);
+        var condition={};
+        condition.proc_code  = "zj_101";
+        condition.proc_inst_status  = {'$ne':4};
+        model.$ProcessInst.find(condition, function(error, result){
+            if(error){
+                console.log('查询未归档稽核工单实例失败',err);
+                resolve({'success':false,'code':'1000','msg':'查询未归档稽核工单实例失败',"error":err});
+            }else{
+                //if(result) {
+                //    if (result.length > 0) {
+                //        var resultData = [];
+                //        for(let i in result){
+                //            var jsonData = JSON.parse(result[i].proc_vars);
+                //            var t1 = new Date(jsonData.endTime);
+                //            exports.dateSub(t1,time);
+                //        }
+                //    }
+                //}
+                resolve({'success':true,'code':'0000','msg':'查询未归档稽核工单实例成功',"data":result,"error":null});
 
-   })
+            }
+        })
+    });
+    return p;
+}
 
+/**
+ * 计算两个时间相减 结果是小时
+ * @param date1
+ * @param date2
+ * @returns {format}
+ */
+exports.dateSub = function(date1,date2) {
+    var year1 = (date1.getYear() < 1900) ? date1.getYear() + 1900 : date1.getYear();
+    var year2 = (date2.getYear() < 1900) ? date2.getYear() + 1900 : date2.getYear();
+    console.log(year1,year2);
+    if(year1!=year2){
+        return false;
+    }
+
+    var month1 = date1.getMonth() + 1;
+    var month2 = date2.getMonth() + 1;
+    console.log(month1,month2);
+    if(month1!=month2){
+        return false;
+    }
+
+    var day1 = date1.getDate();
+    var day2 = date2.getDate();
+    console.log(day1,day2);
+    if(day1!=day2){
+        return false;
+    }
+
+    var hour1 = date1.getHours();
+    var hour2 = date2.getHours();
+    console.log(hour1,hour2);
+    if(hour2-hour1!=5){
+        return false;
+    }
+    return true;
 }

@@ -57,7 +57,7 @@
                                id="proc_inst_name"  name="proc_inst_name"></input>
                     </td>
                     <td align="right" class="tdLabel">工作天数:</td>
-                    <td><input style="width: 280px"class="easyui-numberbox" data-options="precision:0,required:true, missingMessage:'请输入工作天数'"id="proc_work_day" name="proc_work_day"
+                    <td><input style="width: 280px"class="easyui-numberbox" data-options="precision:0,required:true, missingMessage:'请输入工作天数'"id="work_day" name="work_day"
                     ></input></td>
                 </tr>
                 <tr>
@@ -159,7 +159,7 @@
        // $("#assign_user_no") .combobox('setValue','') ;
         $("#handle") .combobox('setValue','') ;
         //填写工作天数，给完成时间赋值
-        $('#proc_work_day').textbox({
+        $('#work_day').textbox({
             onChange: function(value) {
                 if(value!=''&&value!=null){
                     var time=new Date($("#start_time").textbox("getValue").replace(/-/g,'/'));
@@ -299,6 +299,7 @@
                     msgError(json.msg + ',错误代码:' + json.code);
                 }
             },
+
             onLoadError:function() {
                 msgError('加载数据出现时发生错误,请稍候重试...');
             },

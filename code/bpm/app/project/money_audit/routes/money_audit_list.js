@@ -72,16 +72,16 @@ router.route('/moneyAudit').post(function(req,res){
     var assign_user_no= req.body.assign_user_no;//稽核状态
     var proc_title= req.body.proc_title;//业务名称
     var proc_inst_name= req.body.proc_inst_name;//业务名称
-    var proc_work_day= req.body.proc_work_day;//业务名称
+    var work_day= req.body.work_day;//业务名称
     var start_time= req.body.start_time;//业务名称
     var end_time= req.body.end_time;//业务名称
     var proc_content= req.body.proc_content;//业务名称
     var orgId= req.body.orgId;//机构id
-    console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"+orgId)
+    console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"+work_day)
     var proc_vars_parm = {};
     proc_vars_parm.proc_title=proc_title;
     proc_vars_parm.proc_inst_name=proc_inst_name;
-    proc_vars_parm.proc_work_day=proc_work_day;
+    proc_vars_parm.work_day=work_day;
     proc_vars_parm.start_time=start_time;
     proc_vars_parm.end_time=end_time;
     proc_vars_parm.proc_content=proc_content;
