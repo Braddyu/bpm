@@ -677,7 +677,7 @@ exports.createExcelOrderDetail =function createExcelOrderDetail(data) {
             c.proc_title,
             c.proc_name,
             JSON.parse(c.proc_vars).proc_content,
-            moment(new Date(c.proc_start_time)).format('YYYY-MM-DD'),
+            moment(new Date(c.proc_start_time)).format('YYYY-MM-DD HH:mm:ss'),
             work_id ,
             proc_inst_task_assignee_name,
             proc_inst_task_type,

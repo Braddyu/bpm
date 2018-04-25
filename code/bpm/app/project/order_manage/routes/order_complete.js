@@ -18,7 +18,7 @@ router.route('/list').post(function(req,res){
     var startDate = req.body.startDate;//创建时间
     var endDate = req.body.endDate;//创建时间
     var work_order_number = req.body.work_order_number;
-	var task_type = req.body.task_type;
+    var task_type = req.body.task_type;
     console.log("开始获取我的已办集合,用户编号",userNo)
 
     // 验证流程名是否为空
@@ -66,7 +66,6 @@ router.route("/logs").post(function(req,res){
         utils.respJsonData(res,rs);
     });
 });
-
 /**
  * 任务转派
  */
@@ -91,6 +90,14 @@ router.route("/listAllTaskType").post(function(req,res){
         utils.respJsonData(res,rs.data);
     });
 });
-
+/**
+ * 查询营业员信息
+ */
+router.route("/getUserInfo").post(function(req,res){
+    var workId = req.body.workId;
+    userService.getUserInfo(workId).then(function(rs){
+        utils.respJsonData(res,rs);
+    });
+});
 module.exports = router;
 

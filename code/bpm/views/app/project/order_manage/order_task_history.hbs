@@ -41,12 +41,13 @@
 
 <script type="text/javascript">
     $(document).ready(function () {
-        //加载我的待办列表
-        loadOrderTodaoListDatagrid();
         //设置时间
         var curr_time = new Date();
         $("#startDate").datebox("setValue",myformatter(curr_time));
         $("#endDate").datebox("setValue",myformatter(curr_time));
+        //加载我的待办列表
+        loadOrderTodaoListDatagrid();
+        doSearch();
 
     });
 

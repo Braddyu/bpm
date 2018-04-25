@@ -138,3 +138,21 @@ exports.getMyArchiveTaskQuery4Eui = function (page, size, userNo, work_order_num
 
 
 
+exports.checkFileList = function (page, size, userNo, work_order_number,proc_start_time,proc_inst_task_complete_time,is_overtime,proc_code,result) {
+
+    return new Promise(function(resolve,reject){
+        var userArr = [];
+        userArr.push(userCode);
+        var conditionMap = {};
+        var match={};
+        if(joinup_sys){
+            match.joinup_sys=joinup_sys;
+        }
+        if(proc_code){
+            match.proc_code=proc_code;
+        }
+        conditionMap['$and'] = [match,{'proc_inst_task_assignee':{'$in':userArr}}];
+        conditionMap.proc_inst_task_status = 1;
+        utils.pagingQuery4Eui(model.$ProcessTaskHistroy, page, size, conditionMap, resolve, '',  {proc_inst_task_arrive_time:-1});
+    });
+};

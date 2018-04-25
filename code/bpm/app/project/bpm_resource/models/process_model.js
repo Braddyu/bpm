@@ -169,7 +169,8 @@ var commonProcessInstSchema = new Schema(
         publish_status : Number,//1 发布 0-未发布
         is_overtime:Number,//是否超时，0-未超时，1-超时
         proc_inst_task_complete_time:Date,// 归档时间
-        refuse_number:Number// 拒绝次数
+        refuse_number:Number,// 拒绝次数
+        is_check:Number// 是否被复核
     },
     {collection: "common_bpm_proc_inst"}// mongodb集合名
 );
@@ -286,30 +287,7 @@ var commonProcessTaskHistroySchema = new Schema(
 
 // 流程流转历史信息model
 exports.$ProcessTaskHistroy = mongoose.model('CommonCoreProcessTaskHistroy', commonProcessTaskHistroySchema);
-//构造流程流转历史信息Schema对象
-// var commonProcessInstTaskHistroySchema = new Schema(
-//     {
-//             proc_inst_id : {type: Schema.Types.ObjectId, ref: 'CommonCoreProcessInst'}, // 流程流转当前信息ID
-//             proc_inst_task_code : String,// 流程当前节点编码(流程任务编号)
-//             proc_inst_task_name : String,// 流程当前节点名称(任务名称)
-//             proc_inst_task_type : String,// 流程当前节点类型(任务类型)
-//             proc_inst_task_arrive_time : Date,// 流程到达时间
-//             proc_inst_task_handle_time : Date,// 流程认领时间
-//             proc_inst_task_complete_time : Date,// 流程完成时间
-//             proc_inst_task_status : Number,// 流程当前状态
-//             proc_inst_task_assignee : String,// 流程处理人ID
-//             proc_inst_task_assignee_name : String,// 流程处理人名
-//             proc_inst_task_params : String,// 流程参数(任务参数)
-//             proc_inst_task_claim : Number,// 流程会签
-//             proc_inst_task_sign : Number,// 流程签收(0-未认领，1-已认领)
-//             proc_inst_task_sms : Number,// 流程是否短信提醒
-//             proc_inst_task_remark : String// 流程处理意见
-//     },
-//     {collection: "common_bpm_proc_inst_task_histroy"}// mongodb集合名
-// );
-//
-// // 流程流转历史信息model
-// exports.$ProcessInstTaskHistroy = mongoose.model('CommonCoreProcessInstTaskHistroy', commonProcessInstTaskHistroySchema);
+
 
 
 //令牌对象

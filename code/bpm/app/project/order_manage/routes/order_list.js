@@ -410,30 +410,23 @@ router.post('/uploadFile', upload.array("file"), function (req, res, next) {
     //状态为1表示新增附件，状态为0表示补传
     var status = req.body.status;
     //状态为1表示实例id，状态为0表示附件id
-    var change_id = req.body.proc_task_id;
-    console.log("status", status, "change_id", change_id);
+    var change_id = req.body.change_id;
     var files = req.files;
     var user_name = req.session.current_user.user_name;//处理人姓名
-    console.log(user_name);
-    service.upload_images(files, change_id, user_name).then(function (result) {
-        utils.respJsonData(res, result);
-    }).catch(function (err) {
-        utils.respMsg(res, false, '1000', '上传失败', null, err);
-    })
-    /*    if (status == 1) {
-            service.upload_images(files, change_id).then(function (result) {
+    console.log("status", status, "change_id", change_id,"user_name",user_name);
+      if (status == 1) {
+            service.upload_images(files, change_id,user_name).then(function (result) {
                 utils.respJsonData(res, result);
             }).catch(function (err) {
                 utils.respMsg(res, false, '1000', '上传失败', null, err);
             })
         } else {
-            var user_name = req.session.current_user.user_name;//处理人姓名
             service.again_images(files, change_id, user_name).then(function (result) {
                 utils.respJsonData(res, result);
             }).catch(function (err) {
                 utils.respMsg(res, false, '1000', '上传失败', null, err);
             })
-        }*/
+        }
 
 
 });
@@ -490,6 +483,40 @@ router.post('/deleteFile', function (req, res) {
 
 
 });
+
+
+router.post('/checkFile', function (req, res) {
+    console.log("开始复核...");
+    let inst_id = req.body.inst_id;
+    let node = req.body.node;
+    let check_memo = req.body.check_memo;
+    let current_user = req.session.current_user;
+
+    let user_roles =current_user.user_roles;
+    let is_admin = false;
+    //判断当前角色是否可以进行复核
+    for(let i in user_roles){
+        if(user_roles[i].role_code=='check_manager'){
+            is_admin = true;
+            break;
+        }
+    }
+    if(!is_admin){
+        utils.respMsg(res, false, '1000', '抱歉，您不能进行复核', null, null);
+    }else{
+        service.checkFile(inst_id, node,check_memo,current_user.user_name,current_user.user_no)
+            .then(function (result) {
+                utils.respJsonData(res, result);
+            })
+            .catch(function (err) {
+                console.log('获取工单详情失败', err);
+
+            });
+    }
+
+
+});
+
 
 function isEmptyObject(e) {
     var t;

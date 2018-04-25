@@ -20,13 +20,14 @@ router.route('/list').post(function(req,res){
     var status = req.body.status;//是否返回到当前所在机构
     var startDate = req.body.startDate;//开始插入时间
     var endDate = req.body.endDate;//结束插入时间
-
-    console.log("params",org_id,proc_code,level,status,startDate,endDate);
+    var areaCode = req.body.area_code;// 区域编码
+    var is_use_org_code = req.body.is_use_org_code;
+    var channel_enterprise_type = req.body.channel_enterprise_type;//渠道类型 0:实体  1：政企
+    console.log("params",org_id,proc_code,level,status,startDate,endDate,areaCode,channel_enterprise_type);
     // 调用分页
-    service.getStatisticsListPage(org_id,proc_code,level,status,startDate,endDate)
+    service.getStatisticsListPage(org_id,proc_code,level,status,startDate,endDate,areaCode,is_use_org_code,channel_enterprise_type)
         .then(function(result){
-           //  console.log("获取所有工单列表成功",result);
-
+           //  console.log("获取所有工单列表成功",result);channel_enterprise_type
             utils.respJsonData(res, result);
         })
         .catch(function(err){
@@ -47,8 +48,10 @@ router.route('/export_excel').get(function(req,res){
     var status = req.query.status;//是否返回到当前所在机构
     var startDate = req.query.startDate;//开始插入时间
     var endDate = req.query.endDate;//结束插入时间
+    var areaCode = req.query.area_code;// 区域编码
+    var is_use_org_code = req.query.is_use_org_code;
     // 调用分页
-    service.exportStatisticsList(org_id,proc_code,level,status,startDate,endDate)
+    service.exportStatisticsList(org_id,proc_code,level,status,startDate,endDate,areaCode,is_use_org_code)
         .then(service.createExcelOrderList)
         .then(excelBuf=>{
             const date = new Date();

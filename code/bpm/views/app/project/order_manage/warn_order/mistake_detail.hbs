@@ -50,11 +50,12 @@
 
                 </tr>
 
-                  <tr>
-                      <td align="right" class="tdLabel">客户手机号:</td>
-                      <td> <input readonly class="easyui-textbox" name="client_tel" id="user_phone"  style="width: 280px"></td>
+                <tr>
+                    <td align="right" class="tdLabel">客户手机号:</td>
+                    <td><input readonly class="easyui-textbox" name="client_tel" id="user_phone" style="width: 280px">
+                    </td>
 
-                  </tr>
+                </tr>
                 <tr>
                     <td align="right" class="tdLabel">派单内容:</td>
                     <td colspan="3"><input readonly
@@ -113,21 +114,17 @@
                     <tr id="fileUpload">
                         <td align="right" class="tdLabel">附件上传:</td>
                         <td>
-                            <div> <span style="color:rgba(247,0,0,0.61);font-size:12px">上传附件的格式为:GIF,JPG,JPEG,BPM,PNG,MP3,WAV,WMA,PDF</span></div>
-                        <div id="uploader" class="wu-example">
-                            <!--用来存放文件信息-->
-
-
-                            <div id="picker" >选择文件
+                            <div><span style="color:rgba(247,0,0,0.61);font-size:12px">上传附件的格式为:GIF,JPG,JPEG,BPM,PNG,MP3,WAV,WMA,PDF</span>
                             </div>
+                            <div id="uploader" class="wu-example">
+                                <!--用来存放文件信息-->
+                                <div id="picker">选择文件
+                                </div>
 
-                            <div id="thelist" class="uploader-list" ></div>
-                        </div>
+                                <div id="thelist" class="uploader-list"></div>
+                            </div>
                         </td>
-                      <!--  <td align="right" class="tdLabel">附件上传:</td>
-                        <td><input type="file" labelPosition="top" id="files" name="files" multiple="true"
-                                   data-options="prompt:'选择文件...',buttonText:'选择'" style="width:250px"/>
-                        </td>-->
+
                     </tr>
                 </table>
 
@@ -139,17 +136,35 @@
             </div>
 
         </form>
-
+        <div style="padding:5px 0;display:none" align="center" id="check">
+            <a id="checkButton" href="javascript:void(0);" class="easyui-linkbutton" onclick="openCheck()"
+           style="width: 100px;">复核</a>
+        </div>
 
     </div>
-    <div title="流程图" style="padding:10px">
+    <div title="流程图" style="padding:10px;">
 
         <iframe id="iframeId" frameborder=0 width=1200 height=830 marginheight=0 marginwidth=0 scrolling=no
                 src=></iframe>
     </div>
     <div title="附件" style="padding:10px">
-        <table cellpadding="5" align="center">
 
+        <table cellpadding="5" align="center">
+            <tr id="againFile" style="display: none">
+                <td align="right" class="tdLabel">附件上传:</td>
+                <td>
+                    <div><span style="color:rgba(247,0,0,0.61);font-size:12px">上传附件的格式为:GIF,JPG,JPEG,BPM,PNG,MP3,WAV,WMA,PDF</span>
+                    </div>
+                    <div class="wu-example">
+                        <!--用来存放文件信息-->
+                        <div id="filePicker">选择文件
+                        </div>
+
+                        <div id="thelist1" class="uploader-list"></div>
+                    </div>
+                </td>
+
+            </tr>
             <tr>
                 <td colspan="4">
                     <table id="file_dg"></table>
@@ -160,6 +175,31 @@
     </div>
 </div>
 
+<div id="checkDetail"  class="mydialog"  >
+    <table  align="center">
+
+        <tr>
+            <td align="right" class="tdLabel">回退节点:</td>
+            <td colspan="3"><select class="easyui-combobox"
+                                    id="node"name="node" style="width: 180px;">
+                <option value="processDefineDiv_node_3">厅店处理回复</option>
+                <option value="processDefineDiv_node_28">省营业厅销售部稽核</option>
+            </select> </td>
+
+        </tr>
+
+        <tr>
+            <td align="right" class="tdLabel">复核原因:</td>
+            <td colspan="2"><input name="check_memo" id="check_memo"class="easyui-textbox"  labelPosition="top" multiline="true" style="width: 370px; height: 54px; resize: none;"/>
+
+            </td>
+
+        </tr>
+
+    </table>
+
+</div>
+
 <script>
 
     $.ajaxSettings.beforeSend = function (xhr, request) {
@@ -168,14 +208,15 @@
 </script>
 
 <script type="text/javascript">
-     var $list=$("#thelist");
-     var status='{{status}}'
-     var change_id='{{change_id}}'
-     var proc_code='{{proc_code}}'
-    var uploader = WebUploader.create({
-        auto:false,
-        // swf文件路径
-        swf: '{{projcfg.appurl}}/static/{{projcfg.theme}}webuploade/Uploader.swf',
+    var $list = $("#thelist");
+    var status = '{{status}}'
+    var change_id = '{{change_id}}'
+    var proc_code = '{{proc_code}}'
+    //详情界面的附件上传
+     var uploader = WebUploader.create({
+         auto:false,
+         // swf文件路径
+         swf: '{{projcfg.appurl}}/static/{{projcfg.theme}}webuploade/Uploader.swf',
         method:'POST',
         // 文件接收服务端。
         server: '{{projcfg.appurl}}/api/order_manage/order_list/uploadFile?_csrf=' + '{{_csrfToken}}',
@@ -195,9 +236,8 @@
         fileNumLimit: 8, //限制上传个数
         fileSingleSizeLimit: 10048000 //限制单个上传图片的大小
     });
-     /**
-      * 验证文件格式
-      */
+
+      // 验证文件格式
      uploader.on("error", function (type) {
          if (type == "Q_TYPE_DENIED") {
              $.messager.alert('提示',"请上传GIF,JPG,JPEG,BPM,PNG,MP3,WAV,WMA,PDF格式文件");
@@ -209,11 +249,12 @@
              $.messager.alert('提示', "上传出错！请检查后重新上传！错误代码"+type);
          }
      });
-    // 当有文件被添加进队列的时候
-    uploader.on( 'fileQueued', function( file ) {
+     // 当有文件被添加进队列的时候
+     uploader.on( 'fileQueued', function( file ) {
 
         if (/[\u4E00-\u9FA5]/i.test(file.name)) {
             $.messager.alert('提示', file.name+"；文件名称不能包含中文");
+            uploader.removeFile(uploader.getFile(file.id));
         }else{
             var $li = $(
                     '<div id="' + file.id + '" class="file-item thumbnail">' +
@@ -231,43 +272,18 @@
 
 
     });
-   // 文件上传过程中创建进度条实时显示。
-   uploader.on( 'uploadProgress', function( file, percentage ) {
-       var $li = $( '#'+file.id ),
-               $percent = $li.find('.progress span');
-
-       // 避免重复创建
-       if ( !$percent.length ) {
-           $percent = $('<p class="progress"><span></span></p>')
-                   .appendTo( $li )
-                   .find('span');
-       }
-
-       $percent.css( 'width', percentage * 100 + '%' );
-   });
-   // 文件上传成功，给item添加成功class, 用样式标记上传成功。
-   uploader.on('uploadSuccess', function (file) {
-       $('#' + file.id).find('p.state').text('已上传');
-   });
-   // 文件上传失败，显示上传出错。
-   uploader.on('uploadError', function (file) {
+     // 文件上传失败，显示上传出错。
+     uploader.on('uploadError', function (file) {
        $('#' + file.id).find('p.state').text('上传出错');
-   });
-    var fileLength=0;
-     var count=0;
-   // 完成上传完了，成功或者失败，先删除进度条。
-   uploader.on( 'uploadComplete', function( file ) {
-       $( '#'+file.id ).find('.progress').remove();
-       //文件的id的最后是当前文件的下表
-       count++;
-       if(count==fileLength){
+     });
+     uploader.on( 'all', function( type, arg1, arg2 ) {
+        if(type=="uploadFinished"){
             $.messager.alert('提示', '处理成功');
-              $("#dd").dialog('close');
-              $('#orderTablelist').datagrid('reload');
-              $.messager.progress('close');
-       }
-   });
-
+            $("#dd").dialog('close');
+            $('#orderTablelist').datagrid('reload');
+            $.messager.progress('close');
+        }
+    });
 
 
     //是否属于归档节点
@@ -275,208 +291,285 @@
     var proc_inst_task_sign = 1;
 
 
-     /*   //状态1:归档,2：我的待办,3:我的已办，4：新增操作
-        var status = '2';
-        //状态为2时表示任务id，1和3时为实例id
-        var change_id = '5ab35e64a967be2344eb8aff'*/
+    /*   //状态1:归档,2：我的待办,3:我的已办，4：新增操作
+       var status = '2';
+       //状态为2时表示任务id，1和3时为实例id
+       var change_id = '5ab35e64a967be2344eb8aff'*/
 
-        if (status == 1 || status == 3) {
-            //隐藏处理操作
-            $("#order_detail").hide();
-            $("#submitButton").hide();
-          /*  if (status == 3) {
-                $("#fileUpload1").show();
-            }*/
-        } else if (status == 2) {
-            //待办操作
-            $("#fileUpload1").show();
+    if (status == 1 || status == 3) {
+        //隐藏处理操作
+        $("#order_detail").hide();
+        $("#submitButton").hide();
+
+        /*  if (status == 3) {
+              $("#fileUpload1").show();
+          }*/
+        if (status == 1) {
+            $("#check").show();
         }
+    } else if (status == 2) {
+        //待办操作
+        $("#fileUpload1").show();
+    }
 
-        $.ajax({
-            url: '{{projcfg.appurl}}/api/order_manage/order_list/orderDetail',
-            type: 'post',
-            dataType: 'json',
-            data: {
-                "change_id": change_id,
-                "status": status
-            },
-            success: function (data) {
-                if (data.success) {
+    $.ajax({
+        url: '{{projcfg.appurl}}/api/order_manage/order_list/orderDetail',
+        type: 'post',
+        dataType: 'json',
+        data: {
+            "change_id": change_id,
+            "status": status
+        },
+        success: function (data) {
+            if (data.success) {
 
-                    //业务数据
-                    var proc_vars = data.data.proc_vars;
-                    //工单标题
-                    var proc_title = '';
-                    //实例id
-                    var inst_id;
+                //业务数据
+                var proc_vars = data.data.proc_vars;
+                //工单标题
+                var proc_title = '';
+                //实例id
+                var inst_id;
 
-                    var proc_vars_json = JSON.parse(proc_vars);
-                    //状态为0表示需要认领
-                    if (data.data.proc_inst_task_sign == 0) {
-                        proc_inst_task_sign = 0;
-                        $("#submitButton").text('认领');
-                        $("#order_detail").hide();
-                    }
+                var proc_vars_json = JSON.parse(proc_vars);
+                //状态为0表示需要认领
+                if (data.data.proc_inst_task_sign == 0) {
+                    proc_inst_task_sign = 0;
+                    $("#submitButton").text('认领');
+                    $("#order_detail").hide();
+                }
 
-                    //待办标题字段不同
-                    if (status == 2) {
-                        proc_title = data.data.proc_inst_task_title;
-                        inst_id = data.data.proc_inst_id;
-                        //当前节点
-                        var node_code = data.data.proc_inst_task_code;
-                        //任务id
-                        var task_id = data.data._id;
+                //待办标题字段不同
+                if (status == 2) {
+                    proc_title = data.data.proc_inst_task_title;
+                    inst_id = data.data.proc_inst_id;
+                    //当前节点
+                    var node_code = data.data.proc_inst_task_code;
+                    //任务id
+                    var task_id = data.data._id;
 
-                        //当前节点名称
-                        var proc_inst_task_name = data.data.proc_inst_task_name;
-                        $("#proc_inst_task_name").textbox("setValue", proc_inst_task_name);
-                        //操作下拉框初始化
-                        isEndNode(proc_code, node_code, task_id, inst_id);
-                        $("#node_code").val(node_code);
-                        $("#proc_inst_id").val(inst_id);
-                        $("#proc_task_id").val(task_id);
+                    //当前节点名称
+                    var proc_inst_task_name = data.data.proc_inst_task_name;
+                    $("#proc_inst_task_name").textbox("setValue", proc_inst_task_name);
+                    //操作下拉框初始化
+                    isEndNode(proc_code, node_code, task_id, inst_id);
+                    $("#node_code").val(node_code);
+                    $("#proc_inst_id").val(inst_id);
+                    $("#proc_task_id").val(task_id);
 
-
-                    } else {
-                        proc_title = data.data.proc_title;
-                        inst_id = change_id;
-
-                    }
-                    $('#orderDetailForm').form('load', proc_vars_json);
-                    $("#proc_inst_task_title").textbox("setValue", proc_title);
-                    $("#proc_task_code").combobox("setValue", proc_code);
-
-                    //重新加载流程图
-                    $('#tabs').tabs({
-                        border: false,
-                        onSelect: function (title, index) {
-                            if (title == '流程图') {
-                                var url = '{{projcfg.appurl}}/api/process/show/progressed?proc_inst_id=' + inst_id;
-                                document.getElementById("iframeId").src = url;
-                            }
-
-                        }
-                    });
-
-                    //流程日志
-                    $('#dg').datagrid({
-                        url: '{{projcfg.appurl}}/api/order_manage/order_complete/logs',
-                        width: 800,
-                        queryParams: {
-                            inst_id: inst_id
-                        },
-                        method: 'post',
-                        columns: [[
-                            {
-                                field: 'proc_inst_task_name', title: '节点名称', width: 130, halign: 'center',
-                                formatter: function (value, row, index) {
-
-                                    return "<span title='" + value + "'>" + value + "</span>";
-
-                                }
-                            },
-                            {field: 'proc_inst_task_assignee_name', title: '处理人', width: 100, halign: 'center'},
-                            {
-                                field: 'proc_inst_task_complete_time', title: '处理时间', width: 145, halign: 'center',
-                                formatter: function (value, row, index) {
-                                    if (value != null) {
-                                        var isoDateStr = value.substring(0, value.indexOf('.'));
-                                        var date = new Date(isoDateStr.replace(/-/g, '/').replace(/T|Z/g, ' '));
-                                        date.setHours(date.getHours() + 8)
-                                        return date.Format("yyyy-MM-dd hh:mm:ss");
-                                    } else {
-                                        return '';
-                                    }
-                                }
-                            },
-                            {
-                                field: 'proc_inst_task_remark', title: '处理意见', width: 350,
-                                halign: 'center',
-                                formatter: function (value) {
-                                    return "<span style='width:80%;word-break:normal;display:block;white-space:pre-wrap;overflow:hidden;' title='" + value + "'>" + value + "</span>";
-                                }
-                            }
-                        ]]
-                    })
-                    //上传附件
-                    $('#file_dg').datagrid({
-                        url: '{{projcfg.appurl}}/api/order_manage/order_list/fileLogs',
-                        width: 800,
-                        queryParams: {
-                            inst_id: inst_id
-                        },
-
-                        method: 'post',
-                        columns: [[
-                            {field: '_id', hidden: true},
-                            {
-                                field: 'file_name', title: '文件名', width: 130, halign: 'center',
-                                formatter: function (value, row, index) {
-
-                                    return "<a href='{{projcfg.appurl}}/api/order_manage/order_list/download/" + row._id + "'>" + value + "</a>";
-
-                                }
-                            },
-                            {
-                                field: 'file_path', title: '预览', width: 130, halign: 'center', height: 130,
-                                formatter: function (value, row, index) {
-                                    var extStart = row.file_name.lastIndexOf(".");
-                                    var ext = row.file_name.substring(extStart, row.file_name.length).toUpperCase();
-
-
-                                    var html = '';
-                                    if (ext == '.JPG' || ext == '.PNG') {
-                                        html = '<div id="innerdiv" >' +
-                                                '<img id="' + row._id + '"  style="height:130px;width:130px"  src="{{projcfg.appurl}}/api/order_manage/order_list/download/' + row._id + '/?t=' + Math.random() + '" />' +
-                                                '</div>'
-                                    } else if (ext == '.MP3' || ext == '.WAV' || ext == '.WMA') {
-                                        html = '<div id="innerdiv" >' +
-                                                '<audio  id="' + row._id + '"  src="{{projcfg.appurl}}/api/order_manage/order_list/download/' + row._id + '/?t=' + Math.random() + '"  controls="controls"></audio>' +
-                                                '</div>'
-                                    }
-
-                                    return html;
-
-                                }
-                            },
-                            {field: 'proc_inst_task_type', title: '上传节点', width: 120, halign: 'center'},
-                            {field: 'user_name', title: '上传人', width: 60, halign: 'center'},
-                            {
-                                field: 'insert_time', title: '上传时间', width: 150, halign: 'center',
-                                formatter: function (value, row, index) {
-                                    if (value != null) {
-                                        var isoDateStr = value.substring(0, value.indexOf('.'));
-                                        var date = new Date(isoDateStr.replace(/-/g, '/').replace(/T|Z/g, ' '));
-                                        date.setHours(date.getHours() + 8)
-                                        return date.Format("yyyy-MM-dd hh:mm:ss");
-                                    } else {
-                                        return '';
-                                    }
-                                }
-                            },
-                            {
-                                field: 'proc_inst_task_remark', title: '操作', width: 250,
-                                halign: 'center',
-                                formatter: function (value, row, index) {
-                                    var html = '';
-                                    if (status == 2) {
-                                        html = '<div style="text-align: center"><a href="javascript:void(0);" onclick="deleteFile(\'' + row._id + '\')" >删除</a></div>';
-                                    }
-                                    return html;
-                                }
-                            }
-                        ]]
-                    })
 
                 } else {
-                    $.messager.alert('错误提示', '工单创建失败');
+                    proc_title = data.data.proc_title;
+                    inst_id = change_id;
 
                 }
-            }
-        });
+                $('#orderDetailForm').form('load', proc_vars_json);
+                $("#proc_inst_task_title").textbox("setValue", proc_title);
+                $("#proc_task_code").combobox("setValue", proc_code);
+                var proc_inst_status = data.data.proc_inst_status;
+                //重新加载流程图
+                $('#tabs').tabs({
+                    border: false,
+                    onSelect: function (title, index) {
+                        if (title == '流程图') {
+                            var url = '{{projcfg.appurl}}/api/process/show/progressed?proc_inst_id=' + inst_id;
+                            document.getElementById("iframeId").src = url;
+                        } else if (title == '附件') {
+                            if(proc_inst_status==2){
 
-        //初始化工单类型下拉框
-        getAllProBase();
+                                $("#againFile").show();
+                                var $list1 = $("#thelist1");
+                                var uploader1 = WebUploader.create({
+                                    auto: true,
+                                    // swf文件路径
+                                    swf: '{{projcfg.appurl}}/static/{{projcfg.theme}}webuploade/Uploader.swf',
+                                    method: 'POST',
+                                    // 文件接收服务端。
+                                    server: '{{projcfg.appurl}}/api/order_manage/order_list/uploadFile?_csrf=' + '{{_csrfToken}}',
+                                    // 选择文件的按钮。可选。
+                                    // 内部根据当前运行是创建，可能是input元素，也可能是flash.
+                                    pick: '#filePicker',
+                                    formData: {
+                                        status: 0,
+                                        change_id:change_id
+                                    },
+                                    // 不压缩image, 默认如果是jpeg，文件上传前会压缩一把再上传！
+                                    resize: false,
+                                    // 只允许选择图片文件。
+                                    accept: {
+                                        title: '文件错误',
+                                        extensions: 'gif,jpg,jpeg,bmp,png,mp3,wav,wma,pdf',
+                                        mimeTypes: '*'
+                                    },
+                                    fileNumLimit: 8, //限制上传个数
+                                    fileSingleSizeLimit: 10048000 //限制单个上传图片的大小
+                                });
+                                // 验证文件格式
+                                uploader1.on("error", function (type) {
+                                    if (type == "Q_TYPE_DENIED") {
+                                        $.messager.alert('提示',"请上传GIF,JPG,JPEG,BPM,PNG,MP3,WAV,WMA,PDF格式文件");
+                                    }else if (type == "F_DUPLICATE") {
+                                        $.messager.alert('提示',"上传文件重复");
+                                    }else if (type == "F_EXCEED_SIZE") {
+                                        $.messager.alert('提示',"上传文件大小不能大于10M");
+                                    }else{
+                                        $.messager.alert('提示', "上传出错！请检查后重新上传！错误代码"+type);
+                                    }
+                                });
+                                // 当有文件被添加进队列的时候
+                                uploader1.on( 'fileQueued', function( file ) {
+
+                                    if (/[\u4E00-\u9FA5]/i.test(file.name)) {
+                                        $.messager.alert('提示', file.name+"；文件名称不能包含中文");
+                                        uploader1.removeFile(uploader1.getFile(file.id));
+                                    }else{
+                                        var $li = $(
+                                                '<div id="' + file.id + '" class="file-item thumbnail">' +
+                                                '<img>' +
+                                                '<div class="info">' + file.name + '</div>' +
+                                                '</div>'
+                                                ),
+                                                $img = $li.find('img');
+                                        // $list为容器jQuery实例
+                                        $list1.append( $li );
+                                    }
+
+                                });
+                                uploader1.on( 'all', function( type, arg1, arg2 ) {
+                                  if(type=="uploadFinished"){
+                                      $('#file_dg').datagrid({
+                                          width: 800,
+                                          queryParams: {
+                                              inst_id: inst_id
+                                          },
+                                      })
+                                    }
+                                });
+
+                            }
+                        }
+
+                    }
+                });
+
+                //流程日志
+                $('#dg').datagrid({
+                    url: '{{projcfg.appurl}}/api/order_manage/order_complete/logs',
+                    width: 800,
+                    queryParams: {
+                        inst_id: inst_id
+                    },
+                    method: 'post',
+                    columns: [[
+                        {
+                            field: 'proc_inst_task_name', title: '节点名称', width: 130, halign: 'center',
+                            formatter: function (value, row, index) {
+
+                                return "<span title='" + value + "'>" + value + "</span>";
+
+                            }
+                        },
+                        {field: 'proc_inst_task_assignee_name', title: '处理人', width: 100, halign: 'center'},
+                        {
+                            field: 'proc_inst_task_complete_time', title: '处理时间', width: 145, halign: 'center',
+                            formatter: function (value, row, index) {
+                                if (value != null) {
+                                    var isoDateStr = value.substring(0, value.indexOf('.'));
+                                    var date = new Date(isoDateStr.replace(/-/g, '/').replace(/T|Z/g, ' '));
+                                    date.setHours(date.getHours() + 8)
+                                    return date.Format("yyyy-MM-dd hh:mm:ss");
+                                } else {
+                                    return '';
+                                }
+                            }
+                        },
+                        {
+                            field: 'proc_inst_task_remark', title: '处理意见', width: 350,
+                            halign: 'center',
+                            formatter: function (value) {
+                                return "<span style='width:80%;word-break:normal;display:block;white-space:pre-wrap;overflow:hidden;' title='" + value + "'>" + value + "</span>";
+                            }
+                        }
+                    ]]
+                })
+                //上传附件
+                $('#file_dg').datagrid({
+                    url: '{{projcfg.appurl}}/api/order_manage/order_list/fileLogs',
+                    width: 800,
+                    queryParams: {
+                        inst_id: inst_id
+                    },
+
+                    method: 'post',
+                    columns: [[
+                        {field: '_id', hidden: true},
+                        {
+                            field: 'file_name', title: '文件名', width: 130, halign: 'center',
+                            formatter: function (value, row, index) {
+
+                                return "<a href='{{projcfg.appurl}}/api/order_manage/order_list/download/" + row._id + "'>" + value + "</a>";
+
+                            }
+                        },
+                        {
+                            field: 'file_path', title: '预览', width: 130, halign: 'center', height: 130,
+                            formatter: function (value, row, index) {
+                                var extStart = row.file_name.lastIndexOf(".");
+                                var ext = row.file_name.substring(extStart, row.file_name.length).toUpperCase();
+
+
+                                var html = '';
+                                if (ext == '.JPG' || ext == '.PNG') {
+                                    html = '<div id="innerdiv" >' +
+                                            '<img id="' + row._id + '"  style="height:130px;width:130px"  src="{{projcfg.appurl}}/api/order_manage/order_list/download/' + row._id + '/?t=' + Math.random() + '" />' +
+                                            '</div>'
+                                } else if (ext == '.MP3' || ext == '.WAV' || ext == '.WMA') {
+                                    html = '<div id="innerdiv" >' +
+                                            '<audio  id="' + row._id + '"  src="{{projcfg.appurl}}/api/order_manage/order_list/download/' + row._id + '/?t=' + Math.random() + '"  controls="controls"></audio>' +
+                                            '</div>'
+                                }
+
+                                return html;
+
+                            }
+                        },
+                        {field: 'proc_inst_task_type', title: '上传节点', width: 120, halign: 'center'},
+                        {field: 'user_name', title: '上传人', width: 60, halign: 'center'},
+                        {
+                            field: 'insert_time', title: '上传时间', width: 150, halign: 'center',
+                            formatter: function (value, row, index) {
+                                if (value != null) {
+                                    var isoDateStr = value.substring(0, value.indexOf('.'));
+                                    var date = new Date(isoDateStr.replace(/-/g, '/').replace(/T|Z/g, ' '));
+                                    date.setHours(date.getHours() + 8)
+                                    return date.Format("yyyy-MM-dd hh:mm:ss");
+                                } else {
+                                    return '';
+                                }
+                            }
+                        },
+                        {
+                            field: 'proc_inst_task_remark', title: '操作', width: 250,
+                            halign: 'center',
+                            formatter: function (value, row, index) {
+                                var html = '';
+                                if (status == 2 || proc_inst_status==2) {
+                                    html = '<div style="text-align: center"><a href="javascript:void(0);" onclick="deleteFile(\'' + row._id + '\')" >删除</a></div>';
+                                }
+                                return html;
+                            }
+                        }
+                    ]]
+                })
+
+            } else {
+                $.messager.alert('错误提示', '工单创建失败');
+
+            }
+        }
+    });
+
+    //初始化工单类型下拉框
+    getAllProBase();
 
 
     /**
@@ -555,20 +648,14 @@
 
     //提交任务
     function submitTask() {
-       // 验证表单
+        // 验证表单
         var validate = $('#orderDetailForm').form('validate');
         if (!validate) {
             return false;
         }
 
-        if(!endFlag && proc_inst_task_sign ==1){
-            if(uploader.getFiles().length == 0){
-                $.messager.alert('提示', '请上传附件');
-                return;
-            }
-        }
-        $.messager.confirm('提示', '确认处理么?', function(r) {
-            if(r){
+        $.messager.confirm('提示', '确认处理么?', function (r) {
+            if (r) {
                 $.messager.progress({
                     title: '提示',
                     msg: '处理中，请稍候……',
@@ -624,14 +711,13 @@
                         success: function (data) {
                             if (data.success) {
                                 //如果有选择文件
-                                if(uploader.getFiles().length > 0){
-                                    fileLength=  uploader.getFiles().length;
+                                if (uploader.getFiles().length > 0) {
                                     var obj = new Object();
                                     obj.status = 1;
-                                    obj.proc_task_id = $("#proc_task_id").val();
+                                    obj.change_id = $("#proc_task_id").val();
                                     uploader.options.formData = obj;
                                     uploader.upload()
-                                }else{
+                                } else {
                                     $.messager.alert('提示', '处理成功');
                                     $("#dd").dialog('close');
                                     $('#orderTablelist').datagrid('reload');
@@ -674,52 +760,65 @@
             }
         });
     }
+    function openCheck(){
 
-   /* var file_id;
-
-    function uploadFile(id) {
-
-        file_id = id;
-        document.getElementById("file" + id).click();
+        $('#checkDetail').show();
+        $('#checkDetail').mydialog({
+            title:"复核信息",
+            width: 700,
+            height: 250,
+            top:250,
+            modal: true,
+            myButtons:[
+                {
+                    text:'确定',
+                    btnCls:'btn btn-blue',
+                    handler:function(){
+                        check();
+                    }
+                },
+                {
+                    text:'关闭',
+                    btnCls:'btn btn-danger',
+                    handler:function(){
+                        $('#checkDetail').dialog("close");
+                    }
+                }
+            ]
+        });
 
     }
 
-    /!**
-     * 上传
-     *!/
-    function doUploadCorrect() {
-        var filepath = $("#file" + file_id).val();
-        // 图片类型
-        var extStart = filepath.lastIndexOf(".");
-        var ext = filepath.substring(extStart, filepath.length).toUpperCase();
+    //提交复核
+    function check(){
 
-        if (ext != ".JPG" && ext != ".PNG" && ext != ".MP3" && ext != ".WAV" && ext != ".WMA") {
-            $.messager.alert('提示', '文件限于jpg,png,MP3,WAV,WMA格式');
-            return;
-        }
+        $.messager.confirm('提示', '确认对此工单进行复核么?', function (r) {
+            if (r) {
+                $.ajax({
+                    url: '{{projcfg.appurl}}/api/order_manage/order_list/checkFile',
+                    type: 'post',
+                    dataType:'json',
+                    data: {
+                        inst_id:change_id,
+                        node:$("#node").combobox('getValue'),
+                        check_memo:$("#check_memo").val(),
+                    },
+                    success: function (data) {
+                        if(data.success){
+                            $('#checkDetail').dialog("close");
+                            $.messager.alert('提示','处理成功');
+                            $("#dd").dialog('close');
+                            parent.$('#orderTablelist').datagrid('reload');
+                            parent.$('#orderTablelist3').datagrid('reload');
 
-        if (document.getElementById("file" + file_id).files[0].size > 1024 * 600) {
-            $.messager.alert('提示', '文件:' + document.getElementById("file" + file_id).files[0].name + '必须小于600KB');
-            return;
-        }
-        $.ajaxFileUpload({
-            type: 'POST',
-            url: '{{projcfg.appurl}}/api/order_manage/order_list/uploadFile?id=' + file_id + "&_csrf=" + '{{_csrfToken}}',
-            secureuri: false,
-            fileElementId: 'file' + file_id,     //与html代码中的input的id值对应
-            dataType: 'json',
-            success: function (data) {
-                if (data.success) {
-                    $.messager.alert('提示', '修正成功!');
-                    $('#file_dg').datagrid('reload');//刷新
-                } else {
-                    $.messager.alert('警告', data.msg, 'error');
-                }
-            },
-            error: function (err) {
-                alert(JSON.stringify(err));
+                        }else{
+                            $.messager.alert('错误提示',data.msg);
+
+                        }
+                    }
+                });
             }
         })
-        document.getElementById('file' + file_id).outerHTML += "";
-    }*/
+
+    }
 </script>
