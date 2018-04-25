@@ -21,10 +21,7 @@ exports.getMyCompleteTaskQuery4Eui = function (page, size, userCode, paramMap, p
         let work_id=paramMap.work_id;
         //有的工号为'',为了防止查到空工号的任务
         if(!work_id)work_id='@@@@@@@';
-        conditionMap['$or'] = [{'proc_inst_task_assignee': {'$in': userArr}},{'proc_inst_task_work_id':work_id}, {
-            'proc_inst_task_user_role': {'$in': paramMap.roles},
-            'proc_inst_task_user_org': paramMap.orgs
-        }];
+        conditionMap['$or'] = [{'proc_inst_task_assignee': {'$in': userArr}},{'proc_inst_task_work_id':work_id}];
         // conditionMap['$or'] = [{'proc_inst_task_assignee':{'$in':userArr}},{'proc_inst_task_user_role':{'$in':paramMap.roles},'proc_inst_task_user_org':{'$in':paramMap.orgs}}];
         conditionMap.proc_inst_task_status = 1;
         if (proc_code) {
