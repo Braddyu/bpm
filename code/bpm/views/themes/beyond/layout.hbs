@@ -15,9 +15,6 @@
     <!-- font awesome -->
     <link href="{{projcfg.appurl}}/static/css/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet"/>
 
-    <!-- Google Fonts
-    <link href="{{projcfg.appurl}}/static/css/font-google/font-google.css" rel="stylesheet" />
--->
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
@@ -29,14 +26,6 @@
     <!--Beyond styles-->
     <link id="beyond-link-bak" href="{{projcfg.appurl}}/static/{{projcfg.theme}}css/beyond.min.css" rel="stylesheet"
           type="text/css"/>
-    <!--
-
-    <link href="{{projcfg.appurl}}/static/{{projcfg.theme}}css/demo.min.css" rel="stylesheet" />
-    <link href="{{projcfg.appurl}}/static/{{projcfg.theme}}css/typicons.min.css" rel="stylesheet" />
-    <link href="{{projcfg.appurl}}/static/{{projcfg.theme}}css/animate.min.css" rel="stylesheet" />
-
-    <link id="skin-link" href="" rel="stylesheet" type="text/css" />
--->
     <!--Skin Script: Place this script in head to load scripts for skins and rtl support-->
     <script src="{{projcfg.appurl}}/static/{{projcfg.theme}}js/skins.js"></script>
 
@@ -275,7 +264,7 @@
                                     {{#if children}}
                                         <i class="menu-expand"></i>
                                     {{/if}}
-                                </a>
+                                     </a>
                                     {{#if children}}
                                         <ul class="submenu">
                                             {{#each children}}
@@ -643,19 +632,7 @@
                 }
             ]
         });
-//        bootbox.dialog({
-//            message: $("#myProfileModal").html(),
-//            title: '个人信息',
-//            className: "modal-blue",
-//            buttons: {
-//                    "关闭": {
-//                        className: "btn-danger",
-//                        callback: function () {
-//                            $("#myProfileModal").modal('hide');
-//                        }
-//                    }
-//            }
-//        });
+
     }
 
     function info() {

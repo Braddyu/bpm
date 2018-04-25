@@ -274,6 +274,7 @@ exports.getInterface = function(queryDate,check_status,user_no,user_name,role_na
             {'queryDate': queryDate,'check_status':check_status,'user_no': user_no,'user_name':user_name,'role_name':role_name,'work_id':work_id,'city_code':city_code,'business_name':business_name,'mlog_id':mlog_id,'status':status,time:new Date()},
             'utf8').on('error', function (e) {
             console.log("Got error: " + e.message);
+            mistake_model.$ProcessMistakeLogs.remove({'_id':mlog_id});
             resolve({'success':false,'code':'1000','msg':'差错工单派单异常'});
         });
     });

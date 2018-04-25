@@ -72,7 +72,7 @@ exports.process_instance=function() {
         }
         try{
             if (!user_code) {
-                utils.respMsg(res, false, '2001', '当前处理人编号为空', null, null);
+                utils.respMsg(res, false, '2001', '当前操作人编号为空', null, null);
                 return;
             } else {
                 //判断用户是否存在
