@@ -75,7 +75,9 @@
     </table>
 </div>
 <div id="dd"></div>
-
+<div id="dlg" class="easyui-dialog" closed="true"  closable="false"title="正在导出">
+    <div id="p" class="easyui-progressbar" style="width:400px;"></div>
+</div>
 <script type="text/javascript">
 
     var level;
@@ -448,6 +450,7 @@
      */
     function downloadExcel() {
         if (downloadExcelIng) {
+            msgError('正在导出中,请导出成功后再试！');
             return;
         }
         downloadExcelIng = true;
@@ -465,15 +468,46 @@
 
     function downloadExcelDetail(export_level) {
         if (downloadExcelIng) {
+            msgError('正在导出中,请导出成功后再试！');
             return;
         }
         downloadExcelIng = true;
+        var randomStr =parseInt(Math.random() * 10000) ;
+
 
         var downloadUrl = '{{projcfg.appurl}}/api/order_manage/order_statistics/export_excel_detail?status='
                 +export_status+'&level='+export_level+'&org_id='+export_org_id+'&proc_code='+$("#proc_code").combobox('getValue')
-                +'&startDate='+$("#startDate").datebox('getValue')+'&endDate='+$("#endDate").datebox('getValue');
-        window.location.href=downloadUrl;
-        downloadExcelIng = false;
+                +'&startDate='+$("#startDate").datebox('getValue')+'&endDate='+$("#endDate").datebox('getValue')+ '&randomStr=' + randomStr;
+        window.location.href = downloadUrl;
+        $('#dlg').dialog('open')
+        var int_id=  setInterval(function () {
+            $.ajax({
+                url: '{{projcfg.appurl}}/api/order_manage/order_statistics/getMemcachedValue',
+                type: 'post',
+                dataType: 'json',
+                data: {
+                    randomStr: randomStr
+                },
+                success: function (data) {
+                    if(data.success){
+                        if(data.data==100){
+                            clearInterval(int_id);
+                            $('#p').progressbar('setValue', data.data);
+                            $('#dlg').dialog('close')
+                            downloadExcelIng = false;
+                        }else{
+                            $('#p').progressbar('setValue', data.data);
+                        }
+
+                    }else{
+                        clearInterval(int_id);
+                        msgError(data.msg);
+                        downloadExcelIng = false;
+                    }
+                }
+            })
+        }, 1000);
+
     }
     var export_org_id;
     var export_status;

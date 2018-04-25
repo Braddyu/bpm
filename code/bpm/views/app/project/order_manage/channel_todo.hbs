@@ -10,24 +10,28 @@
                             <div class="btn-group" role="group" aria-label="...">
                                 <div class="btn-group" role="group" aria-label="...">
                                     <label for="filterParam3">工单编号：</label>
-                                    <input class="easyui-textbox"id="work_order_number"  style="width: 130px;height:31px;">
+                                    <input class="easyui-textbox" id="work_order_number"
+                                           style="width: 130px;height:31px;">
                                 </div>
                                 <div class="btn-group" role="group" aria-label="...">
                                     <label for="filterParam3">渠道编码：</label>
-                                    <input class="easyui-textbox"id="channel_code"  style="width: 130px;height:31px;">
+                                    <input class="easyui-textbox" id="channel_code" style="width: 130px;height:31px;">
                                 </div>
                                 <div class="btn-group" role="group" aria-label="...">
                                     <label for="filterParam3">被派营业员BOSS工号：</label>
-                                    <input class="easyui-textbox"id="channel_work_id"  style="width: 130px;height:31px;">
+                                    <input class="easyui-textbox" id="channel_work_id"
+                                           style="width: 130px;height:31px;">
                                 </div>
                                 <div class="btn-group" role="group" aria-label="...">
                                     <label for="filterParam3">工单类型：</label>
-                                    <select class="easyui-combobox"id="proc_task_code"  style="width: 180px;height:31px;">
+                                    <select class="easyui-combobox" id="proc_task_code"
+                                            style="width: 180px;height:31px;">
                                     </select>
                                 </div>
                                 <div class="btn-group" role="group" aria-label="...">
                                     <label for="filterParam3">工单状态：</label>
-                                    <select class="easyui-combobox"id="proc_inst_task_type"  style="width: 100px;height:31px;">
+                                    <select class="easyui-combobox" id="proc_inst_task_type"
+                                            style="width: 100px;height:31px;">
                                         <option value="">==全部==</option>
                                         <option value="厅店处理回复">厅店处理回复</option>
                                         <option value="网格经理审核">网格经理审核</option>
@@ -37,11 +41,13 @@
                                 </div>
                                 <div class="btn-group" role="group" aria-label="...">
                                     <label for="filterParam3">开始时间：</label>
-                                    <input id="startDate" class="easyui-datebox" label="Start Date:" labelPosition="top" style="width:120px;height:30px">
+                                    <input id="startDate" class="easyui-datebox" label="Start Date:" labelPosition="top"
+                                           style="width:120px;height:30px">
                                 </div>
                                 <div class="btn-group" role="group" aria-label="...">
                                     <label for="filterParam3">结束时间：</label>
-                                    <input id="endDate" class="easyui-datebox" label="Start Date:" labelPosition="top" style="width:120px;height:30px">
+                                    <input id="endDate" class="easyui-datebox" label="Start Date:" labelPosition="top"
+                                           style="width:120px;height:30px">
                                 </div>
 
                             </div>
@@ -54,10 +60,12 @@
 
                                         <!--<input type="input" id="filterParam1" class="form-control" style="width:130px;" placeholder="输入标题查询"/>-->
                                         <span class="input-group-btn">
-                                                <button class="btn btn-default" type="button" onclick="doSearch()"><i class="fa fa-search"></i>查询</button>
+                                                <button class="btn btn-default" type="button" onclick="doSearch()"><i
+                                                        class="fa fa-search"></i>查询</button>
                                             </span>
                                         <span class="input-group-btn">
-                                            <button class="btn btn-default" type="button" id="exportDataDetail"><i class="glyphicon glyphicon-open"></i>导出</button>
+                                            <button class="btn btn-default" type="button" id="exportDataDetail"><i
+                                                    class="glyphicon glyphicon-open"></i>导出</button>
                                        </span>
                                     </div>
                                 </div>
@@ -76,7 +84,9 @@
 </div>
 
 <div id="dd"></div>
-
+<div id="dlg" class="easyui-dialog" closed="true"  closable="false"title="正在导出">
+    <div id="p" class="easyui-progressbar" style="width:400px;"></div>
+</div>
 
 
 <script type="text/javascript">
@@ -85,28 +95,28 @@
         //初始化工单类型下拉框
         getAllProBase();
         //加载所辖渠道未处理工单
-       loadChannelTodoListDatagrid();
+        loadChannelTodoListDatagrid();
 
 
         $('#startDate').datebox().datebox('calendar').calendar({
-            validator: function(date){
+            validator: function (date) {
                 var endDate = new Date($('#endDate').datebox('getValue'));
-                if($('#endDate').datebox('getValue')){
+                if ($('#endDate').datebox('getValue')) {
                     var d1 = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate());
-                    return  date<=d1;
-                }else{
+                    return date <= d1;
+                } else {
                     return true;
                 }
             }
         });
 
         $('#endDate').datebox().datebox('calendar').calendar({
-            validator: function(date){
-                if($('#startDate').datebox('getValue')){
-                    var startDate = new Date($('#startDate').datebox('getValue').replace(/-/g,'/').replace(/T|Z/g,' '));
+            validator: function (date) {
+                if ($('#startDate').datebox('getValue')) {
+                    var startDate = new Date($('#startDate').datebox('getValue').replace(/-/g, '/').replace(/T|Z/g, ' '));
                     var d1 = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
-                    return  date>=d1;
-                }else{
+                    return date >= d1;
+                } else {
                     return true;
                 }
 
@@ -130,128 +140,153 @@
             if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
         return fmt;
     }
-    function loadChannelTodoListDatagrid(){
-        var field=[
-            {"field":"_id",hidden:true},
-            {"field": "work_order_number","title":"工单编号","width":"160px"},
-            {"field": "proc_title","title":"标题","width":"300px",
-                formatter:function(value,row,index){
-                    return "<span title='" +value + "'>" + value + "</span>";
+
+    function loadChannelTodoListDatagrid() {
+        var field = [
+            {"field": "_id", hidden: true},
+            {"field": "work_order_number", "title": "工单编号", "width": "160px"},
+            {
+                "field": "proc_title", "title": "标题", "width": "300px",
+                formatter: function (value, row, index) {
+                    return "<span title='" + value + "'>" + value + "</span>";
 
 
-                }},
-            {"field": "proc_vars","title":"派单内容","width":"300px",
-                formatter:function(value,row,index){
+                }
+            },
+            {
+                "field": "proc_vars", "title": "派单内容", "width": "300px",
+                formatter: function (value, row, index) {
 
-                    if(value){
-                        var json=JSON.parse(value);
-                        if(json){
+                    if (value) {
+                        var json = JSON.parse(value);
+                        if (json) {
                             return "<span title='" + json.remark + "'>" + json.remark + "</span>";
-                        }else{
+                        } else {
                             return '<span style="color:red">派单内容格式错误</span>';
                         }
 
-                    }else{
+                    } else {
                         return '无派单内容';
                     }
 
 
-                }},
-            {"field": "proc_name","title":"类型","width":"150px"},
-            {"field": "work_id","title":"当前处理人BOSS工号","width":"150px"},
-            {"field": "proc_inst_task_assignee_name","title":"当前处理人","width":"150px",
-                formatter:function(value,row,index){
-                    if(row.proc_inst_status==4){
-                        return  '<span style="color:green">/</span>';
-                    }else if(value){
+                }
+            },
+            {"field": "proc_name", "title": "类型", "width": "150px"},
+            {"field": "work_id", "title": "当前处理人BOSS工号", "width": "150px"},
+            {
+                "field": "proc_inst_task_assignee_name", "title": "当前处理人", "width": "150px",
+                formatter: function (value, row, index) {
+                    if (row.proc_inst_status == 4) {
+                        return '<span style="color:green">/</span>';
+                    } else if (value) {
                         return value;
-                    }else{
-                        return  '<span style="color:blueviolet">待认领</span>';
+                    } else {
+                        return '<span style="color:blueviolet">待认领</span>';
                     }
-                }},
-            {"field": "proc_inst_task_type","title":"当前状态","width":"150px",
-                formatter:function(value,row,index){
-                    if(row.proc_inst_status==4){
-                        return  '<span style="color:green">已归档</span>';
-                    }else{
+                }
+            },
+            {
+                "field": "proc_inst_task_type", "title": "当前状态", "width": "150px",
+                formatter: function (value, row, index) {
+                    if (row.proc_inst_status == 4) {
+                        return '<span style="color:green">已归档</span>';
+                    } else {
                         return value;
                     }
 
 
-                }},
-            {"field": "proc_start_time","title":"派单时间","width":"150px",
-                formatter:function(value,row,index){
-                    var isoDateStr = value.substring(0,value.indexOf('.'));
-                    var date=new Date(isoDateStr.replace(/-/g,'/').replace(/T|Z/g,' '));
-                    date.setHours(date.getHours()+8)
-                    return  date.Format("yyyy-MM-dd hh:mm:ss");
+                }
+            },
+            {
+                "field": "proc_start_time", "title": "派单时间", "width": "150px",
+                formatter: function (value, row, index) {
+                    var isoDateStr = value.substring(0, value.indexOf('.'));
+                    var date = new Date(isoDateStr.replace(/-/g, '/').replace(/T|Z/g, ' '));
+                    date.setHours(date.getHours() + 8)
+                    return date.Format("yyyy-MM-dd hh:mm:ss");
 
-                }},
+                }
+            },
 
-            {"field": "proc_start_user_name","title":"工单发起人","width":"150px"},
-            {"field": "channel_code","title":"渠道编码","width":"100px"},
-            {"field": "channel_name","title":"渠道名称","width":"300px"},
-            {"field": "channel_work_id","title":"渠道负责人BOSS工号","width":"170px"},
-            {"field": "user_name","title":"渠道负责人","width":"150px"},
-            {"field": "user_phone","title":"渠道负责人手机号码","width":"150px"},
-            {"field": "grid_code","title":"所属网格编码","width":"150px"},
-            {"field": "grid_name","title":"所属网格","width":"150px"},
-            {"field": "county_code","title":"所属区县编码","width":"150px"},
-            {"field": "county_name","title":"所属区县","width":"150px"},
-            {"field": "channel_histroy","title":"被派单渠道处理意见","width":"150px",
-                formatter:function(value,row,index){
+            {"field": "proc_start_user_name", "title": "工单发起人", "width": "150px"},
+            {"field": "channel_code", "title": "渠道编码", "width": "100px"},
+            {"field": "channel_name", "title": "渠道名称", "width": "300px"},
+            {"field": "channel_work_id", "title": "渠道负责人BOSS工号", "width": "170px"},
+            {"field": "user_name", "title": "渠道负责人", "width": "150px"},
+            {"field": "user_phone", "title": "渠道负责人手机号码", "width": "150px"},
+            {"field": "grid_code", "title": "所属网格编码", "width": "150px"},
+            {"field": "grid_name", "title": "所属网格", "width": "150px"},
+            {"field": "county_code", "title": "所属区县编码", "width": "150px"},
+            {"field": "county_name", "title": "所属区县", "width": "150px"},
+            {
+                "field": "channel_histroy", "title": "被派单渠道处理意见", "width": "150px",
+                formatter: function (value, row, index) {
 
-                    var remark_arr=value.toString().split(',');
-                    if(remark_arr.length>0){
+                    var remark_arr = value.toString().split(',');
+                    if (remark_arr.length > 0) {
                         return remark_arr[0];
                     }
-                }}
+                }
+            }
         ];
-        if($("#proc_task_code").combobox('getValue')=='p-109'){
-            field.push({"field": "two_histroy","title":"网格负责人","width":"150px",
-                formatter:function(value,row,index){
-                    if(value && value.length > 0){
+        if ($("#proc_task_code").combobox('getValue') == 'p-109') {
+            field.push({
+                "field": "two_histroy", "title": "网格负责人", "width": "150px",
+                formatter: function (value, row, index) {
+                    if (value && value.length > 0) {
                         return value[0].proc_inst_task_assignee_name;
                     }
-                }});
-            field.push( {"field": "two_histroy1","title":"网格负责人手机号码","width":"150px",
-                formatter:function(value,row,index){
-                    if(row.two_histroy && row.two_histroy.length > 0){
+                }
+            });
+            field.push({
+                "field": "two_histroy1", "title": "网格负责人手机号码", "width": "150px",
+                formatter: function (value, row, index) {
+                    if (row.two_histroy && row.two_histroy.length > 0) {
                         return row.two_histroy[0].proc_inst_task_assignee;
                     }
-                }});
-            field.push( {"field": "two_histroy2","title":"网格处理人意见","width":"150px",
-                formatter:function(value,row,index){
-                    if(row.two_histroy  && row.two_histroy.length > 0 ){
+                }
+            });
+            field.push({
+                "field": "two_histroy2", "title": "网格处理人意见", "width": "150px",
+                formatter: function (value, row, index) {
+                    if (row.two_histroy && row.two_histroy.length > 0) {
                         return row.two_histroy[0].proc_inst_task_remark;
                     }
-                }})
-        }else{
+                }
+            })
+        } else {
 
-            field.push({"field": "two_histroy","title":"省级稽核负责人","width":"150px",
-                formatter:function(value,row,index){
-                    if(value && value.length > 0){
+            field.push({
+                "field": "two_histroy", "title": "省级稽核负责人", "width": "150px",
+                formatter: function (value, row, index) {
+                    if (value && value.length > 0) {
                         return value[0].proc_inst_task_assignee_name;
                     }
-                }});
-            field.push( {"field": "two_histroy1","title":"省级稽核负责人手机号码","width":"150px",
-                formatter:function(value,row,index){
-                    if(row.two_histroy && row.two_histroy.length > 0){
+                }
+            });
+            field.push({
+                "field": "two_histroy1", "title": "省级稽核负责人手机号码", "width": "150px",
+                formatter: function (value, row, index) {
+                    if (row.two_histroy && row.two_histroy.length > 0) {
                         return row.two_histroy[0].proc_inst_task_assignee;
                     }
-                }});
-            field.push({"field": "two_histroy2","title":"省级稽核处理人意见","width":"150px",
-                formatter:function(value,row,index){
-                    if(row.two_histroy  && row.two_histroy.length > 0 ){
+                }
+            });
+            field.push({
+                "field": "two_histroy2", "title": "省级稽核处理人意见", "width": "150px",
+                formatter: function (value, row, index) {
+                    if (row.two_histroy && row.two_histroy.length > 0) {
                         return row.two_histroy[0].proc_inst_task_remark;
                     }
-                }});
+                }
+            });
 
         }
 
         // 加载工单基本属性列表
         $('#detailTable').datagrid({
-            url:'{{projcfg.appurl}}/api/order_manage/order_statistics/channel_detail_list',
+            url: '{{projcfg.appurl}}/api/order_manage/order_statistics/channel_detail_list',
             queryParams: {
                 status: '1',
                 proc_code: $("#proc_task_code").combobox('getValue'),
@@ -262,51 +297,51 @@
                 channel_code: $("#channel_code").val(),
                 channel_work_id: $("#channel_work_id").val(),
             },
-            method:'post',
-            rownumbers:true,
-            striped:true,
-            fitColumns:true,
-            border:false,
-            fit:true,
+            method: 'post',
+            rownumbers: true,
+            striped: true,
+            fitColumns: true,
+            border: false,
+            fit: true,
             toolbar: '#toolbar1',
-            singleSelect:true,
-            selectOnCheck:true,
-            checkOnSelect:true,
-            columns:[field],
-            onDblClickRow:function(rowIndex, rowData){
+            singleSelect: true,
+            selectOnCheck: true,
+            checkOnSelect: true,
+            columns: [field],
+            onDblClickRow: function (rowIndex, rowData) {
 
-                var url='{{projcfg.appurl}}/api/order_manage/order_list/showDetailView?proc_code='+rowData.proc_code+'&change_id='+rowData.proc_inst_id+'&status=3';
-               // var content = '<iframe src="'+url+'" width="100%" height="99%" frameborder="0" scrolling="yes"></iframe>';
+                var url = '{{projcfg.appurl}}/api/order_manage/order_list/showDetailView?proc_code=' + rowData.proc_code + '&change_id=' + rowData.proc_inst_id + '&status=3';
+                // var content = '<iframe src="'+url+'" width="100%" height="99%" frameborder="0" scrolling="yes"></iframe>';
 
 
                 $('#dd').dialog({
-                    title : '工单详情',
-                    width : 1250,
-                    height : 650,
-                    closed : false,
-                    cache : false,
-                    href :url ,
-                    modal : true
+                    title: '工单详情',
+                    width: 1250,
+                    height: 650,
+                    closed: false,
+                    cache: false,
+                    href: url,
+                    modal: true
                 });
 
             },
-            onLoadSuccess:function(json) {
-                if(!json.success) {
+            onLoadSuccess: function (json) {
+                if (!json.success) {
                     msgError(json.msg + ',错误代码:' + json.code);
                 }
             },
-            onLoadError:function() {
+            onLoadError: function () {
                 msgError('加载数据出现时发生错误,请稍候重试...');
             },
-            pagination:true,
+            pagination: true,
             pageSize: 20,
-            loadMsg:'正在加载...'
+            loadMsg: '正在加载...'
         });
     }
 
     //导出详细资料
     $("#exportDataDetail").click(function () {
-        $.messager.confirm('导出', '确定要导出吗?', function(r) {
+        $.messager.confirm('导出', '确定要导出吗?', function (r) {
             if (r) {
                 downloadExcelDetail();
             }
@@ -316,37 +351,69 @@
      * 是否在下载中 防止重复点击
      */
     var downloadExcelIng = false;
+
     function downloadExcelDetail() {
-        if (downloadExcelIng) {
+
+       if (downloadExcelIng) {
+            msgError('正在导出中,请导出成功后再试！');
             return;
         }
         downloadExcelIng = true;
+        var randomStr =parseInt(Math.random() * 10000) ;
+
+
         var downloadUrl = '{{projcfg.appurl}}/api/order_manage/order_statistics/export_excel_detail?status=1&todo=1'
-                +'&proc_code='+$("#proc_task_code").combobox('getValue')+'&startDate='+$("#startDate").datebox('getValue')
-                +'&endDate='+$("#endDate").datebox('getValue')+'&proc_inst_task_type='+$("#proc_inst_task_type").combobox('getValue')+'&work_order_number='+$("#work_order_number").val()
-                +'&channel_code='+$("#channel_code").val()+'&channel_work_id='+$("#channel_work_id").val();
-        window.location.href=downloadUrl;
+                + '&proc_code=' + $("#proc_task_code").combobox('getValue') + '&startDate=' + $("#startDate").datebox('getValue')
+                + '&endDate=' + $("#endDate").datebox('getValue') + '&proc_inst_task_type=' + $("#proc_inst_task_type").combobox('getValue') + '&work_order_number=' + $("#work_order_number").val()
+                + '&channel_code=' + $("#channel_code").val() + '&channel_work_id=' + $("#channel_work_id").val() + '&randomStr=' + randomStr;
+        window.location.href = downloadUrl;
+        $('#dlg').dialog('open')
+        var int_id=  setInterval(function () {
+            $.ajax({
+                url: '{{projcfg.appurl}}/api/order_manage/order_statistics/getMemcachedValue',
+                type: 'post',
+                dataType: 'json',
+                data: {
+                    randomStr: randomStr
+                },
+                success: function (data) {
+                    if(data.success){
+                        if(data.data==100){
+                            clearInterval(int_id);
+                            $('#p').progressbar('setValue', data.data);
+                            $('#dlg').dialog('close')
+                        }else{
+                            $('#p').progressbar('setValue', data.data);
+                        }
+
+                    }else{
+                        clearInterval(int_id);
+                        msgError(data.msg);
+                    }
+                }
+            })
+        }, 1000);
         downloadExcelIng = false;
     }
 
     /**
      * 初始化工单类型下拉框
      */
-    function getAllProBase(){
+    function getAllProBase() {
         $("#proc_task_code").combobox({
             method: 'get',
             url: '{{projcfg.appurl}}/api/order_manage/order_list/proBase',
-            valueField:'proc_code',
-            textField:'proc_name'
+            valueField: 'proc_code',
+            textField: 'proc_name'
         });
 
     }
 
     //查询
-    function  doSearch(){
+    function doSearch() {
         loadChannelTodoListDatagrid();
-     /*   $('#detailTable').datagrid({
-            url: '{{projcfg.appurl}}/api/order_manage/order_statistics/channel_detail_list',
+        /*   $('#detailTable').datagrid({
+               url: '{{projcfg.appurl}}/api/order_manage/order_statistics/channel_detail_list',
             queryParams: {
                 status: '1',
                 proc_code: $("#proc_task_code").combobox('getValue'),
@@ -359,16 +426,17 @@
             }
         })*/
     }
+
     /**
      * 初始化工单类型下拉框
      */
-    function getAllProBase(){
+    function getAllProBase() {
         $("#proc_task_code").combobox({
             method: 'get',
             url: '{{projcfg.appurl}}/api/order_manage/order_list/proBase',
-            valueField:'proc_code',
-            textField:'proc_name'
+            valueField: 'proc_code',
+            textField: 'proc_name'
         });
-        $("#proc_task_code").combobox("setValue","p-109");
+        $("#proc_task_code").combobox("setValue", "p-109");
     }
 </script>

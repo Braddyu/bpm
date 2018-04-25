@@ -6,6 +6,7 @@
 var express = require('express');
 var router = express.Router();
 var utils = require('../../../../lib/utils/app_utils');
+var memcached_utils = require('../../../../lib/memcached_utils.js');
 var service = require('../services/order_statistics_service');
 
 /**
@@ -101,7 +102,7 @@ router.route('/pre_org').post(function(req,res){
  */
 router.route('/detail_list').post(function(req,res){
     let start =new Date().getTime();
-    console.log("获取工单明细列表...");
+    console.log("获取工单明细列表1...");
     var org_id = req.body.org_id;//机构编号
     var page = req.body.page;//页码
     var size = req.body.rows;//每页大小
@@ -130,7 +131,7 @@ router.route('/detail_list').post(function(req,res){
  * 获取渠道详情
  */
 router.route('/channel_detail_list').post(function(req,res){
-    console.log("获取工单明细列表...");
+    console.log("获取工单明细列表2...");
     let start = new Date().getTime()
     var page = req.body.page;//页码
     var size = req.body.rows;//每页大小
@@ -185,6 +186,7 @@ router.route('/export_excel_detail').get(function(req,res){
     console.log("开始导出统计工单明细列表...");
     let start_time=new Date().getTime();
     var org_id = req.query.org_id;//机构编号
+    var randomStr = req.query.randomStr;//随机数
     var proc_code = req.query.proc_code;//流程编号
     var level = req.query.level;//机构等级
     var status = req.query.status;//是否返回到当前所在机构
@@ -194,8 +196,9 @@ router.route('/export_excel_detail').get(function(req,res){
     var channel_code = req.query.channel_code;//渠道编码
     var channel_work_id = req.query.channel_work_id;//被派渠道BOSS工号
     var work_order_number = req.query.work_order_number;//工单号
-    console.log("params",org_id,proc_code,level,status,startDate,endDate,);
+    console.log("params",org_id,proc_code,level,status,startDate,endDate);
     console.log("channel_work_id",channel_work_id,"channel_code",channel_code);
+
     var  istodo=req.query.todo;//是否所辖渠道点击
     //1：表示为所辖渠道点击
     if(istodo == 1){
@@ -207,10 +210,10 @@ router.route('/export_excel_detail').get(function(req,res){
                 if (result.success) {
                     level = result.data.level;
                     org_id = result.data.org_id;
-                    console.log("istodo:",istodo,org_id,level)
+                    console.log("istodo:",istodo,org_id,level,"randomStr",randomStr)
 
                     // 调用分页
-                    service.exportDetailList(org_id,proc_code,level,status,startDate,endDate,proc_inst_task_type,channel_code,channel_work_id,work_order_number)
+                    service.exportDetailList(org_id,proc_code,level,status,startDate,endDate,proc_inst_task_type,channel_code,channel_work_id,work_order_number,randomStr)
                         .then(service.createExcelOrderDetail)
                         .then(excelBuf=>{
                             let end_time=new Date().getTime();
@@ -236,7 +239,7 @@ router.route('/export_excel_detail').get(function(req,res){
                 }
             })
     }else{
-        service.exportDetailList(org_id,proc_code,level,status,startDate,endDate,proc_inst_task_type,channel_code,channel_work_id,work_order_number)
+        service.exportDetailList(org_id,proc_code,level,status,startDate,endDate,proc_inst_task_type,channel_code,channel_work_id,work_order_number,randomStr)
             .then(service.createExcelOrderDetail)
             .then(excelBuf=>{
                 const date = new Date();
@@ -279,6 +282,25 @@ router.route('/local_user').post(function(req,res){
             console.log('获取当前登录机构失败',err);
 
         });
+})
+/**
+ * 获取Memcached中的值
+ */
+router.route('/getMemcachedValue').post(function(req,res){
+    var randomStr = req.body.randomStr;//随机数
+    memcached_utils.getVal(randomStr,function(err,res1){
+        if(err){
+            utils.respJsonData(res, {'success': false, 'code': '1000', 'msg': '获取Memcached失败', "error": null});
+        }else{
+           if(res1){
+               utils.respJsonData(res, {'success': true, 'code': '1000', 'msg': '获取Memcached成功', 'data': res1,"error": null});
+           }else{
+               utils.respJsonData(res, {'success': true, 'code': '1000', 'msg': '不存在的值','data': 0, "error": null});
+           }
+
+        }
+
+    })
 })
 
 

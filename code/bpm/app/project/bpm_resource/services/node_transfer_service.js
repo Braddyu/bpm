@@ -650,7 +650,12 @@ async function normal_process(current_detail,next_detail, next_node, proc_inst_i
 
             });
             let user_mes =await model_user.$User.find({'user_no':step_first[0].proc_inst_task_assignee});
-            condition_task.proc_inst_task_work_id = user_mes[0].work_id;
+
+            if(user_mes.length >0 && user_mes[0].work_id){
+                condition_task.proc_inst_task_work_id = user_mes[0].work_id;
+            }else{
+                condition_task.proc_inst_task_work_id = '';
+            }
             condition_task.next_name = step_first[0].next_name;
             condition_task.proc_back = 1;
             condition_task.joinup_sys = step_first[0].joinup_sys;//工单所属编号
@@ -1402,3 +1407,5 @@ exports.finish_task=(task_id,user_no)=>{
         resolve({"data":rs,"msg":"update the task ,","code":"00000","success":true});
     })
 }
+
+

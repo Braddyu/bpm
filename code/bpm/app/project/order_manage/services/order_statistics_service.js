@@ -7,7 +7,7 @@ var utils = require('../../../../lib/utils/app_utils');
 var logger = require('../../../../lib/logHelper').helper;
 var xlsx = require('node-xlsx');
 var moment = require('moment');
-
+var memcached_utils = require('../../../../lib/memcached_utils.js');
 /**
  * 工单统计
  * @param org_id 机构id
@@ -358,8 +358,7 @@ exports.exportStatisticsList = function (org_id, proc_code, level, status, start
  * @param endDate
  * @returns {Promise}
  */
-exports.exportDetailList = function (org_id, proc_code, level, status, startDate, endDate, proc_inst_task_type, channel_code, channel_work_id, work_order_number) {
-
+exports.exportDetailList = function (org_id, proc_code, level, status, startDate, endDate, proc_inst_task_type, channel_code, channel_work_id, work_order_number,randomStr) {
     var p = new Promise(function (resolve, reject) {
         let obj_org_id = [];
         console.log("org_id", org_id, level);
@@ -428,11 +427,11 @@ exports.exportDetailList = function (org_id, proc_code, level, status, startDate
         }
         //总数
         if (status == 1) {
-            inst_match['inst.proc_inst_status'] = {$in: [1, 2, 3, 4]};
+            // inst_match['inst.proc_inst_status'] = {$in: [1, 2, 3, 4]};
         }
         //归档数
         if (status == 2) {
-            inst_match['inst.proc_inst_status'] = {$in: [4]};
+            inst_match['inst.proc_inst_status'] = 4;
         }
         //未超时归档数
         if (status == 3) {
@@ -449,17 +448,15 @@ exports.exportDetailList = function (org_id, proc_code, level, status, startDate
         if (work_order_number) {
             inst_match['inst.work_order_number'] = work_order_number;
         }
-        let task_flag = true;
         var task_search = {"proc_inst_task_status": 0}
         if (proc_inst_task_type) {
             if (proc_inst_task_type == 'complete') {
-                inst_match = {"inst.proc_inst_status": {$in: [4]}};
+                inst_match = {"inst.proc_inst_status": 4};
             } else {
-                task_search.proc_inst_task_type = proc_inst_task_type;
-                task_flag = false;
+                inst_match['inst.proc_cur_task_name']= proc_inst_task_type;
             }
         }
-        console.log("task_search", task_search, proc_inst_task_type == 'complete');
+        console.log("task_search", task_search, inst_match);
         console.log("statistics", statistics);
         //依机构表为主表，关联统计表和实例表
         process_extend_model.$ProcessTaskStatistics.aggregate([
@@ -478,21 +475,16 @@ exports.exportDetailList = function (org_id, proc_code, level, status, startDate
                 $match: inst_match
             },
             {
-                $addFields: {
-                    "isCount": "1"
-                }
-            },
-            {
-                $sortByCount: "$isCount"
+                $count: "proc_inst_id"
             }
         ]).exec(function (err, res) {
             if (err) {
                 reject(utils.returnMsg(false, '1000', '查询统计失败。', null, err));
             } else {
-                if (res.length > 0) {
-                    let count = res[0].count;
+               if (res.length > 0) {
+                    let count = res[0].proc_inst_id;
                     console.log("总数：", count);
-                    let batch_size = 200;
+                    let batch_size = 10;
                     let size = Math.ceil(count / batch_size);
                     let arr = [];
                     let counter = 0;
@@ -503,12 +495,6 @@ exports.exportDetailList = function (org_id, proc_code, level, status, startDate
                                 $match: statistics
                             },
                             {
-                                $skip: i * batch_size
-                            },
-                            {
-                                $limit: batch_size
-                            },
-                            {
                                 $lookup: {
                                     from: "common_bpm_proc_inst",
                                     localField: 'proc_inst_id',
@@ -517,44 +503,38 @@ exports.exportDetailList = function (org_id, proc_code, level, status, startDate
                                 }
                             },
                             {
-                                $match: inst_match
-                            },
-
-                            {
                                 $unwind: {path: "$inst", preserveNullAndEmptyArrays: true}
                             },
                             {
+                                $match: inst_match
+                            },
+                            {
+                                $skip: i * batch_size
+                            },
+                            {
+                                $limit: batch_size
+                            },
+                           {
                                 $graphLookup: {
                                     from: "common_bpm_proc_inst_task",
                                     startWith: "$proc_inst_id",
                                     connectFromField: "proc_inst_id",
                                     connectToField: "proc_inst_id",
-                                    as: "task",
-                                    restrictSearchWithMatch: task_search
+                                    restrictSearchWithMatch:task_search,
+                                    as: "task"
                                 }
                             },
                             {
-                                $unwind: {path: "$task", preserveNullAndEmptyArrays: task_flag}
+                                $unwind: {path: "$task", preserveNullAndEmptyArrays: true}
                             },
-                            {
-                                $lookup: {
-                                    from: "common_bpm_user_info",
-                                    localField: 'task.proc_inst_task_assignee',
-                                    foreignField: "user_no",
-                                    as: "user"
-                                }
-                            },
-                            {
-                                $unwind: {path: "$user", preserveNullAndEmptyArrays: task_flag}
-                            },
-                            {
+                           {
                                 $graphLookup: {
                                     from: "common_bpm_proc_task_histroy",
                                     startWith: "$proc_inst_id",
                                     connectFromField: "proc_inst_id",
                                     connectToField: "proc_inst_id",
-                                    as: "channel_histroy",
-                                    restrictSearchWithMatch: {"proc_inst_task_type": "厅店处理回复"}
+                                    restrictSearchWithMatch:{"proc_inst_task_type": "厅店处理回复" },
+                                    as: "channel_histroy"
                                 }
                             },
                             {
@@ -563,8 +543,8 @@ exports.exportDetailList = function (org_id, proc_code, level, status, startDate
                                     startWith: "$proc_inst_id",
                                     connectFromField: "proc_inst_id",
                                     connectToField: "proc_inst_id",
-                                    as: "two_histroy",
-                                    restrictSearchWithMatch: two_histroy
+                                    restrictSearchWithMatch:two_histroy,
+                                    as: "two_histroy"
                                 }
                             },
                             {
@@ -572,15 +552,14 @@ exports.exportDetailList = function (org_id, proc_code, level, status, startDate
                                     proc_title: "$inst.proc_title",
                                     proc_name: "$inst.proc_name",
                                     proc_vars: "$inst.proc_vars",
-                                    is_overtime: "$inst.is_overtime",
                                     proc_start_time: "$inst.proc_start_time",
                                     proc_start_user_name: "$inst.proc_start_user_name",
                                     proc_inst_task_type: "$task.proc_inst_task_type",
                                     work_order_number: "$inst.work_order_number",
                                     proc_inst_task_assignee_name: "$task.proc_inst_task_assignee_name",
                                     proc_inst_status: "$inst.proc_inst_status",
-                                    channel_histroy: "$channel_histroy.proc_inst_task_remark",
-                                    work_id: "$user.work_id",
+                                    work_id: "$task.proc_inst_task_work_id",
+                                    channel_histroy:"$channel_histroy.proc_inst_task_remark",
                                     channel_work_id: "$work_id",
 
                                 }
@@ -592,115 +571,31 @@ exports.exportDetailList = function (org_id, proc_code, level, status, startDate
                                 reject(utils.returnMsg(false, '1000', '查询统计失败。', null, err));
                             } else {
                                 var hash = {};
-                                res = res.reduce(function (item, next) {
+                              res = res.reduce(function (item, next) {
                                     hash[next.work_order_number] ? '' : hash[next.work_order_number] = true && item.push(next);
                                     return item
                                 }, [])
-                                console.log("長度:", res.length);
+                                console.log("長度:",i, res.length);
                                 arr = arr.concat(res);
                                 counter++;
-                                console.log("查询进度：", Math.round(parseFloat(counter / size) * 100) + "%");
-                                console.log(arr.length);
-                                if (counter == size) {
+                                let lifetime=1000;
+
+                                memcached_utils.setVal(randomStr,Math.round(parseFloat(counter / size) * 100),lifetime,function(err,res){
+                                })
+                                console.log("查询进度：", arr.length,Math.round(parseFloat(counter / size) * 100) + "%");
+                               if (counter == size) {
                                     resolve({"data": arr, "proc_code": proc_code});
                                 }
                             }
                         })
                     }
 
-                }
+                }else{
+                   resolve({"data": [], "proc_code": proc_code});
+               }
             }
         })
-        /*   process_extend_model.$ProcessTaskStatistics.aggregate([
-              {
-                  $match: statistics
-              },
-             {
-                  $lookup: {
-                      from: "common_bpm_proc_inst",
-                      localField: 'proc_inst_id',
-                      foreignField: "_id",
-                      as: "inst"
-                  }
-              },
-              {
-                  $match: inst_match
-              },
 
-              {
-                  $unwind : { path: "$inst", preserveNullAndEmptyArrays: true }
-              },
-              {
-                  $graphLookup: {
-                      from: "common_bpm_proc_inst_task",
-                      startWith: "$proc_inst_id",
-                      connectFromField: "proc_inst_id",
-                      connectToField: "proc_inst_id",
-                      as: "task",
-                      restrictSearchWithMatch: task_search
-                  }
-              },
-              {
-                  $unwind : { path: "$task", preserveNullAndEmptyArrays: task_flag }
-              },
-              {
-                  $lookup: {
-                      from: "common_bpm_user_info",
-                      localField: 'task.proc_inst_task_assignee',
-                      foreignField: "user_no",
-                      as: "user"
-                  }
-              },
-              {
-                  $unwind : { path: "$user", preserveNullAndEmptyArrays: task_flag }
-              },
-              {
-                  $graphLookup: {
-                      from: "common_bpm_proc_task_histroy",
-                      startWith: "$proc_inst_id",
-                      connectFromField: "proc_inst_id",
-                      connectToField: "proc_inst_id",
-                      as: "channel_histroy",
-                      restrictSearchWithMatch: {"proc_inst_task_type" : "厅店处理回复"}
-                  }
-              },
-              {
-                  $graphLookup: {
-                      from: "common_bpm_proc_task_histroy",
-                      startWith: "$proc_inst_id",
-                      connectFromField: "proc_inst_id",
-                      connectToField: "proc_inst_id",
-                      as: "two_histroy",
-                      restrictSearchWithMatch: two_histroy
-                  }
-              },
-              {
-                  $addFields: {
-
-                      proc_title:  "$inst.proc_title",
-                      proc_name: "$inst.proc_name",
-                      proc_vars: "$inst.proc_vars",
-                      is_overtime: "$inst.is_overtime",
-                      proc_start_time: "$inst.proc_start_time",
-                      proc_start_user_name: "$inst.proc_start_user_name",
-                      proc_inst_task_type: "$task.proc_inst_task_type",
-                      work_order_number: "$inst.work_order_number",
-                      proc_inst_task_assignee_name:  "$task.proc_inst_task_assignee_name",
-                      proc_inst_status:  "$inst.proc_inst_status",
-                      channel_histroy:  "$channel_histroy.proc_inst_task_remark",
-                      work_id:  "$user.work_id",
-                      channel_work_id:  "$work_id",
-
-                  }
-              }
-          ]).exec(function(err,res){
-              if(err){
-                  reject(utils.returnMsg(false, '1000', '查询统计失败。',null,err));
-              }else{
-
-                  resolve({"data":res,"proc_code":proc_code});
-              }
-          })*/
 
     });
 
@@ -980,10 +875,6 @@ exports.detail_list = function (page, size, org_id, level, status, proc_code, st
                 two_histroy = {"proc_inst_task_type": "省营业厅销售部稽核"}
             }
         }
-        //派单时间
-        /*  if(dispatch_time){
-              statistics['dispatch_time']=dispatch_time.replace(/\-/g,'');
-          }*/
         //渠道编码
         if (channel_code) {
             statistics['channel_code'] = channel_code;
@@ -1003,7 +894,6 @@ exports.detail_list = function (page, size, org_id, level, status, proc_code, st
             compare['$lte'] = new Date(new Date(new Date(endDate).setDate(new Date(endDate).getDate() + 1)));
         }
         var task_flag = true;
-        var task_flag = true;
         //查询实例
         var inst_match = {};
         console.log(compare);
@@ -1013,11 +903,11 @@ exports.detail_list = function (page, size, org_id, level, status, proc_code, st
         }
         //总数
         if (status == 1) {
-            inst_match['inst.proc_inst_status'] = {$in: [1, 2, 3, 4]};
+           // inst_match['inst.proc_inst_status'] = {$in: [1, 2, 3, 4]};
         }
         //归档数
         if (status == 2) {
-            inst_match['inst.proc_inst_status'] = {$in: [4]};
+            inst_match['inst.proc_inst_status'] = 4;
         }
         //未超时归档数
         if (status == 3) {
@@ -1038,16 +928,17 @@ exports.detail_list = function (page, size, org_id, level, status, proc_code, st
         var task_search = {"proc_inst_task_status": 0}
         if (proc_inst_task_type) {
             if (proc_inst_task_type == 'complete') {
-                inst_match = {"inst.proc_inst_status": {$in: [4]}};
+                inst_match = {"inst.proc_inst_status": 4};
             } else {
-                task_search.proc_inst_task_type = proc_inst_task_type;
+                // task_search['task.proc_inst_task_type'] = proc_inst_task_type;
+                inst_match = {"inst.proc_cur_task_name": proc_inst_task_type};
                 task_flag = false;
             }
         }
         console.log("task_search", task_search);
         console.log("statistics", statistics);
         console.log("inst_match", inst_match);
-
+        console.log("two_histroy", two_histroy);
         //依机构表为主表，关联统计表和实例表
         process_extend_model.$ProcessTaskStatistics.aggregate([
             {
@@ -1062,72 +953,10 @@ exports.detail_list = function (page, size, org_id, level, status, proc_code, st
                 }
             },
             {
-                $match: inst_match
-            },
-
-            {
                 $unwind: {path: "$inst", preserveNullAndEmptyArrays: true}
             },
             {
-                $graphLookup: {
-                    from: "common_bpm_proc_inst_task",
-                    startWith: "$proc_inst_id",
-                    connectFromField: "proc_inst_id",
-                    connectToField: "proc_inst_id",
-                    as: "task",
-                    restrictSearchWithMatch: task_search
-                }
-            },
-            {
-                $unwind: {path: "$task", preserveNullAndEmptyArrays: task_flag}
-            },
-            {
-                $lookup: {
-                    from: "common_bpm_user_info",
-                    localField: 'task.proc_inst_task_assignee',
-                    foreignField: "user_no",
-                    as: "user"
-                }
-            },
-            {
-                $unwind: {path: "$user", preserveNullAndEmptyArrays: task_flag}
-            },
-            {
-                $graphLookup: {
-                    from: "common_bpm_proc_task_histroy",
-                    startWith: "$proc_inst_id",
-                    connectFromField: "proc_inst_id",
-                    connectToField: "proc_inst_id",
-                    as: "channel_histroy",
-                    restrictSearchWithMatch: {"proc_inst_task_type": "厅店处理回复"}
-                }
-            },
-            {
-                $graphLookup: {
-                    from: "common_bpm_proc_task_histroy",
-                    startWith: "$proc_inst_id",
-                    connectFromField: "proc_inst_id",
-                    connectToField: "proc_inst_id",
-                    as: "two_histroy",
-                    restrictSearchWithMatch: two_histroy
-                }
-            },
-            {
-                $addFields: {
-                    proc_title: "$inst.proc_title",
-                    proc_name: "$inst.proc_name",
-                    proc_vars: "$inst.proc_vars",
-                    proc_start_time: "$inst.proc_start_time",
-                    proc_start_user_name: "$inst.proc_start_user_name",
-                    proc_inst_task_type: "$task.proc_inst_task_type",
-                    work_order_number: "$inst.work_order_number",
-                    proc_inst_task_assignee_name: "$task.proc_inst_task_assignee_name",
-                    proc_inst_status: "$inst.proc_inst_status",
-                    channel_histroy: "$channel_histroy.proc_inst_task_remark",
-                    work_id: "$user.work_id",
-                    channel_work_id: "$work_id",
-
-                }
+                $match: inst_match
             },
             {
                 $skip: (page - 1) * size
@@ -1135,6 +964,56 @@ exports.detail_list = function (page, size, org_id, level, status, proc_code, st
             {
                 $limit: size
             },
+            {
+                $graphLookup: {
+                    from: "common_bpm_proc_inst_task",
+                    startWith: "$proc_inst_id",
+                    connectFromField: "proc_inst_id",
+                    connectToField: "proc_inst_id",
+                    restrictSearchWithMatch:task_search,
+                    as: "task"
+                }
+            },
+            {
+                $unwind: {path: "$task", preserveNullAndEmptyArrays: task_flag}
+            },
+            {
+                $graphLookup: {
+                    from: "common_bpm_proc_task_histroy",
+                    startWith: "$proc_inst_id",
+                    connectFromField: "proc_inst_id",
+                    connectToField: "proc_inst_id",
+                    restrictSearchWithMatch:{"proc_inst_task_type": "厅店处理回复" },
+                    as: "channel_histroy"
+                }
+            },
+            {
+                $graphLookup: {
+                    from: "common_bpm_proc_task_histroy",
+                    startWith: "$proc_inst_id",
+                    connectFromField: "proc_inst_id",
+                    connectToField: "proc_inst_id",
+                    restrictSearchWithMatch:two_histroy,
+                    as: "two_histroy"
+                }
+            },
+           {
+               $addFields: {
+                   proc_title: "$inst.proc_title",
+                   proc_name: "$inst.proc_name",
+                   proc_vars: "$inst.proc_vars",
+                   proc_start_time: "$inst.proc_start_time",
+                   proc_start_user_name: "$inst.proc_start_user_name",
+                   proc_inst_task_type: "$task.proc_inst_task_type",
+                   work_order_number: "$inst.work_order_number",
+                   proc_inst_task_assignee_name: "$task.proc_inst_task_assignee_name",
+                   proc_inst_status: "$inst.proc_inst_status",
+                   work_id: "$task.proc_inst_task_work_id",
+                   channel_histroy:"$channel_histroy.proc_inst_task_remark",
+                   channel_work_id: "$work_id",
+
+               }
+           },
         ]).exec(function (err, res) {
             if (err) {
                 reject(utils.returnMsg(false, '1000', '查询统计失败。', null, err));
@@ -1157,49 +1036,19 @@ exports.detail_list = function (page, size, org_id, level, status, proc_code, st
                     {
                         $match: inst_match
                     },
+
                     {
-                        $unwind: {path: "$inst", preserveNullAndEmptyArrays: true}
-                    },
-                    {
-                        $graphLookup: {
-                            from: "common_bpm_proc_inst_task",
-                            startWith: "$proc_inst_id",
-                            connectFromField: "proc_inst_id",
-                            connectToField: "proc_inst_id",
-                            as: "task",
-                            restrictSearchWithMatch: task_search
-                        }
-                    },
-                    {
-                        $unwind: {path: "$task", preserveNullAndEmptyArrays: task_flag}
-                    },
-                    {
-                        $addFields: {
-                            proc_title: "$inst.proc_title",
-                            proc_name: "$inst.proc_name",
-                            proc_vars: "$inst.proc_vars",
-                            work_order_number: "$inst.work_order_number",
-                            proc_start_time: "$inst.proc_start_time",
-                            proc_start_user_name: "$inst.proc_start_user_name",
-                            proc_inst_task_type: "$task.proc_inst_task_type",
-                            proc_inst_task_assignee_name: "$task.proc_inst_task_assignee_name",
-                            proc_inst_status: "$inst.proc_inst_status",
-                        }
-                    },
-                    {
-                        $group: {
-                            _id: null,
-                            count: {$sum: 1}
-                        }
+                        $count: "proc_inst_id"
                     }
                 ]).exec(function (err, res) {
                     if (err) {
                         reject(utils.returnMsg(false, '1000', '查询统计失败。', null, err));
                     } else {
+
                         if (res.length == 0) {
                             result.total = 0;
                         } else {
-                            result.total = res[0].count;
+                            result.total = res[0].proc_inst_id;
                         }
 
                         resolve(result);
