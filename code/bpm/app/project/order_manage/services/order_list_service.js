@@ -799,7 +799,25 @@ exports.again_images = function (files, inst_id, user_name) {
     return p;
 }
 
-
+/**
+ * 标记客户不配合的工单
+ * @param id,handle ,result1
+ */
+exports.updateInstTask = function (id,handle,result1) {
+    return new Promise(async function (resolve, reject) {
+        if (id) {
+            console.log("00000000000000");
+            let conditions = {proc_task_id: id};
+            let update = {$set: {proc_inst_task_status: 5}};
+            let options = {}
+            await model.$ProcessTaskHistroy.update(conditions, update, options);
+            await model.$ProcessInstTask.remove({_id: id});
+            let res = await model.$ProcessTaskHistroy.find({proc_task_id: id,proc_inst_task_status: 5});
+            await model.$ProcessInst.update({_id:res[0].proc_inst_id,$set: {proc_inst_status: 5}});
+            resolve(result1)
+        }
+    })
+}
 /**
  * 重置超时时间
  * @param result1

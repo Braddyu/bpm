@@ -23,6 +23,7 @@ router.route('/list').post(function(req,res){
     if(queryDate){
         conditionMap.mistake_time =queryDate.replace(/\-/g,'');
     }
+    console.log(conditionMap.mistake_time,"==================");
     if(status){
         var dataIntArr=[]
         status=status.split(",").forEach(function(data,index,arr){

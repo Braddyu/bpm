@@ -257,7 +257,16 @@ router.post('/complete', function (req, res, next) {
                                             }).catch(function (err) {
                                                 utils.respJsonData(res, err);
                                             })
-                                        } else {
+                                        }else if(handle==3){
+                                            //客户不配合 时进行记录
+                                            console.log(id,"88888888888");
+                                            service.updateInstTask(id,handle,result1).then(function () {
+                                                utils.respJsonData(res, result1);
+                                            }).catch(function (err) {
+                                                utils.respJsonData(res, err);
+                                            })
+
+                                        }else {
                                             //拒绝时，重置超时时间
                                             service.updateOvertime(result1).then(function () {
                                                 utils.respJsonData(res, result1);
