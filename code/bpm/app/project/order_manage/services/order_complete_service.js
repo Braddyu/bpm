@@ -63,6 +63,7 @@ exports.turn2SendTask = function(userInfo,instId){
     var p = new Promise(function(resolve, reject){
         process_model.$ProcessInst.find({'_id':instId},function(err,rs){
             var proc_cur_task_code_3 = "processDefineDiv_node_3";
+            console.log("#############",err);
             if(!err){
                 var inst = rs[0];
                 // 工单已归档
@@ -97,7 +98,7 @@ exports.turn2SendTask = function(userInfo,instId){
                     });
                 }
             }else{
-                resolve(resolve(utils.returnMsg(false,"0001","派单失败:查询实例出错",null,null)));
+                resolve(utils.returnMsg(false,"0001","派单失败:查询实例出错",null,null));
             }
         })
     })

@@ -261,10 +261,10 @@
     }
 
     function turn2Send(){
-        if(!is_admin){
+        /*if(!is_admin){
             $.messager.alert("提示","你没有权限进行此操作");
             return false;
-        }
+        }*/
         var row=$('#orderTablelist').datagrid('getSelected');
         if(!row){
             $.messager.show({
@@ -283,7 +283,7 @@
             $.messager.alert("提示","只能转派类型为[稽核工单差错]的工单");
             return false;
         }
-        //$("#instId").val(row.proc_inst_id);
+        $("#instId").val(row.proc_inst_id);
         $('#win').window('open');
     }
 
