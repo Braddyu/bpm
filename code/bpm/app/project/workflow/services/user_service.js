@@ -550,7 +550,9 @@ exports.getUserInfo = function(workId){
                 let user = result.data;
                 let orgs = user.orgInfos;
                 for (let item in orgs) {
-                    org_pids.push(new mongoose.Types.ObjectId(orgs[item].grid_id))
+                    if (orgs[item].grid_id) {
+                        org_pids.push(new mongoose.Types.ObjectId(orgs[item].grid_id))
+                    }
                 }
                 model.$CommonCoreOrg.find({"_id":{$in:org_pids}},function(err,rs) {
                     if (rs.length > 0) {
@@ -562,8 +564,8 @@ exports.getUserInfo = function(workId){
                                 }
                             }
                         }
-                        resolve(utils.returnMsg(true, '0001', '查询成功', user, null));
                     }
+                    resolve(utils.returnMsg(true, '0001', '查询成功', user, null));
                 });
             }else{
                 resolve(result);
@@ -578,7 +580,9 @@ exports.getUserInfo = function(workId){
                 let user = result.data;
                 let orgs = user.orgInfos;
                 for (let item in orgs) {
-                    org_pids.push(new mongoose.Types.ObjectId(orgs[item].county_id))
+                    if (orgs[item].county_id) {
+                        org_pids.push(new mongoose.Types.ObjectId(orgs[item].county_id))
+                    }
                 }
                 model.$CommonCoreOrg.find({"_id":{$in:org_pids}},function(err,rs) {
                     if (rs.length > 0) {
@@ -590,8 +594,8 @@ exports.getUserInfo = function(workId){
                                 }
                             }
                         }
-                        resolve(utils.returnMsg(true, '0001', '查询成功', user, null));
                     }
+                    resolve(utils.returnMsg(true, '0001', '查询成功', user, null));
                 });
             }else{
                 resolve(result);
@@ -606,7 +610,9 @@ exports.getUserInfo = function(workId){
                 let user = result.data;
                 let orgs = user.orgInfos;
                 for (let item in orgs) {
-                    org_pids.push(new mongoose.Types.ObjectId(orgs[item].city_id))
+                    if(orgs[item].city_id){
+                        org_pids.push(new mongoose.Types.ObjectId(orgs[item].city_id))
+                    }
                 }
                 model.$CommonCoreOrg.find({"_id":{$in:org_pids}},function(err,rs) {
                     if (rs.length > 0) {
@@ -617,8 +623,8 @@ exports.getUserInfo = function(workId){
                                 }
                             }
                         }
-                        resolve(utils.returnMsg(true, '0001', '查询成功', user, null));
                     }
+                    resolve(utils.returnMsg(true, '0001', '查询成功', user, null));
                 });
             }else{
                 resolve(result);

@@ -18,9 +18,9 @@ var memcached_utils = require('../../../../lib/memcached_utils.js');
  * @param endDate 插入时间
  * @returns {Promise}
  */
-exports.getStatisticsListPage = function (org_id, proc_code, level, status, startDate, endDate) {
+exports.getStatisticsListPage = function (org_id, proc_code, level, status, startDate, endDate,areaCode,is_use_org_code) {
 
-    var p = new Promise(function (resolve, reject) {
+    var p = new Promise(async function (resolve, reject) {
         let obj_org_id = [];
         let match = {};
         let foreignField;
@@ -54,13 +54,13 @@ exports.getStatisticsListPage = function (org_id, proc_code, level, status, star
             match._id = {$in: obj_org_id};
         } else {
             match.org_pid = {$in: org_id};
-            ;
         }
         console.log("match", match);
 
         //查询统计表
         var statistics = {};
         var inst = {};
+        var history = {};
         //流程编码
         if (proc_code) {
             statistics['proc_code'] = proc_code;
@@ -83,9 +83,54 @@ exports.getStatisticsListPage = function (org_id, proc_code, level, status, star
 
         console.log("statistics", statistics);
         console.log("inst", inst);
+        // 区域编码查询相关代码
+        var org_code_match = {};
+        if (areaCode && is_use_org_code == 1) {
+            await user_model.$CommonCoreOrg.find({"company_code":areaCode},function(err,result){
+                if(err){
+                    let result = {rows: [], success: true};
+                    resolve(result);
+                }else{
+                    if(result.length > 0){
+                        let org = result[0];
+                        match.org_pid = org.org_pid;
+                        delete match._id;
+                        let lev = org.level;
+                        org_code_match["company_code"] = areaCode;
+                        //等级为2表示省公司,
+                        if (lev == 2) {
+                            foreignField = 'province_id';
+                        } else if (lev == 3) {
+                            //地市
+                            foreignField = 'city_id';
+                            //地市的编码长度要于等于3
+                            match.company_code = {"$regex": /^.{1,3}$/}
+                        } else if (lev == 4) {
+                            //区县
+                            foreignField = 'county_id';
+                            //区县的编码长度要小于等于4
+                            match.company_code = {"$regex": /^.{1,4}$/}
+                        } else if (lev == 5) {
+                            //网格
+                            foreignField = 'grid_id';
+                            //区县的编码长度要小于等于4
+                            match.company_code = {"$regex": /^.{1,8}$/}
+                        } else if (lev == 6) {
+                            //渠道
+                            foreignField = 'channel_id';
+                            delete match.company_code;
+                        }
+                    }else{
+                        let result = {rows: [], success: true};
+                        resolve(result);
+                    }
+                }
+            });
+
+        }
         //依机构表为主表，关联统计表和实例表
 
-        user_model.$CommonCoreOrg.aggregate([
+        await user_model.$CommonCoreOrg.aggregate([
             {
                 $match: match
             },
@@ -98,6 +143,9 @@ exports.getStatisticsListPage = function (org_id, proc_code, level, status, star
                     as: "statistics",
                     restrictSearchWithMatch: statistics
                 }
+            },
+            {
+                $match:org_code_match
             },
             {
                 $unwind: {path: "$statistics", preserveNullAndEmptyArrays: true}
@@ -124,9 +172,18 @@ exports.getStatisticsListPage = function (org_id, proc_code, level, status, star
                 $unwind: {path: "$inst", preserveNullAndEmptyArrays: true}
             },
             {
+                $graphLookup: {
+                    from: "common_bpm_proc_task_histroy",
+                    startWith: "$inst._id",
+                    connectFromField: "_id",
+                    connectToField: "proc_inst_id",
+                    as: "history",
+                    restrictSearchWithMatch: history
+                }
+            },
+            {
                 $group: {
                     _id: "$_id",
-                    org_fullname: {$first: "$org_fullname"},
                     company_code: {$first: "$company_code"},
                     org_id: {$first: "$_id"},
                     total: {
@@ -157,7 +214,73 @@ exports.getStatisticsListPage = function (org_id, proc_code, level, status, star
                             }
                         }
                     },
-
+                    twiceAuditNum: {
+                        $sum: {
+                            $cond: {
+                                if: {
+                                    $or: [
+                                        {$and: [{$in: [{"$size": "$history"}, [3]]}, {$ne: ["$inst.proc_inst_status", 4]}]},
+                                        {$gt: [{"$size": "$history"}, 3]}
+                                    ]
+                                },
+                                then: {$sum: 1},
+                                else: 0
+                            }
+                        }
+                    },
+                    treatedNum: {
+                        $sum: {
+                            $cond: {
+                                if: {$gt: [{"$size": "$history"}, 1]},
+                                then: {$sum: 1},
+                                else: 0
+                            }
+                        }
+                    },
+                    untreatedNum: {
+                        $sum: {
+                            $cond: {
+                                if: {$in: [{"$size": "$history"}, [1]]},
+                                then: {$sum: 1},
+                                else: 0
+                            }
+                        }
+                    },
+                    twiceAuditPassedNum: {
+                        $sum: {
+                            $cond: {
+                                if: {$and: [{$gt: [{"$size": "$history"}, 3]}, {$in: ["$inst.proc_inst_status", [4]]}]},
+                                then: {$sum: 1},
+                                else: 0
+                            }
+                        }
+                    },
+                    overtimeTreatedNum: {
+                        $sum: {
+                            $cond: {
+                                if: {$and:[{$gt: [{"$size": "$history"}, 1]},{$in:["$inst.is_overtime", [1]]}]},
+                                then: {$sum: 1},
+                                else: 0
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                $graphLookup: {
+                    from: "common_bpm_org_info",
+                    startWith: "$_id",
+                    connectFromField: "_id",
+                    connectToField: "_id",
+                    as: "org",
+                    restrictSearchWithMatch: {}
+                }
+            },
+            {
+                $addFields:{
+                    org_fullname:"$org.org_fullname",
+                    level:"$org.level",
+                    org_pid:"$org.org_pid",
                 }
             },
             {
@@ -190,9 +313,9 @@ exports.getStatisticsListPage = function (org_id, proc_code, level, status, star
  * @param endDate 插入时间
  * @returns {Promise}
  */
-exports.exportStatisticsList = function (org_id, proc_code, level, status, startDate, endDate) {
+exports.exportStatisticsList = function (org_id, proc_code, level, status, startDate, endDate,areaCode,is_use_org_code) {
 
-    var p = new Promise(function (resolve, reject) {
+    var p = new Promise(async function (resolve, reject) {
         let obj_org_id = [];
         for (let item in org_id) {
             obj_org_id.push(new mongoose.Types.ObjectId(org_id[item]))
@@ -236,6 +359,7 @@ exports.exportStatisticsList = function (org_id, proc_code, level, status, start
 
         //查询统计表
         var statistics = {};
+        var history = {};
         //流程编码
         if (proc_code) {
             statistics['proc_code'] = proc_code;
@@ -259,8 +383,53 @@ exports.exportStatisticsList = function (org_id, proc_code, level, status, start
         }
 
         console.log("statistics", statistics);
+        // 区域编码查询相关代码
+        var org_code_match = {};
+        if (areaCode && is_use_org_code == 1) {
+            await user_model.$CommonCoreOrg.find({"company_code":areaCode},function(err,result){
+                if(err){
+                    let result = {rows: [], success: true};
+                    resolve(result);
+                }else{
+                    if(result.length > 0){
+                        let org = result[0];
+                        match.org_pid = org.org_pid;
+                        delete match._id;
+                        let lev = org.level;
+                        org_code_match["company_code"] = areaCode;
+                        //等级为2表示省公司,
+                        if (lev == 2) {
+                            foreignField = 'province_id';
+                        } else if (lev == 3) {
+                            //地市
+                            foreignField = 'city_id';
+                            //地市的编码长度要于等于3
+                            match.company_code = {"$regex": /^.{1,3}$/}
+                        } else if (lev == 4) {
+                            //区县
+                            foreignField = 'county_id';
+                            //区县的编码长度要小于等于4
+                            match.company_code = {"$regex": /^.{1,4}$/}
+                        } else if (lev == 5) {
+                            //网格
+                            foreignField = 'grid_id';
+                            //区县的编码长度要小于等于4
+                            match.company_code = {"$regex": /^.{1,8}$/}
+                        } else if (lev == 6) {
+                            //渠道
+                            foreignField = 'channel_id';
+                            delete match.company_code;
+                        }
+                    }else{
+                        let result = {rows: [], success: true};
+                        resolve(result);
+                    }
+                }
+            });
+
+        }
         //依机构表为主表，关联统计表和实例表
-        user_model.$CommonCoreOrg.aggregate([
+        await user_model.$CommonCoreOrg.aggregate([
             {
                 $match: match
             },
@@ -279,6 +448,9 @@ exports.exportStatisticsList = function (org_id, proc_code, level, status, start
                 $unwind: {path: "$statistics", preserveNullAndEmptyArrays: true}
             },
             {
+                $match:org_code_match
+            },
+            {
                 $graphLookup: {
                     from: "common_bpm_proc_inst",
                     startWith: "$statistics.proc_inst_id",
@@ -292,9 +464,18 @@ exports.exportStatisticsList = function (org_id, proc_code, level, status, start
                 $unwind: {path: "$inst", preserveNullAndEmptyArrays: true}
             },
             {
+                $graphLookup: {
+                    from: "common_bpm_proc_task_histroy",
+                    startWith: "$inst._id",
+                    connectFromField: "_id",
+                    connectToField: "proc_inst_id",
+                    as: "history",
+                    restrictSearchWithMatch: history
+                }
+            },
+            {
                 $group: {
                     _id: "$_id",
-                    org_fullname: {$first: "$org_fullname"},
                     company_code: {$first: "$company_code"},
                     org_id: {$first: "$_id"},
                     total: {
@@ -325,7 +506,73 @@ exports.exportStatisticsList = function (org_id, proc_code, level, status, start
                             }
                         }
                     },
-
+                    twiceAuditNum: {
+                        $sum: {
+                            $cond: {
+                                if: {
+                                    $or: [
+                                        {$and: [{$in: [{"$size": "$history"}, [3]]}, {$ne: ["$inst.proc_inst_status", 4]}]},
+                                        {$gt: [{"$size": "$history"}, 3]}
+                                    ]
+                                },
+                                then: {$sum: 1},
+                                else: 0
+                            }
+                        }
+                    },
+                    treatedNum: {
+                        $sum: {
+                            $cond: {
+                                if: {$gt: [{"$size": "$history"}, 1]},
+                                then: {$sum: 1},
+                                else: 0
+                            }
+                        }
+                    },
+                    untreatedNum: {
+                        $sum: {
+                            $cond: {
+                                if: {$in: [{"$size": "$history"}, [1]]},
+                                then: {$sum: 1},
+                                else: 0
+                            }
+                        }
+                    },
+                    twiceAuditPassedNum: {
+                        $sum: {
+                            $cond: {
+                                if: {$and: [{$gt: [{"$size": "$history"}, 3]}, {$in: ["$inst.proc_inst_status", [4]]}]},
+                                then: {$sum: 1},
+                                else: 0
+                            }
+                        }
+                    },
+                    overtimeTreatedNum: {
+                        $sum: {
+                            $cond: {
+                                if: {$and:[{$gt: [{"$size": "$history"}, 1]},{$in:["$inst.is_overtime", [1]]}]},
+                                then: {$sum: 1},
+                                else: 0
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                $graphLookup: {
+                    from: "common_bpm_org_info",
+                    startWith: "$_id",
+                    connectFromField: "_id",
+                    connectToField: "_id",
+                    as: "org",
+                    restrictSearchWithMatch: {}
+                }
+            },
+            {
+                $addFields:{
+                    org_fullname:"$org.org_fullname",
+                    level:"$org.level",
+                    org_pid:"$org.org_pid",
                 }
             },
             {
@@ -388,6 +635,7 @@ exports.exportDetailList = function (org_id, proc_code, level, status, startDate
         }
         //流程编码
         var two_histroy = {};
+        var history = {};
         //流程编码
         if (proc_code) {
             statistics['proc_code'] = proc_code;
@@ -445,6 +693,31 @@ exports.exportDetailList = function (org_id, proc_code, level, status, startDate
             inst_match['inst.proc_inst_status'] = 4;
 
         }
+        var history_match = {};
+        var history_match1 = {};
+        var history_match2 = {};
+        // 二次及以上稽核业务量
+        if (status == 5) {
+            history_match1["history"] = {$size:3}
+            history_match1["inst.proc_inst_status"] = {$ne:4}
+
+            history_match2["history.3"] = { $exists : 1}
+
+            history_match = {$or:[history_match1,history_match2]}
+        }
+        // 未补录工单量
+        if (status == 6) {
+            history_match["history"] ={$size:1};
+        }
+        // 补录工单量
+        if (status == 7) {
+            history_match["history.1"]={ $exists : 1};
+        }
+        // 补录工单超时量
+        if (status == 8) {
+            history_match['history.1'] ={$exists : 1};
+            history_match['inst.is_overtime']= 1;
+        }
         if (work_order_number) {
             inst_match['inst.work_order_number'] = work_order_number;
         }
@@ -473,6 +746,19 @@ exports.exportDetailList = function (org_id, proc_code, level, status, startDate
             },
             {
                 $match: inst_match
+            },
+            {
+                $graphLookup: {
+                    from: "common_bpm_proc_task_histroy",
+                    startWith: "$inst._id",
+                    connectFromField: "_id",
+                    connectToField: "proc_inst_id",
+                    as: "history",
+                    restrictSearchWithMatch: history
+                }
+            },
+            {
+                $match: history_match
             },
             {
                 $count: "proc_inst_id"
@@ -548,6 +834,19 @@ exports.exportDetailList = function (org_id, proc_code, level, status, startDate
                                 }
                             },
                             {
+                                $graphLookup: {
+                                    from: "common_bpm_proc_task_histroy",
+                                    startWith: "$inst._id",
+                                    connectFromField: "_id",
+                                    connectToField: "proc_inst_id",
+                                    as: "history",
+                                    restrictSearchWithMatch: history
+                                }
+                            },
+                            {
+                                $match: history_match
+                            },
+                            {
                                 $addFields: {
                                     proc_title: "$inst.proc_title",
                                     proc_name: "$inst.proc_name",
@@ -614,9 +913,14 @@ function createExcelOrderList(list) {
         '归档工单数',
         '未超时归档工单数',
         '一次归档工单数',
+        '二次及以上稽核业务量 ',
+        '未补录工单量',
+        '补录工单量 ',
+        '补录工单超时量 ',
         '工单归档率',
         '工单及时归档率',
         '一次归档率',
+        '二次稽核通过率 ',
     ];
 
     var data = [headers];
@@ -660,6 +964,19 @@ function createExcelOrderList(list) {
             }
 
         }
+        //二次稽核通过率
+        let two_filing_rate = "0%";
+        if (c.twiceAuditPassedNum == 0 || c.total == 0) {
+            two_filing_rate = "0%";
+        } else {
+            var re = ((parseInt(c.twiceAuditPassedNum) / c.total).toFixed(5) * 100).toFixed(3);
+            if (re == 0) {
+                two_filing_rate = "0%";
+            } else {
+                two_filing_rate = re + "%";
+            }
+
+        }
         const tmp = [
             c.company_code,
             c.org_fullname,
@@ -667,9 +984,14 @@ function createExcelOrderList(list) {
             c.success,
             c.overtime,
             c.one_file,
+            c.twiceAuditNum,
+            c.untreatedNum,
+            c.treatedNum,
+            c.overtimeTreatedNum,
             filing_rate,
             timely_filing_rate,
-            one_filing_rate
+            one_filing_rate,
+            two_filing_rate,
         ]
 
         data.push(tmp);
@@ -866,6 +1188,7 @@ exports.detail_list = function (page, size, org_id, level, status, proc_code, st
             statistics['channel_id'] = {$in: obj_org_id};
         }
         var two_histroy = {};
+        var history = {};
         //流程编码
         if (proc_code) {
             statistics['proc_code'] = proc_code;
@@ -920,6 +1243,31 @@ exports.detail_list = function (page, size, org_id, level, status, proc_code, st
             inst_match['inst.refuse_number'] = 0;
             inst_match['inst.proc_inst_status'] = 4;
 
+        }
+        var history_match = {};
+        var history_match1 = {};
+        var history_match2 = {};
+        // 二次及以上稽核业务量
+        if (status == 5) {
+            history_match1["history_size"] = 3
+            history_match1["inst.proc_inst_status"] = {$ne:4}
+
+            history_match2["history_size_gt_3"] = 1
+
+            history_match = {$or:[history_match1,history_match2]}
+        }
+        // 未补录工单量
+        if (status == 6) {
+            history_match["history_size"] = 1;
+        }
+        // 补录工单量
+        if (status == 7) {
+            history_match["history_size_gt_1"]= 1;
+        }
+        // 补录工单超时量
+        if (status == 8) {
+            history_match['history_size_gt_1'] =1;
+            history_match['inst.is_overtime']= 1;
         }
         if (work_order_number) {
             inst_match['inst.work_order_number'] = work_order_number;
@@ -997,6 +1345,26 @@ exports.detail_list = function (page, size, org_id, level, status, proc_code, st
                     as: "two_histroy"
                 }
             },
+            {
+                $graphLookup: {
+                    from: "common_bpm_proc_task_histroy",
+                    startWith: "$inst._id",
+                    connectFromField: "_id",
+                    connectToField: "proc_inst_id",
+                    as: "history",
+                    restrictSearchWithMatch: history
+                }
+            },
+            {
+                $addFields: {
+                    history_size_gt_3:{$cond: { if: { $gt: [ {$size:"$history"}, 3 ] }, then: 1, else: 0 }},
+                    history_size_gt_1:{$cond: { if: { $gt: [ {$size:"$history"}, 1 ] }, then: 1, else: 0 }},
+                    history_size:{$size:"$history"},
+                }
+            },
+            {
+                $match: history_match
+            },
            {
                $addFields: {
                    proc_title: "$inst.proc_title",
@@ -1032,6 +1400,26 @@ exports.detail_list = function (page, size, org_id, level, status, proc_code, st
                             foreignField: "_id",
                             as: "inst"
                         }
+                    },
+                    {
+                        $graphLookup: {
+                            from: "common_bpm_proc_task_histroy",
+                            startWith: "$inst._id",
+                            connectFromField: "_id",
+                            connectToField: "proc_inst_id",
+                            as: "history",
+                            restrictSearchWithMatch: history
+                        }
+                    },
+                    {
+                        $addFields: {
+                            history_size_gt_3:{$cond: { if: { $gt: [ {$size:"$history"}, 3 ] }, then: 1, else: 0 }},
+                            history_size_gt_1:{$cond: { if: { $gt: [ {$size:"$history"}, 1 ] }, then: 1, else: 0 }},
+                            history_size:{$size:"$history"},
+                        }
+                    },
+                    {
+                        $match: history_match
                     },
                     {
                         $match: inst_match

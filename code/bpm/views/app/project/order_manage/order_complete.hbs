@@ -35,7 +35,7 @@
                                     <div class="form-group">
                                         <div class="input-group">
                                             <span class="input-group-btn">
-                                                    <button id="turn2SendBtn" class="btn btn-default" type="button" onclick="turn2Send()"><i class="fa fa-edit"></i>转派{{msg}}</button>
+                                                    <button id="turn2SendBtn" class="btn btn-default" type="button" onclick="turn2Send()"><i class="fa fa-edit"></i>转派</button>
                                             </span>
                                         </div>
                                     </div>
@@ -297,7 +297,6 @@
             type:"post",
             url:"{{projcfg.appurl}}/api/order_manage/order_complete/getUserInfo",
             dataType:"json",
-            async:false,
             data:{"workId":workId},
             success:function(data){
                 if(data.success){
@@ -306,12 +305,36 @@
                     var str = "<tr>";
                     $("#tbd").html("");
                     for(var i=0;i<orgs.length;i++){
-                        str +=  "<th class='td'>"+user.name+"</th>"+
-                                "<th class='td'>"+user.mobile+"</th>"+
-                                "<th class='td'>"+orgs[i].city_name+"</th>"+
-                                "<th class='td'>"+orgs[i].county_name+"</th>"+
-                                "<th class='td'>"+orgs[i].grid_name+"</th>"+
-                                "<th class='td'>"+orgs[i].channel_name+"</th>";
+                        var name = "";
+                        if (user.name) {
+                            name = user.name;
+                        }
+                        var mobile="";
+                        if (user.mobile) {
+                            mobile = user.mobile;
+                        }
+                        var city_name = "";
+                        if(orgs[i].city_name){
+                            city_name = orgs[i].city_name;
+                        }
+                        var county_name = "";
+                        if(orgs[i].county_name){
+                            county_name = orgs[i].county_name;
+                        }
+                        var grid_name = "";
+                        if(orgs[i].grid_name){
+                            grid_name = orgs[i].grid_name;
+                        }
+                        var channel_name = "";
+                        if(orgs[i].channel_name){
+                            channel_name = orgs[i].channel_name;
+                        }
+                        str +=  "<th class='td'>"+name+"</th>"+
+                                "<th class='td'>"+mobile+"</th>"+
+                                "<th class='td'>"+city_name+"</th>"+
+                                "<th class='td'>"+city_name+"</th>"+
+                                "<th class='td'>"+grid_name+"</th>"+
+                                "<th class='td'>"+channel_name+"</th>";
                     }
                     $("#tbd").append(str);
                 }else{
@@ -319,7 +342,7 @@
                 }
             },
             error:function(XMLHttpRequest, textStatus, errorThrown){
-
+                $.messager.alert("提示",textStatus);
             }
          });
     }

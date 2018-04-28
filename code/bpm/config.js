@@ -255,10 +255,12 @@ var config = {
     SMS_TEMPLET_ORDER:"渠道工单系统有一张需要您处理的工单，《procName》，工单号：orderNo，请及时登陆认真处理。",
     VALIDATION:"工单系统手机号登录验证码为：randomNumber，请不要透露他人。",
     GRID_COPY:"尊敬的网格管理员，您所辖渠道:channelName,渠道编码:channelCode,有一条待处理工单《procName》,工单号：orderNo，请及时催促处理。",
+    MISTAKE_DISTRIBUTE_TASK:"差错工单系统自动派单失败，工单量大于2万条，请手动派单。",
     OPEN_SMS_ALL:false, //工单短信发送总开关
     OPEN_SMS:false, //工单短信发送接口
     OPEN_LOGIN_SMS:false, //短信登录验证码
     GRID_COPY_SMS:false, //预警工单抄送给网格经理短信
+    MISTAKE_DISTRIBUTE_TASK_SMS:false, // 差错工单系统自动派单短信提醒
     //派单接口信息
     api_interface_url:'https://127.0.0.1:30002',
     mistake_proc_code:'p-201',
@@ -270,6 +272,7 @@ var config = {
         athena_app_switch:false,  //同步雅典娜app数据(网格经理、厅经理、营业员)作业任务开关
         huanghe_switch:false , //差错工单同步黄河数据
         mistake_switch:false,  //差错工单任务是否超时定时任务
+        mistake_distribute_switch:true,// 差错工单派发定时任务
         errData_switch:false //差错工单归档数据上传ftp
     },
     //允许发送短信的流程
@@ -282,6 +285,7 @@ var config = {
     athena_peason_switch_core:"30 1 2 * * *",//秒、分、时、日、月、周几
     huanghe_switch_core:"30 11 15 * * *",//秒、分、时、日、月、周几
     mistake_switch_core:"40 14 15 * * *",//秒、分、时、日、月、周几
+    mistake_distribute_cron:"00 * */10 * * *",
     peson_sync_data_from_Athena_url:"e:\\peasondata",//同步人员错误数据导出地址
     org_sync_data_from_Athena_url:"e:\\data",//同步机构错误数据导出地址
     ftp_huanghe_server:{

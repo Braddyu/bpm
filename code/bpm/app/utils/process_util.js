@@ -27,6 +27,8 @@ exports.sendSMS=function(mobile,params,tmplet_key,proc_code){
                 var OPEN_LOGIN_SMS=config.OPEN_LOGIN_SMS
                 //抄送
                 var GRID_COPY_SMS=config.GRID_COPY_SMS
+                //差错工单系统自动派单
+                var MISTAKE_DISTRIBUTE_TASK_SMS = config.MISTAKE_DISTRIBUTE_TASK_SMS;
 
                 //是否开通短信登录
                 if(tmplet_key == 'VALIDATION' && OPEN_LOGIN_SMS){
@@ -55,6 +57,14 @@ exports.sendSMS=function(mobile,params,tmplet_key,proc_code){
 
                 //是否开通工单抄送接收短信
                 if(tmplet_key == 'GRID_COPY' && GRID_COPY_SMS){
+                    open = true;
+                }else if(tmplet_key == 'GRID_COPY'){
+                    reject("短信服务未开启");
+                    return;
+                }
+
+                //差错工单派单定时任务短信提醒
+                if(tmplet_key == 'MISTAKE_DISTRIBUTE_TASK' && MISTAKE_DISTRIBUTE_TASK_SMS){
                     open = true;
                 }else if(tmplet_key == 'GRID_COPY'){
                     reject("短信服务未开启");

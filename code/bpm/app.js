@@ -152,7 +152,20 @@ hbs.registerHelper('isempty', function (v1, options) {
     }
     return options.fn(this);
 });
-
+hbs.registerHelper('ifAdmin', function (options) {
+    var user_roles = this.currentUser.user_roles;
+    var is_admin = false;
+    user_roles.forEach(function (item) {
+        if(item.role_code == 'check_manager'){
+            is_admin = true;
+        }
+    });
+    if(!is_admin) {
+        return options.inverse(this);
+    }else{
+        return options.fn(this);
+    }
+});
 /**
  * json object转换为string
  */

@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var utils = require('../../../../lib/utils/app_utils');
 var service = require('../services/mistake_list_service');
+var dict_service = require('../../workflow/services/dict_service');
 var config = require('../../../../config');
 var xss = require('xss');
 
@@ -91,10 +92,10 @@ router.route('/dispatch').post(function(req,resp){
     data.create_user_name = user_name;
     data.update_user_no = '';
     data.dispatch_cond_one = check_status?check_status:'';
-    data.dispatch_cond_two = city_code?city_code:'';
     data.dispatch_cond_thr = business_name?business_name:'';
     data.create_time = new Date();
-    //0表示派单中，1表示：派单全部成功。2表示：派单部分成功。3表示：派单全部失败。
+    //0表示派单中，1表示：派单全部成ond_two = city_code?city_code:'';
+    //     data.dispatch_c功。2表示：派单部分成功。3表示：派单全部失败。
     data.status = 0;
     data.dispatch_remark = '';
     datas.push(data);
@@ -263,4 +264,59 @@ router.route('/export_overtimeList').get(function(req,res){
         })
 })
 
+/**
+ * 开启差错工单派单定时任务
+ */
+router.route("/openTask").post(function(req,res){
+    var query_date = req.body.query_date;
+    var check_status = req.body.check_status;
+    var business_name = req.body.business_name;
+    var city_code = req.body.city_code;
+    var params = {};
+    if (query_date){
+        params['query_date'] = query_date;
+    }else{
+        params['query_date'] = "";
+    }
+    if(check_status && 0!=check_status){
+        params['check_status'] = check_status;
+    }else{
+        params['check_status'] = "";
+    }
+    if (business_name && 0!=business_name) {
+        params['business_name'] = business_name;
+    }else{
+        params['business_name'] = "";
+    }
+    if (city_code && 0!=city_code) {
+        params['city_code'] = city_code;
+    }else{
+        params['city_code'] = "";
+    }
+    dict_service.openTask(params).then(function(result){
+        if(result.success){
+            utils.respJsonData(res,result);
+        }
+    });
+});
+/**
+ * 关闭差错工单派单定时任务
+ */
+router.route("/closeTask").post(function(req,res){
+    dict_service.closeTask().then(function(result){
+        if(result.success){
+            utils.respJsonData(res,result);
+        }
+    });
+});
+/**
+ * 获取差错工单派单定时任务开关状态
+ */
+router.route("/getSwitch").get(function(req,res){
+    dict_service.getSwitch().then(function(result){
+        if(result.success){
+            utils.respJsonData(res,result);
+        }
+    });
+});
 module.exports = router;
