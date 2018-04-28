@@ -231,8 +231,12 @@ exports.getOrgTreeDataAsyn = function(condition) {
 exports.getMoneyAudtiProcInsts = function() {
     var p = new Promise(function(resolve,reject){
         var time = new Date();
-        var t1 = new Date("2018-04-24 10:23;00")
-        exports.dateSub(t1,time);
+        var isoDateStr = "2018-04-25 10:25:00 ";
+        isoDateStr=isoDateStr.replace(/-/g,':').replace(' ',':');
+        isoDateStr=isoDateStr.split(':');
+        var t1 = new Date(isoDateStr[0],(isoDateStr[1]-1),isoDateStr[2],isoDateStr[3],isoDateStr[4],isoDateStr[5]);
+        var flag = exports.dateSub(t1,time);
+        console.log(flag);
         var condition={};
         condition.proc_code  = "zj_101";
         condition.proc_inst_status  = {'$ne':4};
@@ -289,7 +293,7 @@ exports.dateSub = function(date1,date2) {
 
     var hour1 = date1.getHours();
     var hour2 = date2.getHours();
-    console.log(hour1,hour2);
+    console.log(hour1,hour2,hour2-hour1);
     if(hour2-hour1!=5){
         return false;
     }

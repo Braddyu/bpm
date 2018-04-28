@@ -53,7 +53,10 @@ router.route('/accept')
 // -------------------------------任务认领接口-------------------------------
     .post(function (req, res) {
         var id = req.body.id;//任务id
-        var userNo = req.session.current_user.user_no;;//任务userJson
+        var userNo = req.session.current_user.user_no;//任务userJson
+        var handle =req.body.handle;
+
+        console.log(handle,"33333333333333333333")
 
         // 任务是否为空
         if (!id) {
