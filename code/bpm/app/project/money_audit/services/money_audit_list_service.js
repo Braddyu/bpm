@@ -229,36 +229,44 @@ exports.getOrgTreeDataAsyn = function(condition) {
  * @param condition
  */
 exports.getMoneyAudtiProcInsts = function() {
-    var p = new Promise(function(resolve,reject){
+    var p = new Promise(async function(resolve,reject){
         var time = new Date();
-        var isoDateStr = "2018-04-25 10:25:00 ";
-        isoDateStr=isoDateStr.replace(/-/g,':').replace(' ',':');
-        isoDateStr=isoDateStr.split(':');
-        var t1 = new Date(isoDateStr[0],(isoDateStr[1]-1),isoDateStr[2],isoDateStr[3],isoDateStr[4],isoDateStr[5]);
-        var flag = exports.dateSub(t1,time);
-        console.log(flag);
         var condition={};
         condition.proc_code  = "zj_101";
         condition.proc_inst_status  = {'$ne':4};
-        model.$ProcessInst.find(condition, function(error, result){
-            if(error){
-                console.log('查询未归档稽核工单实例失败',err);
-                resolve({'success':false,'code':'1000','msg':'查询未归档稽核工单实例失败',"error":err});
-            }else{
-                //if(result) {
-                //    if (result.length > 0) {
-                //        var resultData = [];
-                //        for(let i in result){
-                //            var jsonData = JSON.parse(result[i].proc_vars);
-                //            var t1 = new Date(jsonData.endTime);
-                //            exports.dateSub(t1,time);
-                //        }
-                //    }
-                //}
-                resolve({'success':true,'code':'0000','msg':'查询未归档稽核工单实例成功',"data":result,"error":null});
-
+        let result= await model.$ProcessInst.find(condition);
+        if (result.length > 0) {
+            var resultData = [];
+            for(let i in result){
+                var isoDateStr = JSON.parse(result[i].proc_vars).end_time;
+                isoDateStr=isoDateStr.replace(/-/g,':').replace(' ',':');
+                isoDateStr=isoDateStr.split(':');
+                var t1 = new Date(isoDateStr[0],(isoDateStr[1]-1),isoDateStr[2],isoDateStr[3],isoDateStr[4],isoDateStr[5]);
+                var flag = exports.dateSub(t1,time);//判断完成时间
+                if(flag){
+                    //获取到任务  节点处理人  发短信通知
+                    let res= await model.$ProcessInstTask.find({"proc_inst_id":result[i]._id,"proc_inst_task_status":0});
+                    if(res.length>0){
+                        let result1= await model_user.$User.find({"user_no":res[0].proc_inst_task_assignee});
+                        if(result1.length>0) {
+                            var phone = result1[0].user_phone;
+                            //发短信
+                            console.log("发短信给了"+phone)
+                            var params = {
+                                "procName": result[i].proc_name,
+                                "orderNo":result[i].work_order_number
+                            }
+                            process_utils.sendSMS(mobile, params, "SMS_TEMPLET_MONEY_AUDIT_ORDER","zj_101").then(function (rs) {
+                                console.log("短信发送成功");
+                            }).catch(function (err) {
+                                console.log("短信发送失败", err);
+                            });
+                        }
+                    }
+                }
             }
-        })
+        }
+        resolve({'success':true,'code':'0000','msg':'短信发送成功',"data":result,"error":null});
     });
     return p;
 }
@@ -293,8 +301,8 @@ exports.dateSub = function(date1,date2) {
 
     var hour1 = date1.getHours();
     var hour2 = date2.getHours();
-    console.log(hour1,hour2,hour2-hour1);
-    if(hour2-hour1!=5){
+    console.log(hour1,hour2,hour1-hour2);
+    if(hour1-hour2!=5){
         return false;
     }
     return true;

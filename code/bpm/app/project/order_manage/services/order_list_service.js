@@ -505,7 +505,11 @@ exports.upload_images = function (files, task_id, user_name) {
                                 data.proc_task_id = task_id;
                                 data.proc_inst_id = res[0].proc_inst_id;
                                 data.proc_inst_task_code = res[0].proc_inst_task_code;
-                                data.proc_inst_task_type = res[0].proc_inst_task_type;
+                                if(res[0].proc_inst_task_type){
+                                    data.proc_inst_task_type = res[0].proc_inst_task_type;
+                                }else{
+                                    data.proc_inst_task_type = res[0].proc_inst_task_name;
+                                }
                                 data.user_name = user_name;
                                 data.proc_code = res[0].proc_code;
                                 data.proc_name = res[0].proc_name;

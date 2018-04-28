@@ -273,7 +273,8 @@ var config = {
         huanghe_switch:false , //差错工单同步黄河数据
         mistake_switch:false,  //差错工单任务是否超时定时任务
         mistake_distribute_switch:true,// 差错工单派发定时任务
-        errData_switch:false //差错工单归档数据上传ftp
+        errData_switch:false, //差错工单归档数据上传ftp
+		money_audit_switch:false  //资金稽核工单 预警定时任务
     },
     //允许发送短信的流程
     allowSMS:{
@@ -286,6 +287,7 @@ var config = {
     huanghe_switch_core:"30 11 15 * * *",//秒、分、时、日、月、周几
     mistake_switch_core:"40 14 15 * * *",//秒、分、时、日、月、周几
     mistake_distribute_cron:"00 * */10 * * *",
+	money_audit_switch_core:"5 * * * * *",//秒、分、时、日、月、周几
     peson_sync_data_from_Athena_url:"e:\\peasondata",//同步人员错误数据导出地址
     org_sync_data_from_Athena_url:"e:\\data",//同步机构错误数据导出地址
     ftp_huanghe_server:{

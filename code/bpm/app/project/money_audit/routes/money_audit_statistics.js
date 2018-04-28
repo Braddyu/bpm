@@ -116,7 +116,7 @@ router.route('/detail_list').post(function(req,res){
     service.detail_list(page,size,org_id,level,status,proc_code,startDate,endDate,"","","","")
         .then(function(result){
             let end =new Date().getTime();
-            console.log();
+            console.log(result);
             utils.respJsonData(res, result);
 
         })
