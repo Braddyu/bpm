@@ -16,22 +16,29 @@ var mongoose = require('mongoose');
  */
 exports.getTaskHistoryList=function(condition,pageNow,pageSize){
     var p = new Promise(function (resolve, reject) {
-        var user_roles = mongoose.Types.ObjectId('5a24aab506255330b47e45e1');
+        var user_roles = mongoose.Types.ObjectId('5a9fa2c616f8172c60687e96');
         var fields = {};
         fields.user_roles=user_roles;
         var user_nos=[];
-        var results=[];
+        var userResults=[];
         var resultCount=[];
         var resultcond=[];
-        console.log("2222222222222");
-        console.log(new Date(condition.startDate),"2222222222222");
-
-
+        var compare = {};
+        //开始时间
+        if (condition.startDate) {
+            compare['$gte'] = new Date(condition.startDate);
+        }
+        //结束时间
+        if (condition.endDate) {
+            compare['$lte'] = new Date(condition.endDate+' 23:59:59');
+        }
+        //console.log(compare,"eeeeeeeeeeeee");
         user_model.$User.find(fields, function(error, result) {
             if(error) {
                 console.log(error);
             }else {
-                results = result;
+                console.log(result,"-----------");
+                userResults = result;
                 for(var k in result){
                     user_nos.push(result[k].user_no);
                 }
@@ -41,8 +48,8 @@ exports.getTaskHistoryList=function(condition,pageNow,pageSize){
                             proc_inst_task_assignee:{$in:user_nos},
                             proc_code: "p-201",
                             proc_inst_task_code : { $ne : "processDefineDiv_node_2" },
-                            proc_inst_task_arrive_time:{$gte : new Date(condition.startDate)},
-                            proc_inst_task_handle_time:{$lte: new Date(condition.endDate)}
+                            proc_inst_task_handle_time:compare
+
                         }
                     },
                     {
@@ -54,23 +61,35 @@ exports.getTaskHistoryList=function(condition,pageNow,pageSize){
                         }
                     }
                 ]).exec(function (err, res) {
+                    console.log(res,"++++++++");
                     if (err) {
                         reject(utils.returnMsg(false, '1000', '查询统计失败。', null, err));
                     } else {
-                        console.log(res);
-                        for(var idx in results){
-                            var user = results[idx];
-                            console.log(user.user_no);
-                            for(var ix in res){
-                                var task = res[ix];
-                                if(task._id.proc_inst_task_assignee==user.user_no){
-                                    resultCount.push({user_no: user.user_no, count: task.count,user_name:user.user_name });
-                                }else{
-                                    resultCount.push({ user_no: user.user_no, count: 0,user_name:user.user_name });
-                                    //break;
+                        for(var idx in userResults){
+                            var user = userResults[idx];
+                            if (res.length>0){
+                                for(var ix in res){
+                                    var task = res[ix];
+                                     if(task._id.proc_inst_task_assignee==user.user_no){
+                                         resultCount.push({user_no: user.user_no, count: task.count,user_name:user.user_name });
+                                     }
+                                }
+                            }else {
+                                resultCount.push({ user_no: user.user_no, count: 0,user_name:user.user_name });
+                            }
+                        }
+                        for(var idx in userResults){
+                            for(var ix in resultCount){
+                                if(resultCount[ix].user_no==userResults[idx].user_no){
+                                    userResults.splice(idx,1);
                                 }
                             }
-
+                        }
+                        console.log(userResults,"00000000000000000000000");
+                        if (userResults.length>0){
+                            for (var i in userResults){
+                                resultCount.push({user_no: userResults[i].user_no, count: 0,user_name:userResults[i].user_name });
+                            }
                         }
                         if(condition.user_no){
                             for(let  i in resultCount){
