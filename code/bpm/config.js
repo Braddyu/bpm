@@ -253,6 +253,7 @@ var config = {
     joinup_sys:'warnSys_node,errorSys_node,auditorSys_node,syesightSys_node,moneyAudit_node,unitTest_node',
     AES_KEY:'1234567890ABCDEFGHIJKLMNOPQRSTUV',
     SMS_TEMPLET_ORDER:"渠道工单系统有一张需要您处理的工单，《procName》，工单号：orderNo，请及时登陆认真处理。",
+    SMS_TEMPLET_MONEY_AUDIT_ORDER:"渠道工单系统有一张需要您处理的工单即将到期，《procName》，工单号：orderNo，请尽快登陆认真处理。",
     VALIDATION:"工单系统手机号登录验证码为：randomNumber，请不要透露他人。",
     GRID_COPY:"尊敬的网格管理员，您所辖渠道:channelName,渠道编码:channelCode,有一条待处理工单《procName》,工单号：orderNo，请及时催促处理。",
     MISTAKE_DISTRIBUTE_TASK:"差错工单系统自动派单失败，工单量大于2万条，请手动派单。",
@@ -261,6 +262,7 @@ var config = {
     OPEN_LOGIN_SMS:false, //短信登录验证码
     GRID_COPY_SMS:false, //预警工单抄送给网格经理短信
     MISTAKE_DISTRIBUTE_TASK_SMS:false, // 差错工单系统自动派单短信提醒
+    MONEY_AUDIT_SMS:true,//资金稽核工单 预警短信开关
     //派单接口信息
     api_interface_url:'https://127.0.0.1:30002',
     mistake_proc_code:'p-201',
@@ -287,7 +289,7 @@ var config = {
     huanghe_switch_core:"30 11 15 * * *",//秒、分、时、日、月、周几
     mistake_switch_core:"40 14 15 * * *",//秒、分、时、日、月、周几
     mistake_distribute_cron:"00 * */10 * * *",
-	money_audit_switch_core:"5 * * * * *",//秒、分、时、日、月、周几
+	money_audit_switch_core:" 0 * */1 * *",//秒、分、时、日、月、周几
     peson_sync_data_from_Athena_url:"e:\\peasondata",//同步人员错误数据导出地址
     org_sync_data_from_Athena_url:"e:\\data",//同步机构错误数据导出地址
     ftp_huanghe_server:{

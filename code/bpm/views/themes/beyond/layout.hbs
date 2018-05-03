@@ -40,6 +40,7 @@
     <script type="text/javascript" src="{{projcfg.appurl}}/static/js/easyui/jquery.easyui.min.js"></script>
     <script type="text/javascript" src="{{projcfg.appurl}}/static/js/easyui/locale/easyui-lang-zh_CN.js"></script>
     <link rel="stylesheet" type="text/css" href="{{projcfg.appurl}}/static/css/common/style.css">
+    <script src="{{projcfg.appurl}}/static/js/tingyun-rum.js"></script>
     <script>
         $.ajaxSettings.beforeSend = function (xhr, request) {
             xhr.setRequestHeader('csrf-token', '{{_csrfToken}}');

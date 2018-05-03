@@ -6,6 +6,7 @@ var flag = config.switchDetail.money_audit_switch;
 
 schedule.scheduleJob(config.money_audit_switch_core, function(){
     if(flag){
+        console.log("执行了")
         //查出 未归档的资金稽核工单实例，遍历
         service.getMoneyAudtiProcInsts()
             .then(function(result){

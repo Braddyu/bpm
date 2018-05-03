@@ -256,7 +256,7 @@ exports.getMoneyAudtiProcInsts = function() {
                                 "procName": result[i].proc_name,
                                 "orderNo":result[i].work_order_number
                             }
-                            process_utils.sendSMS(mobile, params, "SMS_TEMPLET_MONEY_AUDIT_ORDER","zj_101").then(function (rs) {
+                            process_utils.sendSMS(phone, params, "SMS_TEMPLET_MONEY_AUDIT_ORDER","zj_101").then(function (rs) {
                                 console.log("短信发送成功");
                             }).catch(function (err) {
                                 console.log("短信发送失败", err);

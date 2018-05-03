@@ -30,6 +30,8 @@ exports.sendSMS=function(mobile,params,tmplet_key,proc_code){
                 //差错工单系统自动派单
                 var MISTAKE_DISTRIBUTE_TASK_SMS = config.MISTAKE_DISTRIBUTE_TASK_SMS;
 
+                var MONEY_AUDIT_SMS = config.MONEY_AUDIT_SMS;
+
                 //是否开通短信登录
                 if(tmplet_key == 'VALIDATION' && OPEN_LOGIN_SMS){
                     open = true;
@@ -70,6 +72,15 @@ exports.sendSMS=function(mobile,params,tmplet_key,proc_code){
                     reject("短信服务未开启");
                     return;
                 }
+
+                //差错工单派单定时任务短信提醒
+                if(tmplet_key == 'SMS_TEMPLET_MONEY_AUDIT_ORDER' && MONEY_AUDIT_SMS){
+                    open = true;
+                }else if(tmplet_key == 'GRID_COPY'){
+                    reject("短信服务未开启");
+                    return;
+                }
+
             }
 
             if(isOpen && open){
