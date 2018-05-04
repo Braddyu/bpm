@@ -188,7 +188,7 @@
                 },
                     formatter:function(value,row,index){
                     //大于6表示已经下砖到渠道层级
-                    if(level+1>5 || row.company_code.length==8){
+                    if(level+1>5){
                         return value;
                     }else{
                         return '<a href="javascript:void(0);" onclick="doSearchOrg(\''+row._id+'\')">'+value+'</a>';
@@ -199,7 +199,7 @@
                 {"field": "org_fullname","title":"区域名称","width":"450px",
                     formatter:function(value,row,index){
                         //大于6表示已经下砖到渠道层级
-                        if(level+1>5  || row.company_code.length==8){
+                        if(level+1>5){
                             return value;
                         }else{
                             return '<a href="javascript:void(0);" onclick="doSearchOrg(\''+row._id+'\')">'+value+'</a>';
