@@ -592,7 +592,7 @@ exports.checkFile = function (inst_id, node,check_memo,user_name,user_no) {
             }else{
                 let task_history={};
                 let task_arr=[];
-//获取复核的节点信息
+                //获取复核的节点信息
                 for(let i in res){
                     let his=JSON.parse(JSON.stringify(res[i]));
                     delete his["_id"];
@@ -602,8 +602,8 @@ exports.checkFile = function (inst_id, node,check_memo,user_name,user_no) {
                     }
                 }
 
-//修改工单状态，将归档工单改为处理中，已经新增复核字段
-                model.$ProcessInst.update({_id:inst_id},{$set:{is_check:1,proc_inst_status:2}},{},function(err){
+                //修改工单状态，将归档工单改为处理中，已经新增复核字段
+                model.$ProcessInst.update({_id:inst_id},{$set:{is_check:1,proc_inst_status:2,check_time:new Date()}},{},function(err){
                     let history={};
                     history.proc_inst_task_assignee=user_no;
                     history.proc_inst_task_assignee_name=user_name;
@@ -810,14 +810,8 @@ exports.again_images = function (files, inst_id, user_name) {
 exports.updateInstTask = function (id,handle,result1) {
     return new Promise(async function (resolve, reject) {
         if (id) {
-            console.log("00000000000000");
-            let conditions = {proc_task_id: id};
-            let update = {$set: {proc_inst_task_status: 5}};
-            let options = {}
-            await model.$ProcessTaskHistroy.update(conditions, update, options);
-            await model.$ProcessInstTask.remove({_id: id});
-            let res = await model.$ProcessTaskHistroy.find({proc_task_id: id,proc_inst_task_status: 5});
-            await model.$ProcessInst.update({_id:res[0].proc_inst_id,$set: {proc_inst_status: 5}});
+            let res = await model.$ProcessTaskHistroy.find({proc_task_id: id});
+            await model.$ProcessInst.update({_id:res[0].proc_inst_id},{$set: {proc_inst_status: 5}});
             resolve(result1)
         }
     })

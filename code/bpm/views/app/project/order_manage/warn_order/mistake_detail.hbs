@@ -93,10 +93,9 @@
                         <td align="right" class="tdLabel">操作:</td>
                         <td colspan="3" class="tdLabel">
                             <select class="easyui-combobox" name="handle"
-                                    style="width: 80px;" id="handle" panelHeight="auto">
+                                    style="width: 100px;" id="handle" panelHeight="auto">
 
                             </select>
-
 
                         </td>
                     </tr>
@@ -284,27 +283,15 @@
             $.messager.progress('close');
         }
     });
-
-
     //是否属于归档节点
     var endFlag = false;
     var proc_inst_task_sign = 1;
-
-
-    /*   //状态1:归档,2：我的待办,3:我的已办，4：新增操作
-       var status = '2';
-       //状态为2时表示任务id，1和3时为实例id
-       var change_id = '5ab35e64a967be2344eb8aff'*/
-
-    if (status == 1 || status == 3) {
+    //状态,1:实例时间  2：待办工单 3：已办工单 4：归档工单
+    if (status == 1 || status == 3 || status == 4) {
         //隐藏处理操作
         $("#order_detail").hide();
         $("#submitButton").hide();
-
-        /*  if (status == 3) {
-              $("#fileUpload1").show();
-          }*/
-        if (status == 1) {
+        if (status == 4) {
             $("#check").show();
         }
     } else if (status == 2) {
@@ -374,7 +361,7 @@
                             var url = '{{projcfg.appurl}}/api/process/show/progressed?proc_inst_id=' + inst_id;
                             document.getElementById("iframeId").src = url;
                         } else if (title == '附件') {
-                            if(proc_inst_status==2){
+                            if(proc_inst_status==2 &&(status==2 || status==3) ){
 
                                 $("#againFile").show();
                                 var $list1 = $("#thelist1");
@@ -552,7 +539,7 @@
                             halign: 'center',
                             formatter: function (value, row, index) {
                                 var html = '';
-                                if (status == 2 || proc_inst_status==2) {
+                                if ((status ==3 ||status == 2) && proc_inst_status==2) {
                                     html = '<div style="text-align: center"><a href="javascript:void(0);" onclick="deleteFile(\'' + row._id + '\')" >删除</a></div>';
                                 }
                                 return html;
@@ -624,6 +611,7 @@
                         $("#tr_5").hide();
                         endFlag = true;
                         comboboxData.push({value: '1', text: '归档'});
+                        comboboxData.push({value: '3', text: '客户不配合'});
                         $("#fileUpload").hide();
 
                     } else {
@@ -636,7 +624,7 @@
                         //是否存在拒绝节点
                         comboboxData.push({value: '0', text: '拒绝'});
                     }
-                    comboboxData.push({value: '3', text: '客户不配合'});
+
                     $("#handle").combobox('loadData', comboboxData);
                     $("#handle").combobox('select', comboboxData[0].value)
                 } else {

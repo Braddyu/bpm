@@ -207,7 +207,7 @@ router.post('/complete', function (req, res, next) {
     var handle = req.body.handle;//操作
     var params = "";//流转参数
     //通过或者归档
-    if (handle == '1') {
+    if (handle == '1' || handle == '3') {
         params = '{\"flag\":true}';
         // params.flag=true;
     } else if (handle == '0') {
@@ -258,8 +258,7 @@ router.post('/complete', function (req, res, next) {
                                                 utils.respJsonData(res, err);
                                             })
                                         }else if(handle==3){
-                                            //客户不配合 时进行记录
-                                            console.log(id,"88888888888");
+                                            //客户不配合时进行记录
                                             service.updateInstTask(id,handle,result1).then(function () {
                                                 utils.respJsonData(res, result1);
                                             }).catch(function (err) {

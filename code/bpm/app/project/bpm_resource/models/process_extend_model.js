@@ -19,6 +19,7 @@ var commonProcessTaskStatisticsSchema = new Schema(
         channel_id:{type: Schema.Types.ObjectId},//渠道ID
         channel_code:String,//渠道编码
         channel_name:String,//渠道名称
+        channel_type:String,//渠道类型
         grid_code:String,//网格编码
         grid_name:String,//网格名称
         grid_id:{type: Schema.Types.ObjectId},//网格ID

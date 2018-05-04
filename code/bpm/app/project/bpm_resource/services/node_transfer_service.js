@@ -649,13 +649,8 @@ async function normal_process(current_detail,next_detail, next_node, proc_inst_i
                 'proc_inst_task_code': proc_cur_task
 
             });
-            let user_mes =await model_user.$User.find({'user_no':step_first[0].proc_inst_task_assignee});
 
-            if(user_mes.length >0 && user_mes[0].work_id){
-                condition_task.proc_inst_task_work_id = user_mes[0].work_id;
-            }else{
-                condition_task.proc_inst_task_work_id = '';
-            }
+            condition_task.proc_inst_task_work_id = step_first[0].proc_inst_task_work_id;
             condition_task.next_name = step_first[0].next_name;
             condition_task.proc_back = 1;
             condition_task.joinup_sys = step_first[0].joinup_sys;//工单所属编号
@@ -719,22 +714,7 @@ async function normal_process(current_detail,next_detail, next_node, proc_inst_i
             options={};
             await model.$ProcessInst.update(conditions, update, options);
         }
-        //如果是发短信,目前库的user_no即电话号码，所以直接使用user_no
-        if (condition_task.proc_inst_task_assignee && condition_task.proc_inst_task_sms == '1') {
-            var process_utils = require('../../../utils/process_util');
-            let resultss=await model_user.$User.find({"user_no": condition_task.proc_inst_task_assignee});
-            if(resultss.length==0){NoFound(resolve);return ;}
-            var mobile=resultss[0].user_phone;
-            var params = {
-                "procName": proc_name,
-                "orderNo": condition_task.work_order_number
-            }
-            process_utils.sendSMS(mobile, params, "SMS_TEMPLET_ORDER",proc_code).then(function (rs) {
-                console.log("短信发送成功");
-            }).catch(function (err) {
-                console.log("短信发送失败", err);
-            });
-        }
+
 
         resolve(utils.returnMsg(true, '1000', '流程流转新增任务信息正常。', rs, null));
     });
@@ -904,20 +884,7 @@ exports.assign_transfer=function(proc_task_id,node_code,user_code,assign_user_co
        //创建新流转任务
        let result =  await model.$ProcessInstTask.create(arr[0]);
        if(!result){NoFound(resolve);return ;};
-       //如果是发短信
-       if(rs && item_sm_warn=='1' && resultss[0].user_phone){
-           var process_utils = require('../../../utils/process_util');
-           var mobile=resultss[0].user_phone;
-           var params= {
-               "procName":proc_name,
-               "orderNo":work_order_number
-           }
-           await process_utils.sendSMS(mobile,params,"SMS_TEMPLET_ORDER",proc_code).then(function(rs){
-               console.log("短信发送成功");
-           }).catch(function(err){
-               console.log("短信发送失败",err);
-           });
-       }
+
        var conditions = {_id: result.proc_inst_id};
        var data = {};
        data.proc_cur_task = next_detail.item_code;
@@ -951,7 +918,7 @@ exports.find_log=function(inst_id,user_no,page, size){
         var mod = model.$ProcessInstTask;
         var conditionMap = {};
         conditionMap.proc_inst_id = inst_id;
-        if(res[0]._doc.proc_inst_status == '4') {//实例归档
+        if(res[0]._doc.proc_inst_status >= 4) {//实例归档
             mod = model.$ProcessTaskHistroy;
         }
         if(user_no){
@@ -1158,21 +1125,7 @@ exports.do_payout=function(proc_task_id,node_code,user_code,assign_user_code,pro
                 //创建新流转任务
                 let rs = await model.$ProcessInstTask.create(condition_task);
                 taskid = rs._id;
-                //如果是发短信
-                if (rs && item_sm_warn == '1' && resultss[0].user_phone) {
-                    var process_utils = require('../../../utils/process_util');
-                    var mobile = resultss[0].user_phone;
 
-                    var params = {
-                        "procName": proc_name,
-                        "orderNo": work_order_number
-                    }
-                    process_utils.sendSMS(mobile, params, "SMS_TEMPLET_ORDER",proc_code).then(function (rs) {
-                        console.log("短信发送成功");
-                    }).catch(function (err) {
-                        console.log("短信发送失败", err);
-                    });
-                }
                 let resss = await touchNode(next_detail, user_code, rs._id, true);
                 if(!resss.success){
                     resolve(resss);
@@ -1374,19 +1327,6 @@ exports.assigntransfer=function(proc_task_id,node_code,user_code,assign_user_cod
         arr.push(condition_task);
         //创建新流转任务
         let rs_r=await model.$ProcessInstTask.create(arr);
-        if(rs_r && item_sm_warn=='1' && resultss[0].user_phone){
-            var process_utils = require('../../../utils/process_util');
-            var mobile=resultss[0].user_phone;
-            var params= {
-                "procName":proc_name,
-                "orderNo":rs_r[0].work_order_number
-            }
-            process_utils.sendSMS(mobile,params,"SMS_TEMPLET_ORDER",proc_code).then(function(rs){
-                console.log("短信发送成功");
-            }).catch(function(err){
-                console.log("短信发送失败",err);
-            });
-        }
         let res_s= await touchNode(next_detail,user_code,rs[0]._id,true);
         if(res_s.success){
             resolve(utils.returnMsg(true, '1000', '流程流转新增任务信息正常82222。', rs_r, null))
