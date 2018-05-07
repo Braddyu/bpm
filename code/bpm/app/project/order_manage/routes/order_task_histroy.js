@@ -16,8 +16,8 @@ router.route('/list').post(function(req,res){
     if (req.body.endDate) {
         condition.endDate = req.body.endDate;//结束时间
     }
-    if (req.body.user_no) {
-        condition.user_no = req.body.user_no;//boss工号
+    if (req.body.work_id) {
+        condition.work_id = req.body.work_id;//boss工号
     }
     service.getTaskHistoryList(condition,page,size).then(function (taskresult) {
         utils.respJsonData(res, taskresult);

@@ -15,7 +15,7 @@
                             </div>
                             <div class="btn-group" role="group" aria-label="...">
                                 <label for="filterParam3">boss工号：</label>
-                                <input class="easyui-textbox"id="user_no"  style="width: 130px;height:25px;">
+                                <input class="easyui-textbox"id="work_id"  style="width: 130px;height:25px;">
                                 </input>
                             </div>
                         </div>
@@ -104,7 +104,7 @@
             checkOnSelect:true,
             columns:[[
                 //{"field":"_id",checkbox:true},
-                {"field": "user_no","title":"boss工号","width":"33%"},
+                {"field": "work_id","title":"boss工号","width":"33%"},
                 {"field": "user_name","title":"管理员姓名","width":"33%",
                     formatter:function(value,row,index){
                         return "<span title='" + value + "'>" + value + "</span>";
@@ -129,7 +129,7 @@
             queryParams: {
                 startDate: $("#startDate").datebox('getValue'),
                 endDate: $("#endDate").datebox('getValue'),
-                user_no:$("#user_no").val(),
+                work_id:$("#work_id").val(),
             }
         });
     }

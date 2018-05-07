@@ -16,9 +16,9 @@ var mongoose = require('mongoose');
  */
 exports.getTaskHistoryList=function(condition,pageNow,pageSize){
     var p = new Promise(function (resolve, reject) {
-        var user_roles = mongoose.Types.ObjectId('5a9fa2c616f8172c60687e96');
+        var user_roles = mongoose.Types.ObjectId('5a9f3bf5a8cfe7000e40fe41');
         var fields = {};
-        fields.user_roles=user_roles;
+        fields.user_roles={$in:[user_roles]};
         var user_nos=[];
         var userResults=[];
         var resultCount=[];
@@ -71,11 +71,11 @@ exports.getTaskHistoryList=function(condition,pageNow,pageSize){
                                 for(var ix in res){
                                     var task = res[ix];
                                      if(task._id.proc_inst_task_assignee==user.user_no){
-                                         resultCount.push({user_no: user.user_no, count: task.count,user_name:user.user_name });
+                                         resultCount.push({user_no: user.user_no, count: task.count,user_name:user.user_name,work_id:user.work_id });
                                      }
                                 }
                             }else {
-                                resultCount.push({ user_no: user.user_no, count: 0,user_name:user.user_name });
+                                resultCount.push({ user_no: user.user_no, count: 0,user_name:user.user_name,work_id:user.work_id });
                             }
                         }
                         for(var idx in userResults){
@@ -88,14 +88,16 @@ exports.getTaskHistoryList=function(condition,pageNow,pageSize){
                         console.log(userResults,"00000000000000000000000");
                         if (userResults.length>0){
                             for (var i in userResults){
-                                resultCount.push({user_no: userResults[i].user_no, count: 0,user_name:userResults[i].user_name });
+                                resultCount.push({user_no: userResults[i].user_no, count: 0,user_name:userResults[i].user_name,work_id:userResults[i].work_id });
                             }
                         }
-                        if(condition.user_no){
+                        if(condition.work_id){
                             for(let  i in resultCount){
                                 console.log(resultCount[i]);
-                                if (resultCount[i].user_no==condition.user_no){
+                                if (resultCount[i].work_id==condition.work_id){
                                     resultcond.push(resultCount[i]);
+                                    resolve(resultcond);
+                                }else{
                                     resolve(resultcond);
                                 }
                             }
