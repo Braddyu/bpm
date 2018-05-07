@@ -292,20 +292,12 @@
     var proc_inst_task_sign = 1;
 
 
-    /*   //状态1:归档,2：我的待办,3:我的已办，4：新增操作
-       var status = '2';
-       //状态为2时表示任务id，1和3时为实例id
-       var change_id = '5ab35e64a967be2344eb8aff'*/
-
-    if (status == 1 || status == 3) {
+    //状态,1:实例时间  2：待办工单 3：已办工单 4：归档工单
+    if (status == 1 || status == 3 || status==4) {
         //隐藏处理操作
         $("#order_detail").hide();
         $("#submitButton").hide();
-
-        /*  if (status == 3) {
-              $("#fileUpload1").show();
-          }*/
-        if (status == 1) {
+        if (status == 4) {
             $("#check").show();
         }
     } else if (status == 2) {
