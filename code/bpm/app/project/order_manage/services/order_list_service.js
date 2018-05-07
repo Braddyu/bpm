@@ -805,13 +805,13 @@ exports.again_images = function (files, inst_id, user_name) {
 
 /**
  * 标记客户不配合的工单
- * @param id,handle ,result1
+ * @param id,memo ,result1
  */
-exports.updateInstTask = function (id,handle,result1) {
+exports.updateInstTask = function (id,memo,result1) {
     return new Promise(async function (resolve, reject) {
         if (id) {
             let res = await model.$ProcessTaskHistroy.find({proc_task_id: id});
-            await model.$ProcessInst.update({_id:res[0].proc_inst_id},{$set: {proc_inst_status: 5}});
+            await model.$ProcessInst.update({_id:res[0].proc_inst_id},{$set: {proc_inst_status: 5,proc_cur_task_remark:memo}});
             resolve(result1)
         }
     })

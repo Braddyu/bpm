@@ -259,7 +259,7 @@ router.post('/complete', function (req, res, next) {
                                             })
                                         }else if(handle==3){
                                             //客户不配合时进行记录
-                                            service.updateInstTask(id,handle,result1).then(function () {
+                                            service.updateInstTask(id,memo,result1).then(function () {
                                                 utils.respJsonData(res, result1);
                                             }).catch(function (err) {
                                                 utils.respJsonData(res, err);

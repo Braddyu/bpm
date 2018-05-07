@@ -79,6 +79,8 @@ router.route('/order_customer_reason').post(function(req,res){
             completeService.getMyCompleteTaskQueryCustomer(page,length,userNo,result,proc_code,startDate,endDate,work_order_number,task_type).then(function(taskresult){
 
                 utils.respJsonData(res, taskresult);
+
+                console.log(taskresult,"999999999999999");
             }).catch(function(err_inst){
                 // console.log(err_inst);
                 console.log("route-getMyTaskList","获取我的已办数据异常",err_inst);
