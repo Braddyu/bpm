@@ -68,7 +68,21 @@ exports.sendSMS=function(mobile,params,tmplet_key,proc_code){
                 //差错工单派单定时任务短信提醒
                 if(tmplet_key == 'MISTAKE_DISTRIBUTE_TASK' && MISTAKE_DISTRIBUTE_TASK_SMS){
                     open = true;
-                }else if(tmplet_key == 'GRID_COPY'){
+                }else if(tmplet_key == 'MISTAKE_DISTRIBUTE_TASK'){
+                    reject("短信服务未开启");
+                    return;
+                }
+
+                if(tmplet_key == 'MISTAKE_DISTRIBUTE_SUCCESS' && MISTAKE_DISTRIBUTE_TASK_SMS){
+                    open = true;
+                }else if(tmplet_key == 'MISTAKE_DISTRIBUTE_SUCCESS'){
+                    reject("短信服务未开启");
+                    return;
+                }
+
+                if(tmplet_key == 'MISTAKE_DISTRIBUTE_ERROR' && MISTAKE_DISTRIBUTE_TASK_SMS){
+                    open = true;
+                }else if(tmplet_key == 'MISTAKE_DISTRIBUTE_ERROR'){
                     reject("短信服务未开启");
                     return;
                 }

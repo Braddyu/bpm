@@ -85,7 +85,7 @@ exports.getUserRoleList= function(page, size, conditionMap) {
  */
 exports.openTask = function(params){
     // update query date
-    function updateQueryDate(params){
+    /*function updateQueryDate(params){
         return new Promise(function(resolve,reject){
             dictModel.$.find({'dict_code':"mistake_task_date"},function(err,result){
                 if(err){
@@ -105,32 +105,28 @@ exports.openTask = function(params){
                 }
             })
         });
-    }
+    }*/
 
     // update check status
-    function updateCheckStatus(res){
+    function updateCheckStatus(params){
         return new Promise(function(resolve,reject){
-            if(res.success){
-                dictModel.$.find({'dict_code':"mistake_task_check_status"},function(err,result){
-                    if(err){
-                        resolve(utils.returnMsg(false, '0001', '开关开启失败。', null, err));
-                    }else if(result.length == 0){
-                        resolve(utils.returnMsg(false, '0001', '开关开启失败。', null, null));
-                    }else{
-                        var conditions = {"dict_id": result[0]._id};
-                        var update = {$set: {"field_value": res.data.check_status}};
-                        dictModel.$DictAttr.update(conditions,update,{safe:true}, function (errors,updateResult){
-                            if(updateResult.ok > 0){
-                                resolve(utils.returnMsg(true, '0000', '更新数据成功。', res.data, null));
-                            }else{
-                                resolve(utils.returnMsg(false, '0001', '开关开启失败。', null, null));
-                            }
-                        })
-                    }
-                })
-            }else{
-                resolve(result);
-            }
+            dictModel.$.find({'dict_code':"mistake_task_check_status"},function(err,result){
+                if(err){
+                    resolve(utils.returnMsg(false, '0001', '开关开启失败。', null, err));
+                }else if(result.length == 0){
+                    resolve(utils.returnMsg(false, '0001', '开关开启失败。', null, null));
+                }else{
+                    var conditions = {"dict_id": result[0]._id};
+                    var update = {$set: {"field_value": params.check_status}};
+                    dictModel.$DictAttr.update(conditions,update,{safe:true}, function (errors,updateResult){
+                        if(updateResult.ok > 0){
+                            resolve(utils.returnMsg(true, '0000', '更新数据成功。', params, null));
+                        }else{
+                            resolve(utils.returnMsg(false, '0001', '开关开启失败。', null, null));
+                        }
+                    })
+                }
+            })
         });
     }
 
@@ -234,7 +230,7 @@ exports.openTask = function(params){
 
     }
 
-    return updateQueryDate(params).then(updateCheckStatus).then(updateBusinessName).then(updateCityCode).then(updateFlag);
+    return updateCheckStatus(params).then(updateBusinessName).then(updateCityCode).then(updateFlag);
 };
 
 /**

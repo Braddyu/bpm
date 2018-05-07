@@ -94,7 +94,7 @@ exports.getMyCompleteTaskQueryCustomer = function (page, size, userCode, paramMa
 /**
  * 工单任务转派
  */
-exports.turn2SendTask = function(userInfo,instId){
+exports.turn2SendTask = function(userInfo,instId,reason){
     var p = new Promise(function(resolve, reject){
         process_model.$ProcessInst.find({'_id':instId},function(err,rs){
             var proc_cur_task_code_3 = "processDefineDiv_node_3";
@@ -114,16 +114,83 @@ exports.turn2SendTask = function(userInfo,instId){
                             resolve(utils.returnMsg(false,"0001","派单失败:查询当前任务出错",null,err));
                         }else{
                             if(result.length == 1){
-                                // 修改任务表
-                                var update = {};
-                                update.proc_inst_task_arrive_time = new Date();
-                                update.proc_inst_task_handle_time = new Date();
-                                update.proc_inst_task_assignee_name = userInfo.user_name;
-                                update.proc_inst_task_assignee = userInfo.user_no;
-                                update.proc_inst_task_work_id = userInfo.work_id;
-                                update.proc_inst_task_user_org = userInfo.user_org;
-                                update.proc_inst_task_user_role = userInfo.user_roles;
-                                process_model.$ProcessInstTask.update({"_id":result[0]._id},{$set:update},{safe:true},function(err,result){
+                                var cur_task = result[0];
+                                // 修改原任务状态并将其插入到历史表
+                                var time = new Date();
+                                process_model.$ProcessInstTask.update({"_id":result[0]._id},{$set:{"proc_inst_task_status":1,"proc_inst_task_remark":"转派原因:"+reason,"proc_inst_task_complete_time":time}},{safe:true},function(err,result){
+                                    var task_history = {};
+                                    task_history.__v = cur_task.__v;
+                                    task_history.work_order_number = cur_task.work_order_number;
+                                    task_history.previous_step = cur_task.previous_step;
+                                    task_history.proc_back = cur_task.proc_back;
+                                    task_history.next_name = cur_task.next_name;
+                                    task_history.joinup_sys = cur_task.joinup_sys;
+                                    task_history.proc_code = cur_task.proc_code;
+                                    task_history.proc_name = cur_task.proc_name;
+                                    task_history.proc_task_start_name = cur_task.proc_task_start_name;
+                                    task_history.proc_task_start_user_role_names = cur_task.proc_task_start_user_role_names;
+                                    task_history.proc_inst_task_assignee = cur_task.proc_inst_task_assignee;
+                                    task_history.proc_inst_task_remark = "转派原因:"+reason;
+                                    task_history.proc_inst_task_sms = cur_task.proc_inst_task_sms;
+                                    task_history.proc_inst_task_sign = cur_task.proc_inst_task_sign;
+                                    task_history.proc_inst_task_claim = cur_task.proc_inst_task_claim;
+                                    task_history.proc_inst_task_params = cur_task.proc_inst_task_params;
+                                    task_history.proc_vars = cur_task.proc_vars;
+                                    task_history.proc_inst_node_vars = cur_task.proc_inst_node_vars;
+                                    task_history.proc_inst_prev_node_handler_user = cur_task.proc_inst_prev_node_handler_user;
+                                    task_history.proc_inst_prev_node_code = cur_task.proc_inst_prev_node_code;
+                                    task_history.proc_inst_task_title = cur_task.proc_inst_task_title;
+                                    task_history.proc_inst_task_assignee_name = cur_task.proc_inst_task_assignee_name;
+                                    task_history.proc_inst_task_status = 1;
+                                    task_history.proc_inst_task_complete_time = time;
+                                    task_history.proc_inst_task_handle_time = cur_task.proc_inst_task_handle_time;
+                                    task_history.proc_inst_task_arrive_time = cur_task.proc_inst_task_arrive_time;
+                                    task_history.proc_inst_task_type = cur_task.proc_inst_task_type;
+                                    task_history.proc_inst_task_name = cur_task.proc_inst_task_name;
+                                    task_history.proc_inst_id = cur_task.proc_inst_id;
+                                    task_history.proc_task_id = cur_task._id;
+                                    task_history.proc_task_start_user_role_code = cur_task.proc_task_start_user_role_code;
+                                    task_history.proc_inst_task_user_org = cur_task.proc_inst_task_user_org;
+                                    task_history.proc_inst_task_user_role = cur_task.proc_inst_task_user_role;
+                                    process_model.$ProcessTaskHistroy.create(task_history,function(err,result){});
+                                });
+                                // 新增一条任务
+                                var inst_task = {};
+                                inst_task.proc_inst_task_work_id = userInfo.work_id;
+                                inst_task.proc_inst_id = cur_task.proc_inst_id;
+                                inst_task.proc_inst_task_code = cur_task.proc_inst_task_code;
+                                inst_task.proc_inst_task_name = cur_task.proc_inst_task_name;
+                                inst_task.proc_inst_task_type = cur_task.proc_inst_task_type;
+                                inst_task.proc_inst_task_arrive_time = new Date();
+                                inst_task.proc_inst_task_handle_time = new Date();
+                                inst_task.proc_inst_task_complete_time = "";
+                                inst_task.proc_inst_task_status = 0;
+                                inst_task.proc_inst_task_assignee_name = userInfo.user_name;
+                                inst_task.proc_inst_task_title = cur_task.proc_inst_task_title;
+                                inst_task.proc_inst_prev_node_code = cur_task.proc_inst_prev_node_code;
+                                inst_task.proc_inst_prev_node_handler_user = cur_task.proc_inst_prev_node_handler_user;
+                                inst_task.proc_inst_node_vars = cur_task.proc_inst_node_vars;
+                                inst_task.proc_vars = cur_task.proc_vars;
+                                inst_task.proc_inst_task_params = cur_task.proc_inst_task_params;
+                                inst_task.proc_inst_task_claim = cur_task.proc_inst_task_claim;
+                                inst_task.proc_inst_task_sign = cur_task.proc_inst_task_sign;
+                                inst_task.proc_inst_task_sms = cur_task.proc_inst_task_sms;
+                                inst_task.proc_inst_task_remark = "";
+                                inst_task.proc_inst_task_assignee = userInfo.user_no;
+                                inst_task.proc_task_start_user_role_names = cur_task.proc_task_start_user_role_names;
+                                inst_task.proc_task_start_name = cur_task.proc_task_start_name;
+                                inst_task.proc_name = cur_task.proc_name;
+                                inst_task.proc_code = cur_task.proc_code;
+                                inst_task.joinup_sys = cur_task.joinup_sys;
+                                inst_task.next_name = cur_task.next_name;
+                                inst_task.proc_back = cur_task.proc_back;
+                                inst_task.previous_step = cur_task.previous_step;
+                                inst_task.work_order_number = cur_task.work_order_number;
+                                inst_task.proc_task_start_user_role_code = cur_task.proc_task_start_user_role_code;
+                                inst_task.proc_inst_task_user_org = userInfo.user_org;
+                                inst_task.proc_inst_task_user_role = userInfo.user_roles;
+                                inst_task.__v = cur_task.__v;
+                                process_model.$ProcessInstTask.create(inst_task,function(err,result){
                                     console.log(result);
                                 });
                                 resolve(utils.returnMsg(true,"0000","派单成功",null,null));

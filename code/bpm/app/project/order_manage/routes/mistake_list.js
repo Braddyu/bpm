@@ -268,16 +268,16 @@ router.route('/export_overtimeList').get(function(req,res){
  * 开启差错工单派单定时任务
  */
 router.route("/openTask").post(function(req,res){
-    var query_date = req.body.query_date;
+    //var query_date = req.body.query_date.replace(/\-/g,'');;
     var check_status = req.body.check_status;
     var business_name = req.body.business_name;
     var city_code = req.body.city_code;
     var params = {};
-    if (query_date){
+    /*if (query_date){
         params['query_date'] = query_date;
     }else{
         params['query_date'] = "";
-    }
+    }*/
     if(check_status && 0!=check_status){
         params['check_status'] = check_status;
     }else{

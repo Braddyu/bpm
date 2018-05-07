@@ -65,13 +65,19 @@
 <div id="win" closed="true"collapsible="false" minimizable="false" maximizable="false" title="工单转派">
     <div class="easyui-layout" data-options="fit:true">
         <form id="workIdForm">
-            <div data-options="region:'north'" style="padding:20px;height:80px">
+            <div data-options="region:'north'" style="padding:20px;height:80px;">
                 请输入营业员工号: <input id="workId" type="text"class="easyui-textbox" data-options="required:true, missingMessage:'请输入营业员工号'">
                 <button style=" border-radius: 5px;height:24px;width:58px;padding:0px;font-family: 'Microsoft YaHei';font-size:12px;color: #444;left:120px;"class="btn btn-default" type="button" onclick="queryUserInfo()"><i class="fa fa-search"></i>查询</button>
             </div>
-            <div data-options="region:'south',border:false" style="text-align:right;padding:5px 0 0;height:31px;">
-                <a id="wordIdSubmit" class="easyui-linkbutton" data-options="iconCls:'icon-ok'" href="javascript:void(0)" onclick="turn2SendTask()" style="width:80px">确定</a>
-                <a id="wordIdCancel" class="easyui-linkbutton" data-options="iconCls:'icon-cancel'" href="javascript:void(0)" onclick="$('#win').window('close'); $('#workId').textbox('setValue', '');" style="width:80px">取消</a>
+            <div data-options="region:'south',border:false" style="padding:5px 0 0;height:134px;">
+                <div id="reasonDiv">请输入转派原因:
+                    <input style="width: 370px; height: 50px; resize: none;" cols="30" data-options="required:true, missingMessage:'请输入转派原因'"
+                           id="reason" rows="4"  class="easyui-textbox"  labelPosition="top" multiline="true"/>
+                </div>
+                <div id="btns">
+                    <a id="wordIdSubmit" class="easyui-linkbutton" data-options="iconCls:'icon-ok'" href="javascript:void(0)" onclick="turn2SendTask()" style="width:80px">确定</a>
+                    <a id="wordIdCancel" class="easyui-linkbutton" data-options="iconCls:'icon-cancel'" href="javascript:void(0)" onclick="$('#win').window('close'); $('#workId').textbox('setValue', '');" style="width:80px">取消</a>
+                </div>
             </div>
             <input id="instId" type="hidden"/>
         </form>
@@ -102,7 +108,7 @@
     }
     #win{
         width:700px;
-        height:250px;
+        height:350px;
     }
     #userInfos{
         width:100%;
@@ -121,6 +127,15 @@
     }
     #workId{
         width:160px;
+    }
+    #reasonDiv{
+       padding:20px;
+       border-bottom: 1px solid #D4D4D4;
+       border-top: 1px solid #D4D4D4;
+    }
+    #btns{
+        margin-top:10px;
+        text-align: right;
     }
 </style>
 <script src="{{projcfg.appurl}}/static/js/layer/layer.js"></script>
@@ -288,11 +303,11 @@
     }
 
     function queryUserInfo(){
-        var validate =  $("#workIdForm").form("validate");;
-        if(!validate) {
+        var workId = $('#workId').textbox('getValue');
+        if(!workId){
+            $.messager.alert("提示","请输入营业员工号");
             return false;
         }
-        var workId = $('#workId').textbox('getValue');
         $.ajax({
             type:"post",
             url:"{{projcfg.appurl}}/api/order_manage/order_complete/getUserInfo",
@@ -302,7 +317,7 @@
                 if(data.success){
                     var user = data.data;
                     var orgs = user.orgInfos;
-                    var str = "<tr>";
+                    var str = "";
                     $("#tbd").html("");
                     for(var i=0;i<orgs.length;i++){
                         var name = "";
@@ -329,12 +344,12 @@
                         if(orgs[i].channel_name){
                             channel_name = orgs[i].channel_name;
                         }
-                        str +=  "<th class='td'>"+name+"</th>"+
+                        str +=  "<tr><th class='td'>"+name+"</th>"+
                                 "<th class='td'>"+mobile+"</th>"+
                                 "<th class='td'>"+city_name+"</th>"+
                                 "<th class='td'>"+city_name+"</th>"+
                                 "<th class='td'>"+grid_name+"</th>"+
-                                "<th class='td'>"+channel_name+"</th>";
+                                "<th class='td'>"+channel_name+"</th></tr>";
                     }
                     $("#tbd").append(str);
                 }else{
@@ -353,11 +368,12 @@
         }
         var workId = $('#workId').textbox('getValue');
         var instId = $("#instId").val();
+        var reason = $("#reason").val();
         $.ajax({
             type:"post",
             url:"{{projcfg.appurl}}/api/order_manage/order_complete/turn2SendTask",
             dataType:"json",
-            data:{"workId":workId,"instId":instId},
+            data:{"workId":workId,"instId":instId,"reason":reason},
             success:function(data){
                 if(data.success){
                     $('#win').window('close');

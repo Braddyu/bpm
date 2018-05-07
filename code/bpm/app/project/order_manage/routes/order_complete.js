@@ -121,9 +121,10 @@ router.route("/logs").post(function(req,res){
 router.route("/turn2SendTask").post(function(req,res){
     var workId = req.body.workId;
     var instId = req.body.instId;
+    var reason = req.body.reason;
     userService.queryUserByWorkId(workId).then(function(rs){
         if(rs.success){
-            completeService.turn2SendTask(rs.data[0],instId).then(function(rs){
+            completeService.turn2SendTask(rs.data[0],instId,reason).then(function(rs){
                 utils.respJsonData(res,rs);
             });
         }else{

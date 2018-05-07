@@ -5,6 +5,7 @@ var utils = require('../../../../lib/utils/app_utils');
 var dictModel = require('../../workflow/models/dict_model');
 var config = require('../../../../config');
 var process_utils = require('../../../utils/process_util');
+var moment = require('moment');
 
 exports.task_job=function(){
     task ();
@@ -55,8 +56,21 @@ async function task() {
     }
 }
 
-exports.mistake_distribute_task = function () {
-    var queryDate = "";
+exports.mistake_distribute_task = async function () {
+    // --------------------------- 查询所有省级管理员的手机号 ---------------------------
+    let role = await user_model.$Role.find({"role_code" : "check_manager", "role_status" : 1});
+    let users = await user_model.$User.find({"user_roles":role[0]._id,"user_status" : 1});
+    let user_mobiles = [];
+    for(let i in users){
+        let user_mobile = users[i].user_phone;
+        if(user_mobile){
+            user_mobiles.push(user_mobile);
+        }
+    }
+    // ---------------------------------------------------------------------------------
+    moment.locale('zh-cn');
+    var _today = moment();
+    var queryDate =  _today.subtract(1, 'days').format('YYYY-MM-DD');
     var check_status = "";
     var business_name = "";
     var flag = "";
@@ -72,8 +86,8 @@ exports.mistake_distribute_task = function () {
     var datas = [];
     var data = {};
     var match = {};
-    match['dict_code'] = {$in:["mistake_task_date", "mistake_task_check_status",
-            "mistake_task_business_name", "mistake_take_order_number","mistake_task_flag","mistake_task_city_code"]};
+    match['dict_code'] = {$in:[ "mistake_task_check_status", "mistake_task_business_name",
+            "mistake_take_order_number","mistake_task_flag","mistake_task_city_code"]};
     match.dict_status = 1;
     dictModel.$.aggregate([
         {
@@ -99,9 +113,7 @@ exports.mistake_distribute_task = function () {
         if(res.length){
             for(let item in res){
                 var dict = res[item];
-                if (dict.dict_code == "mistake_task_date") {
-                    queryDate = dict.dict_attr_info.field_value;
-                }else if(dict.dict_code == "mistake_task_check_status"){
+                 if(dict.dict_code == "mistake_task_check_status"){
                     check_status =  dict.dict_attr_info.field_value;
                 }else if(dict.dict_code == "mistake_task_business_name"){
                     business_name = dict.dict_attr_info.field_value;
@@ -128,7 +140,7 @@ exports.mistake_distribute_task = function () {
                     var dataIntArr=[]
                     status=status.split(",").forEach(function(data,index,arr){
                         dataIntArr.push(+data);
-                    });  ;
+                    });
                     conditionMap.status={$in:dataIntArr};
                 }else{
                     conditionMap.status={$nin:[-2]};
@@ -140,23 +152,29 @@ exports.mistake_distribute_task = function () {
                     conditionMap.business_name=business_name;
                 }
                 service.getMistakeListPage(0,20,conditionMap).then(function(result){
-                    if (result.success) {
-                        resolve(result);
-                    }else{
-                        console.log("=================","差错工单派单失败:","{查询工单数量失败}","=================");
-                    }
+                    resolve(result);
                 });
             }).then(function(result){
+                var smsParams = {};
+                if(!result.success){
+                    smsParams['msg'] = "查询工单数量失败";
+                    for(let i in user_mobiles){
+                        process_utils.sendSMS(user_mobiles[i],smsParams,"MISTAKE_DISTRIBUTE_ERROR","");
+                    }
+                    return false;
+                }
                 if (order_number < result.total) {
-                    // 超量情况发送短信给管理员并返回
-                    process_utils.sendSMS(user_no,"","MISTAKE_DISTRIBUTE_TASK","");
+                    // 超量情况发送短信给管理员
+                    for(let i in user_mobiles){
+                        process_utils.sendSMS(user_mobiles[i],"","MISTAKE_DISTRIBUTE_TASK","");
+                    }
                     return false;
                 }
                 data.proc_code = config.mistake_proc_code;
                 data.proc_name = config.mistake_proc_name;
-                data.dispatch_time = queryDate;
+                data.dispatch_time = queryDate.replace(/\-/g,'');
                 data.create_user_no = work_id?work_id:user_no;
-                data.create_user_name = "13511927000";
+                data.create_user_name = user_name;
                 data.update_user_no = '';
                 data.dispatch_cond_one = check_status?check_status:'';
                 data.dispatch_cond_thr = business_name?business_name:'';
@@ -170,7 +188,19 @@ exports.mistake_distribute_task = function () {
                 service.addMistakeLog(datas).then(function(result){
                     mlog_id = result.data[0]._id.toString();
                     service.getInterface(queryDate,data.dispatch_cond_one,user_no,user_name,role_name,data.dispatch_cond_thr,data.dispatch_cond_two,data.create_user_no,status,mlog_id).then(function(dispres){
-                        console.log("=================","差错工单派单结果:",dispres,"=================");
+                        if(dispres.success){
+                            var now = moment();
+                            var time =  now.format('YYYY-MM-DD HH:mm:ss');
+                            smsParams['time'] = time;
+                            for(let i in user_mobiles){
+                                process_utils.sendSMS(user_mobiles[i],smsParams,"MISTAKE_DISTRIBUTE_SUCCESS","");
+                            }
+                        }else{
+                            smsParams['msg'] = dispres.msg;
+                            for(let i in user_mobiles){
+                                process_utils.sendSMS(user_mobiles[i],smsParams,"MISTAKE_DISTRIBUTE_ERROR","");
+                            }
+                        }
                     });
                 });
             });
@@ -178,5 +208,4 @@ exports.mistake_distribute_task = function () {
         }
     });
 }
-
 
