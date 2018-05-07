@@ -113,9 +113,11 @@ exports.turn2SendTask = function(userInfo,instId){
             var proc_cur_task_code_3 = "processDefineDiv_node_3";
             if(!err){
                 var inst = rs[0];
-                // 工单已归档
-                if(inst.proc_inst_status == 4){
-                    resolve(utils.returnMsg(false,"0001","派单失败:工单已归档",null,null));
+                // 工单已归档，状态4：表示已归档；5：表示客户不配合
+                if(inst.proc_inst_status == 4  ){
+                    resolve(utils.returnMsg(false,"0001","转派失败:工单已归档",null,null));
+                }else if(inst.proc_inst_status == 5){
+                    resolve(utils.returnMsg(false,"0001","转派失败:客户不配合，请移至客户不配合重新处理",null,null));
                 }else if(inst.proc_cur_task != proc_cur_task_code_3){
                     resolve(utils.returnMsg(false,"0001","该工单营业员已处理，待您审核，若您审核通过归档则不能转派；若您拒绝，才能重新转派。",null,null));
                 }else{
