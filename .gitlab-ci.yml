@@ -32,8 +32,8 @@ test_stages:
   script:
     - cd code/bpm
 #    - code mocha
-    - echo "TEST"
-    - echo "test stage"
+#    - echo "TEST"
+#    - echo "test stage"
 
 # 定义部署阶段
 release_image:
