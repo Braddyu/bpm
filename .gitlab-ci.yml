@@ -22,12 +22,12 @@ build_stages:
     - if [ "$CI_BUILD_TAG" ]; then  docker build -t $MY_CI_REGISTRY_IMAGE .;fi
     
 #    - if [ -n "${PUSH_TO_REGISTRY}" ]; then docker build -t $MY_CI_REGISTRY_IMAGE .;fi
-  tags:
-    - wuqingfa_gitlab_runner
+#  tags:
+#    - wuqingfa_gitlab_runner
 # 定义测试阶段
 test_stages:
-  tags:
-    - dockerin
+#  tags:
+#    - dockerin
   stage: test
   script:
     - cd code/bpm
@@ -37,8 +37,8 @@ test_stages:
 
 # 定义部署阶段
 release_image:
-  tags:
-    - dockerin
+#  tags:
+#    - dockerin
   stage: deploy
   script:
 #    - ping -c 5 117.187.12.236
