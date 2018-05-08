@@ -1171,12 +1171,8 @@ exports.getMyTaskQuery4Eui = function (page, size, userCode, joinup_sys, proc_co
                         resolve(data)
                     })
                 })
-
             }
-
-
         })
-
     });
 };
 /**
