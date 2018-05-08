@@ -58,7 +58,7 @@ async function task() {
 
 exports.mistake_distribute_task = async function () {
     // --------------------------- 查询所有省级管理员的手机号 ---------------------------
-    let role = await user_model.$Role.find({"role_code" : "check_manager", "role_status" : 1});
+    /*let role = await user_model.$Role.find({"role_code" : "check_manager", "role_status" : 1});
     let users = await user_model.$User.find({"user_roles":role[0]._id,"user_status" : 1});
     let user_mobiles = [];
     for(let i in users){
@@ -66,7 +66,7 @@ exports.mistake_distribute_task = async function () {
         if(user_mobile){
             user_mobiles.push(user_mobile);
         }
-    }
+    }*/
     // ---------------------------------------------------------------------------------
     moment.locale('zh-cn');
     var _today = moment();
@@ -158,16 +158,19 @@ exports.mistake_distribute_task = async function () {
                 var smsParams = {};
                 if(!result.success){
                     smsParams['msg'] = "查询工单数量失败";
-                    for(let i in user_mobiles){
+                    /*for(let i in user_mobiles){
                         process_utils.sendSMS(user_mobiles[i],smsParams,"MISTAKE_DISTRIBUTE_ERROR","");
-                    }
+                    }*/
+                    process_utils.sendSMS(user_no,smsParams,"MISTAKE_DISTRIBUTE_ERROR","");
                     return false;
                 }
                 if (order_number < result.total) {
                     // 超量情况发送短信给管理员
-                    for(let i in user_mobiles){
+                    /*for(let i in user_mobiles){
                         process_utils.sendSMS(user_mobiles[i],"","MISTAKE_DISTRIBUTE_TASK","");
-                    }
+                    }*/
+                    smsParams['number'] = order_number;
+                    process_utils.sendSMS(user_no,smsParams,"MISTAKE_DISTRIBUTE_TASK","");
                     return false;
                 }
                 data.proc_code = config.mistake_proc_code;
@@ -188,18 +191,9 @@ exports.mistake_distribute_task = async function () {
                 service.addMistakeLog(datas).then(function(result){
                     mlog_id = result.data[0]._id.toString();
                     service.getInterface(queryDate,data.dispatch_cond_one,user_no,user_name,role_name,data.dispatch_cond_thr,data.dispatch_cond_two,data.create_user_no,status,mlog_id).then(function(dispres){
-                        if(dispres.success){
-                            var now = moment();
-                            var time =  now.format('YYYY-MM-DD HH:mm:ss');
-                            smsParams['time'] = time;
-                            for(let i in user_mobiles){
-                                process_utils.sendSMS(user_mobiles[i],smsParams,"MISTAKE_DISTRIBUTE_SUCCESS","");
-                            }
-                        }else{
+                        if(!dispres.success){
                             smsParams['msg'] = dispres.msg;
-                            for(let i in user_mobiles){
-                                process_utils.sendSMS(user_mobiles[i],smsParams,"MISTAKE_DISTRIBUTE_ERROR","");
-                            }
+                            process_utils.sendSMS(user_no,smsParams,"MISTAKE_DISTRIBUTE_ERROR","");
                         }
                     });
                 });

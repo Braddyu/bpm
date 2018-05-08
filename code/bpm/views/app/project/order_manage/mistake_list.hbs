@@ -151,7 +151,7 @@
     <div class="easyui-layout" data-options="fit:true">
         <div data-options="region:'center'" style="padding:10px;">
             <form id="orderDistributeFrom" style="height:150px;">
-                <div class="col-xs-8 col-md-8" style="width:530px;padding-top:30px;height:150px;">
+                <div class="col-xs-8 col-md-8" style="width:530px;height:150px;">
                     <!--
                     <div class="btn-group" role="group" aria-label="..." >
                         <label for="filterParam3">时间：</label>
@@ -248,6 +248,11 @@
                             <option value="证件识读设备故障退出电子工单">证件识读设备故障退出电子工单</option>
                             <option value="[未扫描证件]">[未扫描证件]</option>
                         </select>
+                    </div>
+                    <div class="btn-group" role="group" aria-label="..."style="top:40px;">
+                        <label for="filterParam3">派单数量上限:</label>
+                        <input class="easyui-numberbox" id="work_order_number"  precision="0" min="0" style="width: 180px;height:31px;" required="true">
+                        </input>
                     </div>
                 </div>
             </form>
@@ -395,7 +400,27 @@
                 if (data) {
                     if ($("#onoffswitch").is(":checked")) {
                         // 选中
-                        $('#w').window('open');
+                        $.ajax({
+                            type:"get",
+                            url:"{{projcfg.appurl}}/api/order_manage/mistake_list/getConditions",
+                            dataType:"json",
+                            data:{},
+                            success:function(data){
+                                var condition = data.data;
+                                if(data.success){
+                                    $("#city_code_w").combobox('setValue', condition.city_code==''?"0":condition.city_code);
+                                    $("#business_name_w").combobox('setValue',condition.business_name==''?"0":condition.business_name);
+                                    $("#check_status_w").combobox('setValue',condition.check_status==''?"0":condition.check_status);
+                                    $("#work_order_number").numberbox('setValue',condition.order_number);
+                                    $('#w').window('open');
+                                }else{
+                                    $.messager.alert("提示",data.msg);
+                                }
+                            },
+                            error:function(XMLHttpRequest, textStatus, errorThrown){
+                                $.messager.alert("提示","开启失败:"+textStatus);
+                            }
+                        });
                     } else {
                         // 取消
                         closeTask();
@@ -627,25 +652,19 @@
         var business_name =  $("#business_name_w").combobox('getValue');
         var check_status = $("#check_status_w").combobox('getValue');
         var city_code = $("#city_code_w").combobox('getValue');
+        var work_order_number = $("#work_order_number").numberbox('getValue');
         //$("#query_date_w").textbox('setValue', '');
-        $("#city_code_w").combobox('setValue', '0');
-        $("#business_name_w").combobox('setValue', '0');
-        $("#check_status_w").combobox('setValue', '0');
         $.ajax({
             type:"post",
             url:"{{projcfg.appurl}}/api/order_manage/mistake_list/openTask",
             dataType:"json",
-            data:{/*'query_date':query_date,*/'business_name':business_name,'check_status':check_status,'city_code':city_code},
+            data:{/*'query_date':query_date,*/'business_name':business_name,'check_status':check_status,'city_code':city_code,"work_order_number":work_order_number},
             success:function(data){
                 if(data.success){
                     $("#onoffswitch").addClass("testswitch-checkbox-checked");
                 }else{
                     $("#onoffswitch").attr('checked',false);
                 }
-                //$("#query_date_w").textbox('setValue', '');
-                $("#city_code_w").combobox('setValue', '0');
-                $("#business_name_w").combobox('setValue', '0');
-                $("#check_status_w").combobox('setValue', '0');
                 $('#w').window('close');
                 $.messager.alert("提示",data.msg);
             },

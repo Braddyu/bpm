@@ -272,6 +272,7 @@ router.route("/openTask").post(function(req,res){
     var check_status = req.body.check_status;
     var business_name = req.body.business_name;
     var city_code = req.body.city_code;
+    var work_order_number = req.body.work_order_number;
     var params = {};
     /*if (query_date){
         params['query_date'] = query_date;
@@ -293,6 +294,8 @@ router.route("/openTask").post(function(req,res){
     }else{
         params['city_code'] = "";
     }
+    params['work_order_number'] = work_order_number;
+
     dict_service.openTask(params).then(function(result){
         if(result.success){
             utils.respJsonData(res,result);
@@ -314,9 +317,16 @@ router.route("/closeTask").post(function(req,res){
  */
 router.route("/getSwitch").get(function(req,res){
     dict_service.getSwitch().then(function(result){
-        if(result.success){
-            utils.respJsonData(res,result);
-        }
+        utils.respJsonData(res,result);
+    });
+});
+
+/**
+ * 获取筛选条件
+ */
+router.route("/getConditions").get(function(req,res){
+    dict_service.getConditions().then(function(result){
+        utils.respJsonData(res,result);
     });
 });
 module.exports = router;
