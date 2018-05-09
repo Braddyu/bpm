@@ -265,6 +265,27 @@ exports.process_instance=function() {
         return !0
     }
     /**
+     *  -------------------------------根据流程编号查询所有实例-------------------------------
+     */
+    router.route('/listByProcCode').post(function (req, res) {
+        var proc_code = req.body.proc_code;
+        var conditionMap = {};
+        if (proc_code) {
+            conditionMap.proc_code = proc_code;
+        } else {
+            utils.respMsg(res, false, '2001', '流程编号不能为空', null, null);
+            return;
+        }
+        inst.getnstanceList(conditionMap).then(function (result) {
+            utils.respJsonData(res, result);
+        }).catch(function (err) {
+            console.log('err');
+            logger.error("route-list", "根据流程编号查询流程实例集合异常", err);
+            utils.respMsg(res, false, '1000', '根据流程编号查询流程实例集合异常', null, err);
+        });
+    });
+
+    /**
      *  -------------------------------终止流程实例接口-------------------------------
      */
     router.route('/cancleInstance').post(function (req, res) {
