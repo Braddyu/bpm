@@ -38,9 +38,25 @@
                                         <option value="2">未归档</option>
                                     </select>
                                 </div>
+                                <div class="btn-group" role="group" aria-label="...">
+                                    <label for="filterParam3">复核结果：</label>
+                                    <select class="easyui-combobox"id="is_check"  style="width: 180px;height:31px;">
+                                        <option value="">===全部==</option>
+                                        <option value="0">复核通过</option>
+                                        <option value="1">复核不通过</option>
+                                    </select>
+                                </div>
                             </div>
                             <div class="col-xs-4 col-md-4 text-right">
                                 <form class="form-inline">
+                                 <!--   <div class="form-group">
+
+                                        <div class="input-group">
+                                            <span class="input-group-btn">
+                                                <button class="btn btn-edit" type="button" onclick="checkHuanghe()"><i class="fa fa-edit"></i>复核黄河通过工单</button>
+                                            </span>
+                                        </div>
+                                    </div>-->
                                     <div class="form-group">
 
                                         <div class="input-group">
@@ -53,24 +69,35 @@
                             </div>
                         </div>
                         <table id="orderTablelist">
-
                         </table>
-
-
-
                 </div>
             </div>
         </div>
     </div>
 </div>
 <div id="dd"></div>
+<div id="checkHuanghe"  class="mydialog"  >
 
+    <table id="orderCheckHuangheList">
+    </table>
+    <div id="tb" style="padding:2px 5px;">
+        开始时间: <input class="easyui-datebox" id="beginDate" style="width:110px">
+        结束时间: <input class="easyui-datebox" id="endDate"style="width:110px">
+        业务名称:
+        <select class="easyui-combobox"  id="tradeTypeCode" panelHeight="auto" style="width:300px">
+            <option value="500000020001">500000020001</option>
+        </select>
+        抽取条数:  <input class="easyui-numberbox" id="dataCount" label="Amount:" labelPosition="top" value="" style="width:100px">
+
+        <a href="#" onclick="loadCheckHuangDatagrid()"class="easyui-linkbutton" iconCls="icon-search">随机抽取</a>
+    </div>
+
+</div>
 
 
 
 
 <script type="text/javascript">
-
 
     $(document).ready(function () {
         //加载列表
@@ -94,7 +121,6 @@
             if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
         return fmt;
     }
-
     function loadOrderListDatagrid(){
         // 加载工单基本属性列表
         $('#orderTablelist').datagrid({
@@ -161,6 +187,15 @@
                         }
 
                     }},
+                {"field": "is_check","title":"复核结果","width":"100px",
+                    formatter:function(value,row,index){
+                        if(value==0){
+                            return "<span style='color:green'>复核通过</span>";
+                        }else{
+                            return "<span style='color:red'>复核不通过</span>";
+                        }
+
+                    }},
                 {"field": "check_time","title":"复核时间","width":"150px"
                     ,formatter:function(value,row,index){
                     var isoDateStr = value.substring(0,value.indexOf('.'));
@@ -198,26 +233,84 @@
             loadMsg:'正在加载...'
         });
     }
-
-
-
-
-
     //查询
-   function  doSearch(){
+    function  doSearch(){
        $('#orderTablelist').datagrid({
-           url: '{{projcfg.appurl}}/api/order_manage/order_file/list',
+           url: '{{projcfg.appurl}}/api/order_manage/order_file/checklist',
            queryParams: {
                proc_title: $("#proc_title").val(),
                check_time:$('#check_time').datebox('getValue'),
                proc_inst_task_complete_time:$('#proc_inst_task_complete_time').datebox('getValue'),
                work_order_number:$("#work_order_number").val(),
                is_file:$("#is_file").combobox('getValue'),
+               is_check:$("#is_check").combobox('getValue'),
 
            }
        });
     }
+    function loadCheckHuangDatagrid(){
+        // 加载工单基本属性列表
+        $('#orderCheckHuangheList').datagrid({
+            url:'{{projcfg.appurl}}/api/order_manage/mistake_list/getHuanghePassOrder',
+            method:'post',
+            rownumbers:true,
+            striped:true,
+            fitColumns:true,
+            border:false,
+            fit:true,
+            toolbar: '#tb',
+            queryParams:{
+                beginDate:$('#beginDate').datebox('getValue'),
+                endDate:$('#endDate').datebox('getValue'),
+                tradeTypeCode:$('#tradeTypeCode').combobox('getValue'),
+                dataCount:$("#dataCount").numberbox('getValue')
+            },
+            singleSelect:true,
+            selectOnCheck:true,
+            checkOnSelect:true,
+            columns:[[
+                {"field":"_id",hidden:true},
+                {"field": "crm_trade_date","title":"日期","width":50},
+                {"field": "trade_province_code","title":"地市","width":50},
+                {"field": "trade_dept_code","title":"渠道编码","width":50},
+                {"field": "channel_name","title":"渠道名称","width":80,
+                    formatter:function(value,row,index){
+                        if(!value)
+                            return "<span style='color:red'>不存在的渠道</span>";
+                        else
+                            return value;
 
+                    }},
+                {"field": "crm_trade_id","title":"BOSS订单编码","width":120},
+                {"field": "cust_tel_number","title":"客户号码","width":50},
+                {"field": "trade_emp_id","title":"营业员工号","width":50},
+                {"field": "channel_type","title":"渠道类型","width":30},
+                {"field": "trade_type_code","title":"业务编码","width":50},
+                {"field": "trade_type_name","title":"业务名称","width":50},
+                {"field": "check_result","title":"稽核说明","width":70},
+                {"field": "t","title":"附件下载","width":40,
+                    formatter:function(value,row,index){
+                            return '<a href="{{projcfg.appurl}}/api/order_manage/mistake_list/huangheFileDownload/'+row.crm_trade_id+'">附件下载</a>';
+
+                    }},
+            ]],
+
+            loadMsg:'正在加载...'
+        });
+    }
+    //打开复核黄河界面
+    function checkHuanghe(){
+        loadCheckHuangDatagrid();
+        $('#checkHuanghe').show();
+        $('#checkHuanghe').mydialog({
+            title:"复核黄河通过工单",
+            width: 1500,
+            height: 550,
+            top:250,
+            modal: true,
+        });
+
+    }
 
 
 </script>

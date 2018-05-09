@@ -169,51 +169,32 @@
     }
 
     function loadOrderListDatagrid(){
-        // 加载工单基本属性列表
-        $('#orderTablelist').datagrid({
-            url:'{{projcfg.appurl}}/api/order_manage/order_statistics/list',
-            method:'post',
-            queryParams: {
-                status:org_status,
-                level: level,
-                org_id: org_id,
-                proc_code: $("#proc_code").combobox("getValue"),
-            },
-            rownumbers:true,
-            striped:true,
-            fitColumns:true,
-            border:false,
-            fit:true,
-            remoteSort:false,
-            toolbar: '#toolbar1',
-            singleSelect:true,
-            selectOnCheck:true,
-            checkOnSelect:true,
-            sortName:'company_code',
-            columns:[[
+        var fields=[]
+        if($("#proc_code").combobox("getValue")=='p-109'){
+            fields=[
                 {"field":"_id",hidden:true},
                 {"field":"level",hidden:true},
                 {"field":"company_code","title":"区域编码","width":"100px",
                     "sortable":true,sorter:function(a,b){
-                         if(level>4){
-                             return a<b?1:-1;
-                         }else{
-                             return a>b?1:-1;
-                         }
+                    if(level>4){
+                        return a<b?1:-1;
+                    }else{
+                        return a>b?1:-1;
+                    }
 
                 },
                     formatter:function(value,row,index){
-                    level = row.level[0];
-                    //大于6表示已经下砖到渠道层级
-                    if(level+1>6 || row.company_code.length==8){
-                        return value;
-                    }else{
-                        return '<a href="javascript:void(0);" onclick="doSearchOrg(\''+row._id+'\')">'+value+'</a>';
+                        level = row.level[0];
+                        //大于6表示已经下砖到渠道层级
+                        if(level+1>6 || row.company_code.length==8){
+                            return value;
+                        }else{
+                            return '<a href="javascript:void(0);" onclick="doSearchOrg(\''+row._id+'\')">'+value+'</a>';
 
-                    }
+                        }
 
-                }},
-               {"field": "org_fullname","title":"区域名称","width":"400px",
+                    }},
+                {"field": "org_fullname","title":"区域名称","width":"400px",
                     formatter:function(value,row,index){
                         level = row.level;
                         //大于6表示已经下砖到渠道层级
@@ -226,11 +207,11 @@
 
                     }},
                 {"field": "totalNum","title":"工单数","width":"100px","sortable":true,sorter:function(a,b){
-                        return a>b?1:-1;
+                    return a>b?1:-1;
                 },
                     formatter:function(value,row,index){
 
-                       if(value>0){
+                        if(value>0){
                             return '<a href="javascript:void(0)" onclick="openDetail(1,\''+row._id+'\')">'+(value)+'</a>';
 
                         }else{
@@ -239,8 +220,126 @@
                         }
 
                     }
-                    },
-                {"field": "treatedNum","title":"补录工单数","width":"100px",
+                },
+
+
+                {"field": "fileNum","title":"归档工单数","width":"120px","sortable":true,sorter:function(a,b){
+                    return a>b?1:-1;
+                },
+                    formatter:function(value,row,index){
+                        if(parseInt(value)>0){
+                            return '<a href="javascript:void(0)" onclick="openDetail(5,\''+row._id+'\')">'+value+'</a>';
+
+                        }else{
+                            return value;
+
+                        }
+                    }},
+
+                {"field": "notOvertimeNum","title":"及时归档工单数","width":"150px" ,"sortable":true,sorter:function(a,b){
+                    return a>b?1:-1;
+                },
+                    formatter:function(value,row,index){
+                        //大于6表示已经下砖到渠道层级
+
+                        if(level+1>6){
+                            return value;
+                        }else if(value>0){
+                            return '<a href="javascript:void(0)" onclick="openDetail(6,\''+row._id+'\')">'+value+'</a>';
+
+                        }else{
+                            return value;
+
+                        }
+
+                    }},
+
+                {"field": "p3","title":"工单归档率","width":"150px",
+                    formatter:function(value,row,index){
+                        if(row.fileNum==0|| row.totalNum==0){
+                            return "0%";
+                        }else{
+                            var re=((parseInt(row.fileNum)/row.totalNum).toFixed(5)*100).toFixed(3);
+                            if(re==0){
+                                return"0%";
+                            }else{
+                                return re+"%";
+                            }
+
+                        }
+
+
+                    }},
+                {"field": "p4","title":"工单及时归档率","width":"150px",
+                    formatter:function(value,row,index){
+                        if(row.notOvertimeNum==0 || row.totalNum==0){
+                            return "0%";
+                        }else{
+                            var re=((parseInt(row.notOvertimeNum)/row.totalNum).toFixed(5)*100).toFixed(3);
+                            if(re==0){
+                                return"0%";
+                            }else{
+                                return re+"%";
+                            }
+
+                        }
+
+
+                    }}
+
+            ];
+        }else if($("#proc_code").combobox("getValue")=='p-201'){
+            fields=[
+                {"field":"_id",hidden:true},
+                {"field":"level",hidden:true},
+                {"field":"company_code","title":"区域编码","width":"100px",
+                    "sortable":true,sorter:function(a,b){
+                    if(level>4){
+                        return a<b?1:-1;
+                    }else{
+                        return a>b?1:-1;
+                    }
+
+                },
+                    formatter:function(value,row,index){
+                        level = row.level[0];
+                        //大于6表示已经下砖到渠道层级
+                        if(level+1>6 || row.company_code.length==8){
+                            return value;
+                        }else{
+                            return '<a href="javascript:void(0);" onclick="doSearchOrg(\''+row._id+'\')">'+value+'</a>';
+
+                        }
+
+                    }},
+                {"field": "org_fullname","title":"区域名称","width":"400px",
+                    formatter:function(value,row,index){
+                        level = row.level;
+                        //大于6表示已经下砖到渠道层级
+                        if(level+1>6  || row.company_code.length==8){
+                            return value;
+                        }else{
+                            return '<a href="javascript:void(0);" onclick="doSearchOrg(\''+row._id+'\')">'+value+'</a>';
+
+                        }
+
+                    }},
+                {"field": "totalNum","title":"工单数","width":"100px","sortable":true,sorter:function(a,b){
+                    return a>b?1:-1;
+                },
+                    formatter:function(value,row,index){
+
+                        if(value>0){
+                            return '<a href="javascript:void(0)" onclick="openDetail(1,\''+row._id+'\')">'+(value)+'</a>';
+
+                        }else{
+                            return '<a href="javascript:void(0)">'+(value)+'</a>';
+
+                        }
+
+                    }
+                },
+                {"field": "treatedNum","title":"处理工单数","width":"100px",
                     formatter:function(value,row,index){
                         //大于6表示已经下砖到渠道层级
 
@@ -255,7 +354,7 @@
                         }
                     }
                 },
-                {"field": "overtimeTreatedNum","title":"超时补录工单数","width":"130px",
+                {"field": "overtimeTreatedNum","title":"超时处理工单数","width":"130px",
                     formatter:function(value,row,index){
                         //大于6表示已经下砖到渠道层级
 
@@ -270,7 +369,7 @@
                         }
                     }
                 },
-                {"field": "untreatedNum","title":"未补录工单数","width":"100px",
+                {"field": "untreatedNum","title":"未处理工单数","width":"100px",
                     formatter:function(value,row,index){
                         //大于6表示已经下砖到渠道层级
 
@@ -299,23 +398,23 @@
                         }
                     }},
 
-              {"field": "notOvertimeNum","title":"及时归档工单数","width":"150px" ,"sortable":true,sorter:function(a,b){
-                  return a>b?1:-1;
-              },
-                  formatter:function(value,row,index){
-                  //大于6表示已经下砖到渠道层级
+                {"field": "notOvertimeNum","title":"及时归档工单数","width":"150px" ,"sortable":true,sorter:function(a,b){
+                    return a>b?1:-1;
+                },
+                    formatter:function(value,row,index){
+                        //大于6表示已经下砖到渠道层级
 
-                  if(level+1>6){
-                      return value;
-                  }else if(value>0){
-                      return '<a href="javascript:void(0)" onclick="openDetail(6,\''+row._id+'\')">'+value+'</a>';
+                        if(level+1>6){
+                            return value;
+                        }else if(value>0){
+                            return '<a href="javascript:void(0)" onclick="openDetail(6,\''+row._id+'\')">'+value+'</a>';
 
-                  }else{
-                      return value;
+                        }else{
+                            return value;
 
-                  }
+                        }
 
-              }},
+                    }},
                 {"field": "oneFileNum","title":"一次归档工单数","width":"150px" ,"sortable":true,sorter:function(a,b){
                     return a>b?1:-1;
                 },
@@ -333,7 +432,7 @@
                         }
 
                     }},
-              {"field": "twiceAuditNum","title":"二次及以上归档工单数","width":"150px",
+                {"field": "twiceAuditNum","title":"二次及以上归档工单数","width":"150px",
                     formatter:function(value,row,index){
                         //大于6表示已经下砖到渠道层级
 
@@ -348,7 +447,7 @@
                         }
                     }
                 },
-                {"field": "p0","title":"工单补录率","width":"150px",
+                {"field": "p0","title":"工单处理率","width":"150px",
                     formatter:function(value,row,index){
                         if(row.treatedNum==0|| row.totalNum==0){
                             return "0%";
@@ -364,7 +463,7 @@
 
 
                     }},
-                {"field": "p1","title":"工单超时补录率","width":"150px",
+                {"field": "p1","title":"工单超时处理率","width":"150px",
                     formatter:function(value,row,index){
                         if(row.overtimeTreatedNum==0|| row.totalNum==0){
                             return "0%";
@@ -380,7 +479,7 @@
 
 
                     }},
-                {"field": "p2","title":"工单未补录率","width":"150px",
+                {"field": "p2","title":"工单未处理率","width":"150px",
                     formatter:function(value,row,index){
                         if(row.untreatedNum==0|| row.totalNum==0){
                             return "0%";
@@ -396,38 +495,38 @@
 
 
                     }},
-               {"field": "p3","title":"工单归档率","width":"150px",
+                {"field": "p3","title":"工单归档率","width":"150px",
                     formatter:function(value,row,index){
-                    if(row.fileNum==0|| row.totalNum==0){
-                        return "0%";
-                    }else{
-                        var re=((parseInt(row.fileNum)/row.totalNum).toFixed(5)*100).toFixed(3);
-                        if(re==0){
-                            return"0%";
+                        if(row.fileNum==0|| row.totalNum==0){
+                            return "0%";
                         }else{
-                            return re+"%";
+                            var re=((parseInt(row.fileNum)/row.totalNum).toFixed(5)*100).toFixed(3);
+                            if(re==0){
+                                return"0%";
+                            }else{
+                                return re+"%";
+                            }
+
                         }
 
-                    }
+
+                    }},
+                {"field": "p4","title":"工单及时归档率","width":"150px",
+                    formatter:function(value,row,index){
+                        if(row.notOvertimeNum==0 || row.totalNum==0){
+                            return "0%";
+                        }else{
+                            var re=((parseInt(row.notOvertimeNum)/row.totalNum).toFixed(5)*100).toFixed(3);
+                            if(re==0){
+                                return"0%";
+                            }else{
+                                return re+"%";
+                            }
+
+                        }
 
 
-                }},
-              {"field": "p4","title":"工单及时归档率","width":"150px",
-                  formatter:function(value,row,index){
-                  if(row.notOvertimeNum==0 || row.totalNum==0){
-                      return "0%";
-                  }else{
-                      var re=((parseInt(row.notOvertimeNum)/row.totalNum).toFixed(5)*100).toFixed(3);
-                      if(re==0){
-                          return"0%";
-                      }else{
-                          return re+"%";
-                      }
-
-                  }
-
-
-              }},
+                    }},
                 {"field": "p5","title":"一次归档率","width":"150px",
                     formatter:function(value,row,index){
                         if(row.oneFileNum==0 || row.totalNum==0){
@@ -444,7 +543,7 @@
 
 
                     }},
-               {"field": "p6","title":"二次及以上归档率","width":"150px",
+                {"field": "p6","title":"二次及以上归档率","width":"150px",
                     formatter:function(value,row,index){
                         if(row.twiceAuditNum==0|| row.totalNum==0){
                             return "0%";
@@ -459,11 +558,49 @@
                         }
                     }
                 }
-            ]],
+            ];
+        }
 
-            onLoadSuccess:function(json) {
-                if(!json.success) {
-                    msgError(json.msg + ',错误代码:' + json.code);
+
+
+
+
+
+        // 加载工单基本属性列表
+        $('#orderTablelist').datagrid({
+            url:'{{projcfg.appurl}}/api/order_manage/order_statistics/list',
+            method:'post',
+            queryParams: {
+                status:org_status,
+                level: level,
+                org_id: org_id,
+                proc_code: $("#proc_code").combobox('getValue'),
+                startDate: $("#startDate").datebox('getValue'),
+                endDate: $("#endDate").datebox('getValue'),
+                channel_enterprise_type:$("#channel_enterprise_type").combobox('getValue')
+            },
+            rownumbers:true,
+            striped:true,
+            fitColumns:true,
+            border:false,
+            fit:true,
+            remoteSort:false,
+            toolbar: '#toolbar1',
+            singleSelect:true,
+            selectOnCheck:true,
+            checkOnSelect:true,
+            sortName:'company_code',
+            columns:[fields],
+
+            onLoadSuccess:function(json){
+                if (json.success && json.rows.length > 0) {
+                    level = Number(json.rows[0].level);
+                    if(level !=top_level){
+                        org_id = json.rows[0].org_pid[0]
+                        export_status=0;
+                        org_status = 0;
+                    };
+                    export_org_id=org_id;
                 }
             },
             onLoadError:function() {
@@ -529,30 +666,7 @@
 
     //查询
     function doSearch(){
-
-       $('#orderTablelist').datagrid({
-            url: '{{projcfg.appurl}}/api/order_manage/order_statistics/list',
-            queryParams: {
-                status:org_status,
-                level: level,
-                org_id: org_id,
-                proc_code: $("#proc_code").combobox('getValue'),
-                startDate: $("#startDate").datebox('getValue'),
-                endDate: $("#endDate").datebox('getValue'),
-                channel_enterprise_type:$("#channel_enterprise_type").combobox('getValue')
-            },
-           onLoadSuccess:function(json){
-               if (json.success && json.rows.length > 0) {
-                   level = Number(json.rows[0].level);
-                   if(level !=top_level){
-                       org_id = json.rows[0].org_pid[0]
-                       export_status=0;
-                       org_status = 0;
-                   };
-                   export_org_id=org_id;
-               }
-           },
-       });
+        loadOrderListDatagrid ();
     }
     //导出查询结果
     $("#exportData").click(function () {

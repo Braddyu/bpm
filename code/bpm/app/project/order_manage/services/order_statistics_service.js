@@ -248,7 +248,7 @@ exports.getStatisticsListPage = function (org_id, proc_code, level, status, star
                         console.log(res);
                         let end_time = new Date().getTime();
                         console.log("时间", end_time - start_time);
-                        var result = {rows: staRes, success: true};
+                        var result = {rows: staRes, success: true,proc_code:proc_code};
                         console.log("结果", result);
                         resolve(result);
 
@@ -268,25 +268,41 @@ exports.getStatisticsListPage = function (org_id, proc_code, level, status, star
 
 exports.createExcelOrderList = function createExcelOrderList(data) {
     let list=data.rows;
-    const headers = [
-        '区域编码',
-        '区域名称',
-        '工单数',
-        '补录工单数',
-        '超时补录工单数',
-        '未补录工单数',
-        '归档工单数 ',
-        '及时归档工单数',
-        '一次归档工单数 ',
-        '二次及以上归档工单数 ',
-        '工单补录率',
-        '工单超时补录率',
-        '工单未补录率',
-        '工单归档率',
-        '工单及时归档率 ',
-        '一次归档率 ',
-        '二次及以上归档率 ',
-    ];
+    let proc_code = data.proc_code;
+    let headers=[];
+    if(proc_code=='p-109'){
+        headers = [
+            '区域编码',
+            '区域名称',
+            '工单数',
+            '归档工单数 ',
+            '及时归档工单数',
+            '工单归档率',
+            '工单及时归档率 ',
+
+        ];
+    }else if(proc_code=='p-201'){
+        headers = [
+            '区域编码',
+            '区域名称',
+            '工单数',
+            '处理工单数',
+            '超时处理工单数',
+            '未处理工单数',
+            '归档工单数 ',
+            '及时归档工单数',
+            '一次归档工单数 ',
+            '二次及以上归档工单数 ',
+            '工单处理率',
+            '工单超时处理率',
+            '工单未处理率',
+            '工单归档率',
+            '工单及时归档率 ',
+            '一次归档率 ',
+            '二次及以上归档率 ',
+        ];
+    }
+
 
     var data = [headers];
 
@@ -383,26 +399,38 @@ exports.createExcelOrderList = function createExcelOrderList(data) {
             }
 
         }
-
-        const tmp = [
-            c.company_code,
-            c.org_fullname,
-            c.totalNum,
-            c.treatedNum,
-            c.overtimeTreatedNum,
-            c.untreatedNum,
-            c.fileNum,
-            c.notOvertimeNum,
-            c.oneFileNum,
-            c.twiceAuditNum,
-            treated_rate,
-            overtimeTreated_rate,
-            untreated_rate,
-            filing_rate,
-            timely_filing_rate,
-            one_filing_rate,
-            two_filing_rate,
-        ]
+        let tmp=[];
+        if(proc_code=='p-109'){
+            tmp = [
+                c.company_code,
+                c.org_fullname,
+                c.totalNum,
+                c.fileNum,
+                c.notOvertimeNum,
+                filing_rate,
+                timely_filing_rate,
+            ]
+        }else if(proc_code=='p-109'){
+            tmp = [
+                c.company_code,
+                c.org_fullname,
+                c.totalNum,
+                c.treatedNum,
+                c.overtimeTreatedNum,
+                c.untreatedNum,
+                c.fileNum,
+                c.notOvertimeNum,
+                c.oneFileNum,
+                c.twiceAuditNum,
+                treated_rate,
+                overtimeTreated_rate,
+                untreated_rate,
+                filing_rate,
+                timely_filing_rate,
+                one_filing_rate,
+                two_filing_rate,
+            ]
+        }
 
         data.push(tmp);
     });
@@ -411,8 +439,13 @@ exports.createExcelOrderList = function createExcelOrderList(data) {
             "!row": [{wpx: 67}]
         }
     };
-    ws['!cols'] = [{wpx: 100}, {wpx: 300}, {wpx: 100}, {wpx: 100}, {wpx: 100}, {wpx: 100}, {wpx: 100}, {wpx: 100}, {wpx: 100}, {wpx: 100}, {wpx: 100}, {wpx: 100}
-        , {wpx: 100}, {wpx: 100}, {wpx: 100}, {wpx: 100}, {wpx: 100}];
+    if(proc_code=='p-109'){
+        ws['!cols'] = [{wpx: 100}, {wpx: 300}, {wpx: 100}, {wpx: 100}, {wpx: 100}, {wpx: 100}, {wpx: 100}, {wpx: 100}, {wpx: 100}, {wpx: 100}, {wpx: 100}]
+    }else  if(proc_code=='p-201'){
+        ws['!cols'] = [{wpx: 100}, {wpx: 300}, {wpx: 100}, {wpx: 100}, {wpx: 100}, {wpx: 100}, {wpx: 100}, {wpx: 100}, {wpx: 100}, {wpx: 100}, {wpx: 100}, {wpx: 100}
+            , {wpx: 100}, {wpx: 100}, {wpx: 100}, {wpx: 100}, {wpx: 100}];
+    }
+
 
 
     return xlsx.build([{name: 'Sheet1', data: data}], ws);

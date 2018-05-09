@@ -16,7 +16,7 @@ var utils = require('../../../../lib/utils/app_utils');
  * @param conditionMap
  * @returns {Promise}
  */
-exports.getMyArchiveTaskQuery4Eui = function (page, size, userNo, work_order_number, proc_start_time, proc_inst_task_complete_time, is_overtime, proc_code, result) {
+exports.getMyArchiveTaskQuery4Eui = function (page, size, userNo, work_order_number, proc_start_time, proc_inst_task_complete_time, is_overtime, proc_code,proc_title, result) {
 
     var p = new Promise(function (resolve, reject) {
 
@@ -26,6 +26,9 @@ exports.getMyArchiveTaskQuery4Eui = function (page, size, userNo, work_order_num
         if (!work_id) work_id = '@@@@@@@';
         if (work_order_number) {
             inst_search.work_order_number = work_order_number;
+        }
+        if (proc_title) {
+            inst_search.proc_title =  new RegExp(proc_title);
         }
 
         if (proc_start_time) {
@@ -145,7 +148,7 @@ exports.getMyArchiveTaskQuery4Eui = function (page, size, userNo, work_order_num
 };
 
 
-exports.checkFileList = function (page, rows, work_order_number, proc_title, proc_inst_task_complete_time, check_time, is_file) {
+exports.checkFileList = function (page, rows, work_order_number, proc_title, proc_inst_task_complete_time, check_time, is_file,is_check) {
 
     return new Promise(function (resolve, reject) {
         let size = (page + 1) * rows;
@@ -154,6 +157,11 @@ exports.checkFileList = function (page, rows, work_order_number, proc_title, pro
         if (work_order_number) {
             conditionMap.work_order_number = work_order_number;
         }
+        if (proc_title) {
+            var proc_title_ = new RegExp(proc_title);
+            conditionMap.proc_title = proc_title_;
+        }
+
         //归档时间
         if (proc_inst_task_complete_time) {
             var compare = {};
@@ -172,7 +180,12 @@ exports.checkFileList = function (page, rows, work_order_number, proc_title, pro
         if (is_file) {
             conditionMap.proc_inst_status = is_file;
         }
-        conditionMap.is_check = 1;
+        if(is_check){
+            conditionMap.is_check=is_check
+        }else{
+            conditionMap.is_check = {$in:[0,1]};
+        }
+        console.log(conditionMap);
         utils.pagingQuery4Eui(model.$ProcessInst, page, size, conditionMap, resolve, '', {check_time: -1});
     });
 };

@@ -19,6 +19,12 @@
                                     </input>
                                 </div>
                                 <div class="btn-group" role="group" aria-label="...">
+
+                                    <label for="filterParam3">工单标题：</label>
+                                    <input class="easyui-textbox"id="proc_title"  style="width: 180px;height:31px;">
+                                    </input>
+                                </div>
+                                <div class="btn-group" role="group" aria-label="...">
                                     <label for="filterParam3">派单时间：</label>
                                     <input id="proc_start_time" class="easyui-datebox" label="Start Date:" labelPosition="top" style="width:130px;height:35px">
 
@@ -206,6 +212,7 @@
                proc_inst_task_complete_time:$('#proc_inst_task_complete_time').datebox('getValue'),
                work_order_number:$("#work_order_number").val(),
                is_overtime:$("#is_overtime").combobox('getValue'),
+               proc_title:$("#proc_title").val(),
 
            }
        });

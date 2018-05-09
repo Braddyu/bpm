@@ -329,4 +329,40 @@ router.route("/getConditions").get(function(req,res){
         utils.respJsonData(res,result);
     });
 });
+
+
+/**
+ * 获取黄河通过的差错工单
+ */
+router.route("/getHuanghePassOrder").post(function(req,res){
+    console.log("开始获取黄河通过工单..");
+    let beginDate= req.body.beginDate;
+    let endDate= req.body.endDate;
+    let dataCount= req.body.dataCount;
+    let tradeTypeCode= req.body.tradeTypeCode;
+    service.getHuanghePassOrderList(beginDate,endDate,dataCount,tradeTypeCode)
+        .then(function(result){
+            utils.respJsonData(res, result);
+        }) .catch(function(err){
+        utils.respJsonData(res, err);
+    });
+});
+
+router.route("/huangheFileDownload/:tradeId").get(function(req,res){
+    console.log("开始下载黄河附件..");
+    let tradeId= req.params.tradeId;
+    service.huangheFileDownload(tradeId)
+        .then(function(buffer){
+
+            res.setHeader('Content-Type', 'application/vnd.openxmlformats');
+            res.setHeader(
+                'Content-Disposition',
+                'attachment; filename=' + tradeId + '.pdf'
+            );
+            res.end(buffer, 'binary');
+        }) .catch(function(err){
+        utils.respJsonData(res, err);
+    });
+});
+
 module.exports = router;

@@ -14,10 +14,11 @@ router.route('/list').post(function(req,res){
     var proc_start_time = req.body.proc_start_time;
     var proc_inst_task_complete_time = req.body.proc_inst_task_complete_time;
     var proc_code = req.body.proc_code;
+    var proc_title = req.body.proc_title;
     var is_overtime = req.body.is_overtime;
     var page = req.body.page;//页码
     var length = req.body.rows;//每页条数
-    console.log("开始获取我的已归档集合,用户编号",userNo,work_order_number)
+    console.log("开始获取我的已归档集合,用户编号",userNo,work_order_number,proc_title)
 
     // 验证流程名是否为空
     if(!userNo) {
@@ -28,7 +29,7 @@ router.route('/list').post(function(req,res){
     userService.getUsreRolesByUserNo(userNo).then(function(result){
         console.log(result);
         if(result){
-            service.getMyArchiveTaskQuery4Eui(page,length,userNo,work_order_number,proc_start_time,proc_inst_task_complete_time,is_overtime,proc_code,result).then(function(taskresult){
+            service.getMyArchiveTaskQuery4Eui(page,length,userNo,work_order_number,proc_start_time,proc_inst_task_complete_time,is_overtime,proc_code,proc_title,result).then(function(taskresult){
                 utils.respJsonData(res, taskresult);
             }).catch(function(err_inst){
                 // console.log(err_inst);
@@ -51,11 +52,12 @@ router.route('/checklist').post(function(req,res){
     var proc_title = req.body.proc_title;
     var proc_inst_task_complete_time = req.body.proc_inst_task_complete_time;
     var check_time = req.body.check_time;
+    var is_check = req.body.is_check;
     var is_file = req.body.is_file;
     var page = req.body.page;//页码
     var rows = req.body.rows;//每页条数
 
-    service.checkFileList(page,rows,work_order_number,proc_title,proc_inst_task_complete_time,check_time,is_file).then(function(taskresult){
+    service.checkFileList(page,rows,work_order_number,proc_title,proc_inst_task_complete_time,check_time,is_file,is_check).then(function(taskresult){
         utils.respJsonData(res, taskresult);
     }).catch(function(err_inst){
         console.log("route-getMyarchiveTaskList","获取我的已归档异常",err_inst);

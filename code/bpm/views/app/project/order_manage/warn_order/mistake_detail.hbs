@@ -89,20 +89,6 @@
 
 
                     </tr>
-                    <!--
-                    <tr id="tr_4">
-                        <td align="right" class="tdLabel">操作:</td>
-                        <td colspan="3" class="tdLabel">
-                            <select class="easyui-combobox" name="handle"
-                                    style="width: 80px;" id="handle" panelHeight="auto">
-
-                            </select>
-
-
-                        </td>
-                    </tr>
-                    -->
-
                     <tr>
                         <td align="right" class="tdLabel">处理意见:</td>
                         <td colspan="2"><input  id="memo" name="memo" class="easyui-textbox" labelPosition="top" multiline="true"
@@ -138,8 +124,10 @@
 
         </form>
         <div style="padding:5px 0;display:none" align="center" id="check">
+            <a id="checkButton" href="javascript:void(0);" class="easyui-linkbutton" onclick="check(0)"
+           style="width: 100px;">复核通过</a>
             <a id="checkButton" href="javascript:void(0);" class="easyui-linkbutton" onclick="openCheck()"
-           style="width: 100px;">复核</a>
+               style="width: 100px;">复核不通过</a>
         </div>
 
     </div>
@@ -180,17 +168,7 @@
     <table  align="center">
 
         <tr>
-            <td align="right" class="tdLabel">回退节点:</td>
-            <td colspan="3"><select class="easyui-combobox"
-                                    id="node"name="node" style="width: 180px;">
-                <option value="processDefineDiv_node_3">厅店处理回复</option>
-                <option value="processDefineDiv_node_28">省营业厅销售部稽核</option>
-            </select> </td>
-
-        </tr>
-
-        <tr>
-            <td align="right" class="tdLabel">复核原因:</td>
+            <td align="right" class="tdLabel">不通过原因:</td>
             <td colspan="2"><input name="check_memo" id="check_memo"class="easyui-textbox"  labelPosition="top" multiline="true" style="width: 370px; height: 54px; resize: none;"/>
 
             </td>
@@ -200,7 +178,6 @@
     </table>
 
 </div>
-
 <script>
 
     $.ajaxSettings.beforeSend = function (xhr, request) {
@@ -209,6 +186,7 @@
 </script>
 
 <script type="text/javascript">
+    var is_admin='{{is_admin}}'
     var $list = $("#thelist");
     var status = '{{status}}'
     var change_id = '{{change_id}}'
@@ -297,8 +275,11 @@
         //隐藏处理操作
         $("#order_detail").hide();
         $("#submitButton").hide();
-        if (status == 4) {
+        //是否是省级管理人员
+        if (status == 4 && is_admin=='1') {
             $("#check").show();
+        }else{
+            $("#check").hide();
         }
     } else if (status == 2) {
         //待办操作
@@ -773,7 +754,7 @@
         $('#checkDetail').mydialog({
             title:"复核信息",
             width: 700,
-            height: 250,
+            height: 150,
             top:250,
             modal: true,
             myButtons:[
@@ -781,7 +762,7 @@
                     text:'确定',
                     btnCls:'btn btn-blue',
                     handler:function(){
-                        check();
+                        check(1);
                     }
                 },
                 {
@@ -797,9 +778,9 @@
     }
 
     //提交复核
-    function check(){
+    function check(check_status){
 
-        $.messager.confirm('提示', '确认对此工单进行复核么?', function (r) {
+         $.messager.confirm('提示', '确认对此工单进行复核么?', function (r) {
             if (r) {
                 $.ajax({
                     url: '{{projcfg.appurl}}/api/order_manage/order_list/checkFile',
@@ -807,12 +788,14 @@
                     dataType:'json',
                     data: {
                         inst_id:change_id,
-                        node:$("#node").combobox('getValue'),
+                        status:check_status,
                         check_memo:$("#check_memo").val(),
                     },
                     success: function (data) {
                         if(data.success){
-                            $('#checkDetail').dialog("close");
+                            if(check_status==1){
+                                $('#checkDetail').dialog("close");
+                            }
                             $.messager.alert('提示','处理成功');
                             $("#dd").dialog('close');
                             parent.$('#orderTablelist').datagrid('reload');

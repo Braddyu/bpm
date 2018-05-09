@@ -1,5 +1,6 @@
 var process_model = require('../../bpm_resource/models/process_model');
 var user_model = require('../../bpm_resource/models/user_model');
+var process_util = require('../../../utils/process_util');
 var mistake_model = require('../models/mistake_model');
 var utils = require('../../../../lib/utils/app_utils');
 var inst = require('../../bpm_resource/services/instance_service');
@@ -753,6 +754,9 @@ exports.overtimeList = function (page, size, conditionMap, work_order_number) {
     });
 
 };
+
+
+
 exports.export_overtimeList = function (page, size, conditionMap, work_order_number) {
 
     return new Promise(function (resolve, reject) {
@@ -932,6 +936,72 @@ function createExcelOvertimeList(list) {
 
 exports.createExcelOvertimeList = createExcelOvertimeList;
 
+/**
+ * 获取黄河审核通过数据
+ */
+exports.getHuanghePassOrderList=function(beginDate,endDate,dataCount,tradeTypeCode){
+
+    return  new Promise(function(resolve,reject){
+        var postData={
+            beginDate: beginDate,
+            endDate: endDate,
+            dataCount: dataCount,
+            tradeTypeCode: tradeTypeCode//业务名称
+        }
+        var options={
+            hostname:'135.10.20.51',
+            port:8080,
+            path:'/ewfs/client/ewf4store/paperList.do',
+            method:'POST',
+            headers:{
+                'Content-Type':'text/plan; charset=UTF-8'
+            }
+        }
+        process_util.httpPost(postData  ,options).then(function (rs) {
+            console.log("结果,",rs);
+            let rs_json=JSON.parse(rs)
+            let result={};
+            if(rs_json.ret_code=='-1'){
+                result.rows=[];
+                result.total=0;
+            }else{
+                result.rows=rs_json.data;
+            }
+            console.log(result)
+            resolve(result)
+        });
+    })
+
+}
+exports.huangheFileDownload=function(tradeId){
+
+    return  new Promise(function(resolve,reject){
+        var postData={
+            tradeId: tradeId
+        }
+        var options={
+            hostname:'135.10.20.51',
+            port:8080,
+            path:'/ewfs/client/ewf4store/paperPdf.do',
+            method:'POST',
+            headers:{
+                'Content-Type':'text/plan; charset=UTF-8'
+            }
+        }
+        process_util.httpPost(postData  ,options).then(function (rs) {
+
+            let rs_json=JSON.parse(rs)
+            let dataBuffe ='';
+            if(rs_json.ret_code=='-1'){
+                dataBuffe='';
+            }else{
+                dataBuffe = new Buffer(rs_json.data, 'base64');
+            }
+            resolve(dataBuffe)
+        });
+    })
+
+}
 
 function formatDuring(mss) {
     var days = parseInt(mss / (1000 * 60 * 60 * 24));
