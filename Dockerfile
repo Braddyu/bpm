@@ -1,4 +1,4 @@
-FROM node:8
+FROM 218.201.251.104:15000/library/node:8
 RUN npm install -g cnpm --registry=https://registry.npm.taobao.org
 RUN cnpm install -g pm2
 
