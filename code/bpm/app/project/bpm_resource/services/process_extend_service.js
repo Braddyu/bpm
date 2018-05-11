@@ -82,6 +82,8 @@ exports.addStatistics = function(inst_id,dispatch_time,channel_id) {
         statistics.channel_code=channel_result[0].company_code;
         ///所属渠道名称
         statistics.channel_name=channel_result[0].org_fullname;
+        ///所属渠道类型
+        statistics.channel_type=channel_result[0].channel_type;
         //查找网格
         let grid_result= await  user_model.$CommonCoreOrg.find({"_id":channel_result[0].org_pid});
         if(grid_result.length !=1){
@@ -214,6 +216,7 @@ exports.addStatisticsByMoneyAudit = function(inst_id,dispatch_time,orgId) {
             statistics.channel_code=orgl_result[0].company_code;
             ///所属渠道名称
             statistics.channel_name=orgl_result[0].org_fullname;
+            statistics.channel_type=orgl_result[0].channel_type;
             //查找区县
             var county_result  = await  user_model.$CommonCoreOrg.find({"_id":orgl_result[0].audit_org_pid,"level":4});
             if(county_result.length !=1){

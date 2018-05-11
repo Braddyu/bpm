@@ -268,16 +268,17 @@ router.route('/export_overtimeList').get(function(req,res){
  * 开启差错工单派单定时任务
  */
 router.route("/openTask").post(function(req,res){
-    var query_date = req.body.query_date;
+    //var query_date = req.body.query_date.replace(/\-/g,'');;
     var check_status = req.body.check_status;
     var business_name = req.body.business_name;
     var city_code = req.body.city_code;
+    var work_order_number = req.body.work_order_number;
     var params = {};
-    if (query_date){
+    /*if (query_date){
         params['query_date'] = query_date;
     }else{
         params['query_date'] = "";
-    }
+    }*/
     if(check_status && 0!=check_status){
         params['check_status'] = check_status;
     }else{
@@ -293,6 +294,8 @@ router.route("/openTask").post(function(req,res){
     }else{
         params['city_code'] = "";
     }
+    params['work_order_number'] = work_order_number;
+
     dict_service.openTask(params).then(function(result){
         if(result.success){
             utils.respJsonData(res,result);
@@ -314,9 +317,52 @@ router.route("/closeTask").post(function(req,res){
  */
 router.route("/getSwitch").get(function(req,res){
     dict_service.getSwitch().then(function(result){
-        if(result.success){
-            utils.respJsonData(res,result);
-        }
+        utils.respJsonData(res,result);
     });
 });
+
+/**
+ * 获取筛选条件
+ */
+router.route("/getConditions").get(function(req,res){
+    dict_service.getConditions().then(function(result){
+        utils.respJsonData(res,result);
+    });
+});
+
+
+/**
+ * 获取黄河通过的差错工单
+ */
+router.route("/getHuanghePassOrder").post(function(req,res){
+    console.log("开始获取黄河通过工单..");
+    let beginDate= req.body.beginDate;
+    let endDate= req.body.endDate;
+    let dataCount= req.body.dataCount;
+    let tradeTypeCode= req.body.tradeTypeCode;
+    service.getHuanghePassOrderList(beginDate,endDate,dataCount,tradeTypeCode)
+        .then(function(result){
+            utils.respJsonData(res, result);
+        }) .catch(function(err){
+        utils.respJsonData(res, err);
+    });
+});
+
+router.route("/huangheFileDownload/:tradeId").get(function(req,res){
+    console.log("开始下载黄河附件..");
+    let tradeId= req.params.tradeId;
+    service.huangheFileDownload(tradeId)
+        .then(function(buffer){
+
+            res.setHeader('Content-Type', 'application/vnd.openxmlformats');
+            res.setHeader(
+                'Content-Disposition',
+                'attachment; filename=' + tradeId + '.pdf'
+            );
+            res.end(buffer, 'binary');
+        }) .catch(function(err){
+        utils.respJsonData(res, err);
+    });
+});
+
 module.exports = router;

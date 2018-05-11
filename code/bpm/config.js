@@ -256,7 +256,9 @@ var config = {
     SMS_TEMPLET_MONEY_AUDIT_ORDER:"渠道工单系统有一张需要您处理的工单即将到期，《procName》，工单号：orderNo，请尽快登陆认真处理。",
     VALIDATION:"工单系统手机号登录验证码为：randomNumber，请不要透露他人。",
     GRID_COPY:"尊敬的网格管理员，您所辖渠道:channelName,渠道编码:channelCode,有一条待处理工单《procName》,工单号：orderNo，请及时催促处理。",
-    MISTAKE_DISTRIBUTE_TASK:"差错工单系统自动派单失败，工单量大于2万条，请手动派单。",
+    MISTAKE_DISTRIBUTE_TASK:"差错工单量达到number上限值，自动派单失败，需手动派单",
+	MISTAKE_DISTRIBUTE_SUCCESS:"差错工单自动派单成功！派单时间:time",
+    MISTAKE_DISTRIBUTE_ERROR:"差错工单自动派单失败:msg",
     OPEN_SMS_ALL:false, //工单短信发送总开关
     OPEN_SMS:false, //工单短信发送接口
     OPEN_LOGIN_SMS:false, //短信登录验证码
@@ -288,7 +290,7 @@ var config = {
     athena_peason_switch_core:"30 1 2 * * *",//秒、分、时、日、月、周几
     huanghe_switch_core:"30 11 15 * * *",//秒、分、时、日、月、周几
     mistake_switch_core:"40 14 15 * * *",//秒、分、时、日、月、周几
-    mistake_distribute_cron:"00 * */10 * * *",
+    mistake_distribute_cron:"00 00 22 * * *",
 	money_audit_switch_core:" 0 * */1 * *",//秒、分、时、日、月、周几
     peson_sync_data_from_Athena_url:"e:\\peasondata",//同步人员错误数据导出地址
     org_sync_data_from_Athena_url:"e:\\data",//同步机构错误数据导出地址

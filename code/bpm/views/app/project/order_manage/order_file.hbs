@@ -19,6 +19,12 @@
                                     </input>
                                 </div>
                                 <div class="btn-group" role="group" aria-label="...">
+
+                                    <label for="filterParam3">工单标题：</label>
+                                    <input class="easyui-textbox"id="proc_title"  style="width: 180px;height:31px;">
+                                    </input>
+                                </div>
+                                <div class="btn-group" role="group" aria-label="...">
                                     <label for="filterParam3">派单时间：</label>
                                     <input id="proc_start_time" class="easyui-datebox" label="Start Date:" labelPosition="top" style="width:130px;height:35px">
 
@@ -152,7 +158,7 @@
                 }},
             ]],
             onDblClickRow:function(rowIndex, rowData){
-                var url='{{projcfg.appurl}}/api/order_manage/order_list/showDetailView?proc_code='+rowData.proc_code+'&change_id='+rowData._id+'&status=1';
+                var url='{{projcfg.appurl}}/api/order_manage/order_list/showDetailView?proc_code='+rowData.proc_code+'&change_id='+rowData._id+'&status=4';
                 var content = '<iframe src="'+url+'" width="100%" height="99%" frameborder="0" scrolling="yes"></iframe>';
 
 
@@ -206,6 +212,7 @@
                proc_inst_task_complete_time:$('#proc_inst_task_complete_time').datebox('getValue'),
                work_order_number:$("#work_order_number").val(),
                is_overtime:$("#is_overtime").combobox('getValue'),
+               proc_title:$("#proc_title").val(),
 
            }
        });

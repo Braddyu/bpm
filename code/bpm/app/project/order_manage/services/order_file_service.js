@@ -16,23 +16,32 @@ var utils = require('../../../../lib/utils/app_utils');
  * @param conditionMap
  * @returns {Promise}
  */
-exports.getMyArchiveTaskQuery4Eui = function (page, size, userNo, work_order_number,proc_start_time,proc_inst_task_complete_time,is_overtime,proc_code,result) {
+exports.getMyArchiveTaskQuery4Eui = function (page, size, userNo, work_order_number, proc_start_time, proc_inst_task_complete_time, is_overtime, proc_code,proc_title, result) {
 
     var p = new Promise(function (resolve, reject) {
 
-        var inst_search={};
-        let work_id=result.work_id;
+        var inst_search = {};
+        let work_id = result.work_id;
         //有的工号为'',为了防止查到空工号的任务
-        if(!work_id)work_id='@@@@@@@';
+        if (!work_id) work_id = '@@@@@@@';
         if (work_order_number) {
             inst_search.work_order_number = work_order_number;
         }
+        if (proc_title) {
+            inst_search.proc_title =  new RegExp(proc_title);
+        }
 
         if (proc_start_time) {
-            inst_search.proc_start_time =  {$gte: new Date(proc_start_time),$lte:new Date(new Date(proc_start_time).setDate(new Date(proc_start_time).getDate()+1))};
+            inst_search.proc_start_time = {
+                $gte: new Date(proc_start_time),
+                $lte: new Date(new Date(proc_start_time).setDate(new Date(proc_start_time).getDate() + 1))
+            };
         }
         if (proc_inst_task_complete_time) {
-            inst_search.proc_inst_task_complete_time = {$gte: new Date(proc_inst_task_complete_time),$lte:new Date(new Date(proc_inst_task_complete_time).setDate(new Date(proc_inst_task_complete_time).getDate()+1))};
+            inst_search.proc_inst_task_complete_time = {
+                $gte: new Date(proc_inst_task_complete_time),
+                $lte: new Date(new Date(proc_inst_task_complete_time).setDate(new Date(proc_inst_task_complete_time).getDate() + 1))
+            };
         }
         if (is_overtime) {
             inst_search.is_overtime = parseInt(is_overtime);
@@ -41,7 +50,7 @@ exports.getMyArchiveTaskQuery4Eui = function (page, size, userNo, work_order_num
         if (proc_code) {
             inst_search.proc_code = proc_code;
         }
-        inst_search.proc_inst_status=4;
+        inst_search.proc_inst_status = 4;
         page = parseInt(page);
         size = parseInt(size);
         if (page == 0) {
@@ -53,15 +62,16 @@ exports.getMyArchiveTaskQuery4Eui = function (page, size, userNo, work_order_num
             {
                 $match: inst_search
             },
-            {  $lookup: {
+            {
+                $lookup: {
                     from: "common_bpm_proc_task_histroy",
-                     localField:"_id",
+                    localField: "_id",
                     foreignField: "proc_inst_id",
                     as: "his"
                 }
             },
             {
-                $match: {$or:[{"his.proc_inst_task_assignee":userNo},{"his.proc_inst_task_work_id":work_id}]}
+                $match: {$or: [{"his.proc_inst_task_assignee": userNo}, {"his.proc_inst_task_work_id": work_id}]}
             },
             {
                 $project: {
@@ -98,15 +108,16 @@ exports.getMyArchiveTaskQuery4Eui = function (page, size, userNo, work_order_num
                     {
                         $match: inst_search
                     },
-                    {  $lookup: {
-                        from: "common_bpm_proc_task_histroy",
-                        localField:"_id",
-                        foreignField: "proc_inst_id",
-                        as: "his"
-                    }
+                    {
+                        $lookup: {
+                            from: "common_bpm_proc_task_histroy",
+                            localField: "_id",
+                            foreignField: "proc_inst_id",
+                            as: "his"
+                        }
                     },
                     {
-                        $match: {"his.proc_inst_task_assignee":userNo}
+                        $match: {"his.proc_inst_task_assignee": userNo}
                     },
                     {
                         $addFields: {
@@ -120,11 +131,11 @@ exports.getMyArchiveTaskQuery4Eui = function (page, size, userNo, work_order_num
                     if (err) {
                         reject(utils.returnMsg(false, '1000', '查询统计失败。', null, err));
                     } else {
-                        console.log("数量",res);
-                        if(res.length > 0)
-                            result.total=res[0].count;
+                        console.log("数量", res);
+                        if (res.length > 0)
+                            result.total = res[0].count;
                         else
-                            result.total=0;
+                            result.total = 0;
                         resolve(result)
 
                     }
@@ -137,22 +148,44 @@ exports.getMyArchiveTaskQuery4Eui = function (page, size, userNo, work_order_num
 };
 
 
+exports.checkFileList = function (page, rows, work_order_number, proc_title, proc_inst_task_complete_time, check_time, is_file,is_check) {
 
-exports.checkFileList = function (page, size, userNo, work_order_number,proc_start_time,proc_inst_task_complete_time,is_overtime,proc_code,result) {
+    return new Promise(function (resolve, reject) {
+        let size = (page + 1) * rows;
 
-    return new Promise(function(resolve,reject){
-        var userArr = [];
-        userArr.push(userCode);
         var conditionMap = {};
-        var match={};
-        if(joinup_sys){
-            match.joinup_sys=joinup_sys;
+        if (work_order_number) {
+            conditionMap.work_order_number = work_order_number;
         }
-        if(proc_code){
-            match.proc_code=proc_code;
+        if (proc_title) {
+            var proc_title_ = new RegExp(proc_title);
+            conditionMap.proc_title = proc_title_;
         }
-        conditionMap['$and'] = [match,{'proc_inst_task_assignee':{'$in':userArr}}];
-        conditionMap.proc_inst_task_status = 1;
-        utils.pagingQuery4Eui(model.$ProcessTaskHistroy, page, size, conditionMap, resolve, '',  {proc_inst_task_arrive_time:-1});
+
+        //归档时间
+        if (proc_inst_task_complete_time) {
+            var compare = {};
+            compare['$gte'] = new Date(proc_inst_task_complete_time);
+            compare['$lte'] = new Date(new Date(new Date(proc_inst_task_complete_time).setDate(new Date(proc_inst_task_complete_time).getDate() + 1)));
+            conditionMap.proc_inst_task_complete_time = compare;
+        }
+        //复核时间
+        if (check_time) {
+            var compare = {};
+            compare['$gte'] = new Date(proc_inst_task_complete_time);
+            compare['$lte'] = new Date(new Date(new Date(check_time).setDate(new Date(check_time).getDate() + 1)));
+            conditionMap.check_time = compare;
+        }
+        //是否归档
+        if (is_file) {
+            conditionMap.proc_inst_status = is_file;
+        }
+        if(is_check){
+            conditionMap.is_check=is_check
+        }else{
+            conditionMap.is_check = {$in:[0,1]};
+        }
+        console.log(conditionMap);
+        utils.pagingQuery4Eui(model.$ProcessInst, page, size, conditionMap, resolve, '', {check_time: -1});
     });
 };

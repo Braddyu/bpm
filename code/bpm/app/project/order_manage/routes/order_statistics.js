@@ -21,11 +21,10 @@ router.route('/list').post(function(req,res){
     var startDate = req.body.startDate;//开始插入时间
     var endDate = req.body.endDate;//结束插入时间
     var areaCode = req.body.area_code;// 区域编码
-    var is_use_org_code = req.body.is_use_org_code;
     var channel_enterprise_type = req.body.channel_enterprise_type;//渠道类型 0:实体  1：政企
     console.log("params",org_id,proc_code,level,status,startDate,endDate,areaCode,channel_enterprise_type);
     // 调用分页
-    service.getStatisticsListPage(org_id,proc_code,level,status,startDate,endDate,areaCode,is_use_org_code,channel_enterprise_type)
+    service.getStatisticsListPage(org_id,proc_code,level,status,startDate,endDate,channel_enterprise_type)
         .then(function(result){
            //  console.log("获取所有工单列表成功",result);channel_enterprise_type
             utils.respJsonData(res, result);
@@ -49,9 +48,9 @@ router.route('/export_excel').get(function(req,res){
     var startDate = req.query.startDate;//开始插入时间
     var endDate = req.query.endDate;//结束插入时间
     var areaCode = req.query.area_code;// 区域编码
-    var is_use_org_code = req.query.is_use_org_code;
+
     // 调用分页
-    service.exportStatisticsList(org_id,proc_code,level,status,startDate,endDate,areaCode,is_use_org_code)
+    service.getStatisticsListPage(org_id,proc_code,level,status,startDate,endDate)
         .then(service.createExcelOrderList)
         .then(excelBuf=>{
             const date = new Date();
@@ -115,9 +114,10 @@ router.route('/detail_list').post(function(req,res){
     // var dispatch_time = req.body.dispatch_time;//派单时间
     var startDate = req.body.startDate;//开始插入时间
     var endDate = req.body.endDate;//结束插入时间
+    var channel_enterprise_type = req.body.channel_enterprise_type;//查询渠道类型
     console.log("params",org_id,level,status,proc_code,startDate,endDate);
     // 调用分页
-    service.detail_list(page,size,org_id,level,status,proc_code,startDate,endDate,"","","","")
+    service.detail_list(page,size,org_id,level,status,proc_code,startDate,endDate,"","","","",channel_enterprise_type)
         .then(function(result){
             let end =new Date().getTime();
             console.log(end-start,"ms");
@@ -199,6 +199,7 @@ router.route('/export_excel_detail').get(function(req,res){
     var channel_code = req.query.channel_code;//渠道编码
     var channel_work_id = req.query.channel_work_id;//被派渠道BOSS工号
     var work_order_number = req.query.work_order_number;//工单号
+    var channel_enterprise_type = req.query.channel_enterprise_type;//查询渠道类型
     console.log("params",org_id,proc_code,level,status,startDate,endDate);
     console.log("channel_work_id",channel_work_id,"channel_code",channel_code);
 
@@ -216,7 +217,7 @@ router.route('/export_excel_detail').get(function(req,res){
                     console.log("istodo:",istodo,org_id,level,"randomStr",randomStr)
 
                     // 调用分页
-                    service.exportDetailList(org_id,proc_code,level,status,startDate,endDate,proc_inst_task_type,channel_code,channel_work_id,work_order_number,randomStr)
+                    service.exportDetailList(org_id,proc_code,level,status,startDate,endDate,proc_inst_task_type,channel_code,channel_work_id,work_order_number,randomStr,channel_enterprise_type)
                         .then(service.createExcelOrderDetail)
                         .then(excelBuf=>{
                             let end_time=new Date().getTime();
@@ -242,7 +243,7 @@ router.route('/export_excel_detail').get(function(req,res){
                 }
             })
     }else{
-        service.exportDetailList(org_id,proc_code,level,status,startDate,endDate,proc_inst_task_type,channel_code,channel_work_id,work_order_number,randomStr)
+        service.exportDetailList(org_id,proc_code,level,status,startDate,endDate,proc_inst_task_type,channel_code,channel_work_id,work_order_number,randomStr,channel_enterprise_type)
             .then(service.createExcelOrderDetail)
             .then(excelBuf=>{
                 const date = new Date();

@@ -1,4 +1,100 @@
 <link rel="stylesheet" type="text/css" href="{{projcfg.appurl}}/static/order/css/order_detail.css">
+<style type="text/css">
+    #w .panel-body{
+        overflow: hidden !important;
+    }
+    .panel-title{
+        font-size:14px !important;
+    }
+    #orderDistribute{
+        line-height:31px;
+        height:31px;
+        margin-left:10px;
+    }
+    .testswitch {
+        position: relative;
+        float: right;
+        width: 60px;
+        top:3px;
+        margin: 0;
+        -webkit-user-select:none;
+        -moz-user-select:none;
+        -ms-user-select: none;
+    }
+
+    .testswitch-checkbox {
+        display:none;
+    }
+
+    .testswitch-label {
+        display: block;
+        overflow: hidden;
+        cursor: pointer;
+        border: 2px solid #999999;
+        border-radius: 20px;
+    }
+
+    .testswitch-inner {
+        display: block;
+        width: 200%;
+        margin-left: -100%;
+        transition: margin 0.3s ease-in 0s;
+    }
+
+    .testswitch-inner::before, .testswitch-inner::after {
+        display: block;
+        float: right;
+        width: 50%;
+        height: 20px;
+        padding: 0;
+        line-height: 30px;
+        font-size: 14px;
+        color: white;
+        font-family:
+                Trebuchet, Arial, sans-serif;
+        font-weight: bold;
+        box-sizing: border-box;
+    }
+
+    .testswitch-inner::after {
+        content: attr(data-on);
+        padding-left: 10px;
+        line-height: 20px;
+        background-color: #00e500;
+        color: #FFFFFF;
+    }
+    .testswitch-inner::before {
+        content: attr(data-off);
+        padding-right: 10px;
+        line-height: 20px;
+        background-color: #EEEEEE;
+        color: #999999;
+        text-align: right;
+    }
+
+    .testswitch-switch {
+        position: absolute;
+        display: block;
+        width: 15px;
+        height: 15px;
+        margin: 4px;
+        background: #FFFFFF;
+        top: 0;
+        bottom: 0;
+        right: 36px;
+        border: 2px solid #999999;
+        border-radius: 20px;
+        transition: all 0.3s ease-in 0s;
+    }
+
+    .testswitch-checkbox-checked + .testswitch-label .testswitch-inner {
+        margin-left: 0;
+    }
+
+    .testswitch-checkbox-checked + .testswitch-label .testswitch-switch {
+        right: 0px;
+    }
+</style>
 <div id="processDiv" class="row">
     <div class="col-xs-12 col-md-12">
         <div class="widget">
@@ -151,38 +247,14 @@
     <div class="easyui-layout" data-options="fit:true">
         <div data-options="region:'center'" style="padding:10px;">
             <form id="orderDistributeFrom" style="height:150px;">
-                <div class="col-xs-8 col-md-8" style="width:530px;padding-top:30px;height:150px;">
+                <div class="col-xs-8 col-md-8" style="width:530px;height:150px;">
+                    <!--
                     <div class="btn-group" role="group" aria-label="..." >
                         <label for="filterParam3">时间：</label>
                         <input id="query_date_w" class="easyui-datebox" label="Start Date:" labelPosition="top" style="width:130px;height:28.35px"data-options="required:true, missingMessage:'请选择时间'">
                     </div>
-                    <div class="btn-group" role="group" aria-label="..." style="padding-left:5px;">
-                        <label for="filterParam3">稽核说明：</label>
-                        <select class="easyui-combobox"id="check_status_w" style="width: 230px;height:31px;">
-                            <option value="0">=========全部========</option>
-                            <option value="无纸化打印传送中">无纸化打印传送中</option>
-                            <option value="前端软件异常退出电子工单">前端软件异常退出电子工单</option>
-                            <option value="纸质重打成功">纸质重打成功</option>
-                            <option value="[用户没有签名笔迹]">[用户没有签名笔迹]</option>
-                            <option value="进入电子免填单，营业员不扫描证件，不签字，不盖章，退出电子工单">进入电子免填单，营业员不扫描证件，不签字，不盖章，退出电子工单</option>
-                            <option value="[身份证扫描件不清晰或未扫描证件]">[身份证扫描件不清晰或未扫描证件]</option>
-                            <option value="已撤单">已撤单</option>
-                            <option value="无纸化打印控件未安装">无纸化打印控件未安装</option>
-                            <option value="无纸化补打传送中">无纸化补打传送中</option>
-                            <option value="纸质打印成功">纸质打印成功</option>
-                            <option value="纸质补打成功">纸质补打成功</option>
-                            <option value="[没有身份证正面]">[没有身份证正面]</option>
-                            <option value="无纸化重打传送中">无纸化重打传送中</option>
-                            <option value="盖章时异常退出电子工单">盖章时异常退出电子工单</option>
-                            <option value="未打印">未打印</option>
-                            <option value="[受理人员没有扫描客户证件信息, 未扫描证件]">[受理人员没有扫描客户证件信息, 未扫描证件]</option>
-                            <option value="纸质打印控件未安装">纸质打印控件未安装</option>
-                            <option value="[客户证号与受理客户信息不一致]">[客户证号与受理客户信息不一致]</option>
-                            <option value="签字屏故障退出电子工单">签字屏故障退出电子工单</option>
-                            <option value="证件识读设备故障退出电子工单">证件识读设备故障退出电子工单</option>
-                            <option value="[未扫描证件]">[未扫描证件]</option>
-                        </select>
-                    </div>
+                    -->
+
 
                     <div class="btn-group" role="group" aria-label="..." style="top:20px;">
                         <label for="filterParam3">地州：</label>
@@ -244,8 +316,39 @@
                             <option value="IMS营业停机">IMS营业停机</option>
                             <option value="二次确认普通成员批量增加">二次确认普通成员批量增加</option>
                             <option value="亲友网成员变更">亲友网成员变更</option>
-
                         </select>
+                    </div>
+                    <div class="btn-group" role="group" aria-label="..." style="top:30px;">
+                        <label for="filterParam3">稽核说明：</label>
+                        <select class="easyui-combobox"id="check_status_w" style="width: 230px;height:31px;">
+                            <option value="0">=========全部========</option>
+                            <option value="无纸化打印传送中">无纸化打印传送中</option>
+                            <option value="前端软件异常退出电子工单">前端软件异常退出电子工单</option>
+                            <option value="纸质重打成功">纸质重打成功</option>
+                            <option value="[用户没有签名笔迹]">[用户没有签名笔迹]</option>
+                            <option value="进入电子免填单，营业员不扫描证件，不签字，不盖章，退出电子工单">进入电子免填单，营业员不扫描证件，不签字，不盖章，退出电子工单</option>
+                            <option value="[身份证扫描件不清晰或未扫描证件]">[身份证扫描件不清晰或未扫描证件]</option>
+                            <option value="已撤单">已撤单</option>
+                            <option value="无纸化打印控件未安装">无纸化打印控件未安装</option>
+                            <option value="无纸化补打传送中">无纸化补打传送中</option>
+                            <option value="纸质打印成功">纸质打印成功</option>
+                            <option value="纸质补打成功">纸质补打成功</option>
+                            <option value="[没有身份证正面]">[没有身份证正面]</option>
+                            <option value="无纸化重打传送中">无纸化重打传送中</option>
+                            <option value="盖章时异常退出电子工单">盖章时异常退出电子工单</option>
+                            <option value="未打印">未打印</option>
+                            <option value="[受理人员没有扫描客户证件信息, 未扫描证件]">[受理人员没有扫描客户证件信息, 未扫描证件]</option>
+                            <option value="纸质打印控件未安装">纸质打印控件未安装</option>
+                            <option value="[客户证号与受理客户信息不一致]">[客户证号与受理客户信息不一致]</option>
+                            <option value="签字屏故障退出电子工单">签字屏故障退出电子工单</option>
+                            <option value="证件识读设备故障退出电子工单">证件识读设备故障退出电子工单</option>
+                            <option value="[未扫描证件]">[未扫描证件]</option>
+                        </select>
+                    </div>
+                    <div class="btn-group" role="group" aria-label="..."style="top:40px;">
+                        <label for="filterParam3">派单数量上限:</label>
+                        <input class="easyui-numberbox" id="work_order_number"  precision="0" min="0" style="width: 180px;height:31px;" required="true">
+                        </input>
                     </div>
                 </div>
             </form>
@@ -256,102 +359,7 @@
         </div>
     </div>
 </div>
-<style type="text/css">
-    #w .panel-body{
-        overflow: hidden !important;
-    }
-    .panel-title{
-        font-size:14px !important;
-    }
-    #orderDistribute{
-        line-height:31px;
-        height:31px;
-        margin-left:10px;
-    }
-    .testswitch {
-        position: relative;
-        float: right;
-        width: 60px;
-        top:3px;
-        margin: 0;
-        -webkit-user-select:none;
-        -moz-user-select:none;
-        -ms-user-select: none;
-    }
 
-    .testswitch-checkbox {
-        display:none;
-    }
-
-    .testswitch-label {
-        display: block;
-        overflow: hidden;
-        cursor: pointer;
-        border: 2px solid #999999;
-        border-radius: 20px;
-    }
-
-    .testswitch-inner {
-        display: block;
-        width: 200%;
-        margin-left: -100%;
-        transition: margin 0.3s ease-in 0s;
-    }
-
-    .testswitch-inner::before, .testswitch-inner::after {
-        display: block;
-        float: right;
-        width: 50%;
-        height: 20px;
-        padding: 0;
-        line-height: 30px;
-        font-size: 14px;
-        color: white;
-        font-family:
-        Trebuchet, Arial, sans-serif;
-        font-weight: bold;
-        box-sizing: border-box;
-    }
-
-    .testswitch-inner::after {
-        content: attr(data-on);
-        padding-left: 10px;
-        line-height: 20px;
-        background-color: #00e500;
-        color: #FFFFFF;
-    }
-    .testswitch-inner::before {
-        content: attr(data-off);
-        padding-right: 10px;
-        line-height: 20px;
-        background-color: #EEEEEE;
-        color: #999999;
-        text-align: right;
-    }
-
-    .testswitch-switch {
-        position: absolute;
-        display: block;
-        width: 15px;
-        height: 15px;
-        margin: 4px;
-        background: #FFFFFF;
-        top: 0;
-        bottom: 0;
-        right: 36px;
-        border: 2px solid #999999;
-        border-radius: 20px;
-        transition: all 0.3s ease-in 0s;
-    }
-
-    .testswitch-checkbox-checked + .testswitch-label .testswitch-inner {
-        margin-left: 0;
-    }
-
-    .testswitch-checkbox-checked + .testswitch-label .testswitch-switch {
-        right: 0px;
-    }
-</style>
 
 <script type="text/javascript">
 
@@ -393,7 +401,27 @@
                 if (data) {
                     if ($("#onoffswitch").is(":checked")) {
                         // 选中
-                        $('#w').window('open');
+                        $.ajax({
+                            type:"get",
+                            url:"{{projcfg.appurl}}/api/order_manage/mistake_list/getConditions",
+                            dataType:"json",
+                            data:{},
+                            success:function(data){
+                                var condition = data.data;
+                                if(data.success){
+                                    $("#city_code_w").combobox('setValue', condition.city_code==''?"0":condition.city_code);
+                                    $("#business_name_w").combobox('setValue',condition.business_name==''?"0":condition.business_name);
+                                    $("#check_status_w").combobox('setValue',condition.check_status==''?"0":condition.check_status);
+                                    $("#work_order_number").numberbox('setValue',condition.order_number);
+                                    $('#w').window('open');
+                                }else{
+                                    $.messager.alert("提示",data.msg);
+                                }
+                            },
+                            error:function(XMLHttpRequest, textStatus, errorThrown){
+                                $.messager.alert("提示","开启失败:"+textStatus);
+                            }
+                        });
                     } else {
                         // 取消
                         closeTask();
@@ -621,29 +649,23 @@
         if(!validate) {
             return false;
         }
-        var query_date = $("#query_date_w").textbox('getValue');
+        //var query_date = $("#query_date_w").textbox('getValue');
         var business_name =  $("#business_name_w").combobox('getValue');
         var check_status = $("#check_status_w").combobox('getValue');
         var city_code = $("#city_code_w").combobox('getValue');
-        $("#query_date_w").textbox('setValue', '');
-        $("#city_code_w").combobox('setValue', '0');
-        $("#business_name_w").combobox('setValue', '0');
-        $("#check_status_w").combobox('setValue', '0');
+        var work_order_number = $("#work_order_number").numberbox('getValue');
+        //$("#query_date_w").textbox('setValue', '');
         $.ajax({
             type:"post",
             url:"{{projcfg.appurl}}/api/order_manage/mistake_list/openTask",
             dataType:"json",
-            data:{'query_date':query_date,'business_name':business_name,'check_status':check_status,'city_code':city_code},
+            data:{/*'query_date':query_date,*/'business_name':business_name,'check_status':check_status,'city_code':city_code,"work_order_number":work_order_number},
             success:function(data){
                 if(data.success){
                     $("#onoffswitch").addClass("testswitch-checkbox-checked");
                 }else{
                     $("#onoffswitch").attr('checked',false);
                 }
-                $("#query_date_w").textbox('setValue', '');
-                $("#city_code_w").combobox('setValue', '0');
-                $("#business_name_w").combobox('setValue', '0');
-                $("#check_status_w").combobox('setValue', '0');
                 $('#w').window('close');
                 $.messager.alert("提示",data.msg);
             },
@@ -655,7 +677,7 @@
     }
     $("#w").window({
         onBeforeClose: function () {
-            $("#query_date_w").textbox('setValue', '');
+            //$("#query_date_w").textbox('setValue', '');
             $("#city_code_w").combobox('setValue', '0');
             $("#business_name_w").combobox('setValue', '0');
             $("#check_status_w").combobox('setValue', '0');
@@ -682,7 +704,7 @@
         });
     }
     function cancleWin(){
-        $("#query_date_w").textbox('setValue', '');
+        //$("#query_date_w").textbox('setValue', '');
         $("#city_code_w").combobox('setValue', '0');
         $("#business_name_w").combobox('setValue', '0');
         $("#check_status_w").combobox('setValue', '0');

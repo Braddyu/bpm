@@ -582,82 +582,91 @@ exports.fileLogs = function (inst_id) {
  * @param user_no
  * @returns {Promise}
  */
-exports.checkFile = function (inst_id, node,check_memo,user_name,user_no) {
+exports.checkFile = function (inst_id, status,check_memo,user_name,user_no) {
 
     return new Promise(function (resolve, reject) {
-        console.log("node",node);
-        model.$ProcessTaskHistroy.find({"proc_inst_id":inst_id},function(err,res){
-            if(err || res.length == 0){
-                reject({'success': false, 'code': '1000', 'msg': '复核失败0', "error": null})
-            }else{
-                let task_history={};
-                let task_arr=[];
-//获取复核的节点信息
-                for(let i in res){
-                    let his=JSON.parse(JSON.stringify(res[i]));
-                    delete his["_id"];
-                    task_arr.push(his);
-                    if(his.proc_inst_task_code==node){
-                        task_history=res[i];
-                    }
-                }
-
-//修改工单状态，将归档工单改为处理中，已经新增复核字段
-                model.$ProcessInst.update({_id:inst_id},{$set:{is_check:1,proc_inst_status:2}},{},function(err){
-                    let history={};
-                    history.proc_inst_task_assignee=user_no;
-                    history.proc_inst_task_assignee_name=user_name;
-                    history.proc_inst_task_remark="复核意见:"+check_memo;
-                    history.proc_inst_task_status=1;
-                    history.joinup_sys=task_history.joinup_sys;
-                    history.proc_name=task_history.proc_name;
-                    history.proc_code=task_history.proc_code;
-                    history.proc_task_start_user_role_names=task_history.proc_task_start_user_role_names;
-                    history.proc_task_start_name=task_history.proc_task_start_name;
-                    history.proc_vars=task_history.proc_vars;
-                    history.proc_inst_task_title=task_history.proc_inst_task_title;
-                    history.proc_inst_task_complete_time=new Date();
-                    history.proc_inst_task_handle_time=new Date();
-                    history.proc_inst_task_arrive_time=new Date();
-                    history.proc_inst_id=task_history.proc_inst_id;
-                    history.proc_task_start_user_role_code=task_history.proc_task_start_user_role_code;
-                    history.proc_inst_task_name ="归档工单复核"
-                    history.work_order_number =task_history.work_order_number
-                    task_arr.push(history)
-
-
-                    task_history.proc_inst_task_status=0;
-                    task_history.proc_inst_task_remark='';
-                    task_history=JSON.parse(JSON.stringify(task_history))
-                    delete task_history["_id"];
-                    task_history.proc_inst_task_complete_time=new Date();
-                    task_history.proc_inst_task_handle_time=new Date();
-                    task_history.proc_inst_task_arrive_time=new Date();
-                    task_arr.push(task_history);
-                    console.log(task_arr);
-//将历史表的中记录重新插入任务表，表示此工单重新处理
-                    model.$ProcessInstTask.create(task_arr,function(err){
-                        console.log(err);
-                        if(err){
-                            reject({'success': false, 'code': '1000', 'msg': '复核失败1', "error": null})
-                        }else{
-                            model.$ProcessTaskHistroy(history).save(function(err){
-                                if(err){
-                                    reject({'success': false, 'code': '1000', 'msg': '复核失败2', "error": null})
-                                }else{
-                                    resolve({'success': true, 'code': '2000', 'msg': '复核成功', "error": null})
-                                }
-                            })
+        //0：表示复核通过，1：表示复核不通过
+        console.log("status",status);
+        if(status=='0'){
+            model.$ProcessInst.update({_id:inst_id},{$set:{is_check:0,check_time:new Date()}},{},function(err){
+                resolve({'success': true, 'code': '2000', 'msg': '复核成功', "error": null})
+            })
+        }else{
+            model.$ProcessTaskHistroy.find({"proc_inst_id":inst_id},function(err,res){
+                if(err || res.length == 0){
+                    reject({'success': false, 'code': '1000', 'msg': '复核失败0', "error": null})
+                }else{
+                    let task_history={};
+                    let task_arr=[];
+                    //获取复核的节点信息
+                    for(let i in res){
+                        let his=JSON.parse(JSON.stringify(res[i]));
+                        delete his["_id"];
+                        task_arr.push(his);
+                        if(his.proc_inst_task_type=='厅店处理回复'){
+                            task_history=res[i];
                         }
+                    }
+
+                    //修改工单状态，将归档工单改为处理中，已经新增复核字段
+                    model.$ProcessInst.update({_id:inst_id},{$set:{is_check:1,proc_inst_status:2,check_time:new Date()}},{},function(err){
+                        let history={};
+                        history.proc_inst_task_assignee=user_no;
+                        history.proc_inst_task_assignee_name=user_name;
+                        history.proc_inst_task_remark="复核意见:"+check_memo;
+                        history.proc_inst_task_status=1;
+                        history.joinup_sys=task_history.joinup_sys;
+                        history.proc_name=task_history.proc_name;
+                        history.proc_code=task_history.proc_code;
+                        history.proc_task_start_user_role_names=task_history.proc_task_start_user_role_names;
+                        history.proc_task_start_name=task_history.proc_task_start_name;
+                        history.proc_vars=task_history.proc_vars;
+                        history.proc_inst_task_title=task_history.proc_inst_task_title;
+                        history.proc_inst_task_complete_time=new Date();
+                        history.proc_inst_task_handle_time=new Date();
+                        history.proc_inst_task_arrive_time=new Date();
+                        history.proc_inst_id=task_history.proc_inst_id;
+                        history.proc_task_start_user_role_code=task_history.proc_task_start_user_role_code;
+                        history.proc_inst_task_name ="归档工单复核"
+                        history.work_order_number =task_history.work_order_number
+                        task_arr.push(history)
+
+
+                        task_history.proc_inst_task_status=0;
+                        task_history.proc_inst_task_remark='';
+                        task_history=JSON.parse(JSON.stringify(task_history))
+                        delete task_history["_id"];
+                        task_history.proc_inst_task_complete_time=new Date();
+                        task_history.proc_inst_task_handle_time=new Date();
+                        task_history.proc_inst_task_arrive_time=new Date();
+                        task_arr.push(task_history);
+                        console.log(task_arr);
+                        //将历史表的中记录重新插入任务表，表示此工单重新处理
+                        model.$ProcessInstTask.create(task_arr,function(err){
+                            console.log(err);
+                            if(err){
+                                reject({'success': false, 'code': '1000', 'msg': '复核失败1', "error": null})
+                            }else{
+                                model.$ProcessTaskHistroy(history).save(function(err){
+                                    if(err){
+                                        reject({'success': false, 'code': '1000', 'msg': '复核失败2', "error": null})
+                                    }else{
+                                        resolve({'success': true, 'code': '2000', 'msg': '复核成功', "error": null})
+                                    }
+                                })
+                            }
+
+                        })
+
 
                     })
+                }
 
 
-                })
-            }
+            })
+        }
 
 
-        })
     })
 }
 /**
@@ -805,19 +814,13 @@ exports.again_images = function (files, inst_id, user_name) {
 
 /**
  * 标记客户不配合的工单
- * @param id,handle ,result1
+ * @param id,memo ,result1
  */
-exports.updateInstTask = function (id,handle,result1) {
+exports.updateInstTask = function (id,memo,result1) {
     return new Promise(async function (resolve, reject) {
         if (id) {
-            console.log("00000000000000");
-            let conditions = {proc_task_id: id};
-            let update = {$set: {proc_inst_task_status: 5}};
-            let options = {}
-            await model.$ProcessTaskHistroy.update(conditions, update, options);
-            await model.$ProcessInstTask.remove({_id: id});
-            let res = await model.$ProcessTaskHistroy.find({proc_task_id: id,proc_inst_task_status: 5});
-            await model.$ProcessInst.update({_id:res[0].proc_inst_id,$set: {proc_inst_status: 5}});
+            let res = await model.$ProcessTaskHistroy.find({proc_task_id: id});
+            await model.$ProcessInst.update({_id:res[0].proc_inst_id},{$set: {proc_inst_status: 5,proc_cur_task_remark:memo}});
             resolve(result1)
         }
     })

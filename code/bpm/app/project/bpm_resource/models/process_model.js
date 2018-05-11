@@ -170,7 +170,8 @@ var commonProcessInstSchema = new Schema(
         is_overtime:Number,//是否超时，0-未超时，1-超时
         proc_inst_task_complete_time:Date,// 归档时间
         refuse_number:Number,// 拒绝次数
-        is_check:Number// 是否被复核
+        is_check:Number,// 复核1：表示复核不通过，0：表示复核通过
+        check_time:Date//复核时间
     },
     {collection: "common_bpm_proc_inst"}// mongodb集合名
 );

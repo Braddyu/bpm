@@ -61,8 +61,8 @@ exports.task=function() {
             //判断用户是否存在
             inst.userInfo(userNo).then(function (rs) {
                 if (rs.success && rs.data.length == 1) {
-                    userService.getUsreRolesByUserNo(userNo).then(function (result) {
-                        if (result) {
+                    // userService.getUsreRolesByUserNo(userNo).then(function (result) {
+                    //     if (result) {
                             inst.getMyTaskQuery4Eui(page, length, userNo, joinup_sys, proc_code,"").then(function (taskresult) {
                                 utils.respJsonData(res, taskresult);
                             }).catch(function (err_inst) {
@@ -70,14 +70,14 @@ exports.task=function() {
                                 logger.error("route-getMyTaskList", "获取我的待办数据异常", err_inst);
                                 utils.respMsg(res, false, '1000', '获取数据异常', null, err_inst);
                             });
-                        } else {
-                            utils.respMsg(res, false, '1000', '无用户数据', null, null);
-                        }
-                    }).catch(function (err_inst) {
-                        // console.log(err_inst);
-                        logger.error("route-getUsreRolesByUserNo", "根据用户编号获取用户角色异常", err_inst);
-                        utils.respMsg(res, false, '1000', '获取数据异常', null, err_inst);
-                    });
+                        // } else {
+                        //     utils.respMsg(res, false, '1000', '无用户数据', null, null);
+                        // }
+                    // }).catch(function (err_inst) {
+                    //     // console.log(err_inst);
+                    //     logger.error("route-getUsreRolesByUserNo", "根据用户编号获取用户角色异常", err_inst);
+                    //     utils.respMsg(res, false, '1000', '获取数据异常', null, err_inst);
+                    // });
                 } else {
                     utils.respMsg(res, false, '1000', '用户不存在', null, null);
                 }

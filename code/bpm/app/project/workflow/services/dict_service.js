@@ -85,7 +85,7 @@ exports.getUserRoleList= function(page, size, conditionMap) {
  */
 exports.openTask = function(params){
     // update query date
-    function updateQueryDate(params){
+    /*function updateQueryDate(params){
         return new Promise(function(resolve,reject){
             dictModel.$.find({'dict_code':"mistake_task_date"},function(err,result){
                 if(err){
@@ -105,32 +105,28 @@ exports.openTask = function(params){
                 }
             })
         });
-    }
+    }*/
 
     // update check status
-    function updateCheckStatus(res){
+    function updateCheckStatus(params){
         return new Promise(function(resolve,reject){
-            if(res.success){
-                dictModel.$.find({'dict_code':"mistake_task_check_status"},function(err,result){
-                    if(err){
-                        resolve(utils.returnMsg(false, '0001', '开关开启失败。', null, err));
-                    }else if(result.length == 0){
-                        resolve(utils.returnMsg(false, '0001', '开关开启失败。', null, null));
-                    }else{
-                        var conditions = {"dict_id": result[0]._id};
-                        var update = {$set: {"field_value": res.data.check_status}};
-                        dictModel.$DictAttr.update(conditions,update,{safe:true}, function (errors,updateResult){
-                            if(updateResult.ok > 0){
-                                resolve(utils.returnMsg(true, '0000', '更新数据成功。', res.data, null));
-                            }else{
-                                resolve(utils.returnMsg(false, '0001', '开关开启失败。', null, null));
-                            }
-                        })
-                    }
-                })
-            }else{
-                resolve(result);
-            }
+            dictModel.$.find({'dict_code':"mistake_task_check_status"},function(err,result){
+                if(err){
+                    resolve(utils.returnMsg(false, '0001', '开关开启失败。', null, err));
+                }else if(result.length == 0){
+                    resolve(utils.returnMsg(false, '0001', '开关开启失败。', null, null));
+                }else{
+                    var conditions = {"dict_id": result[0]._id};
+                    var update = {$set: {"field_value": params.check_status}};
+                    dictModel.$DictAttr.update(conditions,update,{safe:true}, function (errors,updateResult){
+                        if(updateResult.ok > 0){
+                            resolve(utils.returnMsg(true, '0000', '更新数据成功。', params, null));
+                        }else{
+                            resolve(utils.returnMsg(false, '0001', '开关开启失败。', null, null));
+                        }
+                    })
+                }
+            })
         });
     }
 
@@ -146,6 +142,34 @@ exports.openTask = function(params){
                     }else{
                         var conditions = {"dict_id": result[0]._id};
                         var update = {$set: {"field_value": res.data.business_name}};
+                        dictModel.$DictAttr.update(conditions,update,{safe:true}, function (errors,updateResult){
+                            if(updateResult.ok > 0){
+                                resolve(utils.returnMsg(true, '0000', '更新数据成功。', res.data, null));
+                            }else{
+                                resolve(utils.returnMsg(false, '0001', '开关开启失败。', null, null));
+                            }
+                        })
+                    }
+                })
+            }else{
+                resolve(result);
+            }
+        });
+
+    }
+
+    // update order number
+    function updateOrderNumber(res){
+        return new Promise(function(resolve,reject){
+            if(res.success){
+                dictModel.$.find({'dict_code':"mistake_take_order_number"},function(err,result){
+                    if(err){
+                        resolve(utils.returnMsg(false, '0001', '开关开启失败。', null, err));
+                    }else if(result.length == 0){
+                        resolve(utils.returnMsg(false, '0001', '开关开启失败。', null, null));
+                    }else{
+                        var conditions = {"dict_id": result[0]._id};
+                        var update = {$set: {"field_value": res.data.work_order_number}};
                         dictModel.$DictAttr.update(conditions,update,{safe:true}, function (errors,updateResult){
                             if(updateResult.ok > 0){
                                 resolve(utils.returnMsg(true, '0000', '更新数据成功。', res.data, null));
@@ -234,7 +258,7 @@ exports.openTask = function(params){
 
     }
 
-    return updateQueryDate(params).then(updateCheckStatus).then(updateBusinessName).then(updateCityCode).then(updateFlag);
+    return updateCheckStatus(params).then(updateBusinessName).then(updateOrderNumber).then(updateCityCode).then(updateFlag);
 };
 
 /**
@@ -314,6 +338,61 @@ exports.getSwitch = function(){
                 resolve(utils.returnMsg(true, '0000', '获取数据成功。', res[0], null));
             }
         });
+    });
+    return p;
+};
+
+
+/**
+ * 获取差错工单派单定时任务筛选条件
+ */
+exports.getConditions = function(){
+    var p = new Promise(function(resolve,reject){
+        var match = {};
+        match['dict_code'] = {$in:[ "mistake_task_check_status", "mistake_task_business_name",
+                "mistake_take_order_number","mistake_task_flag","mistake_task_city_code"]};
+        match.dict_status = 1;
+        dictModel.$.aggregate([
+            {
+                $match:match
+            },
+            {
+                $graphLookup: {
+                    from: "common_dict_attr_info",
+                    startWith: "$_id",
+                    connectFromField: "_id",
+                    connectToField: "dict_id",
+                    as: "dict_attr_info",
+                    restrictSearchWithMatch: {}
+                }
+            },
+            {
+                $unwind: {path: "$dict_attr_info", preserveNullAndEmptyArrays: true}
+            },
+            {
+                $match:{"dict_attr_info.field_status":1,"dict_attr_info.field_checked":1}
+            },
+        ]).exec(function (err, res) {
+            if(err || !(res.length>0)){
+                resolve(utils.returnMsg(false, '0001', '开启开关失败:查询筛选条件失败!', null, err));
+            }
+            var data = {};
+            for (let item in res) {
+                var dict = res[item];
+                if (dict.dict_code == "mistake_task_check_status") {
+                    data.check_status = dict.dict_attr_info.field_value;
+                } else if (dict.dict_code == "mistake_task_business_name") {
+                    data.business_name = dict.dict_attr_info.field_value;
+                } else if (dict.dict_code == "mistake_task_flag") {
+                    data.flag = dict.dict_attr_info.field_value;
+                } else if (dict.dict_code == "mistake_take_order_number") {
+                    data.order_number = dict.dict_attr_info.field_value;
+                } else if (dict.dict_code == "mistake_task_city_code") {
+                    data.city_code = dict.dict_attr_info.field_value;
+                }
+            }
+            resolve(utils.returnMsg(true, '0000', 'success!', data, null));
+        })
     });
     return p;
 };

@@ -209,12 +209,32 @@ exports.process_instance=function() {
         var length = req.body.rows;
         var proc_code = req.body.proc_code;
         var user_no = req.body.user_no;
+        var work_order_number = req.body.work_order_number;
+        var startDate = req.body.startDate;//创建时间
+        var endDate = req.body.endDate;//创建时间
         var conditionMap = {};
+        if (work_order_number) {
+            conditionMap.work_order_number = work_order_number;
+        }
         if (proc_code) {
             conditionMap.proc_code = proc_code;
         } else {
             utils.respMsg(res, false, '2001', '流程编号不能为空', null, null);
             return;
+        }
+        var compare = {};
+        //开始时间
+        if (startDate) {
+            compare['$gte'] = new Date(startDate);
+        }
+        //结束时间
+        if (endDate) {
+            //结束时间追加至当天的最后时间
+            compare['$lte'] = new Date(endDate + ' 23:59:59');
+        }
+        //时间查询
+        if (!isEmptyObject(compare)) {
+            conditionMap['proc_start_time'] = compare;
         }
         if (!user_no) {
             utils.respMsg(res, false, '1000', '当前处理人编号为空', null, null);
@@ -237,6 +257,34 @@ exports.process_instance=function() {
             });
         }
     });
+
+    function isEmptyObject(e) {
+        var t;
+        for (t in e)
+            return !1;
+        return !0
+    }
+    /**
+     *  -------------------------------根据流程编号查询所有实例-------------------------------
+     */
+    router.route('/listByProcCode').post(function (req, res) {
+        var proc_code = req.body.proc_code;
+        var conditionMap = {};
+        if (proc_code) {
+            conditionMap.proc_code = proc_code;
+        } else {
+            utils.respMsg(res, false, '2001', '流程编号不能为空', null, null);
+            return;
+        }
+        inst.getnstanceList(conditionMap).then(function (result) {
+            utils.respJsonData(res, result);
+        }).catch(function (err) {
+            console.log('err');
+            logger.error("route-list", "根据流程编号查询流程实例集合异常", err);
+            utils.respMsg(res, false, '1000', '根据流程编号查询流程实例集合异常', null, err);
+        });
+    });
+
     /**
      *  -------------------------------终止流程实例接口-------------------------------
      */

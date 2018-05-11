@@ -5,17 +5,19 @@ var mysql_pool_promise = require("../../../../lib/mysql_pool_athena");
 var fs = require('fs');
 var config = require('../../../../config');
 
-var org_sync_data_from_Athena_url = config.org_sync_data_from_Athena_url;
 
 exports.sync_data_from_Athena = function () {
     sync_data_from_Athena();
 }
 
-//sync_data_from_Athena()
 
 async function sync_data_from_Athena() {
-    await sync_grid_data(5);
-    await sync_channel_data(6);
+    //await sync_grid_data(5);
+    //同步厅经理中渠道
+    // await sync_channel_data_hall_manager(6);
+    // //同步营业员渠道
+    // await sync_channel_data_salesperson_info(6);
+    await sync_channel_data_yadiana_info();
 }
 
 
@@ -85,7 +87,7 @@ function sync_grid_data(type) {
  *  从雅典娜更新渠道数据到工单系统
  * @returns {bluebird|exports|module.exports}
  */
-function sync_channel_data(type) {
+function sync_channel_data_hall_manager(type) {
     return new Promise(async (resolve, reject) => {
         let sql = "SELECT " +
             " TRIM(channel_id) area_code, " +
@@ -100,17 +102,74 @@ function sync_channel_data(type) {
             "GROUP BY " +
             " channel_id  ";
         let condition = {};
+        console.log(sql);
         let result = await mysql_pool_promise.queryPromise(sql, condition);
         if (!result) {
             console.log("获取mysql渠道数据总数失败");
         } else {
-            console.log(result);
+            console.log(result.length);
             await synchrodata(result, type);
             resolve();
             console.log("=================================渠道数据处理结束==============================");
         }
     });
 }
+
+function sync_channel_data_salesperson_info(type) {
+    return new Promise(async (resolve, reject) => {
+        let sql = "SELECT " +
+            " TRIM(channel_id) area_code, " +
+            " TRIM(channel_name) area_name, " +
+            " TRIM(grid_coding) p_code,TRIM(grid_name) p_name " +
+            "FROM " +
+            " salesperson_info " +
+            "WHERE " +
+            " channel_id IS NOT NULL " +
+            "AND grid_coding IS NOT NULL " +
+            "AND district_code IS NOT NULL " +
+            "GROUP BY " +
+            " channel_id  ";
+        let condition = {};
+        console.log(sql);
+        let result = await mysql_pool_promise.queryPromise(sql, condition);
+        if (!result) {
+            console.log("获取mysql渠道数据总数失败");
+        } else {
+            console.log(result.length);
+            await synchrodata(result, type);
+            resolve();
+            console.log("=================================渠道数据处理结束==============================");
+        }
+    });
+}
+
+function sync_channel_data_yadiana_info(){
+    return new Promise(async (resolve, reject) => {
+        let sql ="SELECT " +
+            "  channel_id area_code, " +
+            "  channel_name area_name, " +
+            "  grid_code p_code, " +
+            "  channel_type " +
+            "FROM " +
+            "  channel2_develop_baseinfo " +
+            "WHERE " +
+            "  `status` = '1'  ";
+        let condition = {};
+        console.log(sql);
+        let result = await mysql_pool_promise.queryPromise(sql, condition);
+        if (!result) {
+            console.log("获取mysql渠道数据总数失败");
+        } else {
+            // console.log(result.length);
+
+            await synchrodata(result,6);
+
+            console.log("=================================渠道数据处理结束==============================");
+        }
+    });
+}
+
+
 
 function synchrodata(result, type) {
     return new Promise((resolve, reject) => {
@@ -135,25 +194,42 @@ function synchrodata(result, type) {
                         org.org_type = '网格';
                     } else if (type == 6) {
                         org.level = 6;
+                        org.channel_type = result[i].channel_type;
                         org.org_type = '渠道';
                     }
 
                     org.org_belong = '0';
                     org.midifytime = new Date();
                     org.org_code = area_code;
-                    if (resp.length > 0) {
+                    org.org_status=1;
+                    if (resp && resp.length > 0) {
                         org.org_pid = resp[0]._id;
                     } else {
                         org.org_pid = "";
+                        console.log("################为空:################",p_code);
                     }
                     //存在则修改
-                    if (res.length > 0) {
-                        model_org.$CommonCoreOrg.update({"_id": res[0]._id}, {$set: org}, function (err, res) {
-                            count++;
-                            if (count == result.length) {
-                                resolve();
-                            }
-                        })
+                    if (res && res.length > 0) {
+                        if(res.length==1){
+                            model_org.$CommonCoreOrg.update({"_id": res[0]._id}, {$set: org}, function (err, res) {
+                                count++;
+                                if (count == result.length) {
+                                    resolve();
+                                }
+                            })
+                        }else{
+                            model_org.$CommonCoreOrg.remove({"company_code": area_code}, function (err) {
+                                let orgModel = new model_org.$CommonCoreOrg(org)
+                                orgModel.save(function (err) {
+                                        count++;
+                                        if (count == result.length) {
+                                            resolve();
+                                        }
+                                    }
+                                );
+                            })
+                        }
+
                     } else {
                         let orgModel = new model_org.$CommonCoreOrg(org)
                         orgModel.save(function (err) {
