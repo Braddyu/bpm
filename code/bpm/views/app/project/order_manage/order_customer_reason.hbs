@@ -46,6 +46,14 @@
                                 <div class="form-group">
                                     <div class="input-group">
                                         <span class="input-group-btn">
+                                                 <button class="btn btn-default" type="button"  id='restart'><i class="fa"></i>重启工单</button>
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <div class="input-group">
+                                        <span class="input-group-btn">
                                                 <button class="btn btn-default" type="button" onclick="doSearch()"><i class="fa fa-search"></i>查询</button>
                                             </span>
                                     </div>
@@ -182,8 +190,8 @@
             selectOnCheck:true,
             checkOnSelect:true,
             columns:[[
-                {"field":"id",checkbox:true},
-                {"field":"_id",hidden:true},
+                {"field":"_id",checkbox:true},
+                //{"field":"_id",hidden:true},
                 //{"field":"proc_inst_id",hidden:true},
                 {"field": "work_order_number","title":"工单编号","width":55},
                 {"field": "proc_title","title":"工单标题","width":100,
@@ -204,8 +212,8 @@
                 {"field": "proc_start_user_name","title":"发起人","width":50}
 
             ]],
+
             onDblClickRow:function(rowIndex, rowData){
-                //alert(rowData._id);
                 var url='{{projcfg.appurl}}/api/order_manage/order_list/showDetailView?proc_code='+rowData.proc_code+'&change_id='+rowData._id+'&status=3';
                // var content = '<iframe src="'+url+'" width="100%" height="99%" frameborder="0" scrolling="yes"></iframe>';
                 $('#dd').dialog({
@@ -257,6 +265,38 @@
             }
         });
     }
+
+    //重启客户不配合工单
+    $("#restart").click(function(){
+        alert("Hello World click");
+        var id = "";
+        var rows = $('#orderTablelist').datagrid('getSelections');
+        if(rows.length>0){
+            for(var i=0; i<rows.length; i++){
+                id=rows[i]._id;
+            }
+
+            $.ajax({
+                url: '{{projcfg.appurl}}/api/order_manage/order_complete/acceptBatch',
+                type: 'post',
+                dataType:'json',
+                data: {
+                    "id":id
+                },
+                success: function (data) {
+                    if(data.success){
+                        $('#orderTablelist').datagrid('reload');
+                        $.messager.alert('提示',data.msg);
+                    }else{
+                        $.messager.alert('错误提示',data.error);
+                    }
+                }
+            });
+        }else{
+            $.messager.alert('提示','请选择数据');
+
+        }
+    });
 
     function turn2Send(){
         if(!is_admin){

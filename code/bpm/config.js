@@ -105,7 +105,8 @@ var config = {
             '/project/order_manage/routes/':project_url_prefix+'/api/order_manage/',
             '/project/money_audit/routes/':project_url_prefix+'/api/money_audit/',
 			'/project/suggestion/routes/':project_url_prefix+'/api/suggestion/',// 意见意见路由匹配路径
-			  '/project/res_download/routes/':project_url_prefix+'/api/res_down/',// 资料下载路由匹配路径
+            '/project/res_download/routes/':project_url_prefix+'/api/res_down/',// 资料下载路由匹配路径
+            '/project/misdata/routes/':project_url_prefix+'/api/misdata/',//错误数据展现路由
 
 
         },
@@ -137,7 +138,7 @@ var config = {
         ]
     },
     mongdb:{
-         url: 'mongodb://192.168.9.48:27017/process',
+         url: 'mongodb://192.168.9.48:27017/process1',
          // url: 'mongodb://10.196.153.11:30000/process',
         //url:'mongodb://10.201.253.162:27017/process1',
         // url: 'mongodb://10.201.253.111:27017/Examine',
@@ -172,6 +173,15 @@ var config = {
         user: 'root',
         password: 'root',
         database: 'hh_history_gd',
+        insecureAuth:true
+    },
+
+    mysqlYadianna:{
+        host: '192.168.9.48',
+        port:3306,
+        user: 'root',
+        password: 'root',
+        database: 'yadianna',
         insecureAuth:true
     },
     auth:{

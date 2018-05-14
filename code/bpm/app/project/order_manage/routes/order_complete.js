@@ -97,6 +97,21 @@ router.route('/order_customer_reason').post(function(req,res){
     });
 });
 
+
+/**
+ * 重启工单
+ */
+router.route('/acceptBatch').post(function (req, res) {
+    console.log("开始重启工单..", req.body);
+    var id = req.body.id;//实例id
+    console.log(id);
+    if (id){
+        completeService.acceptBatch(id).then(function(taskresult){
+            utils.respJsonData(res, taskresult);
+        })
+    }
+});
+
 /**
  * 获取工单的流程日志
  */

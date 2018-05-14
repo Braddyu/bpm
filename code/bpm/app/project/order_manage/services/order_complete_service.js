@@ -54,6 +54,106 @@ exports.getMyCompleteTaskQuery4Eui = function (page, size, userCode, paramMap, p
 };
 
 
+/**
+ * 获取客户不配合工单
+ * @param userCode
+ * @param paramMap
+ */
+exports.getMyCompleteTaskQueryCustomer = function (page, size, userCode, paramMap, proc_code, startDate, endDate, work_order_number,task_type) {
+
+    var p = new Promise(function (resolve, reject) {
+        var conditionMap = {};
+        conditionMap.proc_inst_status = 5;
+        if (proc_code) {
+            conditionMap.proc_code = proc_code;
+        }
+        if (work_order_number) {
+            conditionMap.work_order_number = work_order_number;
+        }
+        if(task_type){
+            conditionMap.proc_inst_task_code = task_type;
+        }
+        console.log(conditionMap);
+        var ProcessInst =utils.pagingQuery4Eui(model.$ProcessInst, page, size, conditionMap, resolve, '', {proc_inst_task_complete_time: -1});
+    });
+    return p;
+};
+
+
+/**
+ * 重启客户不配合工单
+ * @param id 实例Id
+ */
+exports.acceptBatch = function (id) {
+    var p = new Promise(function (resolve, reject) {
+        // 查询任务表当前历史任务
+        process_model.$ProcessTaskHistroy.find({"proc_inst_id":id},async function(err,result){
+            if(err){
+                resolve(utils.returnMsg(false,"0001","历史数据查询异常！",null,err));
+            }else{
+                var taskHistroy=result[0];
+                var arr = [];
+                var condition_task = {};
+                condition_task.proc_inst_id =taskHistroy.proc_inst_id; // 流程流转当前信息ID
+                condition_task.proc_inst_task_code =taskHistroy.proc_inst_task_code;// 流程当前节点编码(流程任务编号)
+                condition_task.proc_inst_task_name =taskHistroy.proc_inst_task_name;// 流程当前节点名称(任务名称)
+                condition_task.proc_inst_task_type =taskHistroy.proc_inst_task_type;// 流程当前节点类型(任务类型)
+                condition_task.proc_inst_task_title =taskHistroy.proc_inst_task_title;// 任务标题
+                condition_task.proc_name=taskHistroy.proc_name;//所属流程
+                condition_task.proc_code=taskHistroy.proc_code; //所属流程编码
+                condition_task.proc_inst_task_arrive_time=taskHistroy.proc_inst_task_arrive_time;// 流程到达时间
+                condition_task.proc_inst_task_handle_time=taskHistroy.proc_inst_task_handle_time;// 流程认领时间
+                condition_task.proc_inst_task_complete_time=taskHistroy.proc_inst_task_complete_time;// 流程完成时间
+                condition_task.proc_inst_task_status=0;// 流程当前状态 0-未处理，1-已完成
+                condition_task.proc_inst_task_assignee=taskHistroy.proc_inst_task_assignee;// 流程处理人code
+                condition_task.proc_inst_task_assignee_name=taskHistroy.proc_inst_task_assignee_name;// 流程处理人名
+                condition_task.proc_inst_task_work_id=taskHistroy.proc_inst_task_work_id;// 流程处理人工号
+                condition_task.proc_inst_task_user_role=taskHistroy.proc_inst_task_user_role;// 流程处理用户角色ID
+                condition_task.proc_inst_task_user_role_name=taskHistroy.proc_inst_task_user_role_name;// 流程处理用户角色名
+                condition_task.proc_inst_task_user_org=taskHistroy.proc_inst_task_user_org;// 流程处理用户组织ID
+                condition_task.proc_inst_task_user_org_name=taskHistroy.proc_inst_task_user_org_name;// 流程处理用户组织名
+                condition_task.proc_inst_task_params=taskHistroy.proc_inst_task_params;// 流程参数(任务参数)
+                condition_task.proc_inst_task_claim=taskHistroy.proc_inst_task_claim;// 流程会签
+                condition_task.proc_inst_task_sign=taskHistroy.proc_inst_task_sign;// 流程签收(0-未认领，1-已认领)
+                condition_task.proc_inst_task_sms=taskHistroy.proc_inst_task_sms;// 流程是否短信提醒
+                condition_task.proc_inst_task_remark=taskHistroy.proc_inst_task_remark;// 流程处理意见
+                //condition_task.proc_inst_biz_vars=taskHistroy.String,// 流程业务实例变量
+                condition_task.proc_inst_node_vars=taskHistroy.proc_inst_node_vars;// 流程实例节点变量
+                condition_task.proc_inst_prev_node_code=taskHistroy.proc_inst_prev_node_code,// 流程实例上一处理节点编号
+                    condition_task.proc_inst_prev_node_handler_user=taskHistroy.proc_inst_prev_node_handler_user;// 流程实例上一节点处理人编号
+                condition_task.proc_task_start_user_role_names=taskHistroy.proc_task_start_user_role_names;//流程发起人角色
+                condition_task.proc_task_start_user_role_code=taskHistroy.proc_task_start_user_role_code; //流程发起人id
+                condition_task.proc_task_start_name=taskHistroy.proc_task_start_name;//流程发起人姓名
+                //condition_task.proc_task_work_day=taskHistroy.Number,//天数
+                //condition_task.proc_task_ver=taskHistroy.Number,//版本号
+                //condition_task.proc_task_name=taskHistroy.{ type: String,  required: false ,index: true },//流程名
+                //condition_task.proc_task_content=taskHistroy.String,// 流程派单内容
+                //condition_task.proc_task_code=taskHistroy.String,// 流程编码
+                //condition_task.proc_start_time=taskHistroy.Date,// 流程发起时间(开始时间)
+                condition_task.proc_vars=taskHistroy.proc_vars;// 流程变量
+                condition_task.joinup_sys=taskHistroy.joinup_sys;//所属系统编号
+                //condition_task.skip=taskHistroy.Number,//是否为跳过节点任务
+                condition_task.next_name=taskHistroy.next_name;//下一节点处理人姓名
+                condition_task.proc_back=taskHistroy.proc_back;//判断为回退任务 1:为回退任务 0:为正常流转
+                condition_task.previous_step=taskHistroy.previous_step;//上一节点任务id
+                //condition_task.publish_status=taskHistroy.Number,//1 发布 0-未发布
+                condition_task.work_order_number=taskHistroy.work_order_number;//工单编号
+                //condition_task.is_overtime=taskHistroy.Number//是否超时，0-未超时，1-超时
+                await process_model.$ProcessInstTask.create(arr);
+                await process_model.$ProcessInst.update({_id:taskHistroy.proc_inst_id},{$set: {proc_inst_status: 2,proc_cur_task_remark:"重启的工单"}});
+                if(result.length>0){
+                    const  res=await  new Promise(resolve => {
+                        resolve({'success': true, 'code': '0000', 'msg':'重启客户不配合工单成功!'});
+                    });
+                    resolve(res);
+                }
+            }
+        });
+
+    });
+    return p;
+};
+
 
 
 /**
