@@ -175,15 +175,6 @@ var config = {
         database: 'hh_history_gd',
         insecureAuth: true
     },
-
-    mysqlYadianna: {
-        host: '192.168.9.48',
-        port: 3306,
-        user: 'root',
-        password: 'root',
-        database: 'yadianna',
-        insecureAuth: true
-    },
     auth: {
         auth_type: 'local',// local：本地认证；cas：单点登录认证
         //cas_server_url             : 'http://117.135.196.139:65080/cas',
@@ -304,7 +295,6 @@ var config = {
     GRID_COPY_SMS: false, //预警工单抄送给网格经理短信
     MISTAKE_DISTRIBUTE_TASK_SMS: false, // 差错工单系统自动派单短信提醒
     MONEY_AUDIT_SMS: false,//资金稽核工单 预警短信开关
-
     //派单接口信息
     api_interface_url: 'https://127.0.0.1:30002',
     mistake_proc_code: 'p-201',
@@ -324,7 +314,7 @@ var config = {
     athena_peason_switch_core: "30 1 2 * * *",//秒、分、时、日、月、周几
     huanghe_switch_core: "30 11 15 * * *",//秒、分、时、日、月、周几
     mistake_switch_core: "40 14 15 * * *",//秒、分、时、日、月、周几
-    mistake_distribute_cron: "00 00 22 * * *",
+    mistake_distribute_cron: "00 00 09 * * *",
     money_audit_switch_core: " 0 * */1 * *",//秒、分、时、日、月、周几
     peson_sync_data_from_Athena_url: "e:\\peasondata",//同步人员错误数据导出地址
     org_sync_data_from_Athena_url: "e:\\data",//同步机构错误数据导出地址
