@@ -126,7 +126,7 @@ exports.getStatisticsListPage = function (org_id, proc_code, level, status, star
             {
                 $match: inst
             },
-            {
+           {
                 $group: {
                     _id: "$_id",
                     org_fullname: {$first: "$org_fullname"},
@@ -135,13 +135,7 @@ exports.getStatisticsListPage = function (org_id, proc_code, level, status, star
                     level:{$first: "$level"},
                     //总工单数
                     totalNum: {
-                        $sum: {
-                            $cond: {
-                                if: {$in: ["$inst.proc_inst_status", [1, 2, 3, 4]]},
-                                then: {$sum: 1},
-                                else: 0
-                            }
-                        }
+                        $sum: 1
                     },
                     //归档工单数
                     fileNum: {$sum: {$cond: {if: {$eq: ["$inst.proc_inst_status", 4]}, then: {$sum: 1}, else: 0}}},
@@ -215,7 +209,8 @@ exports.getStatisticsListPage = function (org_id, proc_code, level, status, star
                 reject(utils.returnMsg(false, '1000', '查询统计失败。', null, err));
             } else {
                 //统计后的组织只统计有数据的组织，没数据的组织会没有，这里将没数据的组织的数据全部为0的插入统计数据
-                user_model.$CommonCoreOrg.find(match, function (err, res) {
+
+               user_model.$CommonCoreOrg.find(match, function (err, res) {
                     if (res && res.length > 0) {
                         for (let i in res) {
                             let is_exists = false;
@@ -410,7 +405,7 @@ exports.createExcelOrderList = function createExcelOrderList(data) {
                 filing_rate,
                 timely_filing_rate,
             ]
-        }else if(proc_code=='p-109'){
+        }else if(proc_code=='p-201'){
             tmp = [
                 c.company_code,
                 c.org_fullname,

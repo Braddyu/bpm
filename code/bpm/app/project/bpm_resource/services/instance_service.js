@@ -379,7 +379,7 @@ exports.create_instance_only = function (proc_code, proc_ver, proc_title, user_c
             if (res_user[0].work_id) {
                 task.proc_inst_task_work_id = res_user[0].work_id;
             } else {
-                task.proc_inst_task_work_id = '';
+                task.proc_inst_task_work_id = '@@@@@';
             }
             task.publish_status = results[0].publish_status;
             task.work_order_number = results[0].work_order_number;
@@ -670,7 +670,7 @@ function insertTask(result, condition, resu, role) {
         if (resu[0].work_id) {
             task.proc_inst_task_work_id = resu[0].work_id;
         } else {
-            task.proc_inst_task_work_id = '';
+            task.proc_inst_task_work_id = '@@@@@';
         }
 
         task.work_order_number = condition.work_order_number//工单编号
@@ -1066,7 +1066,7 @@ exports.getMyTaskQuery4Eui = function (page, size, userCode, joinup_sys, proc_co
                 let work_id = res[0].work_id
                 //有的工号为'',为了防止查到空工号的任务
                 if (!work_id)
-                    if (!work_id) work_id = '@@@@@@@';
+                    if (!work_id) work_id = '@@@@@@';
 
 
                 //待处理任务
@@ -2180,7 +2180,8 @@ exports.return_task = function (task_id, user_no, memo, node_code, node_name) {
                                 } else {
                                     //创建下一步流转任务
                                     var condition_task = {};
-                                    condition_task.proc_inst_task_work_id = rsu[0].proc_inst_task_work_id;
+                                    if(rsu[0].proc_inst_task_work_id)
+                                        condition_task.proc_inst_task_work_id = rsu[0].proc_inst_task_work_id;
                                     condition_task.proc_task_ver = rsu[0].proc_task_ver;
                                     condition_task.work_order_number = rsu[0].work_order_number;
                                     condition_task.publish_status = rsu[0].publish_status;//1-发布 0- 未发布

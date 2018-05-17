@@ -369,8 +369,14 @@ function postHuanghe(proc_inst_id, mistakeRes, memo, order_num) {
             "suggestion": memo,
             "crmTradeDate": mistakeRes[0].mistake_time
         };
-        //回传地址
-        var options = config.repair_huanghe;
+        var options={};
+        //1:表示不通过补录，11：表示通过补录，两个回传地址不同
+        if(mistakeRes[0].status==1){
+            options = config.repair_huanghe;
+        }else if(mistakeRes[0].status==11){
+            options = config.repair_pass_huanghe;
+        }
+
         console.log(postData);
         //开始回传
         process_utils.httpPost(postData, options).then(function (rs) {
@@ -386,12 +392,20 @@ function postHuanghe(proc_inst_id, mistakeRes, memo, order_num) {
             var rs_json = JSON.parse(rs);
             if (rs_json.ret_code == 0) {
                 update.status = 3;
-                update.dispatch_remark = "补录成功";
+                if(mistakeRes[0].status==1){
+                    update.dispatch_remark = "不通过工单补录成功";
+                }else if(mistakeRes[0].status==11){
+                    update.dispatch_remark = "通过工单补录成功";
+                }
             } else {
                 update.status = 2;
-                update.dispatch_remark = "回传结果:" + rs_json.ret_msg;
-            }
+                if(mistakeRes[0].status==1){
+                    update.dispatch_remark = "不通过工单回传结果:" + rs_json.ret_msg;
+                }else if(mistakeRes[0].status==11){
+                    update.dispatch_remark = "通过工单回传结果:" + rs_json.ret_msg;
+                }
 
+            }
             //修改状态
             mistake_model.$ProcessMistake.update(conditions, update, {}, function (errors) {
                 if (errors) {
@@ -588,9 +602,39 @@ exports.checkFile = function (inst_id, status,check_memo,user_name,user_no) {
         //0：表示复核通过，1：表示复核不通过
         console.log("status",status);
         if(status=='0'){
-            model.$ProcessInst.update({_id:inst_id},{$set:{is_check:0,check_time:new Date()}},{},function(err){
-                resolve({'success': true, 'code': '2000', 'msg': '复核成功', "error": null})
+            model.$ProcessInst.find({_id:inst_id},function(err,res){
+                if(res && res.length >0){
+                    let his={};
+                    his.proc_name=res[0].proc_name;
+                    his.proc_code=res[0].proc_code;
+                    his.proc_task_start_user_role_names=res[0].proc_task_start_user_role_names;
+                    his.proc_task_start_name=res[0].proc_task_start_name;
+                    his.proc_vars=res[0].proc_vars;
+                    his.proc_inst_task_remark='复核意见：复核通过';
+                    his.proc_inst_task_sign=1;
+                    his.proc_inst_task_assignee=user_no;
+                    his.proc_inst_task_assignee_name=user_name;
+                    his.proc_inst_task_status=1;
+                    his.proc_inst_task_complete_time=new Date();
+                    his.proc_inst_task_handle_time=new Date();
+                    his.proc_inst_task_arrive_time=new Date();
+                    his.proc_inst_task_title=res[0].proc_inst_task_title;
+                    his.proc_inst_task_name='归档工单复核';
+                    his.proc_inst_id=inst_id;
+                    his.work_order_number=res[0].work_order_number;
+                    model.$ProcessTaskHistroy.create(his,function(err,doc){
+                        if(err){
+                            reject({'success': false, 'code': '1000', 'msg': '复核失败00', "error": null})
+                        }else{
+                            model.$ProcessInst.update({_id:inst_id},{$set:{is_check:0,check_time:new Date(),check_user_no:user_no,check_user_name:user_name}},{},function(err){
+                                resolve({'success': true, 'code': '2000', 'msg': '复核成功', "error": null})
+                            })
+                        }
+                    })
+
+                }
             })
+
         }else{
             model.$ProcessTaskHistroy.find({"proc_inst_id":inst_id},function(err,res){
                 if(err || res.length == 0){
@@ -609,7 +653,7 @@ exports.checkFile = function (inst_id, status,check_memo,user_name,user_no) {
                     }
 
                     //修改工单状态，将归档工单改为处理中，已经新增复核字段
-                    model.$ProcessInst.update({_id:inst_id},{$set:{is_check:1,proc_inst_status:2,check_time:new Date()}},{},function(err){
+                    model.$ProcessInst.update({_id:inst_id},{$set:{is_check:1,proc_inst_status:2,check_time:new Date(),check_user_no:user_no,check_user_name:user_name,proc_cur_task:'processDefineDiv_node_3',proc_cur_task_name : "厅店处理回复"}},{},function(err){
                         let history={};
                         history.proc_inst_task_assignee=user_no;
                         history.proc_inst_task_assignee_name=user_name;
@@ -820,7 +864,7 @@ exports.updateInstTask = function (id,memo,result1) {
     return new Promise(async function (resolve, reject) {
         if (id) {
             let res = await model.$ProcessTaskHistroy.find({proc_task_id: id});
-            await model.$ProcessInst.update({_id:res[0].proc_inst_id},{$set: {proc_inst_status: 5,proc_cur_task_remark:memo}});
+            await model.$ProcessInst.update({_id:res[0].proc_inst_id},{$set: {proc_inst_status: 7,proc_cur_task_remark:memo}});
             resolve(result1)
         }
     })
@@ -834,33 +878,41 @@ exports.updateOvertime = function (result1) {
     return new Promise(async function (resolve, reject) {
         if (result1.success) {
             let data = result1.data[0];
+
             //获取任务id
             let _id = data._id;
             let proc_vars = JSON.parse(data.proc_vars);
             let work_day = parseInt(proc_vars.work_day);
             //获取实例id
             let proc_inst_id = data.proc_inst_id;
-            //任务到达时间即为超时时间的开始时间
-            let proc_inst_task_arrive_time = moment(new Date(data.proc_inst_task_arrive_time)).format('YYYY-MM-DD HH:mm:ss');
 
-            console.log(proc_inst_task_arrive_time);
-            //到达时间+工作天数=结束时间
-            let end_time = moment(new Date(new Date(new Date(data.proc_inst_task_arrive_time)
-                .setDate(new Date(data.proc_inst_task_arrive_time)
-                    .getDate() + work_day))))
-                .format('YYYY-MM-DD HH:mm:ss');
-            //重新修改流程参数
-            proc_vars.start_time = proc_inst_task_arrive_time;
-            proc_vars.end_time = end_time;
+            let inset_result= await  model.$ProcessInst.find({_id:proc_inst_id});
+            //如果工单未超时，则重置处理时间
+            if(inset_result[0].is_overtime==0){
+                //任务到达时间即为超时时间的开始时间
+                let proc_inst_task_arrive_time = moment(new Date(data.proc_inst_task_arrive_time)).format('YYYY-MM-DD HH:mm:ss');
 
-            proc_vars = JSON.stringify(proc_vars)
-            let conditions = {_id: proc_inst_id};
-            let update = {$set: {proc_vars: proc_vars}};
-            let options = {};
-            await  model.$ProcessInst.update(conditions, update, options);
-            conditions = {_id: _id};
-            await model.$ProcessInstTask.update(conditions, update, options);
+                console.log(proc_inst_task_arrive_time);
+                //到达时间+工作天数=结束时间
+                let end_time = moment(new Date(new Date(new Date(data.proc_inst_task_arrive_time)
+                    .setDate(new Date(data.proc_inst_task_arrive_time)
+                        .getDate() + work_day))))
+                    .format('YYYY-MM-DD HH:mm:ss');
+                //重新修改流程参数
+                proc_vars.start_time = proc_inst_task_arrive_time;
+                proc_vars.end_time = end_time;
+
+                proc_vars = JSON.stringify(proc_vars)
+                let conditions = {_id: proc_inst_id};
+                let update = {$set: {proc_vars: proc_vars}};
+                let options = {};
+                await  model.$ProcessInst.update(conditions, update, options);
+                conditions = {_id: _id};
+                await model.$ProcessInstTask.update(conditions, update, options);
+
+            }
             resolve(result1)
+
         }
     })
 }

@@ -1,10 +1,9 @@
 var model = require('../../bpm_resource/models/process_model');
-
+var process_extend_service = require("../../bpm_resource/services/process_extend_service");
+var process_extend_model = require('../../bpm_resource/models/process_extend_model');
 var utils = require('../../../../lib/utils/app_utils');
-var logger = require('../../../../lib/logHelper').helper;
-var inst = require('../../bpm_resource/services/instance_service');
 var process_model = require('../../bpm_resource/models/process_model');
-
+var user_model = require('../../bpm_resource/models/user_model');
 
 /**
  * 获取我的已办任务列表分页方法
@@ -59,14 +58,12 @@ exports.getMyCompleteTaskQuery4Eui = function (page, size, userCode, paramMap, p
  * @param userCode
  * @param paramMap
  */
-exports.getMyCompleteTaskQueryCustomer = function (page, size, userCode, paramMap, proc_code, startDate, endDate, work_order_number,task_type) {
+exports.getMyCompleteTaskQueryCustomer = function (page, rows, startDate, endDate, work_order_number, task_type) {
 
     var p = new Promise(function (resolve, reject) {
         var conditionMap = {};
-        conditionMap.proc_inst_status = 5;
-        if (proc_code) {
-            conditionMap.proc_code = proc_code;
-        }
+        conditionMap.proc_inst_status = 7;
+        conditionMap.proc_code = 'p-201';
         if (work_order_number) {
             conditionMap.work_order_number = work_order_number;
         }
@@ -74,7 +71,8 @@ exports.getMyCompleteTaskQueryCustomer = function (page, size, userCode, paramMa
             conditionMap.proc_inst_task_code = task_type;
         }
         console.log(conditionMap);
-        var ProcessInst =utils.pagingQuery4Eui(model.$ProcessInst, page, size, conditionMap, resolve, '', {proc_inst_task_complete_time: -1});
+
+        var ProcessInst =utils.pagingQuery4Eui(model.$ProcessInst, page, rows, conditionMap, resolve, '', {proc_inst_task_complete_time: -1});
     });
     return p;
 };
@@ -84,111 +82,84 @@ exports.getMyCompleteTaskQueryCustomer = function (page, size, userCode, paramMa
  * 重启客户不配合工单
  * @param id 实例Id
  */
-exports.acceptBatch = function (id) {
+exports.acceptBatch = function (inst_id,user_name,user_no) {
     var p = new Promise(function (resolve, reject) {
-        // 查询任务表当前历史任务
-        process_model.$ProcessTaskHistroy.find({"proc_inst_id":id},async function(err,result){
-            if(err){
-                resolve(utils.returnMsg(false,"0001","历史数据查询异常！",null,err));
+        model.$ProcessTaskHistroy.find({"proc_inst_id":inst_id},function(err,res){
+            if(err || res.length == 0){
+                reject({'success': false, 'code': '1000', 'msg': '重派失败0', "error": null})
             }else{
-                var taskHistroy=result[0];
-                var arr = [];
-                var condition_task = {};
-                condition_task.proc_inst_id =taskHistroy.proc_inst_id; // 流程流转当前信息ID
-                condition_task.proc_inst_task_code =taskHistroy.proc_inst_task_code;// 流程当前节点编码(流程任务编号)
-                condition_task.proc_inst_task_name =taskHistroy.proc_inst_task_name;// 流程当前节点名称(任务名称)
-                condition_task.proc_inst_task_type =taskHistroy.proc_inst_task_type;// 流程当前节点类型(任务类型)
-                condition_task.proc_inst_task_title =taskHistroy.proc_inst_task_title;// 任务标题
-                condition_task.proc_name=taskHistroy.proc_name;//所属流程
-                condition_task.proc_code=taskHistroy.proc_code; //所属流程编码
-                condition_task.proc_inst_task_arrive_time=taskHistroy.proc_inst_task_arrive_time;// 流程到达时间
-                condition_task.proc_inst_task_handle_time=taskHistroy.proc_inst_task_handle_time;// 流程认领时间
-                condition_task.proc_inst_task_complete_time=taskHistroy.proc_inst_task_complete_time;// 流程完成时间
-                condition_task.proc_inst_task_status=0;// 流程当前状态 0-未处理，1-已完成
-                condition_task.proc_inst_task_assignee=taskHistroy.proc_inst_task_assignee;// 流程处理人code
-                condition_task.proc_inst_task_assignee_name=taskHistroy.proc_inst_task_assignee_name;// 流程处理人名
-                condition_task.proc_inst_task_work_id=taskHistroy.proc_inst_task_work_id;// 流程处理人工号
-                condition_task.proc_inst_task_user_role=taskHistroy.proc_inst_task_user_role;// 流程处理用户角色ID
-                condition_task.proc_inst_task_user_role_name=taskHistroy.proc_inst_task_user_role_name;// 流程处理用户角色名
-                condition_task.proc_inst_task_user_org=taskHistroy.proc_inst_task_user_org;// 流程处理用户组织ID
-                condition_task.proc_inst_task_user_org_name=taskHistroy.proc_inst_task_user_org_name;// 流程处理用户组织名
-                condition_task.proc_inst_task_params=taskHistroy.proc_inst_task_params;// 流程参数(任务参数)
-                condition_task.proc_inst_task_claim=taskHistroy.proc_inst_task_claim;// 流程会签
-                condition_task.proc_inst_task_sign=taskHistroy.proc_inst_task_sign;// 流程签收(0-未认领，1-已认领)
-                condition_task.proc_inst_task_sms=taskHistroy.proc_inst_task_sms;// 流程是否短信提醒
-                condition_task.proc_inst_task_remark=taskHistroy.proc_inst_task_remark;// 流程处理意见
-                //condition_task.proc_inst_biz_vars=taskHistroy.String,// 流程业务实例变量
-                condition_task.proc_inst_node_vars=taskHistroy.proc_inst_node_vars;// 流程实例节点变量
-                condition_task.proc_inst_prev_node_code=taskHistroy.proc_inst_prev_node_code,// 流程实例上一处理节点编号
-                    condition_task.proc_inst_prev_node_handler_user=taskHistroy.proc_inst_prev_node_handler_user;// 流程实例上一节点处理人编号
-                condition_task.proc_task_start_user_role_names=taskHistroy.proc_task_start_user_role_names;//流程发起人角色
-                condition_task.proc_task_start_user_role_code=taskHistroy.proc_task_start_user_role_code; //流程发起人id
-                condition_task.proc_task_start_name=taskHistroy.proc_task_start_name;//流程发起人姓名
-                //condition_task.proc_task_work_day=taskHistroy.Number,//天数
-                //condition_task.proc_task_ver=taskHistroy.Number,//版本号
-                //condition_task.proc_task_name=taskHistroy.{ type: String,  required: false ,index: true },//流程名
-                //condition_task.proc_task_content=taskHistroy.String,// 流程派单内容
-                //condition_task.proc_task_code=taskHistroy.String,// 流程编码
-                //condition_task.proc_start_time=taskHistroy.Date,// 流程发起时间(开始时间)
-                condition_task.proc_vars=taskHistroy.proc_vars;// 流程变量
-                condition_task.joinup_sys=taskHistroy.joinup_sys;//所属系统编号
-                //condition_task.skip=taskHistroy.Number,//是否为跳过节点任务
-                condition_task.next_name=taskHistroy.next_name;//下一节点处理人姓名
-                condition_task.proc_back=taskHistroy.proc_back;//判断为回退任务 1:为回退任务 0:为正常流转
-                condition_task.previous_step=taskHistroy.previous_step;//上一节点任务id
-                //condition_task.publish_status=taskHistroy.Number,//1 发布 0-未发布
-                condition_task.work_order_number=taskHistroy.work_order_number;//工单编号
-                //condition_task.is_overtime=taskHistroy.Number//是否超时，0-未超时，1-超时
-                await process_model.$ProcessInstTask.create(arr);
-                await process_model.$ProcessInst.update({_id:taskHistroy.proc_inst_id},{$set: {proc_inst_status: 2,proc_cur_task_remark:"重启的工单"}});
-                if(result.length>0){
-                    const  res=await  new Promise(resolve => {
-                        resolve({'success': true, 'code': '0000', 'msg':'重启客户不配合工单成功!'});
-                    });
-                    resolve(res);
+                let task_history={};
+                let task_arr=[];
+                //获取复核的节点信息
+                for(let i in res){
+                    let his=JSON.parse(JSON.stringify(res[i]));
+                    delete his["_id"];
+                    task_arr.push(his);
+                    if(his.proc_inst_task_type=='厅店处理回复'){
+                        task_history=res[i];
+                    }
                 }
+
+                //修改工单状态，将归档工单改为处理中，已经新增复核字段
+                model.$ProcessInst.update({_id:inst_id},{$set:{proc_inst_status:2,proc_cur_arrive_time:new Date(),proc_cur_task:'processDefineDiv_node_3',proc_cur_task_name : "厅店处理回复"}},{},function(err){
+                    let history={};
+                    history.proc_inst_task_assignee=user_no;
+                    history.proc_inst_task_assignee_name=user_name;
+                    history.proc_inst_task_remark="重派意见:客户不配合工单重派";
+                    history.proc_inst_task_status=1;
+                    history.joinup_sys=task_history.joinup_sys;
+                    history.proc_name=task_history.proc_name;
+                    history.proc_code=task_history.proc_code;
+                    history.proc_task_start_user_role_names=task_history.proc_task_start_user_role_names;
+                    history.proc_task_start_name=task_history.proc_task_start_name;
+                    history.proc_vars=task_history.proc_vars;
+                    history.proc_inst_task_title=task_history.proc_inst_task_title;
+                    history.proc_inst_task_complete_time=new Date();
+                    history.proc_inst_task_handle_time=new Date();
+                    history.proc_inst_task_arrive_time=new Date();
+                    history.proc_inst_id=task_history.proc_inst_id;
+                    history.proc_task_start_user_role_code=task_history.proc_task_start_user_role_code;
+                    history.proc_inst_task_name ="客户不配合工单重派"
+                    history.work_order_number =task_history.work_order_number
+                    task_arr.push(history)
+
+
+                    task_history.proc_inst_task_status=0;
+                    task_history.proc_inst_task_remark='';
+                    task_history=JSON.parse(JSON.stringify(task_history))
+                    delete task_history["_id"];
+                    task_history.proc_inst_task_complete_time=new Date();
+                    task_history.proc_inst_task_handle_time=new Date();
+                    task_history.proc_inst_task_arrive_time=new Date();
+                    task_arr.push(task_history);
+                    console.log(task_arr);
+                    //将历史表的中记录重新插入任务表，表示此工单重新处理
+                    model.$ProcessInstTask.create(task_arr,function(err){
+                        console.log(err);
+                        if(err){
+                            reject({'success': false, 'code': '1000', 'msg': '重派失败1', "error": null})
+                        }else{
+                            model.$ProcessTaskHistroy(history).save(function(err){
+                                if(err){
+                                    reject({'success': false, 'code': '1000', 'msg': '重派失败2', "error": null})
+                                }else{
+                                    resolve({'success': true, 'code': '2000', 'msg': '重派成功', "error": null})
+                                }
+                            })
+                        }
+
+                    })
+
+
+                })
             }
-        });
 
+
+        })
     });
     return p;
 };
 
-
-
-/**
- * 获取我的已办任务列表分页方法
- * @param userCode
- * @param paramMap
- */
-exports.getMyCompleteTaskQueryCustomer = function (page, size, userCode, paramMap, proc_code, startDate, endDate, work_order_number,task_type) {
-
-    var p = new Promise(function (resolve, reject) {
-        var userArr = [];
-        userArr.push(userCode);
-        var conditionMap = {};
-        //proc_inst_task_user_org  进行模糊匹配
-        //let work_id=paramMap.work_id;
-        //有的工号为'',为了防止查到空工号的任务
-       //if(!work_id)work_id='@@@@@@@';
-        //conditionMap['$or'] = [{'proc_task_history': {'$in': userArr}},{'proc_task_history[0].proc_inst_task_work_id':work_id}];
-        // conditionMap['$or'] = [{'proc_inst_task_assignee':{'$in':userArr}},{'proc_inst_task_user_role':{'$in':paramMap.roles},'proc_inst_task_user_org':{'$in':paramMap.orgs}}];
-        conditionMap.proc_inst_status = 5;
-        if (proc_code) {
-            conditionMap.proc_code = proc_code;
-        }
-        if (work_order_number) {
-            conditionMap.work_order_number = work_order_number;
-        }
-        if(task_type){
-            conditionMap.proc_inst_task_code = task_type;
-        }
-
-        console.log(conditionMap);
-        var ProcessInst =utils.pagingQuery4Eui(model.$ProcessInst, page, size, conditionMap, resolve, '', {proc_inst_task_complete_time: -1});
-    });
-    return p;
-};
 
 
 /**
@@ -203,10 +174,10 @@ exports.turn2SendTask = function(userInfo,instId,reason){
                 // 工单已归档，状态4：表示已归档；5：表示客户不配合
                 if(inst.proc_inst_status == 4  ){
                     resolve(utils.returnMsg(false,"0001","转派失败:工单已归档",null,null));
-                }else if(inst.proc_inst_status == 5){
+                }else if(inst.proc_inst_status == 7){
                     resolve(utils.returnMsg(false,"0001","转派失败:客户不配合，请移至客户不配合重新处理",null,null));
                 }else if(inst.proc_cur_task != proc_cur_task_code_3){
-                    resolve(utils.returnMsg(false,"0001","该工单营业员已处理，待您审核，若您审核通过归档则不能转派；若您拒绝，才能重新转派。",null,null));
+                    resolve(utils.returnMsg(false,"0001","此工单已至省公司，不可转派。",null,null));
                 }else{
                     // 查询任务表当前任务
                     process_model.$ProcessInstTask.find({"proc_inst_id":instId,"proc_inst_task_status":0},function(err,result){
@@ -291,9 +262,39 @@ exports.turn2SendTask = function(userInfo,instId,reason){
                                 inst_task.proc_inst_task_user_role = userInfo.user_roles;
                                 inst_task.__v = cur_task.__v;
                                 process_model.$ProcessInstTask.create(inst_task,function(err,result){
-                                    console.log(result);
+                                    if(err){
+                                        resolve(utils.returnMsg(false,"0001","派单失败:创建任务失败",null,null));
+                                    }else{
+                                        //转派则删除原先工单在统计表中的统计信息，重新插入当前工单的统计信息
+                                        process_extend_model.$ProcessTaskStatistics.remove({ "proc_inst_id":instId},function(err,res){
+                                            if(err){
+                                                resolve(utils.returnMsg(true,"0000","派单成功:删除统计失败",null,null));
+                                            }else{
+                                                user_model.$CommonCoreOrg.find({_id:{$in:userInfo.user_org},level:6},function(err,res){
+                                                    if(err){
+                                                        resolve(utils.returnMsg(true,"0000","派单成功:查找重派人员机构失败",null,null));
+                                                    }else if(res.length==0){
+                                                        resolve(utils.returnMsg(true,"0000","派单成功:重派人员无所在渠道，无法进行统计",null,null));
+                                                    }else if(res.length>1){
+                                                        resolve(utils.returnMsg(true,"0000","派单成功:重派人员所在渠道有多个，无法进行统计",null,null));
+                                                    }else{
+                                                        //将差错工单结果插入统计表
+                                                        process_extend_service.addStatistics(instId, JSON.parse(cur_task.proc_vars).mistake_time, res[0].company_code).then(function (rs) {
+                                                            resolve(utils.returnMsg(true,"0000","派单成功",null,null));
+                                                        }).catch(function (e) {
+                                                            resolve(utils.returnMsg(true,"0000","派单成功：插入统计表失败",null,null));
+                                                        });
+                                                    }
+                                                })
+
+
+                                            }
+                                        })
+                                    }
+
                                 });
-                                resolve(utils.returnMsg(true,"0000","派单成功",null,null));
+
+
                             }else{
                                 resolve(utils.returnMsg(false,"0001","派单失败:查询当前任务出错",null,null));
                             }

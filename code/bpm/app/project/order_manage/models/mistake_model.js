@@ -24,7 +24,7 @@ var commonCoreProcessMistake = new Schema(
         check_status : String,//稽核状态
         remark : String,//稽核说明
         proc_inst_id: Schema.Types.ObjectId,//实例编码
-        status:Number,//派单状态,-2:派单失败-1:派单失败，0:未派单 1:已派单 ，2：回传失败 3：回传成功
+        status:Number,//派单状态,-2:派单失败-1:派单失败，0:未派单 1:已派单 ，2：回传失败 3：回传成功，4：表示黄河复核工单
         insert_time:Date,
         dispatch_remark:String//派单说明
 
@@ -45,7 +45,7 @@ var commonCoreProcessMistakeLogs = new Schema(
         create_user_name : String,// 创建者姓名
         create_time:Date,//创建时间
         update_user_no :  String,//修改者工号
-        status:Number,//派单状态0表示：正在派单中。1表示：派单全部成功。2表示：派单部分成功。3表示：派单全部失败。
+        status:Number,//派单状态0表示：正在派单中。1表示：派单全部成功。11，表示黄河稽核通过的数据派单成功，2表示：派单部分成功。3表示：派单全部失败。4:复核黄河工单成功，
         dispatch_remark:String,//派单描述
         dispatch_cond_one:String,//派单条件1
         dispatch_cond_two:String,//派单条件2

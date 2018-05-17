@@ -11,42 +11,18 @@
                                 <input class="easyui-textbox"id="work_order_number"  style="width: 180px;height:31px;">
                                 </input>
                             </div>
-                            <div class="btn-group" role="group" aria-label="...">
-                                <label for="filterParam3">工单类型：</label>
-                                <select class="easyui-combobox"id="proc_task_code"  style="width: 180px;height:31px;">
-                                </select>
-                            </div>
-                            <!--
-                            <div class="btn-group" role="group" aria-label="...">
-                                <label for="filterParam3">处理节点：</label>
-                                <select class="easyui-combobox"id="taskType"  style="width: 180px;height:31px;">
-                                    <option value="">===全部===</option>
-                                    <option value="processDefineDiv_node_2">省营业销售部派发</option>
-                                    <option value="processDefineDiv_node_3">厅店处理回复</option>
-                                    <option value="processDefineDiv_node_28">省营业厅销售部稽核</option>
-                                </select>
-                            </div>
-                            -->
+
+
                             <div class="btn-group" role="group" aria-label="...">
                                 <span style="color:red;font-size:13px">提示:双击查看工单</span>
                             </div>
                         </div>
                         <div class="col-xs-4 col-md-4 text-right">
                             <form class="form-inline">
-                               <!--
                                 <div class="form-group">
                                     <div class="input-group">
                                         <span class="input-group-btn">
-                                                <button id="turn2SendBtn" class="btn btn-default" type="button" onclick="turn2Send()"><i class="fa fa-edit"></i>转派</button>
-                                        </span>
-                                    </div>
-                                </div>
-                                -->
-
-                                <div class="form-group">
-                                    <div class="input-group">
-                                        <span class="input-group-btn">
-                                                 <button class="btn btn-default" type="button"  id='restart'><i class="fa"></i>重启工单</button>
+                                                 <button class="btn btn-default" type="button"  id='restart'><i class="fa"></i>重派工单</button>
                                         </span>
                                     </div>
                                 </div>
@@ -73,86 +49,12 @@
 </div>
 
 <div id="dd"></div>
-<div id="win" class="easyui-window" closed="true"collapsible="false" minimizable="false" maximizable="false" title="工单转派">
-    <div class="easyui-layout" data-options="fit:true">
-        <form id="workIdForm">
-            <div data-options="region:'north'" style="padding:20px;height:80px">
-                请输入营业员工号: <input id="workId" type="text"class="easyui-textbox " data-options="required:true, missingMessage:'请输入营业员工号'">
-                <button style=" border-radius: 5px;height:24px;width:58px;padding:0px;font-family: 'Microsoft YaHei';font-size:12px;color: #444;left:120px;"class="btn btn-default" type="button" onclick="queryUserInfo()"><i class="fa fa-search"></i>查询</button>
-            </div>
-            <div data-options="region:'south',border:false" style="text-align:right;padding:5px 0 0;">
-                <a id="wordIdSubmit" class="easyui-linkbutton" data-options="iconCls:'icon-ok'" href="javascript:void(0)" onclick="turn2SendTask()" style="width:80px">确定</a>
-                <a id="wordIdCancel" class="easyui-linkbutton" data-options="iconCls:'icon-cancel'" href="javascript:void(0)" onclick="$('#win').window('close'); $('#workId').textbox('setValue', '');" style="width:80px">取消</a>
-            </div>
-            <input id="instId" type="hidden"/>
-        </form>
-        <div id="userInfoDiv"data-options="region:'center',split:true" style="height:140px;margin-top:20px;">
-            <table id="userInfos" class ="table datagrid-btable" cellpadding="5">
-                <thead style="background-color:#EBF6FA;">
-                    <tr>
-                        <th class="td">姓名</th>
-                        <th class="td">电话</th>
-                        <th class="td">地市</th>
-                        <th class="td">区县</th>
-                        <th class="td">网格</th>
-                        <th class="td">渠道</th>
-                    </tr>
-                </thead>
-                <tbody id="tbd">
-                </tbody>
-            </table>
-        </div>
-    </div>
-</div>
-<style type="text/css">
-    #workIdForm{
-        padding:50px 10px 10px 10px;
-    }
-    #wordIdSubmit,#wordIdCancel{
-        padding:0px 10px;
-    }
-    #win{
-        width:700px;
-        height:250px;
-    }
-    #userInfos{
-        width:100%;
-        height:100%;
-    }
-    #userInfoDiv{
-        height:138px;
-        margin-top:20px;
-        overflow-y: auto;
-    }
-    .td{
-        border-right: 1px solid #e5e5e5;
-        text-align: center;
-        min-width:50px;
-        font-size:12px !important;
-    }
-</style>
-<script src="{{projcfg.appurl}}/static/js/layer/layer.js"></script>
+
 <script type="text/javascript">
-    window.is_admin=false;
-    //检测权限
-    function checkPower(){
-        $.ajax({
-            url: "{{projcfg.appurl}}/api/suggestion/suggestion/check_power",
-            type: "post",
-            success: function (data) {
-                is_admin=data.isAdmin;
-            },
-        })
-    }
 
     $(document).ready(function () {
-        //初始化工单类型下拉框
-        getAllProBase();
         //加载已办工单列表
         loadOrderCompleteteListDatagrid();
-        //初始化处理节点下拉框
-        //listAllTaskType();
-        checkPower();
 
     });
     //时间格式化:new Date().Format("yyyy-MM-dd hh:mm:ss");
@@ -182,17 +84,12 @@
             fitColumns:true,
             border:false,
             fit:true,
-            queryParams: {
-                proc_code: $("#proc_task_code").combobox('getValue'),
-            },
             toolbar: '#toolbar1',
             singleSelect:true,
             selectOnCheck:true,
             checkOnSelect:true,
             columns:[[
                 {"field":"_id",checkbox:true},
-                //{"field":"_id",hidden:true},
-                //{"field":"proc_inst_id",hidden:true},
                 {"field": "work_order_number","title":"工单编号","width":55},
                 {"field": "proc_title","title":"工单标题","width":100,
                     formatter:function(value,row,index){
@@ -201,7 +98,6 @@
                     }},
                 {"field": "proc_name","title":"工单类型","width":50},
                 {"field": "proc_cur_task_remark","title":"处理意见","width":50},
-                //{"field": "proc_inst_task_name","title":"处理节点","width":50},
                 {"field": "proc_inst_task_complete_time","title":"处理时间","width":80,
                     formatter:function(value,row,index){
                         var isoDateStr = value.substring(0,value.indexOf('.'));
@@ -215,7 +111,6 @@
 
             onDblClickRow:function(rowIndex, rowData){
                 var url='{{projcfg.appurl}}/api/order_manage/order_list/showDetailView?proc_code='+rowData.proc_code+'&change_id='+rowData._id+'&status=3';
-               // var content = '<iframe src="'+url+'" width="100%" height="99%" frameborder="0" scrolling="yes"></iframe>';
                 $('#dd').dialog({
                     title : '工单详情',
                     width : 1250,
@@ -241,19 +136,7 @@
             loadMsg:'正在加载...'
         });
     }
-    /**
-     * 初始化工单类型下拉框
-     */
-    function getAllProBase(){
-        $("#proc_task_code").combobox({
-            method: 'get',
-            url: '{{projcfg.appurl}}/api/order_manage/order_list/proBase',
-            valueField:'proc_code',
-            textField:'proc_name'
-        });
-        $("#proc_task_code").combobox("setValue","p-109");
 
-    }
     //查询
     function  doSearch(){
         $('#orderTablelist').datagrid({
@@ -261,27 +144,20 @@
             queryParams: {
                 proc_code: $("#proc_task_code").combobox('getValue'),
                 work_order_number:$("#work_order_number").val()
-                //task_type:$("#taskType").combobox("getValue"),
             }
         });
     }
 
     //重启客户不配合工单
     $("#restart").click(function(){
-        alert("Hello World click");
-        var id = "";
-        var rows = $('#orderTablelist').datagrid('getSelections');
-        if(rows.length>0){
-            for(var i=0; i<rows.length; i++){
-                id=rows[i]._id;
-            }
-
+        var rows = $('#orderTablelist').datagrid('getSelected');
+        if(rows){
             $.ajax({
                 url: '{{projcfg.appurl}}/api/order_manage/order_complete/acceptBatch',
                 type: 'post',
                 dataType:'json',
                 data: {
-                    "id":id
+                    "inst_id":rows._id
                 },
                 success: function (data) {
                     if(data.success){
@@ -293,114 +169,10 @@
                 }
             });
         }else{
-            $.messager.alert('提示','请选择数据');
+            $.messager.alert('提示','请选择!');
 
         }
     });
 
-    function turn2Send(){
-        if(!is_admin){
-            $.messager.alert("提示","你没有权限进行此操作");
-            return false;
-        }
-        var row=$('#orderTablelist').datagrid('getSelected');
-        if(!row){
-            $.messager.show({
-                title:'提示',
-                msg:'请先选择工单',
-                timeout:2000,
-                showType:'show',
-                style:{
 
-                }
-            });
-            return false;
-        }
-        //$("#instId").val(row.proc_inst_id);
-        $('#win').window('open');
-    }
-
-    function queryUserInfo(){
-        var validate =  $("#workIdForm").form("validate");;
-        if(!validate) {
-            return false;
-        }
-        var workId = $('#workId').textbox('getValue');
-        $.ajax({
-            type:"post",
-            url:"{{projcfg.appurl}}/api/order_manage/order_complete/getUserInfo",
-            dataType:"json",
-            async:false,
-            data:{"workId":workId},
-            success:function(data){
-                if(data.success){
-                    var user = data.data;
-                    var orgs = user.orgInfos;
-                    var str = "<tr>";
-                    $("#tbd").html("");
-                    for(var i=0;i<orgs.length;i++){
-                        str +=  "<th class='td'>"+user.name+"</th>"+
-                                "<th class='td'>"+user.mobile+"</th>"+
-                                "<th class='td'>"+orgs[i].city_name+"</th>"+
-                                "<th class='td'>"+orgs[i].county_name+"</th>"+
-                                "<th class='td'>"+orgs[i].grid_name+"</th>"+
-                                "<th class='td'>"+orgs[i].channel_name+"</th>";
-                    }
-                    $("#tbd").append(str);
-                }else{
-                    $.messager.alert("提示",data.msg);
-                }
-            },
-            error:function(XMLHttpRequest, textStatus, errorThrown){
-
-            }
-         });
-    }
-    function turn2SendTask(){
-        var validate =  $("#workIdForm").form("validate");;
-        if(!validate) {
-            return false;
-        }
-        var workId = $('#workId').textbox('getValue');
-        var instId = $("#instId").val();
-        $.ajax({
-            type:"post",
-            url:"{{projcfg.appurl}}/api/order_manage/order_complete/turn2SendTask",
-            dataType:"json",
-            data:{"workId":workId,"instId":instId},
-            success:function(data){
-                if(data.success){
-                    $('#win').window('close');
-                    $('#workId').textbox('setValue', '');
-                }
-                $.messager.alert("提示",data.msg);
-            },
-            error:function(XMLHttpRequest, textStatus, errorThrown){
-                $.messager.alert("提示","派单失败:"+textStatus);
-                $('#win').window('close');
-            }
-        });
-    }
-    $("#win").window({
-        onBeforeClose: function () {
-            $('#workId').textbox('setValue', '');
-            $("#tbd").html("");
-        }
-    });
-    function layerMsg (icon,msg){
-        layer.alert(msg, {
-            skin: 'layui-layer-lan' //样式类名
-            ,closeBtn: 0,
-            area: '250px'
-        });
-    }
-    function listAllTaskType(){
-        $("#taskType").combobox({
-            method: 'post',
-            url: '{{projcfg.appurl}}/api/order_manage/order_complete/listAllTaskType',
-            valueField:'NAME',
-            textField:'NAME'
-        });
-        $("#taskType").combobox("setValue","省营业销售部派发");
-    }
 </script>

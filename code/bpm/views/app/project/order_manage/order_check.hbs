@@ -49,14 +49,14 @@
                             </div>
                             <div class="col-xs-4 col-md-4 text-right">
                                 <form class="form-inline">
-                                 <!--   <div class="form-group">
+                               <div class="form-group">
 
                                         <div class="input-group">
                                             <span class="input-group-btn">
                                                 <button class="btn btn-edit" type="button" onclick="checkHuanghe()"><i class="fa fa-edit"></i>复核黄河通过工单</button>
                                             </span>
                                         </div>
-                                    </div>-->
+                                    </div>
                                     <div class="form-group">
 
                                         <div class="input-group">
@@ -76,6 +76,20 @@
     </div>
 </div>
 <div id="dd"></div>
+
+<div id="checkDetail"  class="mydialog"  >
+    <table  align="center">
+
+        <tr>
+            <td align="right" class="tdLabel">不通过原因:</td>
+            <td colspan="2"><input name="check_memo" id="check_memo"class="easyui-textbox"  labelPosition="top" multiline="true" style="width: 370px; height: 54px; resize: none;"/>
+            </td>
+        </tr>
+
+    </table>
+
+</div>
+
 <div id="checkHuanghe"  class="mydialog"  >
 
     <table id="orderCheckHuangheList">
@@ -84,12 +98,107 @@
         开始时间: <input class="easyui-datebox" id="beginDate" style="width:110px">
         结束时间: <input class="easyui-datebox" id="endDate"style="width:110px">
         业务名称:
-        <select class="easyui-combobox"  id="tradeTypeCode" panelHeight="auto" style="width:300px">
-            <option value="500000020001">500000020001</option>
+        <select class="easyui-combobox"  id="tradeTypeCode"  style="width: 300px;height:31px;">
+            <option value="">==========全部=============</option>
+            <option value="800000020020">宽带销户</option>
+            <option value="500000020101">产品变更</option>
+            <option value="500000020100">换基本策划</option>
+            <option value="801000000008">宽带资费变更</option>
+            <option value="801000000009">宽带移机</option>
+            <option value="500000020228">手机支付营业厅现金充值</option>
+            <option value="500000020229">手机支付营业厅现金充值冲正</option>
+            <option value="910024000723">【二次认证】统一查询退订</option>
+            <option value="201010070018">集团统一查询退订成功短信</option>
+            <option value="201010070019">集团统一查询退订失败短信</option>
+            <option value="291001010154">新农合业务新装</option>
+            <option value="291004010933">集团彩铃套餐成员添加</option>
+            <option value="291008010933">集团彩铃成员变更</option>
+            <option value="291002010933">集团彩铃套餐变更</option>
+            <option value="291003010933">集团彩铃套餐销户</option>
+            <option value="500000020071">管理复机</option>
+            <option value="500000020072">管理停机</option>
+            <option value="500000020073">营业复机</option>
+            <option value="500000020074">营业停机</option>
+            <option value="500000020076">帐务开机</option>
+            <option value="500000020007">拆机复装</option>
+            <option value="500000020049">补换卡</option>
+            <option value="500000020012">普通销户</option>
+            <option value="500000020062">过户  </option>
+            <option value="2100000005">客户信息变更</option>
+            <option value="291000000021">账户资料变更</option>
+            <option value="291000100002">群组开户</option>
+            <option value="291000100003">群组销户</option>
+            <option value="291000100005">群组成员变更</option>
+            <option value="500000020079">宽带账号/密码变更</option>
+            <option value="291000100031">一拖一退订 </option>
+            <option value="800000020019">密码修改</option>
+            <option value="801000000020">宽带复机</option>
+            <option value="801000000019">宽带停机</option>
+            <option value="291000000301">农村V网新装</option>
+            <option value="291000000302">农村V网业务变更</option>
+            <option value="291000000303">农村V网销户</option>
+            <option value="291000000304">农村V网成员添加</option>
+            <option value="291000000305">农村V网成员变更</option>
+            <option value="291000000306">农村V网成员删除</option>
+            <option value="291000000307">农村V网冻结/解冻</option>
+            <option value="801000000056">宽带账户转移</option>
+            <option value="291005010933">集团彩铃套餐成员删除</option>
+            <option value="801000000057">IMS销户</option>
+            <option value="500000020017">客服策划变更</option>
+            <option value="291001010949">行业应用卡(集团)新装</option>
+            <option value="291001010933">集团彩铃套餐新装</option>
+            <option value="801000000007">宽带受理</option>
+            <option value="500000021009">IMS开户</option>
+            <option value="801000000038">学籍信息修改</option>
+            <option value="291000010002">家庭套餐拆网</option>
+            <option value="500000020045">呼转号码设置</option>
+            <option value="291000000308">农村V网成员同步添加</option>
+            <option value="801000000061">宽带账务开机</option>
+            <option value="800014000660">成员统一查询退订操作</option>
+            <option value="500000020222">DSMP分开关操作</option>
+            <option value="500000020223">DSMP总开关操作</option>
+            <option value="500000020025">家庭亲情网拆网</option>
+            <option value="500000020024">家庭亲情网成员变更</option>
+            <option value="500000020023">家庭亲情网组网</option>
+            <option value="500000020103">订购增值策划</option>
+            <option value="500000020105">退订增值策划</option>
+            <option value="500000020053">密码重置</option>
+            <option value="500000020001">普通GSM开户</option>
+            <option value="500000020057">分合户</option>
+            <option value="291012010934">互联网专线新装,端到端-IRMS-CRM</option>
+            <option value="500000020055">密码修改</option>
+            <option value="291003070943">建行手机支付产品(测试中）注销</option>
+            <option value="291005070943">建行手机支付产品(测试中）成员删除</option>
+            <option value="291001070943">建行手机支付产品(测试中）新装</option>
+            <option value="8000100121">统一查询退订</option>
+            <option value="800015101004">vpmnIMS固话成员添加</option>
+            <option value="801000000035">物联网开户</option>
+            <option value="500000020020">产品变更</option>
+            <option value="291000030101">朋友网变更 </option>
+            <option value="500000020171">非实名制双停复机</option>
+            <option value="291008430100">新装</option>
+            <option value="291000040105">IMS商务套餐成员变更 </option>
+            <option value="801000000013">存量宽带办理互联网电视</option>
+            <option value="291008420531">新装</option>
+            <option value="500000020054">密码解锁</option>
+            <option value="801000000078">2/3G升级为4G</option>
+            <option value="500000020166">实名制补登记</option>
+            <option value="801000000063">物联网销户</option>
+            <option value="291000100013">4G群组销户</option>
+            <option value="291000100014">4G群组成员新增</option>
+            <option value="291000100012">4G群组开户</option>
+            <option value="801000000025">宽带二次预约开户（前台错误派单）</option>
+            <option value="291000020301">产品变更</option>
+            <option value="291000030102">朋友网注销 </option>
+            <option value="500000020165">非实名制停机-A补登记</option>
+            <option value="291000040100">IMS商务套餐组网 </option>
+            <option value="291000030100">朋友网组网 </option>
+            <option value="291000030006">换套餐 </option>
+            <option value="801000000026">宽带二次预约开户（修改预约时间）</option>
         </select>
         抽取条数:  <input class="easyui-numberbox" id="dataCount" label="Amount:" labelPosition="top" value="" style="width:100px">
+        <a href="#" onclick="searchHuanghe()"class="easyui-linkbutton" iconCls="icon-search">随机抽取</a>
 
-        <a href="#" onclick="loadCheckHuangDatagrid()"class="easyui-linkbutton" iconCls="icon-search">随机抽取</a>
     </div>
 
 </div>
@@ -102,7 +211,30 @@
     $(document).ready(function () {
         //加载列表
         loadOrderListDatagrid();
+        $('#beginDate').datebox().datebox('calendar').calendar({
+            validator: function (date) {
+                var endDate = new Date($('#endDate').datebox('getValue'));
+                if ($('#endDate').datebox('getValue')) {
+                    var d1 = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate());
+                    return date <= d1;
+                } else {
+                    return true;
+                }
+            }
+        });
 
+        $('#endDate').datebox().datebox('calendar').calendar({
+            validator: function (date) {
+                if ($('#beginDate').datebox('getValue')) {
+                    var startDate = new Date($('#beginDate').datebox('getValue').replace(/-/g, '/').replace(/T|Z/g, ' '));
+                    var d1 = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
+                    return date >= d1 && date.getMonth()==startDate.getMonth();
+                } else {
+                    return true;
+                }
+
+            }
+        });
 
     });
     //时间格式化:new Date().Format("yyyy-MM-dd hh:mm:ss");
@@ -187,6 +319,7 @@
                         }
 
                     }},
+                {"field": "check_user_name","title":"复核人","width":"80px"},
                 {"field": "is_check","title":"复核结果","width":"100px",
                     formatter:function(value,row,index){
                         if(value==0){
@@ -225,8 +358,10 @@
                     msgError(json.msg + ',错误代码:' + json.code);
                 }
             },
-            onLoadError:function() {
-                msgError('加载数据出现时发生错误,请稍候重试...');
+            onLoadError:function(json) {
+                if(!json.success) {
+                    msgError(json.msg + ',错误代码:' + json.code);
+                }
             },
             pagination:true,
             pageSize: 20,
@@ -270,27 +405,24 @@
             checkOnSelect:true,
             columns:[[
                 {"field":"_id",hidden:true},
-                {"field": "crm_trade_date","title":"日期","width":50},
-                {"field": "trade_province_code","title":"地市","width":50},
+                {"field": "crm_trade_date","title":"日期","width":70},
+                {"field": "trade_province_code","title":"地市编码","width":50},
                 {"field": "trade_dept_code","title":"渠道编码","width":50},
-                {"field": "channel_name","title":"渠道名称","width":80,
-                    formatter:function(value,row,index){
-                        if(!value)
-                            return "<span style='color:red'>不存在的渠道</span>";
-                        else
-                            return value;
-
-                    }},
                 {"field": "crm_trade_id","title":"BOSS订单编码","width":120},
                 {"field": "cust_tel_number","title":"客户号码","width":50},
                 {"field": "trade_emp_id","title":"营业员工号","width":50},
-                {"field": "channel_type","title":"渠道类型","width":30},
                 {"field": "trade_type_code","title":"业务编码","width":50},
                 {"field": "trade_type_name","title":"业务名称","width":50},
-                {"field": "check_result","title":"稽核说明","width":70},
-                {"field": "t","title":"附件下载","width":40,
+                {"field": "check_result","title":"稽核说明","width":50},
+                {"field": "t","title":"附件下载","width":50,
                     formatter:function(value,row,index){
                             return '<a href="{{projcfg.appurl}}/api/order_manage/mistake_list/huangheFileDownload/'+row.crm_trade_id+'">附件下载</a>';
+
+                    }},
+                {"field": "t1","title":"审核操作","width":40,
+                    formatter:function(value,row,index){
+                        return '<a href="#" onclick="checkPass('+index+')">通过</a>&nbsp;&nbsp;' +
+                                '<a href="#" onclick="openCheckNotPass('+index+')">不通过</a>';
 
                     }},
             ]],
@@ -300,6 +432,7 @@
     }
     //打开复核黄河界面
     function checkHuanghe(){
+
         loadCheckHuangDatagrid();
         $('#checkHuanghe').show();
         $('#checkHuanghe').mydialog({
@@ -311,6 +444,117 @@
         });
 
     }
+    function searchHuanghe(){
 
+        if(!$('#beginDate').datebox('getValue')){
+            $.messager.alert('提示','请选择开始时间!');
+            return;
+        }
+        if(!$('#endDate').datebox('getValue')){
+            $.messager.alert('提示','请选择结束时间!');
+            return;
+        }
+        if(!$("#dataCount").numberbox('getValue')){
+            $.messager.alert('提示','请填写抽取条数!');
+            return;
+        }
+        loadCheckHuangDatagrid();
+    }
+
+    function checkPass(index){
+        $.messager.confirm('提示', '确认对此工单为复核成功吗?', function (r) {
+            if (r) {
+                var row = $('#orderCheckHuangheList').datagrid('getData').rows[index];
+                var mistake_time=row.check_time.substring(0,10).replace(/-/g,'')
+                $.ajax({
+                    url: '{{projcfg.appurl}}/api/order_manage/mistake_list/createHuangheOrder',
+                    type: 'post',
+                    dataType:'json',
+                    data: {
+                        BOSS_CODE:row.crm_trade_id,
+                        customer_code:row.customer_id,
+                        salesperson_code:row.trade_emp_id,
+                        business_code:row.trade_type_code,
+                        business_name:row.trade_type_name,
+                        city_code:row.trade_province_code,
+                        country_code:row.trade_eparchy_code,
+                        channel_id:row.trade_dept_code,
+                        check_status:row.trade_status,
+                        client_tel:row.cust_tel_number,
+                        start_time:row.crm_trade_date,
+                        mistake_time:mistake_time,
+                        remark:"复核黄河通过差错工单："+row.check_result,
+                        end_time:row.check_time,
+                        status:0//复核通过
+                    },
+                    success: function (data) {
+                        $.messager.alert('提示',data.msg);
+                        $('#orderTablelist').datagrid('reload');
+                    }
+                })
+            }
+        })
+
+    }
+
+    function openCheckNotPass(index){
+        $("#check_memo").textbox('setValue','');
+        $('#checkDetail').show();
+        $('#checkDetail').mydialog({
+            title:"复核信息",
+            width: 700,
+            height: 150,
+            top:250,
+            modal: true,
+            myButtons:[
+                {
+                    text:'确定',
+                    btnCls:'btn btn-blue',
+                    handler:function(){
+                       checkNotPass(index);
+                    }
+                },
+                {
+                    text:'关闭',
+                    btnCls:'btn btn-danger',
+                    handler:function(){
+                        $('#checkDetail').dialog("close");
+                    }
+                }
+            ]
+        });
+    }
+
+    function checkNotPass(index){
+        var row = $('#orderCheckHuangheList').datagrid('getData').rows[index];
+        var mistake_time=row.check_time.substring(0,10).replace(/-/g,'')
+        $.ajax({
+            url: '{{projcfg.appurl}}/api/order_manage/mistake_list/createHuangheOrder',
+            type: 'post',
+            dataType:'json',
+            data: {
+                BOSS_CODE:row.crm_trade_id,
+                customer_code:row.customer_id,
+                salesperson_code:row.trade_emp_id,
+                business_code:row.trade_type_code,
+                business_name:row.trade_type_name,
+                city_code:row.trade_province_code,
+                country_code:row.trade_eparchy_code,
+                channel_id:row.trade_dept_code,
+                check_status:row.trade_status,
+                client_tel:row.cust_tel_number,
+                start_time:row.crm_trade_date,
+                mistake_time:mistake_time,
+                remark:"复核黄河通过差错工单,不通过原因："+$("#check_memo").val(),
+                end_time:row.check_time,
+                status:1//复核不通过
+            },
+            success: function (data) {
+                $.messager.alert('提示',data.msg);
+                $('#checkDetail').dialog("close");
+                $('#orderTablelist').datagrid('reload');
+            }
+        })
+    }
 
 </script>
