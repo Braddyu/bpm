@@ -649,8 +649,8 @@ async function normal_process(current_detail,next_detail, next_node, proc_inst_i
                 'proc_inst_task_code': proc_cur_task
 
             });
-
-            condition_task.proc_inst_task_work_id = step_first[0].proc_inst_task_work_id;
+            if( step_first[0].proc_inst_task_work_id)
+                condition_task.proc_inst_task_work_id = step_first[0].proc_inst_task_work_id;
             condition_task.next_name = step_first[0].next_name;
             condition_task.proc_back = 1;
             condition_task.joinup_sys = step_first[0].joinup_sys;//工单所属编号
@@ -840,7 +840,7 @@ exports.assign_transfer=function(proc_task_id,node_code,user_code,assign_user_co
        if(resultss[0].work_id){
            condition_task.proc_inst_task_work_id = resultss[0].work_id;
        }else{
-           condition_task.proc_inst_task_work_id = '';
+           condition_task.proc_inst_task_work_id = '@@@@@';
        }
        condition_task.proc_task_ver = proc_task_ver;
        condition_task.publish_status =publish_status;
@@ -1082,7 +1082,7 @@ exports.do_payout=function(proc_task_id,node_code,user_code,assign_user_code,pro
                 if(resultss[0].work_id){
                     condition_task.proc_inst_task_work_id = resultss[0].work_id;
                 }else{
-                    condition_task.proc_inst_task_work_id = '';
+                    condition_task.proc_inst_task_work_id = '@@@@@';
                 }
                 condition_task.proc_inst_id = proc_inst_id;//: {type: Schema.Types.ObjectId, ref: 'CommonCoreProcessInst'}, // 流程流转当前信息ID
                 condition_task.proc_inst_task_code = next_detail.item_code;// : String,// 流程当前节点编码(流程任务编号)

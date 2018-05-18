@@ -1,29 +1,32 @@
 <link rel="stylesheet" type="text/css" href="{{projcfg.appurl}}/static/order/css/order_detail.css">
 <style type="text/css">
-    #w .panel-body{
+    #w .panel-body {
         overflow: hidden !important;
     }
-    .panel-title{
-        font-size:14px !important;
+
+    .panel-title {
+        font-size: 14px !important;
     }
-    #orderDistribute{
-        line-height:31px;
-        height:31px;
-        margin-left:10px;
+
+    #orderDistribute {
+        line-height: 31px;
+        height: 31px;
+        margin-left: 10px;
     }
+
     .testswitch {
         position: relative;
         float: right;
         width: 60px;
-        top:3px;
+        top: 3px;
         margin: 0;
-        -webkit-user-select:none;
-        -moz-user-select:none;
+        -webkit-user-select: none;
+        -moz-user-select: none;
         -ms-user-select: none;
     }
 
     .testswitch-checkbox {
-        display:none;
+        display: none;
     }
 
     .testswitch-label {
@@ -50,8 +53,7 @@
         line-height: 30px;
         font-size: 14px;
         color: white;
-        font-family:
-                Trebuchet, Arial, sans-serif;
+        font-family: Trebuchet, Arial, sans-serif;
         font-weight: bold;
         box-sizing: border-box;
     }
@@ -63,6 +65,7 @@
         background-color: #00e500;
         color: #FFFFFF;
     }
+
     .testswitch-inner::before {
         content: attr(data-off);
         padding-right: 10px;
@@ -101,107 +104,164 @@
             <div class="widget-body">
                 <div id="processLayout" class="easyui-layout" data-options="fit:true" style="width:600px;height:666px;">
 
-                        <div id="toolbar1" class="row tbRow">
-                            <div class="col-xs-8 col-md-8">
+                    <div id="toolbar1" class="row tbRow">
+                        <div class="col-xs-8 col-md-8">
 
-                                    <div class="btn-group" role="group" aria-label="...">
-                                        <label for="filterParam3">时间：</label>
-                                        <input id="queryDate" class="easyui-datebox" label="Start Date:" labelPosition="top" style="width:130px;height:35px">
+                            <div class="btn-group" role="group" aria-label="...">
+                                <label for="filterParam3">时间：</label>
+                                <input id="queryDate" class="easyui-datebox" label="Start Date:" labelPosition="top"
+                                       style="width:130px;height:35px">
 
-                                    </div>
-                                    <div class="btn-group" role="group" aria-label="...">
-                                        <label for="filterParam3">稽核说明：</label>
-                                        <select class="easyui-combobox"id="check_status" style="width: 230px;height:31px;">
-                                            <option value="">=========全部========</option>
-                                            <option value="无纸化打印传送中">无纸化打印传送中</option>
-                                            <option value="前端软件异常退出电子工单">前端软件异常退出电子工单</option>
-                                            <option value="纸质重打成功">纸质重打成功</option>
-                                            <option value="[用户没有签名笔迹]">[用户没有签名笔迹]</option>
-                                            <option value="进入电子免填单，营业员不扫描证件，不签字，不盖章，退出电子工单">进入电子免填单，营业员不扫描证件，不签字，不盖章，退出电子工单</option>
-                                            <option value="[身份证扫描件不清晰或未扫描证件]">[身份证扫描件不清晰或未扫描证件]</option>
-                                            <option value="已撤单">已撤单</option>
-                                            <option value="无纸化打印控件未安装">无纸化打印控件未安装</option>
-                                            <option value="无纸化补打传送中">无纸化补打传送中</option>
-                                            <option value="纸质打印成功">纸质打印成功</option>
-                                            <option value="纸质补打成功">纸质补打成功</option>
-                                            <option value="[没有身份证正面]">[没有身份证正面]</option>
-                                            <option value="无纸化重打传送中">无纸化重打传送中</option>
-                                            <option value="盖章时异常退出电子工单">盖章时异常退出电子工单</option>
-                                            <option value="未打印">未打印</option>
-                                            <option value="[受理人员没有扫描客户证件信息, 未扫描证件]">[受理人员没有扫描客户证件信息, 未扫描证件]</option>
-                                            <option value="纸质打印控件未安装">纸质打印控件未安装</option>
-                                            <option value="[客户证号与受理客户信息不一致]">[客户证号与受理客户信息不一致]</option>
-                                            <option value="签字屏故障退出电子工单">签字屏故障退出电子工单</option>
-                                            <option value="证件识读设备故障退出电子工单">证件识读设备故障退出电子工单</option>
-                                            <option value="[未扫描证件]">[未扫描证件]</option>
-                                        </select>
-                                    </div>
+                            </div>
+                            <div class="btn-group" role="group" aria-label="...">
+                                <label for="filterParam3">稽核说明：</label>
+                                <select class="easyui-combobox" id="check_status" style="width: 220px;height:31px;">
+                                    <option value="">=========全部========</option>
+                                    <option value="4">无纸化打印传送中</option>
+                                    <option value="14">前端软件异常退出电子工单</option>
+                                    <option value="6">纸质重打成功</option>
+                                    <option value="15">进入电子免填单，营业员不扫描证件，不签字，不盖章，退出电子工单</option>
+                                    <option value="2">已撤单</option>
+                                    <option value="10">无纸化打印控件未安装</option>
+                                    <option value="9">无纸化补打传送中</option>
+                                    <option value="1">纸质打印成功</option>
+                                    <option value="8">纸质补打成功</option>
+                                    <option value="7">无纸化重打传送中</option>
+                                    <option value="13">盖章时异常退出电子工单</option>
+                                    <option value="0">未打印</option>
+                                    <option value="17">纸质打印控件未安装</option>
+                                    <option value="12">签字屏故障退出电子工单</option>
+                                    <option value="11">证件识读设备故障退出电子工单</option>
+                                    <option value="32 ">在电子工单系统中无对应数据</option>
+                                    <option value="33 ">客户证件已经失效或没有扫描证件反面</option>
+                                    <option value="34 ">身份证扫描件不清晰或未扫描证件</option>
+                                    <option value="35 ">未扫描证件</option>
+                                    <option value="36 ">用户没有签名笔迹</option>
+                                    <option value="37 ">没有加盖印业章</option>
+                                </select>
+                            </div>
 
-                                <div class="btn-group" role="group" aria-label="...">
-                                    <label for="filterParam3">地州：</label>
-                                    <select class="easyui-combobox"id="city_code" style="width: 100px;height:31px;">
-                                        <option value="">=全省=</option>
-                                        <option value="850">贵安</option>
-                                        <option value="851">贵阳</option>
-                                        <option value="852">遵义</option>
-                                        <option value="853">安顺</option>
-                                        <option value="854">黔南</option>
-                                        <option value="855">黔东南</option>
-                                        <option value="856">铜仁</option>
-                                        <option value="857">毕节</option>
-                                        <option value="858">六盘水</option>
-                                        <option value="859">黔西南</option>
+                            <div class="btn-group" role="group" aria-label="...">
+                                <label for="filterParam3">地州：</label>
+                                <select class="easyui-combobox" id="city_code" style="width: 100px;height:31px;">
+                                    <option value="">=全省=</option>
+                                    <option value="850">贵安</option>
+                                    <option value="851">贵阳</option>
+                                    <option value="852">遵义</option>
+                                    <option value="853">安顺</option>
+                                    <option value="854">黔南</option>
+                                    <option value="855">黔东南</option>
+                                    <option value="856">铜仁</option>
+                                    <option value="857">毕节</option>
+                                    <option value="858">六盘水</option>
+                                    <option value="859">黔西南</option>
 
-                                    </select>
-                                </div>
-                                <div class="btn-group" role="group" aria-label="...">
-                                    <label for="filterParam3">业务名称：</label>
-                                    <select class="easyui-combobox"id="business_name" style="width: 100px;height:31px;">
+                                </select>
+                            </div>
+                            <div class="btn-group" role="group" aria-label="...">
+                                <label for="filterParam3">业务名称：</label>
+                                <select class="easyui-combobox" id="business_code" style="width: 300px;height:31px;">
 
-                                        <option value="">=全部=</option>
-                                        <option value="集团新增">集团新增</option>
-                                        <option value="补换卡">补换卡</option>
-                                        <option value="营业复机">营业复机</option>
-                                        <option value="营业停机">营业停机</option>
-                                        <option value="群组销户">群组销户</option>
-                                        <option value="群组成员变更">群组成员变更</option>
-                                        <option value="物联网销户">物联网销户</option>
-                                        <option value="物联网新装">物联网新装</option>
-                                        <option value="物联网开户">物联网开户</option>
-                                        <option value="注销">注销</option>
-                                        <option value="朋友网组网">朋友网组网</option>
-                                        <option value="朋友网变更">朋友网变更</option>
-                                        <option value="有线固话开户">有线固话开户</option>
-                                        <option value="普通销户">普通销户</option>
-                                        <option value="普通成员批量增加">普通成员批量增加</option>
-                                        <option value="普通GSM开户">普通GSM开户</option>
-                                        <option value="新装">新装</option>
-                                        <option value="携号转网">携号转网</option>
-                                        <option value="拆机复装">拆机复装</option>
-                                        <option value="成员添加">成员添加</option>
-                                        <option value="成员删除">成员删除</option>
-                                        <option value="密码重置">密码重置</option>
-                                        <option value="客户资料变更">客户资料变更</option>
-                                        <option value="删除普通成员">删除普通成员</option>
-                                        <option value="分合户">分合户</option>
-                                        <option value="修改密码">修改密码</option>
-                                        <option value="任我看副卡组网">任我看副卡组网</option>
-                                        <option value="任我看副卡拆网">任我看副卡拆网</option>
-                                        <option value="代付关系变更">代付关系变更</option>
-                                        <option value="亲友网组网">亲友网组网</option>
-                                        <option value="亲友网拆网">亲友网拆网</option>
-                                        <option value="2/3G升级为4G">2/3G升级为4G</option>
-                                        <option value="4G群组开户">4G群组开户</option>
-                                        <option value="4G群组成员变更">4G群组成员变更</option>
-                                        <option value="4G群组销户">4G群组销户</option>
-                                        <option value="IMS固话成员批量增加">IMS固话成员批量增加</option>
-                                        <option value="IMS营业停机">IMS营业停机</option>
-                                        <option value="二次确认普通成员批量增加">二次确认普通成员批量增加</option>
-                                        <option value="亲友网成员变更">亲友网成员变更</option>
+                                    <option value="">==========全部=============</option>
+                                    <option value="800000020020">宽带销户</option>
+                                    <option value="500000020101">产品变更</option>
+                                    <option value="500000020100">换基本策划</option>
+                                    <option value="801000000008">宽带资费变更</option>
+                                    <option value="801000000009">宽带移机</option>
+                                    <option value="500000020228">手机支付营业厅现金充值</option>
+                                    <option value="500000020229">手机支付营业厅现金充值冲正</option>
+                                    <option value="910024000723">【二次认证】统一查询退订</option>
+                                    <option value="201010070018">集团统一查询退订成功短信</option>
+                                    <option value="201010070019">集团统一查询退订失败短信</option>
+                                    <option value="291001010154">新农合业务新装</option>
+                                    <option value="291004010933">集团彩铃套餐成员添加</option>
+                                    <option value="291008010933">集团彩铃成员变更</option>
+                                    <option value="291002010933">集团彩铃套餐变更</option>
+                                    <option value="291003010933">集团彩铃套餐销户</option>
+                                    <option value="500000020071">管理复机</option>
+                                    <option value="500000020072">管理停机</option>
+                                    <option value="500000020073">营业复机</option>
+                                    <option value="500000020074">营业停机</option>
+                                    <option value="500000020076">帐务开机</option>
+                                    <option value="500000020007">拆机复装</option>
+                                    <option value="500000020049">补换卡</option>
+                                    <option value="500000020012">普通销户</option>
+                                    <option value="500000020062">过户</option>
+                                    <option value="2100000005">客户信息变更</option>
+                                    <option value="291000000021">账户资料变更</option>
+                                    <option value="291000100002">群组开户</option>
+                                    <option value="291000100003">群组销户</option>
+                                    <option value="291000100005">群组成员变更</option>
+                                    <option value="500000020079">宽带账号/密码变更</option>
+                                    <option value="291000100031">一拖一退订</option>
+                                    <option value="800000020019">密码修改</option>
+                                    <option value="801000000020">宽带复机</option>
+                                    <option value="801000000019">宽带停机</option>
+                                    <option value="291000000301">农村V网新装</option>
+                                    <option value="291000000302">农村V网业务变更</option>
+                                    <option value="291000000303">农村V网销户</option>
+                                    <option value="291000000304">农村V网成员添加</option>
+                                    <option value="291000000305">农村V网成员变更</option>
+                                    <option value="291000000306">农村V网成员删除</option>
+                                    <option value="291000000307">农村V网冻结/解冻</option>
+                                    <option value="801000000056">宽带账户转移</option>
+                                    <option value="291005010933">集团彩铃套餐成员删除</option>
+                                    <option value="801000000057">IMS销户</option>
+                                    <option value="500000020017">客服策划变更</option>
+                                    <option value="291001010949">行业应用卡(集团)新装</option>
+                                    <option value="291001010933">集团彩铃套餐新装</option>
+                                    <option value="801000000007">宽带受理</option>
+                                    <option value="500000021009">IMS开户</option>
+                                    <option value="801000000038">学籍信息修改</option>
+                                    <option value="291000010002">家庭套餐拆网</option>
+                                    <option value="500000020045">呼转号码设置</option>
+                                    <option value="291000000308">农村V网成员同步添加</option>
+                                    <option value="801000000061">宽带账务开机</option>
+                                    <option value="800014000660">成员统一查询退订操作</option>
+                                    <option value="500000020222">DSMP分开关操作</option>
+                                    <option value="500000020223">DSMP总开关操作</option>
+                                    <option value="500000020025">家庭亲情网拆网</option>
+                                    <option value="500000020024">家庭亲情网成员变更</option>
+                                    <option value="500000020023">家庭亲情网组网</option>
+                                    <option value="500000020103">订购增值策划</option>
+                                    <option value="500000020105">退订增值策划</option>
+                                    <option value="500000020053">密码重置</option>
+                                    <option value="500000020001">普通GSM开户</option>
+                                    <option value="500000020057">分合户</option>
+                                    <option value="291012010934">互联网专线新装,端到端-IRMS-CRM</option>
+                                    <option value="500000020055">密码修改</option>
+                                    <option value="291003070943">建行手机支付产品(测试中）注销</option>
+                                    <option value="291005070943">建行手机支付产品(测试中）成员删除</option>
+                                    <option value="291001070943">建行手机支付产品(测试中）新装</option>
+                                    <option value="8000100121">统一查询退订</option>
+                                    <option value="800015101004">vpmnIMS固话成员添加</option>
+                                    <option value="801000000035">物联网开户</option>
+                                    <option value="500000020020">产品变更</option>
+                                    <option value="291000030101">朋友网变更</option>
+                                    <option value="500000020171">非实名制双停复机</option>
+                                    <option value="291008430100">新装</option>
+                                    <option value="291000040105">IMS商务套餐成员变更</option>
+                                    <option value="801000000013">存量宽带办理互联网电视</option>
+                                    <option value="291008420531">新装</option>
+                                    <option value="500000020054">密码解锁</option>
+                                    <option value="801000000078">2/3G升级为4G</option>
+                                    <option value="500000020166">实名制补登记</option>
+                                    <option value="801000000063">物联网销户</option>
+                                    <option value="291000100013">4G群组销户</option>
+                                    <option value="291000100014">4G群组成员新增</option>
+                                    <option value="291000100012">4G群组开户</option>
+                                    <option value="801000000025">宽带二次预约开户（前台错误派单）</option>
+                                    <option value="291000020301">产品变更</option>
+                                    <option value="291000030102">朋友网注销</option>
+                                    <option value="500000020165">非实名制停机-A补登记</option>
+                                    <option value="291000040100">IMS商务套餐组网</option>
+                                    <option value="291000030100">朋友网组网</option>
+                                    <option value="291000030006">换套餐</option>
+                                    <option value="801000000026">宽带二次预约开户（修改预约时间）</option>
 
-                                    </select>
-                                </div>
-                                {{#ifAdmin}}
+                                </select>
+                            </div>
+                            {{#ifAdmin}}
                                 <div id="orderDistribute" class="btn-group" role="group" aria-label="...">
                                     <label for="filterParam3">定时派单：</label>
                                     <div id="switch" class="testswitch">
@@ -212,29 +272,32 @@
                                         </label>
                                     </div>
                                 </div>
-                                {{/ifAdmin}}
-                            </div>
-                            <div class="col-xs-4 col-md-4 text-right">
-                                <form class="form-inline">
-                                    <div class="form-group">
-                                        <div class="input-group">
-                                            <span class="input-group-btn">
-                                                <button class="btn btn-default" type="button" onclick="doSearch()"><i class="fa fa-search"></i>查询</button>
-                                            </span>
-                                            <span class="input-group-btn">
-                                                <button id="dispbut" type="button" class="btn btn-default" onclick="dispatch()"><i class="fa fa-edit"></i>派单</button>
-                                            </span>
-                                            <span class="input-group-btn">
-                                                <button id="rembut" type="button" class="btn btn-default" onclick="remove()"><i class="fa fa-remove"></i>删除</button>
-                                            </span>
-                                        </div>
-                                    </div>
-                                </form>
-                            </div>
+                            {{/ifAdmin}}
                         </div>
-                        <table id="mistakeTablelist">
+                        <div class="col-xs-4 col-md-4 text-right">
+                            <form class="form-inline">
+                                <div class="form-group">
+                                    <div class="input-group">
+                                            <span class="input-group-btn">
+                                                <button class="btn btn-default" type="button" onclick="doSearch()"><i
+                                                        class="fa fa-search"></i>查询</button>
+                                            </span>
+                                        <span class="input-group-btn">
+                                                <button id="dispbut" type="button" class="btn btn-default"
+                                                        onclick="dispatch()"><i class="fa fa-edit"></i>派单</button>
+                                            </span>
+                                        <span class="input-group-btn">
+                                                <button id="rembut" type="button" class="btn btn-default"
+                                                        onclick="remove()"><i class="fa fa-remove"></i>删除</button>
+                                            </span>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <table id="mistakeTablelist">
 
-                        </table>
+                    </table>
 
 
                 </div>
@@ -243,23 +306,17 @@
     </div>
 </div>
 <div id="dd"></div>
-<div id="w" class="easyui-window" title="请选择筛选条件"  closed="true"collapsible="false" minimizable="false" maximizable="false" style="width:560px;height:288px;padding:5px;">
+<div id="w" class="easyui-window" title="请选择筛选条件" closed="true" collapsible="false" minimizable="false"
+     maximizable="false" style="width:560px;height:288px;padding:5px;">
     <div class="easyui-layout" data-options="fit:true">
         <div data-options="region:'center'" style="padding:10px;">
             <form id="orderDistributeFrom" style="height:150px;">
-                <div class="col-xs-8 col-md-8" style="width:530px;height:150px;">
-                    <!--
-                    <div class="btn-group" role="group" aria-label="..." >
-                        <label for="filterParam3">时间：</label>
-                        <input id="query_date_w" class="easyui-datebox" label="Start Date:" labelPosition="top" style="width:130px;height:28.35px"data-options="required:true, missingMessage:'请选择时间'">
-                    </div>
-                    -->
 
-
-                    <div class="btn-group" role="group" aria-label="..." style="top:20px;">
-                        <label for="filterParam3">地州：</label>
-                        <select class="easyui-combobox"id="city_code_w" style="width: 100px;height:31px;">
-                            <option value="0">=全省=</option>
+                <table style="width:530px;height:150px;">
+                    <tr>
+                        <td><label for="filterParam3">地州：</label></td>
+                        <td><select class="easyui-combobox" id="city_code_w" style="width: 100px;height:31px;">
+                            <option value="">=全省=</option>
                             <option value="850">贵安</option>
                             <option value="851">贵阳</option>
                             <option value="852">遵义</option>
@@ -271,91 +328,162 @@
                             <option value="858">六盘水</option>
                             <option value="859">黔西南</option>
 
-                        </select>
-                    </div>
-                    <div class="btn-group" role="group" aria-label="..." style="top:20px;padding-left:5px;">
-                        <label for="filterParam3">业务名称：</label>
-                        <select class="easyui-combobox"id="business_name_w" style="width: 100px;height:31px;">
-                            <option value="0">=全部=</option>
-                            <option value="集团新增">集团新增</option>
-                            <option value="补换卡">补换卡</option>
-                            <option value="营业复机">营业复机</option>
-                            <option value="营业停机">营业停机</option>
-                            <option value="群组销户">群组销户</option>
-                            <option value="群组成员变更">群组成员变更</option>
-                            <option value="物联网销户">物联网销户</option>
-                            <option value="物联网新装">物联网新装</option>
-                            <option value="物联网开户">物联网开户</option>
-                            <option value="注销">注销</option>
-                            <option value="朋友网组网">朋友网组网</option>
-                            <option value="朋友网变更">朋友网变更</option>
-                            <option value="有线固话开户">有线固话开户</option>
-                            <option value="普通销户">普通销户</option>
-                            <option value="普通成员批量增加">普通成员批量增加</option>
-                            <option value="普通GSM开户">普通GSM开户</option>
-                            <option value="新装">新装</option>
-                            <option value="携号转网">携号转网</option>
-                            <option value="拆机复装">拆机复装</option>
-                            <option value="成员添加">成员添加</option>
-                            <option value="成员删除">成员删除</option>
-                            <option value="密码重置">密码重置</option>
-                            <option value="客户资料变更">客户资料变更</option>
-                            <option value="删除普通成员">删除普通成员</option>
-                            <option value="分合户">分合户</option>
-                            <option value="修改密码">修改密码</option>
-                            <option value="任我看副卡组网">任我看副卡组网</option>
-                            <option value="任我看副卡拆网">任我看副卡拆网</option>
-                            <option value="代付关系变更">代付关系变更</option>
-                            <option value="亲友网组网">亲友网组网</option>
-                            <option value="亲友网拆网">亲友网拆网</option>
-                            <option value="2/3G升级为4G">2/3G升级为4G</option>
-                            <option value="4G群组开户">4G群组开户</option>
-                            <option value="4G群组成员变更">4G群组成员变更</option>
-                            <option value="4G群组销户">4G群组销户</option>
-                            <option value="IMS固话成员批量增加">IMS固话成员批量增加</option>
-                            <option value="IMS营业停机">IMS营业停机</option>
-                            <option value="二次确认普通成员批量增加">二次确认普通成员批量增加</option>
-                            <option value="亲友网成员变更">亲友网成员变更</option>
-                        </select>
-                    </div>
-                    <div class="btn-group" role="group" aria-label="..." style="top:30px;">
-                        <label for="filterParam3">稽核说明：</label>
-                        <select class="easyui-combobox"id="check_status_w" style="width: 230px;height:31px;">
-                            <option value="0">=========全部========</option>
-                            <option value="无纸化打印传送中">无纸化打印传送中</option>
-                            <option value="前端软件异常退出电子工单">前端软件异常退出电子工单</option>
-                            <option value="纸质重打成功">纸质重打成功</option>
-                            <option value="[用户没有签名笔迹]">[用户没有签名笔迹]</option>
-                            <option value="进入电子免填单，营业员不扫描证件，不签字，不盖章，退出电子工单">进入电子免填单，营业员不扫描证件，不签字，不盖章，退出电子工单</option>
-                            <option value="[身份证扫描件不清晰或未扫描证件]">[身份证扫描件不清晰或未扫描证件]</option>
-                            <option value="已撤单">已撤单</option>
-                            <option value="无纸化打印控件未安装">无纸化打印控件未安装</option>
-                            <option value="无纸化补打传送中">无纸化补打传送中</option>
-                            <option value="纸质打印成功">纸质打印成功</option>
-                            <option value="纸质补打成功">纸质补打成功</option>
-                            <option value="[没有身份证正面]">[没有身份证正面]</option>
-                            <option value="无纸化重打传送中">无纸化重打传送中</option>
-                            <option value="盖章时异常退出电子工单">盖章时异常退出电子工单</option>
-                            <option value="未打印">未打印</option>
-                            <option value="[受理人员没有扫描客户证件信息, 未扫描证件]">[受理人员没有扫描客户证件信息, 未扫描证件]</option>
-                            <option value="纸质打印控件未安装">纸质打印控件未安装</option>
-                            <option value="[客户证号与受理客户信息不一致]">[客户证号与受理客户信息不一致]</option>
-                            <option value="签字屏故障退出电子工单">签字屏故障退出电子工单</option>
-                            <option value="证件识读设备故障退出电子工单">证件识读设备故障退出电子工单</option>
-                            <option value="[未扫描证件]">[未扫描证件]</option>
-                        </select>
-                    </div>
-                    <div class="btn-group" role="group" aria-label="..."style="top:40px;">
-                        <label for="filterParam3">派单数量上限:</label>
-                        <input class="easyui-numberbox" id="work_order_number"  precision="0" min="0" style="width: 180px;height:31px;" required="true">
-                        </input>
-                    </div>
-                </div>
+                        </select></td>
+                    </tr>
+                    <tr>
+                        <td><label for="filterParam3">稽核说明：</label></td>
+                        <td><select class="easyui-combobox" id="check_status_w" style="width: 400px;height:31px;">
+                            <option value="">=========全部========</option>
+                            <option value="4">无纸化打印传送中</option>
+                            <option value="14">前端软件异常退出电子工单</option>
+                            <option value="6">纸质重打成功</option>
+                            <option value="15">进入电子免填单，营业员不扫描证件，不签字，不盖章，退出电子工单</option>
+                            <option value="2">已撤单</option>
+                            <option value="10">无纸化打印控件未安装</option>
+                            <option value="9">无纸化补打传送中</option>
+                            <option value="1">纸质打印成功</option>
+                            <option value="8">纸质补打成功</option>
+                            <option value="7">无纸化重打传送中</option>
+                            <option value="13">盖章时异常退出电子工单</option>
+                            <option value="0">未打印</option>
+                            <option value="17">纸质打印控件未安装</option>
+                            <option value="12">签字屏故障退出电子工单</option>
+                            <option value="11">证件识读设备故障退出电子工单</option>
+                            <option value="32 ">在电子工单系统中无对应数据</option>
+                            <option value="33 ">客户证件已经失效或没有扫描证件反面</option>
+                            <option value="34 ">身份证扫描件不清晰或未扫描证件</option>
+                            <option value="35 ">未扫描证件</option>
+                            <option value="36 ">用户没有签名笔迹</option>
+                            <option value="37 ">没有加盖印业章</option>
+                        </select></td>
+                    </tr>
+                    <tr>
+                        <td><label for="filterParam3">业务名称：</label></td>
+                        <td><select class="easyui-combobox" id="business_code_w" style="width: 300px;height:31px;">
+                            <option value="">==========全部=============</option>
+                            <option value="800000020020">宽带销户</option>
+                            <option value="500000020101">产品变更</option>
+                            <option value="500000020100">换基本策划</option>
+                            <option value="801000000008">宽带资费变更</option>
+                            <option value="801000000009">宽带移机</option>
+                            <option value="500000020228">手机支付营业厅现金充值</option>
+                            <option value="500000020229">手机支付营业厅现金充值冲正</option>
+                            <option value="910024000723">【二次认证】统一查询退订</option>
+                            <option value="201010070018">集团统一查询退订成功短信</option>
+                            <option value="201010070019">集团统一查询退订失败短信</option>
+                            <option value="291001010154">新农合业务新装</option>
+                            <option value="291004010933">集团彩铃套餐成员添加</option>
+                            <option value="291008010933">集团彩铃成员变更</option>
+                            <option value="291002010933">集团彩铃套餐变更</option>
+                            <option value="291003010933">集团彩铃套餐销户</option>
+                            <option value="500000020071">管理复机</option>
+                            <option value="500000020072">管理停机</option>
+                            <option value="500000020073">营业复机</option>
+                            <option value="500000020074">营业停机</option>
+                            <option value="500000020076">帐务开机</option>
+                            <option value="500000020007">拆机复装</option>
+                            <option value="500000020049">补换卡</option>
+                            <option value="500000020012">普通销户</option>
+                            <option value="500000020062">过户</option>
+                            <option value="2100000005">客户信息变更</option>
+                            <option value="291000000021">账户资料变更</option>
+                            <option value="291000100002">群组开户</option>
+                            <option value="291000100003">群组销户</option>
+                            <option value="291000100005">群组成员变更</option>
+                            <option value="500000020079">宽带账号/密码变更</option>
+                            <option value="291000100031">一拖一退订</option>
+                            <option value="800000020019">密码修改</option>
+                            <option value="801000000020">宽带复机</option>
+                            <option value="801000000019">宽带停机</option>
+                            <option value="291000000301">农村V网新装</option>
+                            <option value="291000000302">农村V网业务变更</option>
+                            <option value="291000000303">农村V网销户</option>
+                            <option value="291000000304">农村V网成员添加</option>
+                            <option value="291000000305">农村V网成员变更</option>
+                            <option value="291000000306">农村V网成员删除</option>
+                            <option value="291000000307">农村V网冻结/解冻</option>
+                            <option value="801000000056">宽带账户转移</option>
+                            <option value="291005010933">集团彩铃套餐成员删除</option>
+                            <option value="801000000057">IMS销户</option>
+                            <option value="500000020017">客服策划变更</option>
+                            <option value="291001010949">行业应用卡(集团)新装</option>
+                            <option value="291001010933">集团彩铃套餐新装</option>
+                            <option value="801000000007">宽带受理</option>
+                            <option value="500000021009">IMS开户</option>
+                            <option value="801000000038">学籍信息修改</option>
+                            <option value="291000010002">家庭套餐拆网</option>
+                            <option value="500000020045">呼转号码设置</option>
+                            <option value="291000000308">农村V网成员同步添加</option>
+                            <option value="801000000061">宽带账务开机</option>
+                            <option value="800014000660">成员统一查询退订操作</option>
+                            <option value="500000020222">DSMP分开关操作</option>
+                            <option value="500000020223">DSMP总开关操作</option>
+                            <option value="500000020025">家庭亲情网拆网</option>
+                            <option value="500000020024">家庭亲情网成员变更</option>
+                            <option value="500000020023">家庭亲情网组网</option>
+                            <option value="500000020103">订购增值策划</option>
+                            <option value="500000020105">退订增值策划</option>
+                            <option value="500000020053">密码重置</option>
+                            <option value="500000020001">普通GSM开户</option>
+                            <option value="500000020057">分合户</option>
+                            <option value="291012010934">互联网专线新装,端到端-IRMS-CRM</option>
+                            <option value="500000020055">密码修改</option>
+                            <option value="291003070943">建行手机支付产品(测试中）注销</option>
+                            <option value="291005070943">建行手机支付产品(测试中）成员删除</option>
+                            <option value="291001070943">建行手机支付产品(测试中）新装</option>
+                            <option value="8000100121">统一查询退订</option>
+                            <option value="800015101004">vpmnIMS固话成员添加</option>
+                            <option value="801000000035">物联网开户</option>
+                            <option value="500000020020">产品变更</option>
+                            <option value="291000030101">朋友网变更</option>
+                            <option value="500000020171">非实名制双停复机</option>
+                            <option value="291008430100">新装</option>
+                            <option value="291000040105">IMS商务套餐成员变更</option>
+                            <option value="801000000013">存量宽带办理互联网电视</option>
+                            <option value="291008420531">新装</option>
+                            <option value="500000020054">密码解锁</option>
+                            <option value="801000000078">2/3G升级为4G</option>
+                            <option value="500000020166">实名制补登记</option>
+                            <option value="801000000063">物联网销户</option>
+                            <option value="291000100013">4G群组销户</option>
+                            <option value="291000100014">4G群组成员新增</option>
+                            <option value="291000100012">4G群组开户</option>
+                            <option value="801000000025">宽带二次预约开户（前台错误派单）</option>
+                            <option value="291000020301">产品变更</option>
+                            <option value="291000030102">朋友网注销</option>
+                            <option value="500000020165">非实名制停机-A补登记</option>
+                            <option value="291000040100">IMS商务套餐组网</option>
+                            <option value="291000030100">朋友网组网</option>
+                            <option value="291000030006">换套餐</option>
+                            <option value="801000000026">宽带二次预约开户（修改预约时间）</option>
+                        </select></td>
+                    </tr>
+                    <tr>
+                        <td><label for="filterParam3">派单数量上限:</label></td>
+                        <td><input class="easyui-numberbox" id="work_order_number" precision="0" min="0"
+                                   style="width: 180px;height:31px;" required="true">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><label for="filterParam3">成功短信通知电话:</label></td>
+                        <td><input class="easyui-numberbox" id="mistake_task_phone"
+                                   style="width: 180px;height:31px;">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">  <span style="color:red;font-size:13px">提示:定时派单时间为每日凌晨9点</span></td>
+
+                    </tr>
+
+                </table>
+
             </form>
         </div>
         <div data-options="region:'south',border:false" style="text-align:right;padding:5px 0 0;height:31px;">
-            <a class="easyui-linkbutton" data-options="iconCls:'icon-ok'" href="javascript:void(0)" onclick="openTask()" style="width:80px">确定</a>
-            <a class="easyui-linkbutton" data-options="iconCls:'icon-cancel'" href="javascript:void(0)" onclick="$('#w').window('close');cancleWin();" style="width:80px">取消</a>
+            <a class="easyui-linkbutton" data-options="iconCls:'icon-ok'" href="javascript:void(0)" onclick="openTask()"
+               style="width:80px">确定</a>
+            <a class="easyui-linkbutton" data-options="iconCls:'icon-cancel'" href="javascript:void(0)"
+               onclick="$('#w').window('close');cancleWin();" style="width:80px">取消</a>
         </div>
     </div>
 </div>
@@ -364,351 +492,333 @@
 <script type="text/javascript">
 
     $(document).ready(function () {
-        $.ajax({
-            type:"get",
-            url:"{{projcfg.appurl}}/api/order_manage/mistake_list/getSwitch",
-            dataType:"json",
-            async:false,
-            data:{},
-            success:function(data){
-                if(data.success){
-                    if(data.data.dict_attr_info.field_value == 1){
-                        $("#onoffswitch").prop('checked',true)
-                        $("#onoffswitch").addClass("testswitch-checkbox-checked");
-                    }
-                }
-            },
-            error:function(XMLHttpRequest, textStatus, errorThrown){
-                $.messager.alert("提示","查询定时任务开关错误:"+textStatus);
-            }
-        });
-
-
-
-        $("#onoffswitch").on('click', function(){
-            clickSwitch()
-        });
-
-        var clickSwitch = function() {
-            $.messager.defaults = { ok: "是", cancel: "否" };
-            var handle = "";
-            if ($("#onoffswitch").is(":checked")) {
-                handle = "开启";
-            }else{
-                handle = "关闭";
-            }
-            $.messager.confirm("操作提示", "你确定要"+handle+"定时派单吗？", function (data) {
-                if (data) {
-                    if ($("#onoffswitch").is(":checked")) {
-                        // 选中
-                        $.ajax({
-                            type:"get",
-                            url:"{{projcfg.appurl}}/api/order_manage/mistake_list/getConditions",
-                            dataType:"json",
-                            data:{},
-                            success:function(data){
-                                var condition = data.data;
-                                if(data.success){
-                                    $("#city_code_w").combobox('setValue', condition.city_code==''?"0":condition.city_code);
-                                    $("#business_name_w").combobox('setValue',condition.business_name==''?"0":condition.business_name);
-                                    $("#check_status_w").combobox('setValue',condition.check_status==''?"0":condition.check_status);
-                                    $("#work_order_number").numberbox('setValue',condition.order_number);
-                                    $('#w').window('open');
-                                }else{
-                                    $.messager.alert("提示",data.msg);
-                                }
-                            },
-                            error:function(XMLHttpRequest, textStatus, errorThrown){
-                                $.messager.alert("提示","开启失败:"+textStatus);
-                            }
-                        });
-                    } else {
-                        // 取消
-                        closeTask();
-                    }
-                } else {
-                    if($("#onoffswitch").is(":checked")){
-                        $("#onoffswitch").attr('checked',false);
-                    }else{
-                        $("#onoffswitch").prop('checked',true);
-                    }
-                }
-            });
-        };
-
         $('#queryDate').datebox().datebox('calendar').calendar({
-            validator: function(date){
+            validator: function (date) {
                 var now = new Date();
-                var d1 = new Date(now.getFullYear(), now.getMonth(), now.getDate()-1);
-                return  date<=d1;
+                var d1 = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
+                return date <= d1;
 
             }
         });
 
         var now = new Date();
-        var day =now.getFullYear()+"-"+(now.getMonth()+1)+"-"+(now.getDate()-1);
-        $('#queryDate').datebox('setValue',day);
-
+        var day = now.getFullYear() + "-" + (now.getMonth() + 1) + "-" + (now.getDate() - 1);
+        $('#queryDate').datebox('setValue', day);
         //加载列表
         loadMistakeListDatagrid();
+        console.log($("#onoffswitch").attr("class"));
+        //初始化自动派单基本信息
+        $.ajax({
+            type: "get",
+            url: "{{projcfg.appurl}}/api/order_manage/mistake_list/getConditions",
+            dataType: "json",
+            data: {},
+            success: function (data) {
+                var condition = data.data;
+                if (data.success) {
+                    //是否开启订实派单
+                    if(condition.mistake_task_flag=='1'){
+                        $("#onoffswitch").prop('checked', true)
+                        $("#onoffswitch").addClass("testswitch-checkbox-checked");
+                    }
+
+                    $("#city_code_w").combobox('setValue', condition.mistake_task_city_code);
+                    $("#business_code_w").combobox('setValue', condition.mistake_task_business_code);
+                    $("#check_status_w").combobox('setValue', condition.mistake_task_check_status);
+                    $("#work_order_number").numberbox('setValue', condition.mistake_task_order_number);
+                    $("#mistake_task_phone").numberbox('setValue', condition.mistake_task_phone);
+
+                } else {
+                    $.messager.alert("提示", data.msg);
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $.messager.alert("提示", "开启失败:" + textStatus);
+            }
+        });
+        $("#onoffswitch").on('click', function () {
+            var handle = "";
+            if ($("#onoffswitch").attr("class")=='testswitch-checkbox') {
+                handle = "开启";
+            } else {
+                handle = "关闭";
+            }
+            $.messager.confirm("操作提示", "你确定要" + handle + "定时派单吗？", function (data) {
+                if (data) {
+                    if ($("#onoffswitch").attr("class")=='testswitch-checkbox') {
+                        $('#w').window('open');
+                    } else {
+                        closeTask();
+                    }
+                }
+            });
+        });
+
+
+
+
+
     });
 
-    function loadMistakeListDatagrid(){
+    function loadMistakeListDatagrid() {
         // 加载工单基本属性列表
         $('#mistakeTablelist').datagrid({
-            url:'{{projcfg.appurl}}/api/order_manage/mistake_list/list',
-            method:'post',
-            queryParams:{
-                status:0,
-                queryDate:$('#queryDate').datebox('getValue'),
+            url: '{{projcfg.appurl}}/api/order_manage/mistake_list/list',
+            method: 'post',
+            queryParams: {
+                status: 0,
+                queryDate: $('#queryDate').datebox('getValue'),
             },
-            rownumbers:true,
-            striped:true,
-            fitColumns:true,
-            border:false,
-            fit:true,
+            rownumbers: true,
+            striped: true,
+            fitColumns: true,
+            border: false,
+            fit: true,
             pageSize: 20,
-            selectOnCheck:true,
-            checkOnSelect:true,
+            selectOnCheck: true,
+            checkOnSelect: true,
             toolbar: '#toolbar1',
-            columns:[[
-                {"field":"_id",hidden:true},
-                {"field": "mistake_time","title":"日期","width":50},
-                {"field": "city_name","title":"地市","width":50},
-                {"field": "channel_id","title":"渠道编码","width":30},
-                {"field": "channel_name","title":"渠道名称","width":100,
-                    formatter:function(value,row,index){
-                        if(!value)
+            columns: [[
+                {"field": "_id", hidden: true},
+                {"field": "mistake_time", "title": "日期", "width": 50},
+                {"field": "city_name", "title": "地市", "width": 50},
+                {"field": "channel_id", "title": "渠道编码", "width": 30},
+                {
+                    "field": "channel_name", "title": "渠道名称", "width": 100,
+                    formatter: function (value, row, index) {
+                        if (!value)
                             return "<span style='color:red'>不存在的渠道</span>";
                         else
                             return value;
 
-                    }},
-                {"field": "BOSS_CODE","title":"BOSS订单编码","width":80},
-                {"field": "client_tel","title":"客户号码","width":50},
-                {"field": "salesperson_code","title":"营业员工号","width":50},
-                {"field": "channel_code","title":"渠道类型","width":30},
-                {"field": "business_code","title":"业务编码","width":50},
-                {"field": "business_name","title":"业务名称","width":50},
-                {"field": "remark","title":"稽核说明","width":70}
+                    }
+                },
+                {"field": "BOSS_CODE", "title": "BOSS订单编码", "width": 80},
+                {"field": "client_tel", "title": "客户号码", "width": 50},
+                {"field": "salesperson_code", "title": "营业员工号", "width": 50},
+                {"field": "channel_code", "title": "渠道类型", "width": 30},
+                {"field": "business_code", "title": "业务编码", "width": 50},
+                {"field": "business_name", "title": "业务名称", "width": 50},
+                {"field": "remark", "title": "稽核说明", "width": 70}
             ]],
-            onLoadSuccess:function(json) {
-                if(!json.success) {
+            onLoadSuccess: function (json) {
+                if (!json.success) {
                     msgError(json.msg + ',错误代码:' + json.code);
                 }
             },
-            onLoadError:function() {
+            onLoadError: function () {
                 msgError('加载数据出现时发生错误,请稍候重试...');
             },
-            pagination:true,
-            loadMsg:'正在加载...'
+            pagination: true,
+            loadMsg: '正在加载...'
         });
     }
 
     //搜索
-    function doSearch(){
-     $('#mistakeTablelist').datagrid(
-             {   url:'{{projcfg.appurl}}/api/order_manage/mistake_list/list',
-                 queryParams:{
-                     queryDate:$('#queryDate').datebox('getValue'),
-                     status:0,
-                     check_status:$('#check_status').combobox('getValue'),
-                     business_name:$('#business_name').combobox('getValue'),
-                     city_code:$('#city_code').combobox('getValue'),
+    function doSearch() {
+        $('#mistakeTablelist').datagrid(
+                {
+                    url: '{{projcfg.appurl}}/api/order_manage/mistake_list/list',
+                    queryParams: {
+                        queryDate: $('#queryDate').datebox('getValue'),
+                        status: 0,
+                        check_status: $('#check_status').combobox('getValue'),
+                        business_code: $('#business_code').combobox('getValue'),
+                        city_code: $('#city_code').combobox('getValue'),
 
-                 }
-             }
-     );
+                    }
+                }
+        );
         $("#dispbut").removeAttr("disabled");
         $("#rembut").removeAttr("disabled");
- }
- //删除
-    function remove(){
-        var rows = $('#mistakeTablelist').datagrid('getSelections');
-        if(rows.length>0){
+    }
 
-            $.messager.confirm('提示', '您确定删除吗?', function(r){
-                if (r){
-                    var ids=[];
-                    for(var item in rows){
+    //删除
+    function remove() {
+        var rows = $('#mistakeTablelist').datagrid('getSelections');
+        if (rows.length > 0) {
+
+            $.messager.confirm('提示', '您确定删除吗?', function (r) {
+                if (r) {
+                    var ids = [];
+                    for (var item in rows) {
                         ids.push(rows[item]._id);
                     }
 
                     $.ajax({
                         url: '{{projcfg.appurl}}/api/order_manage/mistake_list/remove',
                         type: 'post',
-                        dataType:'json',
+                        dataType: 'json',
                         data: {
-                            ids:ids.toString(),
+                            ids: ids.toString(),
                             _csrf: '{{ _csrfToken }}'
                         },
                         success: function (data) {
-                            if(data.success){
+                            if (data.success) {
                                 $("#mistakeTablelist").datagrid('reload')
-                                $.messager.alert('提示',data.msg);
-                            }else{
-                                $.messager.alert('错误提示',data.msg);
+                                $.messager.alert('提示', data.msg);
+                            } else {
+                                $.messager.alert('错误提示', data.msg);
                             }
                         }
                     });
                 }
             });
 
-        }else{
-            $.messager.alert('提示','请选择数据');
+        } else {
+            $.messager.alert('提示', '请选择数据');
         }
 
     }
 
- //派单
- function dispatch(){
+    //派单
+    function dispatch() {
 
-        if($('#queryDate').datebox('getValue')){
-            var data=$('#mistakeTablelist').datagrid('getData');
-            if(data.total == 0){
-                $.messager.alert('提示','当前列表无数据，请查询有数据后再派单。');
+        if ($('#queryDate').datebox('getValue')) {
+            var data = $('#mistakeTablelist').datagrid('getData');
+            if (data.total == 0) {
+                $.messager.alert('提示', '当前列表无数据，请查询有数据后再派单。');
                 return;
             }
-            $.messager.confirm('提示', '您确定派单吗?', function(r){
-                if (r){
+            $.messager.confirm('提示', '您确定派单吗?', function (r) {
+                if (r) {
                     $.ajax({
                         url: '{{projcfg.appurl}}/api/order_manage/mistake_list/mistakelog',
                         type: 'post',
-                        dataType:'json',
+                        dataType: 'json',
                         data: {
-                            queryDate:$('#queryDate').datebox('getValue'),
+                            queryDate: $('#queryDate').datebox('getValue'),
                             _csrf: '{{ _csrfToken }}',
-                            check_status:$('#check_status').combobox('getValue'),
-                            business_name:$('#business_name').combobox('getValue'),
-                            city_code:$('#city_code').combobox('getValue'),
-                            status:0
+                            check_status: $('#check_status').combobox('getValue'),
+                            business_code: $('#business_code').combobox('getValue'),
+                            city_code: $('#city_code').combobox('getValue'),
+                            status: 0
                         },
                         beforeSend: ajaxLoading,
                         success: function (data) {
                             ajaxLoadEnd();
-                            if(data.success){
-                                if(data.data){
+                            if (data.success) {
+                                if (data.data) {
                                     paidan();
-                                }else{
-                                    $.messager.alert('提示','系统后台正在派单中，请稍后处理...');
+                                } else {
+                                    $.messager.alert('提示', '系统后台正在派单中，请稍后处理...');
                                 }
-                            }else{
-                                $.messager.alert('错误提示',data.msg);
+                            } else {
+                                $.messager.alert('错误提示', data.msg);
                             }
                         }
                     });
                 }
             });
-        }else{
-            $.messager.alert('提示','时间不得为空');
+        } else {
+            $.messager.alert('提示', '时间不得为空');
         }
 
- }
+    }
 
-    function paidan(){
+    function paidan() {
         $.ajax({
             url: '{{projcfg.appurl}}/api/order_manage/mistake_list/dispatch',
             type: 'post',
-            dataType:'json',
+            dataType: 'json',
             timeout: 100000000,
             data: {
-                queryDate:$('#queryDate').datebox('getValue'),
+                queryDate: $('#queryDate').datebox('getValue'),
                 _csrf: '{{ _csrfToken }}',
-                check_status:$('#check_status').combobox('getValue'),
-                business_name:$('#business_name').combobox('getValue'),
-                city_code:$('#city_code').combobox('getValue'),
-                status:0
+                check_status: $('#check_status').combobox('getValue'),
+                business_code: $('#business_code').combobox('getValue'),
+                city_code: $('#city_code').combobox('getValue'),
+                status: 0
             },
             beforeSend: ajaxLoading,
             success: function (data) {
                 ajaxLoadEnd();
-                if(data.success){
-                    $('#dispbut').attr('disabled',"true");
-                    $('#rembut').attr('disabled',"true");
-                    $.messager.alert('提示',data.msg);
+                if (data.success) {
+                    $('#dispbut').attr('disabled', "true");
+                    $('#rembut').attr('disabled', "true");
+                    $.messager.alert('提示', data.msg);
                     $("#mistakeTablelist").datagrid('reload');
 
-                }else{
-                    $.messager.alert('错误提示',data.msg);
+                } else {
+                    $.messager.alert('错误提示', data.msg);
                 }
             }
         });
     }
 
-    function ajaxLoading(){
-        $("<div class=\"datagrid-mask\"></div>").css({display:"block",width:"100%",height:"50px"}).appendTo("body");
-        $("<div class=\"datagrid-mask-msg\"></div>").html("正在派单，请稍候...").appendTo("body").css({display:"block",height:"50px",left:($(document.body).outerWidth(true) - 190) / 2,top:($(window).height() - 45) / 2});
+    function ajaxLoading() {
+        $("<div class=\"datagrid-mask\"></div>").css({
+            display: "block",
+            width: "100%",
+            height: "50px"
+        }).appendTo("body");
+        $("<div class=\"datagrid-mask-msg\"></div>").html("正在派单，请稍候...").appendTo("body").css({
+            display: "block",
+            height: "50px",
+            left: ($(document.body).outerWidth(true) - 190) / 2,
+            top: ($(window).height() - 45) / 2
+        });
     }
-    function ajaxLoadEnd(){
+
+    function ajaxLoadEnd() {
         $(".datagrid-mask").remove();
         $(".datagrid-mask-msg").remove();
     }
+
     // 开启自动派单定时任务
-    function openTask(){
-        var validate =  $("#orderDistributeFrom").form("validate");;
-        if(!validate) {
+    function openTask() {
+        var validate = $("#orderDistributeFrom").form("validate");
+        if (!validate) {
             return false;
         }
-        //var query_date = $("#query_date_w").textbox('getValue');
-        var business_name =  $("#business_name_w").combobox('getValue');
+        var business_code = $("#business_code_w").combobox('getValue');
         var check_status = $("#check_status_w").combobox('getValue');
         var city_code = $("#city_code_w").combobox('getValue');
         var work_order_number = $("#work_order_number").numberbox('getValue');
-        //$("#query_date_w").textbox('setValue', '');
+        var mistake_task_phone= $("#mistake_task_phone").numberbox('getValue');
         $.ajax({
-            type:"post",
-            url:"{{projcfg.appurl}}/api/order_manage/mistake_list/openTask",
-            dataType:"json",
-            data:{/*'query_date':query_date,*/'business_name':business_name,'check_status':check_status,'city_code':city_code,"work_order_number":work_order_number},
-            success:function(data){
-                if(data.success){
+            type: "post",
+            url: "{{projcfg.appurl}}/api/order_manage/mistake_list/openTask",
+            dataType: "json",
+            data: {
+                'business_code': business_code,
+                'check_status': check_status,
+                'city_code': city_code,
+                "work_order_number": work_order_number,
+                "mistake_task_phone":mistake_task_phone
+            },
+            success: function (data) {
+                if (data.success) {
                     $("#onoffswitch").addClass("testswitch-checkbox-checked");
-                }else{
-                    $("#onoffswitch").attr('checked',false);
+                } else {
+                    $("#onoffswitch").attr('checked', false);
                 }
                 $('#w').window('close');
-                $.messager.alert("提示",data.msg);
+                $.messager.alert("提示", data.msg);
             },
-            error:function(XMLHttpRequest, textStatus, errorThrown){
-                $.messager.alert("提示","开启失败:"+textStatus);
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $.messager.alert("提示", "开启失败:" + textStatus);
                 $('#w').window('close');
             }
         });
     }
-    $("#w").window({
-        onBeforeClose: function () {
-            //$("#query_date_w").textbox('setValue', '');
-            $("#city_code_w").combobox('setValue', '0');
-            $("#business_name_w").combobox('setValue', '0');
-            $("#check_status_w").combobox('setValue', '0');
-            if($(".testswitch-checkbox-checked").size() == 0){
-                $("#onoffswitch").attr('checked',false);
-            }
-        }
-    });
-    function closeTask(){
+    function closeTask() {
         $.ajax({
-            type:"post",
-            url:"{{projcfg.appurl}}/api/order_manage/mistake_list/closeTask",
-            dataType:"json",
-            data:{},
-            success:function(data){
-                if(data.success){
+            type: "post",
+            url: "{{projcfg.appurl}}/api/order_manage/mistake_list/closeTask",
+            dataType: "json",
+            data: {},
+            success: function (data) {
+                if (data.success) {
                     $("#onoffswitch").removeClass("testswitch-checkbox-checked");
                 }
-                $.messager.alert("提示",data.msg);
+                $.messager.alert("提示", data.msg);
             },
-            error:function(XMLHttpRequest, textStatus, errorThrown){
-                $.messager.alert("提示","关闭失败:"+textStatus);
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $.messager.alert("提示", "关闭失败:" + textStatus);
             }
         });
     }
-    function cancleWin(){
-        //$("#query_date_w").textbox('setValue', '');
-        $("#city_code_w").combobox('setValue', '0');
-        $("#business_name_w").combobox('setValue', '0');
-        $("#check_status_w").combobox('setValue', '0');
-        $("#onoffswitch").attr('checked',false);
-    }
+
 
 </script>

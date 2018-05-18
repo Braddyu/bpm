@@ -234,8 +234,6 @@
                     href :url ,
                     modal : true
                 });
-
-
             },
             onLoadSuccess:function(json) {
                 if(!json.success) {
@@ -276,10 +274,9 @@
     }
 
     function turn2Send(){
-        /*if(!is_admin){
-            $.messager.alert("提示","你没有权限进行此操作");
-            return false;
-        }*/
+        $('#workId').textbox('setValue','');
+        $('#reason').textbox('setValue','');
+
         var row=$('#orderTablelist').datagrid('getSelected');
         if(!row){
             $.messager.show({

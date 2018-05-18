@@ -151,7 +151,7 @@ exports.getMyArchiveTaskQuery4Eui = function (page, size, userNo, work_order_num
 exports.checkFileList = function (page, rows, work_order_number, proc_title, proc_inst_task_complete_time, check_time, is_file,is_check) {
 
     return new Promise(function (resolve, reject) {
-        let size = (page + 1) * rows;
+
 
         var conditionMap = {};
         if (work_order_number) {
@@ -186,6 +186,50 @@ exports.checkFileList = function (page, rows, work_order_number, proc_title, pro
             conditionMap.is_check = {$in:[0,1]};
         }
         console.log(conditionMap);
-        utils.pagingQuery4Eui(model.$ProcessInst, page, size, conditionMap, resolve, '', {check_time: -1});
+        utils.pagingQuery4Eui(model.$ProcessInst, page, rows, conditionMap, resolve, '', {check_time: -1});
+    });
+};
+
+
+
+exports.getAllFileList = function (page, rows, work_order_number, proc_start_time, proc_inst_task_complete_time, is_overtime, proc_title,is_check) {
+
+    return new Promise(function (resolve, reject) {
+
+        var conditionMap = {};
+        conditionMap.proc_inst_status = 4;
+        conditionMap.proc_code='p-201'
+        if (work_order_number) {
+            conditionMap.work_order_number = work_order_number;
+        }
+        if (proc_title) {
+            var proc_title_ = new RegExp(proc_title);
+            conditionMap.proc_title = proc_title_;
+        }
+        //派单时间
+        if (proc_start_time) {
+            var compare = {};
+            compare['$gte'] = new Date(proc_start_time);
+            compare['$lte'] = new Date(new Date(new Date(proc_start_time).setDate(new Date(proc_start_time).getDate() + 1)));
+            conditionMap.proc_start_time = compare;
+        }
+        //归档时间
+        if (proc_inst_task_complete_time) {
+            var compare = {};
+            compare['$gte'] = new Date(proc_inst_task_complete_time);
+            compare['$lte'] = new Date(new Date(new Date(proc_inst_task_complete_time).setDate(new Date(proc_inst_task_complete_time).getDate() + 1)));
+            conditionMap.proc_inst_task_complete_time = compare;
+        }
+        if(is_overtime){
+            conditionMap.is_overtime=is_overtime
+        }
+        if(is_check=='0' ){
+            conditionMap.is_check = {$in:[0,1]};
+
+        }else if(is_check=='1'){
+            conditionMap.is_check = {$nin:[0,1]};
+        }
+        console.log(conditionMap);
+        utils.pagingQuery4Eui(model.$ProcessInst,page, rows, conditionMap, resolve, '', {proc_inst_task_complete_time:-1});
     });
 };
