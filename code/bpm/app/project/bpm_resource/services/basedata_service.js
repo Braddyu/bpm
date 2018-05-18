@@ -451,7 +451,7 @@ exports.editUserRole = function(id,roleIds) {
 
     var p = new Promise(function(resolve,reject){
 
-        let inst = {'role_status':0};
+        let inst = {};
 
         if (!id) {
             reject(utils.returnMsg( false, '1000', 'id不能为空。', null, null));
@@ -461,10 +461,13 @@ exports.editUserRole = function(id,roleIds) {
             reject(utils.returnMsg( false, '1000', '角色id不能为空。', null, null));
         }else{
             let user_roleids = new Set();
+            console.log(1+roleIds)
             let role_Ids = eval(JSON.parse(roleIds));
+            console.log(3+""+role_Ids+""+role_Ids.length)
             for (let i = 0; i < role_Ids.length; i++) {
                 user_roleids.add(ObjectID(role_Ids[i]));
             }
+            console.log(2+user_roleids)
             inst.user_roles = [...user_roleids];
         }
 
