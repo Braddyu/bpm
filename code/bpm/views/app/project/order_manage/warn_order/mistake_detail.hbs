@@ -794,7 +794,7 @@
                             if(check_status==1){
                                 $('#checkDetail').dialog("close");
                             }
-                            $.messager.alert('提示','处理成功');
+                            $.messager.alert('提示',data.msg);
                             $("#dd").dialog('close');
                             parent.$('#orderTablelist').datagrid('reload');
                             parent.$('#orderTablelist3').datagrid('reload');

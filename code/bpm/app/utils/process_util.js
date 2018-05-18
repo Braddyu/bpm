@@ -108,7 +108,7 @@ exports.sendSMS=function(mobile,params,tmplet_key){
                 //返回结果
                 var result={};
                 //发送请求
-             /* var req=http.request(options, function(res) {
+               var req=http.request(options, function(res) {
                     console.log('Status:',res.statusCode);
                     console.log('headers:',JSON.stringify(res.headers));
                     res.setEncoding('utf-8');
@@ -134,7 +134,7 @@ exports.sendSMS=function(mobile,params,tmplet_key){
 
                 });
                 req.write(JSON.stringify(postContent));
-                req.end();*/
+                req.end();
             }else{
                 reject("短信服务未开启");
             }

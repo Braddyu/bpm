@@ -604,34 +604,37 @@ exports.checkFile = function (inst_id, status,check_memo,user_name,user_no) {
         if(status=='0'){
             model.$ProcessInst.find({_id:inst_id},function(err,res){
                 if(res && res.length >0){
-                    let his={};
-                    his.proc_name=res[0].proc_name;
-                    his.proc_code=res[0].proc_code;
-                    his.proc_task_start_user_role_names=res[0].proc_task_start_user_role_names;
-                    his.proc_task_start_name=res[0].proc_task_start_name;
-                    his.proc_vars=res[0].proc_vars;
-                    his.proc_inst_task_remark='复核意见：复核通过';
-                    his.proc_inst_task_sign=1;
-                    his.proc_inst_task_assignee=user_no;
-                    his.proc_inst_task_assignee_name=user_name;
-                    his.proc_inst_task_status=1;
-                    his.proc_inst_task_complete_time=new Date();
-                    his.proc_inst_task_handle_time=new Date();
-                    his.proc_inst_task_arrive_time=new Date();
-                    his.proc_inst_task_title=res[0].proc_inst_task_title;
-                    his.proc_inst_task_name='归档工单复核';
-                    his.proc_inst_id=inst_id;
-                    his.work_order_number=res[0].work_order_number;
-                    model.$ProcessTaskHistroy.create(his,function(err,doc){
-                        if(err){
-                            reject({'success': false, 'code': '1000', 'msg': '复核失败00', "error": null})
-                        }else{
-                            model.$ProcessInst.update({_id:inst_id},{$set:{is_check:0,check_time:new Date(),check_user_no:user_no,check_user_name:user_name}},{},function(err){
-                                resolve({'success': true, 'code': '2000', 'msg': '复核成功', "error": null})
-                            })
-                        }
-                    })
-
+                    if(res[0].is_check=='0'){
+                        resolve({'success': true, 'code': '2000', 'msg': '复核通过的工单不可重复复核！', "error": null})
+                    }else{
+                        let his={};
+                        his.proc_name=res[0].proc_name;
+                        his.proc_code=res[0].proc_code;
+                        his.proc_task_start_user_role_names=res[0].proc_task_start_user_role_names;
+                        his.proc_task_start_name=res[0].proc_task_start_name;
+                        his.proc_vars=res[0].proc_vars;
+                        his.proc_inst_task_remark='复核意见：复核通过';
+                        his.proc_inst_task_sign=1;
+                        his.proc_inst_task_assignee=user_no;
+                        his.proc_inst_task_assignee_name=user_name;
+                        his.proc_inst_task_status=1;
+                        his.proc_inst_task_complete_time=new Date();
+                        his.proc_inst_task_handle_time=new Date();
+                        his.proc_inst_task_arrive_time=new Date();
+                        his.proc_inst_task_title=res[0].proc_inst_task_title;
+                        his.proc_inst_task_name='归档工单复核';
+                        his.proc_inst_id=inst_id;
+                        his.work_order_number=res[0].work_order_number;
+                        model.$ProcessTaskHistroy.create(his,function(err,doc){
+                            if(err){
+                                reject({'success': false, 'code': '1000', 'msg': '复核失败00', "error": null})
+                            }else{
+                                model.$ProcessInst.update({_id:inst_id},{$set:{is_check:0,check_time:new Date(),check_user_no:user_no,check_user_name:user_name}},{},function(err){
+                                    resolve({'success': true, 'code': '2000', 'msg': '复核成功', "error": null})
+                                })
+                            }
+                        })
+                    }
                 }
             })
 

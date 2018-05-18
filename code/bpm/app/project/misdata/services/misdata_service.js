@@ -2,7 +2,6 @@ var config = require('../../../../config');
 //var history_model = require('../models/history_model');
 var utils = require('../../../../lib/utils/app_utils');
 var mysql  = require('mysql');
-var pool = mysql.createPool(config.mysqlYadianna);
 var xlsx = require('node-xlsx');
 
 //一个网格多个网格经理

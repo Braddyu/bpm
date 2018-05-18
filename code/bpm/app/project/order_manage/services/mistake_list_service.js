@@ -429,7 +429,7 @@ function insertMistakes(mistakeRes, three_node_config, proc_code, proc_name, use
                                                     } else {
                                                         var params = {msg: queryDate+'工单派发成功数为' + successCount + " 失败数为" + failCount}
                                                         //如果派单数据异常，则发送短信
-                                                        if (phone && length ==11) {
+                                                        if (phone && phone.length ==11) {
                                                             process_util.sendSMS(phone, params, "MISTAKE_DISTRIBUTE_TASK").then(function (rs) {
                                                                 console.log("短信发送成功");
                                                             }).catch(function (err) {

@@ -249,6 +249,7 @@ var commonProcessTaskHistroySchema = new Schema(
         proc_inst_task_arrive_time : Date,// 流程到达时间
         proc_inst_task_handle_time : Date,// 流程认领时间
         proc_inst_task_complete_time : Date,// 流程完成时间
+        proc_inst_task_opt_type:Number,//0不同意 1同意  2归档 任务操作类型
         proc_inst_task_status : Number,// 流程当前状态 0-未处理，1-已完成
         proc_inst_task_assignee : String,// 流程处理人code
         proc_inst_task_assignee_name : String,// 流程处理人名

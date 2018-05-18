@@ -149,29 +149,34 @@
     }
 
     //重启客户不配合工单
-    $("#restart").click(function(){
+   $("#restart").click(function(){
         var rows = $('#orderTablelist').datagrid('getSelected');
-        if(rows){
-            $.ajax({
-                url: '{{projcfg.appurl}}/api/order_manage/order_complete/acceptBatch',
-                type: 'post',
-                dataType:'json',
-                data: {
-                    "inst_id":rows._id
-                },
-                success: function (data) {
-                    if(data.success){
-                        $('#orderTablelist').datagrid('reload');
-                        $.messager.alert('提示',data.msg);
-                    }else{
-                        $.messager.alert('错误提示',data.error);
-                    }
-                }
-            });
-        }else{
-            $.messager.alert('提示','请选择!');
+       if(rows){
+           $.messager.confirm('提示', '将重新派至此工单原始营业员身上,确认对此工单进行重派吗?', function (r) {
+               if (r) {
+                   $.ajax({
+                       url: '{{projcfg.appurl}}/api/order_manage/order_complete/acceptBatch',
+                       type: 'post',
+                       dataType: 'json',
+                       data: {
+                           "inst_id": rows._id
+                       },
+                       success: function (data) {
+                           if (data.success) {
+                               $('#orderTablelist').datagrid('reload');
+                               $.messager.alert('提示', data.msg);
+                           } else {
+                               $.messager.alert('错误提示', data.error);
+                           }
+                       }
 
-        }
+                   })
+               }
+           });
+       }else{
+           $.messager.alert('提示','请选择!');
+
+       }
     });
 
 

@@ -346,13 +346,7 @@ function savePeason(result) {
 
                     });
                     await process_extend_model.$ProcessTaskStatistics.update({"work_id":result[i].work_id},{$set:{user_name: result[i].NAME,user_phone: result[i].phone}},{multi:true},function(err,res){})
-
-
                 }
-
-
-
-
             });
 
         }
