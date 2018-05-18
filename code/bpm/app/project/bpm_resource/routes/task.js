@@ -722,5 +722,24 @@ exports.task=function() {
         })
     });
 
+
+    /*
+     删除任务，临时接口，勿用
+     */
+    router.route("/special/delete").post(function(req,res){
+        var taskid= req.body.task_id;//任务Id
+        var status= req.body.inst_status;//实例状态
+        try{
+            inst.taskdelete(taskid,status).then(function (rs) {
+                utils.respJsonData(res,rs);
+            }).catch(function(err_inst){
+                logger.error("return_task","查询流程异常",err_inst);
+                utils.respMsg(res, false, '1000', '查询流程异常', null, err_inst);
+            });
+        }catch(e){
+            utils.respMsg(res, false, '1000', '查询流程异常', null, e);
+        }
+    });
+
     return router;
 }

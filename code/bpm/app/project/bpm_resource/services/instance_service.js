@@ -2450,3 +2450,25 @@ exports.delete = function (joinup_sys) {
     });
     return p;
 }
+
+/*
+删除任务数据 临时接口，勿用
+ */
+
+exports.taskdelete = function (taskid,inststatus) {
+    var p = new Promise(async function (resolve, reject) {
+
+        if (inststatus == '4') {//实例归档
+            await model.$ProcessTaskHistroy.remove({"proc_task_id" : taskid},function(err,result){if(err){resolve(utils.returnMsg(false, '1000', '历史数据删除异常', null, err));}else{console.log('删除历史任务 ',taskid,' 成功');}});
+        } else if(inststatus == '2') {//流转中
+            await model.$ProcessInstTask.remove({"_id" : taskid},function(err,result){if(err){resolve(utils.returnMsg(false, '1000', '数据删除异常', null, err));}else{console.log('删除任务 ',taskid,' 成功');}});
+            await model.$ProcessTaskHistroy.remove({"proc_task_id" : taskid},function(err,result){if(err){resolve(utils.returnMsg(false, '1000', '历史数据删除异常', null, err));}else{console.log('删除历史任务 ',taskid,' 成功');}});
+        }else{
+            resolve(utils.returnMsg(false, '1000', '实例状态不对无法删除', null, null));
+            return;
+        }
+        resolve(utils.returnMsg(true, '0000', '删除数据成功', null, null));
+
+    });
+    return p;
+}
