@@ -307,5 +307,53 @@ router.route('/getMemcachedValue').post(function(req,res){
     })
 })
 
+/**
+ * 获取派单量
+ * @param monthArray :日期
+ */
+router.route('/getMonitoringView').post(function(req,res){
+    var monthArray = req.body.monthArray;//当前月的所有日期
+    console.log(monthArray);
+    service.getMonitoring(monthArray).then(function(result){
+            console.log(result,"qqqqqqq");
+            utils.respJsonData(res, result);
+        }).catch(function(err){
+            console.log('获取派单量失败',err);
+
+        });
+})
+
+/**
+ * 获取特定时间的派单量和归档量
+ * @param today :派单时间
+ */
+router.route('/getArchiveView').post(function(req,res){
+    var today = req.body.today;//当前月的所有日期
+    console.log(today);
+    service.getArchive(today).then(function(result){
+        console.log(result,"321");
+        utils.respJsonData(res, result);
+    }).catch(function(err){
+        console.log('获取特定时间的派单量和归档量失败',err);
+
+    });
+})
+
+
+/**
+ * 获取工单流转量
+ * @param monthArray :日期
+ */
+router.route('/getCirculationView').post(function(req,res){
+    var monthArray = req.body.monthArray;//当前月的所有日期
+    console.log(monthArray);
+    service.getCirculation(monthArray).then(function(result){
+        console.log(result,"qqqqqqq");
+        utils.respJsonData(res, result);
+    }).catch(function(err){
+        console.log('获取派单量失败',err);
+
+    });
+})
 
 module.exports = router;
