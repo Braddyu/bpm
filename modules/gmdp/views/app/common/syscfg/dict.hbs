@@ -11,6 +11,7 @@
                                     <button type="button" class="btn btn-default" onclick="toEdit(1)"><i class="fa fa-edit"></i>修改</button>
                                     <button type="button" class="btn btn-default" onclick="openPage('批量新增字典及属性', 3, '', doAddDictAndAttr)"><i class="fa fa-file-text-o"></i>批量新增</button>
                                     <button type="button" class="btn btn-default" onclick="updateNow()"><i class="fa fa-refresh"></i>同步</button>
+                                    <button type="button" class="btn btn-default" onclick="removeDict()"><i class="fa fa-refresh"></i>删除</button>
                                 </div>
                             </div>
                             <div class="col-xs-6col-md-6 text-right">
@@ -316,6 +317,7 @@
                     }
                 },
                 {"field": "field_order","title":"排序号","width":30},
+                {"field": "field_remark","title":"字段备注","width":30},
                 {"field": "field_status","title":"状态","width":30,
                     "formatter":function (value, rowData,rowIndex) {
                         if(value == 1){
@@ -334,6 +336,31 @@
         });
     });
 
+
+    function removeDict(){
+        var rows = $('#dictDataTable').datagrid('getChecked');
+        if (rows.length != 1) {
+            msgError('提示,请选择一条数据再进行修改');
+            return false;
+        }
+        $.ajax({
+            url: '{{projcfg.appurl}}/admin/api/common/syscfg/dict/removeDict',
+            type: 'post',
+            data: {
+                _id:rows[0]._id
+            },
+            success: function (data) {
+                if(data.success) {
+                    msgSuccess(data.msg);
+                    doSearch(1);
+                }
+                else {
+                    msgError(data.msg+',错误代码:'+data.code);
+                }
+            }
+        });
+
+    }
     function doSearch(flag) {
         if(flag == 1){//查询字典
             $('#dictDataTable').datagrid('reload',{

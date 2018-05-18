@@ -209,3 +209,20 @@ exports.updateDictAttr = function(id, data, cb) {
         }
     });
 }
+exports.removeDict = function(id, cb) {
+    model.$.remove({_id:id}, function (error) {
+        if(error) {
+            cb(utils.returnMsg(false, '1003', ' 删除字典属性时出现异常。', null, error));
+        }
+        else {
+            model.$DictAttr.remove({dict_id: id}, function (error) {
+                if (error) {
+                    cb(utils.returnMsg(false, '1003', ' 删除字典属性时出现异常1。', null, error));
+                }
+                else {
+                    cb(utils.returnMsg(true, '0000', '删除字典成功。', null, null));
+                }
+            })
+        }
+    });
+}

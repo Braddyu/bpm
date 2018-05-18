@@ -35,14 +35,14 @@ exports.addStatistics = function(inst_id,dispatch_time,channel_id) {
         }
 
         //查找实例ID在实例表中是否存在
-       let task_result = await  process_model.$ProcessInstTask.find({"proc_inst_id":inst_id,"proc_inst_task_type":"厅店处理回复"})
+       let task_result = await  process_model.$ProcessInstTask.find({"proc_inst_id":inst_id,"proc_inst_task_type":"厅店处理回复","proc_inst_task_status":0})
         if(task_result.length ==0){
             reject(utils.returnMsg(false, '1000', '查找任务错误。',null,null));
             return;
         }
         var statistics={};
         var task=task_result[0];
-        var org_id=task.proc_inst_task_user_org;
+
         //实例id
         statistics.proc_inst_id=inst_id;
         //派单时间
@@ -55,22 +55,23 @@ exports.addStatistics = function(inst_id,dispatch_time,channel_id) {
         statistics.user_name=task.proc_inst_task_assignee_name;
         ///被派单渠道所属人电话号码，因为渠道的账号手机号和编号为同一个
         statistics.user_phone=task.proc_inst_task_assignee;
-
+        var proc_inst_task_work_id="@@@@@@@@"
+       if(task.proc_inst_task_work_id){
+           proc_inst_task_work_id=task.proc_inst_task_work_id
+       }
         //查找用户信息
-        let user_result= await user_model.$User.find({"user_no":task.proc_inst_task_assignee} );
+        let user_result= await user_model.$User.find({$or:[{"user_no":task.proc_inst_task_assignee},{"work_id":proc_inst_task_work_id}]} );
         if(user_result.length==0 ){
             reject(utils.returnMsg(false, '1000', '查找用户错误。',null,org_id));
             return;
         }
         //被派渠道工号
         statistics.work_id=user_result[0].work_id;
+        var org_id=user_result[0].user_org;
         //查找渠道信息
         let channel_result;
         if(channel_id){
             channel_result = await user_model.$CommonCoreOrg.find({"company_code":channel_id} );
-        }else{
-             channel_result= await user_model.$CommonCoreOrg.find({"company_code":org_id,"level":6} );
-
         }
         if(channel_result.length !=1 ){
             reject(utils.returnMsg(false, '1000', '查找渠道错误。',null,org_id));

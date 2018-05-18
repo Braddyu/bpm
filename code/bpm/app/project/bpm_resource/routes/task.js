@@ -664,7 +664,7 @@ exports.task=function() {
         console.log("开始派单...");
         var queryDate = req.body.queryDate.replace(/\-/g,'');//查询时间
         var check_status= req.body.check_status;//稽核状态
-        var business_name= req.body.business_name;//业务名称
+        var business_code= req.body.business_code;//业务名称
         var city_code= req.body.city_code;//地州
         var mlog_id= req.body.mlog_id;//预先插入的日志ID
         var status= req.body.status;//派单状态
@@ -678,15 +678,13 @@ exports.task=function() {
         var user_name=req.body.user_name;
         var role_name=req.body.role_name;
 
-        console.log(queryDate,check_status,user_no,user_name,role_name,business_name,city_code,work_id,mlog_id);
+        console.log(queryDate,check_status,user_no,user_name,role_name,business_code,city_code,work_id,mlog_id);
         // 调用分页
-        mistakeService.dispatch(queryDate,check_status,user_no,user_name,role_name,business_name,city_code,work_id,status,mlog_id)
+        mistakeService.dispatch(queryDate,check_status,user_no,user_name,role_name,business_code,city_code,work_id,status,mlog_id)
             .then(function(result){
                 console.log("派发工单成功",result);
-                // utils.respJsonData(res, result);
             })
             .catch(function(err){
-                // utils.respJsonData(res, err);
                 console.log('派发工单失败',err);
 
             });
@@ -720,6 +718,25 @@ exports.task=function() {
                 }
             }
         })
+    });
+
+
+    /*
+     删除任务，临时接口，勿用
+     */
+    router.route("/special/delete").post(function(req,res){
+        var taskid= req.body.task_id;//任务Id
+        var status= req.body.inst_status;//实例状态
+        try{
+            inst.taskdelete(taskid,status).then(function (rs) {
+                utils.respJsonData(res,rs);
+            }).catch(function(err_inst){
+                logger.error("return_task","查询流程异常",err_inst);
+                utils.respMsg(res, false, '1000', '查询流程异常', null, err_inst);
+            });
+        }catch(e){
+            utils.respMsg(res, false, '1000', '查询流程异常', null, e);
+        }
     });
 
     return router;

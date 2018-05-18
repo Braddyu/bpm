@@ -80,7 +80,7 @@ var NoFound=(resolve)=>{
                 }
             },
             REQ_HEADERS,
-            {page:1,rows:15,time:new Date(),param:map},
+            {page:1,rows:15,param:map,time:new Date()},
             'utf8').on('error', async function (e) {
             var condition={};
             condition.proc_task_id=task_id;//:String,//task_id
@@ -751,7 +751,6 @@ async function normal_process(current_detail,next_detail, next_node, proc_inst_i
            // resolve(ergodic(r,condition_task,proc_cur_task,next_detail,proc_inst_task_params,proc_inst_node_vars,biz_vars,proc_code,proc_name));
     //是否为拒绝
     let is_refuse=false;
-    console.log("00000000000000000000000000")
     async function loop () {
         if (params && undefined !== params.flag && !params.flag) {
             let step_first = await  model.$ProcessInstTask.find({
@@ -759,7 +758,7 @@ async function normal_process(current_detail,next_detail, next_node, proc_inst_i
                 'proc_inst_task_code': proc_cur_task
 
             });
-            if(step_first[0].proc_inst_task_work_id)
+            if( step_first[0].proc_inst_task_work_id)
                 condition_task.proc_inst_task_work_id = step_first[0].proc_inst_task_work_id;
             condition_task.next_name = step_first[0].next_name;
             condition_task.proc_back = 1;
@@ -950,7 +949,7 @@ exports.assign_transfer=function(proc_task_id,node_code,user_code,assign_user_co
        if(resultss[0].work_id){
            condition_task.proc_inst_task_work_id = resultss[0].work_id;
        }else{
-           condition_task.proc_inst_task_work_id = '';
+           condition_task.proc_inst_task_work_id = '@@@@@';
        }
        condition_task.proc_task_ver = proc_task_ver;
        condition_task.publish_status =publish_status;
@@ -1192,7 +1191,7 @@ exports.do_payout=function(proc_task_id,node_code,user_code,assign_user_code,pro
                 if(resultss[0].work_id){
                     condition_task.proc_inst_task_work_id = resultss[0].work_id;
                 }else{
-                    condition_task.proc_inst_task_work_id = '';
+                    condition_task.proc_inst_task_work_id = '@@@@@';
                 }
                 condition_task.proc_inst_id = proc_inst_id;//: {type: Schema.Types.ObjectId, ref: 'CommonCoreProcessInst'}, // 流程流转当前信息ID
                 condition_task.proc_inst_task_code = next_detail.item_code;// : String,// 流程当前节点编码(流程任务编号)

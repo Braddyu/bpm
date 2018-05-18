@@ -457,4 +457,12 @@ router.route('/updateNow')
             utils.respJsonData(res, result);
         });
     });
+router.route('/removeDict')
+// -------------------------------删除字典-------------------------------
+    .post(function(req,res){
+        let id=req.body._id;
+        dictService.removeDict(id,function(result){
+            utils.respJsonData(res, result);
+        });
+    });
 module.exports = router;

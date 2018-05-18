@@ -140,7 +140,7 @@ var commonProcessInstSchema = new Schema(
         proc_content : String,// 流程派单内容
         proc_params : String,// 流转参数
         proc_inst_status : Number,// 流程流转状态
-        // 1 已启用  0 已禁用,2 流转中，3子流程流转中 ,4  归档,5 回退，6 废弃
+        // 1 已启用  0 已禁用,2 流转中，3子流程流转中 ,4  归档,5 回退，6 废弃 ,7:针对差错工单新建"客户不配合"状态
         proc_attached_type : Number,// 流程附加类型(1:待办业务联系函;2:待办工单;3:待办考核;4:其他待办)
         proce_attached_params : {},// 流程附加属性
         //proce_reject_params : {},// 流程驳回附加参数
@@ -171,7 +171,9 @@ var commonProcessInstSchema = new Schema(
         proc_inst_task_complete_time:Date,// 归档时间
         refuse_number:Number,// 拒绝次数
         is_check:Number,// 复核1：表示复核不通过，0：表示复核通过
-        check_time:Date//复核时间
+        check_time:Date,//复核时间
+        check_user_no:String,//复核人编号
+        check_user_name:String//复核人姓名
     },
     {collection: "common_bpm_proc_inst"}// mongodb集合名
 );

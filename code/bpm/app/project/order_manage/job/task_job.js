@@ -56,150 +56,85 @@ async function task() {
     }
 }
 
-exports.mistake_distribute_task = async function () {
-    // --------------------------- 查询所有省级管理员的手机号 ---------------------------
-    /*let role = await user_model.$Role.find({"role_code" : "check_manager", "role_status" : 1});
-    let users = await user_model.$User.find({"user_roles":role[0]._id,"user_status" : 1});
-    let user_mobiles = [];
-    for(let i in users){
-        let user_mobile = users[i].user_phone;
-        if(user_mobile){
-            user_mobiles.push(user_mobile);
-        }
-    }*/
-    // ---------------------------------------------------------------------------------
+exports.mistake_distribute_task=function(){
+    mistake_distribute_task ();
+}
+
+function mistake_distribute_task() {
+
     moment.locale('zh-cn');
     var _today = moment();
-    var queryDate =  _today.subtract(1, 'days').format('YYYY-MM-DD');
-    var check_status = "";
-    var business_name = "";
-    var flag = "";
-    var order_number = "";
-    var city_code = "";
+    var queryDate =  _today.subtract(1, 'days').format('YYYY-MM-DD').replace(/\-/g,'');
+    queryDate='20180501'
+    console.log(queryDate)
 
-    var status= 0;//派单状态
-    var user_no ="13511927000";
-    var work_id = "18600834";
-    var user_name = "曹锡江";
-    var role_name = "省级管理人员";
-    var mlog_id ='';
-    var datas = [];
-    var data = {};
-    var match = {};
-    match['dict_code'] = {$in:[ "mistake_task_check_status", "mistake_task_business_name",
-            "mistake_take_order_number","mistake_task_flag","mistake_task_city_code"]};
-    match.dict_status = 1;
+    //获取定时派单字典数据
     dictModel.$.aggregate([
         {
-            $match:match
+            $match:{"dict_code" : "mistake_task_code"}
         },
         {
-            $graphLookup: {
+            $lookup: {
                 from: "common_dict_attr_info",
-                startWith: "$_id",
-                connectFromField: "_id",
-                connectToField: "dict_id",
-                as: "dict_attr_info",
-                restrictSearchWithMatch: {}
+                localField: '_id',
+                foreignField: "dict_id",
+                as: "dict_attr_info"
             }
         },
         {
             $unwind: {path: "$dict_attr_info", preserveNullAndEmptyArrays: true}
         },
         {
-            $match:{"dict_attr_info.field_status":1,"dict_attr_info.field_checked":1}
-        },
+            $project:{
+                field_name:"$dict_attr_info.field_name",
+                field_value:"$dict_attr_info.field_value"
+            }
+        }
     ]).exec(function (err, res) {
-        if(res.length){
-            for(let item in res){
-                var dict = res[item];
-                 if(dict.dict_code == "mistake_task_check_status"){
-                    check_status =  dict.dict_attr_info.field_value;
-                }else if(dict.dict_code == "mistake_task_business_name"){
-                    business_name = dict.dict_attr_info.field_value;
-                }else if(dict.dict_code == "mistake_task_flag"){
-                    flag = dict.dict_attr_info.field_value;
-                }else if(dict.dict_code == "mistake_take_order_number"){
-                    order_number = dict.dict_attr_info.field_value;
-                }else if(dict.dict_code == "mistake_task_city_code"){
-                    city_code = dict.dict_attr_info.field_value;
+        if(err){
+            console.log(utils.returnMsg(false, '0001', '开启开关失败:查询筛选条件失败!', null, err));
+        }else{
+            if(res.length>0){
+                var dict_data = {};
+                for (let item in res) {
+                    let dict = res[item];
+                    dict_data[dict.field_name]=dict.field_value;
                 }
-            }
+                console.log(dict_data);
+                if(dict_data.mistake_task_flag=='1'){
+                    var datas = [];
+                    var data = {};
 
-            // 开关未开时停止程序继续向下执行
-            if (flag == "0") {
-                return false;
-            }
+                    data.proc_code = config.mistake_proc_code;
+                    data.proc_name = config.mistake_proc_name;
+                    data.dispatch_time = queryDate;
+                    data.create_user_no ="99999";
+                    data.create_user_name = '系统自动派发';
+                    data.update_user_no = '';
+                    data.dispatch_cond_one = dict_data.mistake_task_check_status;
+                    data.dispatch_cond_two = dict_data.mistake_task_city_code;
+                    data.dispatch_cond_thr = dict_data.mistake_task_business_code;
+                    data.create_time = new Date();
+                    data.status = 0;
+                    data.dispatch_remark = '';
+                    datas.push(data);
 
-            new Promise(function(resolve,reject){
-                var conditionMap = {}
-                if(queryDate){
-                    conditionMap.mistake_time =queryDate.replace(/\-/g,'');
-                }
-                if(status){
-                    var dataIntArr=[]
-                    status=status.split(",").forEach(function(data,index,arr){
-                        dataIntArr.push(+data);
+                    service.addMistakeLog(datas).then(function(result){
+                        var mlog_id = result.data[0]._id.toString();
+                        service.getInterface(queryDate,data.dispatch_cond_one,'99999','系统自动派发','系统自动派发',data.dispatch_cond_thr,data.dispatch_cond_two,data.create_user_no,0,mlog_id).then(function(dispres){
+
+                        });
                     });
-                    conditionMap.status={$in:dataIntArr};
                 }else{
-                    conditionMap.status={$nin:[-2]};
+                    console.log("自动派单定时任务关闭");
                 }
-                if(check_status){
-                    conditionMap.remark=check_status;
-                }
-                if(business_name){
-                    conditionMap.business_name=business_name;
-                }
-                service.getMistakeListPage(0,20,conditionMap).then(function(result){
-                    resolve(result);
-                });
-            }).then(function(result){
-                var smsParams = {};
-                if(!result.success){
-                    smsParams['msg'] = "查询工单数量失败";
-                    /*for(let i in user_mobiles){
-                        process_utils.sendSMS(user_mobiles[i],smsParams,"MISTAKE_DISTRIBUTE_ERROR","");
-                    }*/
-                    process_utils.sendSMS(user_no,smsParams,"MISTAKE_DISTRIBUTE_ERROR","");
-                    return false;
-                }
-                if (order_number < result.total) {
-                    // 超量情况发送短信给管理员
-                    /*for(let i in user_mobiles){
-                        process_utils.sendSMS(user_mobiles[i],"","MISTAKE_DISTRIBUTE_TASK","");
-                    }*/
-                    smsParams['number'] = order_number;
-                    process_utils.sendSMS(user_no,smsParams,"MISTAKE_DISTRIBUTE_TASK","");
-                    return false;
-                }
-                data.proc_code = config.mistake_proc_code;
-                data.proc_name = config.mistake_proc_name;
-                data.dispatch_time = queryDate.replace(/\-/g,'');
-                data.create_user_no = work_id?work_id:user_no;
-                data.create_user_name = user_name;
-                data.update_user_no = '';
-                data.dispatch_cond_one = check_status?check_status:'';
-                data.dispatch_cond_thr = business_name?business_name:'';
-                data.dispatch_cond_two = city_code?city_code:'';
-                data.create_time = new Date();
-                //0表示派单中，1表示：派单全部成功。2表示：派单部分成功。3表示：派单全部失败。
-                data.status = 0;
-                data.dispatch_remark = '';
-                datas.push(data);
 
-                service.addMistakeLog(datas).then(function(result){
-                    mlog_id = result.data[0]._id.toString();
-                    service.getInterface(queryDate,data.dispatch_cond_one,user_no,user_name,role_name,data.dispatch_cond_thr,data.dispatch_cond_two,data.create_user_no,status,mlog_id).then(function(dispres){
-                        if(!dispres.success){
-                            smsParams['msg'] = dispres.msg;
-                            process_utils.sendSMS(user_no,smsParams,"MISTAKE_DISTRIBUTE_ERROR","");
-                        }
-                    });
-                });
-            });
+            }else{
+                console.log(utils.returnMsg(false, '0001', '请添加定时派单字典!', null, err));
+            }
 
         }
-    });
+
+    })
 }
 
