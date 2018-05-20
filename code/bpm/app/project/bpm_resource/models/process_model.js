@@ -105,7 +105,8 @@ var commonProcessItemSchema = new Schema(
         item_filePath : String,//文件路径
         item_funName : String,//方法名
         item_remark : String,//节点备注
-        item_jump : Number//是否跳过(1-可以跳过 0-不可以跳过)
+        item_jump : Number,//是否跳过(1-可以跳过 0-不可以跳过)
+        item_decisionType : Number//决策类型(1-一票否决 2-半数通过)
     },
     {collection: "common_bpm_proc_item_cfg"}// mongodb集合名
 );

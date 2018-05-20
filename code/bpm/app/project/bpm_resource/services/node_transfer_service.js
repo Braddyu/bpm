@@ -544,10 +544,8 @@ async function joinFunction(proc_inst_id, resolve, reject, node_code, params, pr
     var arr_c=[];
     arr_c.push(obj)
     let results=await model.$ProcessTaskHistroy.create(arr_c);
-
-    //会签决策类型判断 如果一票否决
     let cd={}
-    if (proc_inst_id != null) {
+    if (proc_inst_id != null)
         cd.proc_inst_id= proc_inst_id;
     }
     cd.proc_inst_task_status=0;
@@ -562,6 +560,7 @@ async function joinFunction(proc_inst_id, resolve, reject, node_code, params, pr
             NoFound(resolve);
             return ;
         }
+        result.item_config;//获取会签节点配置信息
         var proc_define_id=result[0].proc_define_id;
         let results=await nodeAnalysisService.getNextnode(proc_inst_id, node_code, params, true);
         if(!results.success){

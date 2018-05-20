@@ -551,7 +551,7 @@ router.route('/process/version/:id')
                     processItemEntity.item_type = taskNodeDatas[i].item_type;
                     processItemEntity.item_sms_warn = taskNodeDatas[i].item_sms_warn;
                     processItemEntity.item_jump = taskNodeDatas[i].item_jump;
-                    processItemEntity.item_show_text = taskNodeDatas[i].selectVal;
+                    processItemEntity.item_jump = taskNodeDatas[i].item_jump;
                     if(taskNodeDatas[i].selectType == 1){//参与人
                         processItemEntity.item_assignee_type = taskNodeDatas[i].selectType;
                         processItemEntity.item_assignee_user = taskNodeDatas[i].item_assignee_user;
@@ -628,6 +628,7 @@ router.route('/process/version/:id')
                     }
                     taskNodeDatas[i].item_assignee_type = taskNodeDatas[i].selectType;
                     taskNodeDatas[i].item_show_text = taskNodeDatas[i].selectVal;
+                    console.log(taskNodeDatas[i]);
                     processItemEntity = model.$ProcessItem(taskNodeDatas[i]);
                     processItemEntity.isNew = false;
                 }
@@ -637,6 +638,7 @@ router.route('/process/version/:id')
                 var itemjsonstr = JSON.stringify(itemArray);
                 processDefineEntity.item_config = itemjsonstr;
             }
+
             // 调用修改方法
             proc.updateProcessDefine(id, processDefineEntity).then(function(result1) {
                 utils.respJsonData(res, result1);
