@@ -23,6 +23,7 @@ exports.getTaskHistoryList=function(condition,pageNow,pageSize){
         var userResults=[];
         var resultCount=[];
         var resultcond=[];
+
         var compare = {};
         //开始时间
         if (condition.startDate) {

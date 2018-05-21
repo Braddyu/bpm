@@ -1163,6 +1163,98 @@ exports.local_user = function (user_org, user_no) {
 }
 
 
+/**
+ * 获取派单量
+ * @param monthArray :日期
+ */
+exports.getMonitoring= function(monthArray) {
+    var p = new Promise(async function(resolve,reject) {
+    var timeArray=monthArray.split(",");
+    var orderTotal=[];//派单总量
+    var orderError=[];//差错工单量
+    var orderWarning=[];//预警工单量
+    var orderAudit=[];//资金稽核工单量
+    var number=[];//返回前台的数据
+        for (var i in timeArray){
+        var startDate=new Date(timeArray[i]);
+        var endDate=new Date(timeArray[i]+' 23:59:59');
+        var total =await process_model.$ProcessInst.find({ "proc_start_time":{$gte:startDate,$lte:endDate}}).count();
+        var error =await process_model.$ProcessInst.find({ "proc_start_time":{$gte:startDate,$lte:endDate}, "proc_code" : "p-201"}).count();
+        var warning =await process_model.$ProcessInst.find({ "proc_start_time":{$gte:startDate,$lte:endDate}, "proc_code" : "p-109"}).count();
+        var audit =await process_model.$ProcessInst.find({ "proc_start_time":{$gte:startDate,$lte:endDate}, "proc_code" : "p-108"}).count();
+            orderTotal.push(total);
+            orderError.push(error);
+            orderWarning.push(warning);
+            orderAudit.push(audit);
+            console.log("正在加载派单数据，请稍等。。。")
+        }
+        number.push(orderTotal,orderError,orderWarning,orderAudit);
+        resolve(number);
+    });
+    return p;
+};
+
+
+/**
+ * 归档情况
+ * @param monthArray :日期
+ */
+exports.getArchive= function(today) {
+    var p = new Promise(async function(resolve,reject) {
+        var orderTotal=[];//派单总量
+        var orderArchive=[];//归档量
+        var number=[];//返回前台的数据
+            var startDate=new Date(today);
+            var endDate=new Date(today+' 23:59:59');
+            var totalError =await process_model.$ProcessInst.find({ "proc_start_time":{$gte:startDate,$lte:endDate}, "proc_code" : "p-201"}).count();
+            var totalWarning =await process_model.$ProcessInst.find({ "proc_start_time":{$gte:startDate,$lte:endDate}, "proc_code" :"p-109"}).count();
+            var totalAudit =await process_model.$ProcessInst.find({ "proc_start_time":{$gte:startDate,$lte:endDate}, "proc_code" :"p-108"}).count();
+            orderTotal.push(totalError,totalWarning,totalAudit);
+
+            var archiveError =await process_model.$ProcessInst.find({ "proc_start_time":{$gte:startDate,$lte:endDate}, "proc_code" : "p-201", "proc_inst_status":4}).count();
+            var archiveWarning =await process_model.$ProcessInst.find({ "proc_start_time":{$gte:startDate,$lte:endDate}, "proc_code" : "p-109", "proc_inst_status":4}).count();
+            var archiveAudit =await process_model.$ProcessInst.find({ "proc_start_time":{$gte:startDate,$lte:endDate}, "proc_code" : "p-108", "proc_inst_status":4}).count();
+            orderArchive.push(archiveError,archiveWarning,archiveAudit);
+            console.log("正在加载数据，请稍等。。。")
+        number.push(orderTotal,orderArchive);
+        resolve(number);
+    });
+    return p;
+};
+
+
+/**
+ * 获取工单流转量
+ * @param monthArray :日期
+ */
+exports.getCirculation= function(monthArray) {
+    var p = new Promise(async function(resolve,reject) {
+        var timeArray=monthArray.split(",");
+        var orderTotal=[];//派单总量
+        var orderError=[];//差错工单量
+        var orderWarning=[];//预警工单量
+        var orderAudit=[];//资金稽核工单量
+        var number=[];//返回前台的数据
+        for (var i in timeArray){
+            var startDate=new Date(timeArray[i]);
+            var endDate=new Date(timeArray[i]+' 23:59:59');
+            var total =await process_model.$ProcessTaskHistroy.find({ "proc_inst_task_complete_time":{$gte:startDate,$lte:endDate}}).count();
+            var error =await process_model.$ProcessTaskHistroy.find({ "proc_inst_task_complete_time":{$gte:startDate,$lte:endDate}, "proc_code" : "p-201"}).count();
+            var warning =await process_model.$ProcessTaskHistroy.find({ "proc_inst_task_complete_time":{$gte:startDate,$lte:endDate}, "proc_code" : "p-109"}).count();
+            var audit =await process_model.$ProcessTaskHistroy.find({ "proc_inst_task_complete_time":{$gte:startDate,$lte:endDate}, "proc_code" : "p-108"}).count();
+            orderTotal.push(total);
+            orderError.push(error);
+            orderWarning.push(warning);
+            orderAudit.push(audit);
+            console.log("正在加载工单流转数据，请稍等。。。")
+        }
+        number.push(orderTotal,orderError,orderWarning,orderAudit);
+        resolve(number);
+    });
+    return p;
+};
+
+
 function isEmptyObject(e) {
     var t;
     for (t in e)
