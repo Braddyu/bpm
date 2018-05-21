@@ -1174,6 +1174,7 @@ exports.getMonitoring= function(monthArray) {
     var orderError=[];//差错工单量
     var orderWarning=[];//预警工单量
     var orderAudit=[];//资金稽核工单量
+    var orderDepth=[];//深度资金稽核工单量
     var number=[];//返回前台的数据
         for (var i in timeArray){
         var startDate=new Date(timeArray[i]);
@@ -1182,13 +1183,15 @@ exports.getMonitoring= function(monthArray) {
         var error =await process_model.$ProcessInst.find({ "proc_start_time":{$gte:startDate,$lte:endDate}, "proc_code" : "p-201"}).count();
         var warning =await process_model.$ProcessInst.find({ "proc_start_time":{$gte:startDate,$lte:endDate}, "proc_code" : "p-109"}).count();
         var audit =await process_model.$ProcessInst.find({ "proc_start_time":{$gte:startDate,$lte:endDate}, "proc_code" : "p-108"}).count();
+        var depth =await process_model.$ProcessInst.find({ "proc_start_time":{$gte:startDate,$lte:endDate}, "proc_code" : "zj_101"}).count();
             orderTotal.push(total);
             orderError.push(error);
             orderWarning.push(warning);
             orderAudit.push(audit);
+            orderDepth.push(depth);
             console.log("正在加载派单数据，请稍等。。。")
         }
-        number.push(orderTotal,orderError,orderWarning,orderAudit);
+        number.push(orderTotal,orderError,orderWarning,orderAudit,orderDepth);
         resolve(number);
     });
     return p;
@@ -1208,13 +1211,13 @@ exports.getArchive= function(today) {
             var endDate=new Date(today+' 23:59:59');
             var totalError =await process_model.$ProcessInst.find({ "proc_start_time":{$gte:startDate,$lte:endDate}, "proc_code" : "p-201"}).count();
             var totalWarning =await process_model.$ProcessInst.find({ "proc_start_time":{$gte:startDate,$lte:endDate}, "proc_code" :"p-109"}).count();
-            var totalAudit =await process_model.$ProcessInst.find({ "proc_start_time":{$gte:startDate,$lte:endDate}, "proc_code" :"p-108"}).count();
-            orderTotal.push(totalError,totalWarning,totalAudit);
+            var totalAudit =await process_model.$ProcessInst.find({ "proc_start_time":{$gte:startDate,$lte:endDate}, "proc_code" : {$in:["p-108","zj_101"]}}).count();
+            orderTotal.push(0,totalError,totalWarning,totalAudit);
 
             var archiveError =await process_model.$ProcessInst.find({ "proc_start_time":{$gte:startDate,$lte:endDate}, "proc_code" : "p-201", "proc_inst_status":4}).count();
             var archiveWarning =await process_model.$ProcessInst.find({ "proc_start_time":{$gte:startDate,$lte:endDate}, "proc_code" : "p-109", "proc_inst_status":4}).count();
-            var archiveAudit =await process_model.$ProcessInst.find({ "proc_start_time":{$gte:startDate,$lte:endDate}, "proc_code" : "p-108", "proc_inst_status":4}).count();
-            orderArchive.push(archiveError,archiveWarning,archiveAudit);
+            var archiveAudit =await process_model.$ProcessInst.find({ "proc_start_time":{$gte:startDate,$lte:endDate}, "proc_code" : {$in:["p-108","zj_101"]}, "proc_inst_status":4}).count();
+            orderArchive.push(0,archiveError,archiveWarning,archiveAudit);
             console.log("正在加载数据，请稍等。。。")
         number.push(orderTotal,orderArchive);
         resolve(number);
@@ -1234,6 +1237,7 @@ exports.getCirculation= function(monthArray) {
         var orderError=[];//差错工单量
         var orderWarning=[];//预警工单量
         var orderAudit=[];//资金稽核工单量
+        var orderDepth=[];//深度资金稽核工单量
         var number=[];//返回前台的数据
         for (var i in timeArray){
             var startDate=new Date(timeArray[i]);
@@ -1242,13 +1246,15 @@ exports.getCirculation= function(monthArray) {
             var error =await process_model.$ProcessTaskHistroy.find({ "proc_inst_task_complete_time":{$gte:startDate,$lte:endDate}, "proc_code" : "p-201"}).count();
             var warning =await process_model.$ProcessTaskHistroy.find({ "proc_inst_task_complete_time":{$gte:startDate,$lte:endDate}, "proc_code" : "p-109"}).count();
             var audit =await process_model.$ProcessTaskHistroy.find({ "proc_inst_task_complete_time":{$gte:startDate,$lte:endDate}, "proc_code" : "p-108"}).count();
+            var depth =await process_model.$ProcessTaskHistroy.find({ "proc_start_time":{$gte:startDate,$lte:endDate}, "proc_code" : "zj_101"}).count();
             orderTotal.push(total);
             orderError.push(error);
             orderWarning.push(warning);
             orderAudit.push(audit);
-            console.log("正在加载工单流转数据，请稍等。。。")
+            orderDepth.push(depth);
+            console.log("正在加载派单数据，请稍等。。。")
         }
-        number.push(orderTotal,orderError,orderWarning,orderAudit);
+        number.push(orderTotal,orderError,orderWarning,orderAudit,orderDepth);
         resolve(number);
     });
     return p;
