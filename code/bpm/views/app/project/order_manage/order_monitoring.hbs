@@ -40,9 +40,6 @@
                                     </div>
 
                                         <br>  <br>  <br>  <br>
-
-                                    <div class="widget-body" id="gdtj">
-
                                     <div class="col-xs-11 col-md-11">
                                         <div class="btn-group" role="group" aria-label="...">
                                             <label for="filterParam3">派单时间：</label>
@@ -62,12 +59,10 @@
                                             </div>
                                         </form>
                                     </div>
-
-
+                                    <div class="widget-body" id="gdtj">
                                         <div style="height:300px;">
                                             <div id="archiveChart" style="width:100%;height:300px;"></div>
                                         </div>
-
                                     </div>
 
                                         <br>  <br>  <br>  <br>
@@ -114,7 +109,7 @@
         init_yearMonth2();
         loadOrderMonitoring();
         loadOrderArchive();
-        loadOrderCirculation();
+       loadOrderCirculation();
     });
     //年月初始化
     function init_yearMonth1(){
@@ -337,52 +332,74 @@
                 ajaxLoadEnd(2);
                 if(datacount){
                     var archiveChart = echarts.init(document.getElementById('archiveChart'));
-                    var option = {
+                    archiveChart.setOption({
                         title: {
                             x: 'left',
                             text: '归档情况统计',
+                            textStyle: {
+                                fontSize: '18',
+                                color: '#4c4c4c',
+                                fontWeight: 'bolder'
+                            }
+                        },
+                        tooltip: {
+                            trigger: 'axis'
+                        },
+                        calculable : true,
+                        toolbox: {
+                            show: true,
+                            feature: {
+                                dataZoom: {
+                                    yAxisIndex: 'none'
+                                },
+                                dataView: {readOnly: false},
+                                magicType: {type: ['line', 'bar']}
+
+                            }
                         },
                         barWidth : 30,//柱图宽度
                         legend: {
                             data: ['派单总量','归档量']
                         },
-                        xAxis: [
-                            {
-                                name:'工单类型',
-                                type: 'category',
-                                show: true,
-                                data: orderArray
+                        xAxis:  {
+                            name:'工单类型',
+                            type: 'category',
+                            boundaryGap: false,
+                            data: orderArray,
+                            axisLabel: {
+                                interval:0
+                                //rotate:-30//-30度角倾斜显示
                             }
-                        ],
-                        yAxis: [
-                            {
-                                name:'数量',
-                                show: true,
-                                type: 'value',
-                                splitArea: {show: true}
-                            }
-                        ],
+                        },
+                        yAxis: {
+                            type: 'value',
+                            name:'数量',
+                            splitNumber:10
+                        },
                         series: [
                             {
                                 name:'派单总量',
                                 type:'bar',
                                 data:datacount[0],
+                                markLine: {data: [{type: 'average', name: '平均值'}]},
                                 itemStyle : {normal : {color:'#050505'}}
                             },
                             {
                                 name:'归档量',
                                 type:'bar',
                                 data:datacount[1],
+                                markLine: {data: [{type: 'average', name: '平均值'}]},
                                 itemStyle : {normal : {color:'#AE57E4'}}
                             }
+
                         ]
-                    };
-                    archiveChart.setOption(option);
+                    }) ;
+
                 }else{
                     $.messager.alert('错误提示','数据异常！');
                 }
 
-           }
+            }
         });
     }
     //流转工单统计
