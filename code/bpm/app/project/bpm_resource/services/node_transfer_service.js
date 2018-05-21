@@ -545,7 +545,7 @@ async function joinFunction(proc_inst_id, resolve, reject, node_code, params, pr
     arr_c.push(obj)
     let results=await model.$ProcessTaskHistroy.create(arr_c);
     let cd={}
-    if (proc_inst_id != null)
+    if (proc_inst_id){
         cd.proc_inst_id= proc_inst_id;
     }
     cd.proc_inst_task_status=0;
