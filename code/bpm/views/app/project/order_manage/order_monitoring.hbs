@@ -19,6 +19,7 @@
                                             <label for="filterParam3">派单日期：</label>
                                             <input type="text" id="datetime" />
                                         </div>
+                                        <h4 id="orders" style="text-align: center"></h4>
                                     </div>
 
                                     <div class="col-xs-1 col-md-1 text-right">
@@ -33,9 +34,9 @@
                                         </form>
                                     </div>
 
-                                    <div class="widget-body" id="pdtj">
-                                        <div style="height:300px;">
-                                            <div id="orderChart" style="width:100%;height:300px;"></div>
+                                    <div class="widget-body" id="pdtj" style="height:450px;">
+                                        <div style="height:350px;">
+                                            <div id="orderChart" style="width:100%;height:350px;"></div>
                                         </div>
                                     </div>
 
@@ -59,9 +60,9 @@
                                             </div>
                                         </form>
                                     </div>
-                                    <div class="widget-body" id="gdtj">
-                                        <div style="height:300px;">
-                                            <div id="archiveChart" style="width:100%;height:300px;"></div>
+                                    <div class="widget-body" id="gdtj" style="height: 400px">
+                                        <div style="height:350px;">
+                                            <div id="archiveChart" style="width:100%;height:350px;"></div>
                                         </div>
                                     </div>
 
@@ -71,6 +72,7 @@
                                             <label for="filterParam3">派单时间：</label>
                                             <input type="text" id="circulation" />
                                         </div>
+                                        <h4 id="lzl" style="text-align: center"></h4>
                                     </div>
 
                                     <div class="col-xs-1 col-md-1 text-right">
@@ -84,9 +86,9 @@
                                             </div>
                                         </form>
                                     </div>
-                                    <div class="widget-body" id="lztj">
-                                        <div style="height:300px;">
-                                            <div id="circulationChart" style="width:100%;height:300px;"></div>
+                                    <div class="widget-body" id="lztj" style="height: 450px">
+                                        <div style="height:350px;">
+                                            <div id="circulationChart" style="width:100%;height:350px;"></div>
                                         </div>
 
                                     </div>
@@ -115,6 +117,9 @@
     function init_yearMonth1(){
         var db = $("#datetime");
         db.datebox({
+            editable:false,
+            prompt:'选择年月',
+            validType:[],
             onShowPanel: function () {//显示日趋选择对象后再触发弹出月份层的事件，初始化时没有生成月份层
                 span.trigger('click'); //触发click事件弹出月份层
                 if (!tds) setTimeout(function () {//延时触发获取月份对象，因为上面的事件触发和对象生成有时间间隔
@@ -128,20 +133,29 @@
                     });
                 }, 0);
                 yearIpt.unbind();//解绑年份输入框中任何事件
+                $(yearIpt).attr('readonly',true);//年份只读
+                $(yearIpt).css('border-color','white');//边框去掉
             },
             parser: function (s) {
                 if (!s) return new Date();
                 var arr = s.split('-');
                 return new Date(parseInt(arr[0], 10), parseInt(arr[1], 10) - 1, 1);
             },
-            formatter: function (d) {
-                return d.getFullYear() + '-' + (d.getMonth() + 1);
-            }
+            formatter: function (d) { return d.getFullYear() + '-' + (d.getMonth() + 1);/*getMonth返回的是0开始的，忘记了。。已修正*/ }
         });
         var p = db.datebox('panel'), //日期选择对象
                 tds = false, //日期选择对象中月份
+                aToday = p.find('a.datebox-current'),
                 yearIpt = p.find('input.calendar-menu-year'),//年份输入框
-                span = p.find('span .calendar-text'); //显示月份层的触发控件
+                //显示月份层的触发控件
+                span = aToday.length ? p.find('div.calendar-title span') ://1.3.x版本
+                        p.find('span.calendar-text'); //1.4.x版本
+        if (aToday.length) {//1.3.x版本，取消Today按钮的click事件，重新绑定新事件设置日期框为今天，防止弹出日期选择面板
+            aToday.unbind('click').click(function () {
+                var now=new Date();
+                db.datebox('hidePanel').datebox('setValue', now.getFullYear() + '-' + (now.getMonth() + 1));
+            });
+        }
     }
     //年月初始化
     function init_yearMonth2(){
@@ -224,6 +238,14 @@
             data: {"monthArray":monthArray.toString()},
             success: function (datacount) {
                 ajaxLoadEnd(1);
+                var month;
+                if(val){
+                    var q=val.toString();
+                    month=q.substring(q.length-1);
+                }else {
+                    month=date.getMonth()+1;
+                }
+                $("#orders").html(month+"月总派单量："+datacount[5]+"(条)");
                 if(datacount){
                     var orderChart = echarts.init(document.getElementById('orderChart'));
                     orderChart.setOption({
@@ -327,7 +349,7 @@
             var m = date.getMonth()+1;
             today=y+"-"+0+m+"-01";
         }
-        var orderArray =['','差错工单','预警工单','资金稽核工单'];
+        var orderArray =['','差错工单','预警工单','资金稽核工单','深度资金稽核工单'];
         ajaxLoading(2);
         <!--归档情况-->
         $.ajax({
@@ -446,6 +468,14 @@
             data: {"monthArray":monthArray.toString()},
             success: function (datacount) {
                 ajaxLoadEnd(3);
+                var month;
+                if(val){
+                    var q=val.toString();
+                    month=q.substring(q.length-1);
+                }else {
+                    month=date.getMonth()+1;
+                }
+                $("#lzl").html(month+"月总流转量："+datacount[5]+"(条)");
                 if(datacount){
                     var circulationChart = echarts.init(document.getElementById('circulationChart'));
                     circulationChart.setOption({
@@ -488,7 +518,7 @@
                         },
                         yAxis: {
                             type: 'value',
-                            name:'派单量(条)',
+                            name:'流转量(条)',
                             splitNumber:10
                         },
                         series: [
@@ -541,15 +571,15 @@
     function ajaxLoading(value){
         if(value==1){
             $("<div class=\"datagrid-mask\" id=\"pdtj1\"></div>").css({display:"block",width:50,height:150}).appendTo("#pdtj");
-            $("<div class=\"datagrid-mask-msg\" id=\"pdtj2\"></div>").html("正在加载数据，请稍候...").appendTo("#pdtj").css({display:"block",left:400,top:200});
+            $("<div class=\"datagrid-mask-msg\" id=\"pdtj2\"></div>").html("正在加载数据，请稍候...").appendTo("#pdtj").css({display:"block",left:400,top:250});
 
         }else if (value==2){
             $("<div class=\"datagrid-mask\" id=\"gdtj1\"></div>").css({display:"block",width:50,height:150}).appendTo("#gdtj");
-            $("<div class=\"datagrid-mask-msg\" id=\"gdtj2\"></div>").html("正在加载数据，请稍候...").appendTo("#gdtj").css({display:"block",left:400,top:600});
+            $("<div class=\"datagrid-mask-msg\" id=\"gdtj2\"></div>").html("正在加载数据，请稍候...").appendTo("#gdtj").css({display:"block",left:400,top:750});
 
         }else if (value==3){
             $("<div class=\"datagrid-mask\" id=\"lztj1\"></div>").css({display:"block",width:50,height:150}).appendTo("#lztj");
-            $("<div class=\"datagrid-mask-msg\" id=\"lztj2\"></div>").html("正在加载数据，请稍候...").appendTo("#lztj").css({display:"block",left:400,top:1000});
+            $("<div class=\"datagrid-mask-msg\" id=\"lztj2\"></div>").html("正在加载数据，请稍候...").appendTo("#lztj").css({display:"block",left:400,top:1250});
 
         }
     }
