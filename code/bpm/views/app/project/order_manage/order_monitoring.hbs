@@ -69,7 +69,7 @@
                                         <br>  <br>  <br>  <br>
                                     <div class="col-xs-11 col-md-11">
                                         <div class="btn-group" role="group" aria-label="...">
-                                            <label for="filterParam3">派单时间：</label>
+                                            <label for="filterParam3">派单日期：</label>
                                             <input type="text" id="circulation" />
                                         </div>
                                         <h4 id="lzl" style="text-align: center"></h4>
@@ -107,12 +107,25 @@
 
 <script type="text/javascript">
     $(document).ready(function () {
+        $('#archive').datebox().datebox('calendar').calendar({
+            validator:function(date){
+                var date1 =new Date();
+                var year=date1.getFullYear();
+                var month=date1.getMonth()+1;
+                var today=date1.getDate();
+                var time=year+"-0"+month+"-"+today;
+                var archiveDate =new Date(time);
+                var d1 = new Date(archiveDate.getFullYear(), archiveDate.getMonth(), archiveDate.getDate());
+                return  date<=d1;
+            }
+        });
         init_yearMonth1();
         init_yearMonth2();
         loadOrderMonitoring();
         loadOrderArchive();
        loadOrderCirculation();
     });
+
     //年月初始化
     function init_yearMonth1(){
         var db = $("#datetime");
