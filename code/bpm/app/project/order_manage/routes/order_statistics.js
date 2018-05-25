@@ -313,7 +313,7 @@ router.route('/getMemcachedValue').post(function(req,res){
  */
 router.route('/getMonitoringView').post(function(req,res){
     var monthArray = req.body.monthArray;//当前月的所有日期
-    console.log(monthArray);
+   // console.log(monthArray);
     service.getMonitoring(monthArray).then(function(result){
             console.log(result,"qqqqqqq");
             utils.respJsonData(res, result);

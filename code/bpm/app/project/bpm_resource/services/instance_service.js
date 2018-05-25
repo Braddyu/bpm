@@ -1042,7 +1042,7 @@ exports.getMyInstList = function (userCode) {
  * @param userCode
  * @param paramMap
  */
-exports.getMyTaskQuery4Eui = function (page, size, userCode, joinup_sys, proc_code, work_order_number, proc_inst_task_sign) {
+exports.getMyTaskQuery4Eui = function (page, size, userCode, joinup_sys, proc_code, work_order_number, proc_inst_task_sign,begin_date,end_date) {
     return new Promise(function (resolve, reject) {
 
         var match = {proc_inst_task_status: 0};
@@ -1054,6 +1054,13 @@ exports.getMyTaskQuery4Eui = function (page, size, userCode, joinup_sys, proc_co
         }
         if (work_order_number) {
             match.work_order_number = work_order_number;
+        }
+        if (begin_date && end_date) {
+            match['$and'] = [{"proc_inst_task_arrive_time":{"$gte": new Date(begin_date+" 00:00:00"),"$lte": new Date(end_date+" 23:59:59")}}];
+        }else if (begin_date) {
+            match.proc_inst_task_arrive_time = {"$gte": new Date(begin_date+" 00:00:00")};
+        }else if (end_date) {
+            match.proc_inst_task_arrive_time = {"$lte": new Date(end_date+" 23:59:59")};
         }
 
         //查询用户所在机构和角色
@@ -1107,7 +1114,8 @@ exports.getMyTaskQuery4Eui = function (page, size, userCode, joinup_sys, proc_co
                     task_match=task_match.concat(wait_handle_match)
                     task_match=task_match.concat(wait_claim_match)
                 }
-                if(page==0)page=1;
+                if(!page || page==0)page=1;
+                if(!size || size==0)size=20;
                 let skip_match={};
                 let limit_match={};
                 if(page && size ){
@@ -1119,6 +1127,7 @@ exports.getMyTaskQuery4Eui = function (page, size, userCode, joinup_sys, proc_co
                         $limit: parseInt(size)
                     };
                 }
+                console.log('---match---------- ',match);
                 model.$ProcessInstTask.aggregate([
                     {
                         $match: match
@@ -1149,6 +1158,7 @@ exports.getMyTaskQuery4Eui = function (page, size, userCode, joinup_sys, proc_co
                                 {
                                     org_length: {$size: "$proc_inst_task_user_org"},
                                     role_length: {$size: "$proc_inst_task_user_role"},
+                                    task_id: "$_id"
                                 }
                         },
                         {
@@ -1157,13 +1167,12 @@ exports.getMyTaskQuery4Eui = function (page, size, userCode, joinup_sys, proc_co
                             }
                         },
                         {
-                            $count: "proc_inst_id"
+                            $count: "task_id"
                         }
                     ]).exec(function (err, res) {
                         let count = 0;
-
                         if (res.length > 0)
-                            count = res[0].proc_inst_id;
+                            count = res[0].task_id;
                         data.total = count;
                         data.success = true;
                         data.msg = "获取待办成功";
@@ -1204,7 +1213,7 @@ exports.getMyTaskQuery = function (taskId, user_no) {
  * @param userCode
  * @param paramMap
  */
-exports.getMyCompleteTaskQuery4Eui = function (page, size, userCode, paramMap, joinup_sys, proc_code) {
+exports.getMyCompleteTaskQuery4Eui = function (page, size, userCode, paramMap, joinup_sys, proc_code,begin_date,end_date) {
 
     return new Promise(function (resolve, reject) {
         var userArr = [];
@@ -1216,6 +1225,13 @@ exports.getMyCompleteTaskQuery4Eui = function (page, size, userCode, paramMap, j
         }
         if (proc_code) {
             match.proc_code = proc_code;
+        }
+        if (begin_date && end_date) {
+            match['$and'] = [{"proc_inst_task_arrive_time":{"$gte": new Date(begin_date+" 00:00:00"),"$lte": new Date(end_date+" 23:59:59")}}];
+        }else if (begin_date) {
+            match.proc_inst_task_arrive_time = {"$gte": new Date(begin_date+" 00:00:00")};
+        }else if (end_date) {
+            match.proc_inst_task_arrive_time = {"$lte": new Date(end_date+" 23:59:59")};
         }
         conditionMap['$and'] = [match, {'proc_inst_task_assignee': {'$in': userArr}}];
         //conditionMap['$and'] = [match,{'proc_inst_task_assignee':{'$in':userArr}},{$or:[{'proc_inst_task_user_role':{'$in':paramMap.roles}},{'proc_inst_task_user_org':{'$in':paramMap.orgs}}]}];
