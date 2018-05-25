@@ -282,7 +282,7 @@ var config = {
         },
     },
     //所属系统编号-预警工单系统编号-差错工单系统编号-稽核工单系统编号-慧眼工单系统编号
-    joinup_sys: 'warnSys_node,errorSys_node,auditorSys_node,syesightSys_node,moneyAudit_node,unitTest_node',
+    joinup_sys: 'warnSys_node,errorSys_node,auditorSys_node,syesightSys_node,moneyAudit_node,unitTest_node,riskManagementSys_node',
     AES_KEY: '1234567890ABCDEFGHIJKLMNOPQRSTUV',
     SMS_TEMPLET_ORDER: "渠道工单系统有num张需要您处理的工单，请及时登陆认真处理。",
     SMS_TEMPLET_MONEY_AUDIT_ORDER: "渠道工单系统有一张需要您处理的工单即将到期，《procName》，工单号：orderNo，请尽快登陆认真处理。",
