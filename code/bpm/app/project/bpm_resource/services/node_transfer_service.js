@@ -554,23 +554,65 @@ async function joinFunction(proc_inst_id, resolve, reject, node_code, params, pr
         resolve(utils.returnMsg(true, '0000', '任务完成成功。', null, null));
         return ;
     }else{
-        //根据策略判断会签结果  是否走下一节点
         let result=await model.$ProcessInst.find({_id:proc_inst_id});
         if(result.length==0){
             NoFound(resolve);
             return ;
         }
-        result.item_config;//获取会签节点配置信息
+
         var proc_define_id=result[0].proc_define_id;
         let results=await nodeAnalysisService.getNextnode(proc_inst_id, node_code, params, true);
         if(!results.success){
             resolve(results);
             return ;
         }
-        var next_detail = results.data.next_detail;
-        var current_detail=results.data.current_detail;
-        var next_node = results.data.next_node;
-        normal_process(current_detail,next_detail, next_node, proc_inst_id, resolve, reject,proc_define_id,proc_inst_task_id,user_code,node_code,params,biz_vars,prev_node,prev_user,proc_vars,memo);//next_detail, next_node, proc_inst_id, resolve,reject,proc_define_id,proc_inst_task_id,user_code,current_node
+
+        let item_decisionType = results.item_decisionType;
+        //根据策略判断会签结果  是否走下一节点
+        let flag = false;//是否通过
+        if(item_decisionType==1){//一票否决
+            let cd1={}
+            if (proc_inst_id){
+                cd1.proc_inst_id= proc_inst_id;
+            }
+            cd1.proc_inst_task_opt_type=0;
+            cd1.proc_inst_task_claim=1;
+            let rs1=await model.$ProcessInstTask.find(cd);
+            if(rs1.length>0){//有一个不通过
+                flag = false;
+            }else{
+                flag = true;
+            }
+        }else if(item_decisionType==2){//半数通过
+            let cd1={}
+            if (proc_inst_id){
+                cd1.proc_inst_id= proc_inst_id;
+            }
+            cd1.proc_inst_task_claim=1;
+            let rs1=await model.$ProcessInstTask.find(cd);//查询会签总条数
+
+            cd1.proc_inst_task_opt_type=1;
+            let rs2=await model.$ProcessInstTask.find(cd);//查询会签成功条数
+            if(rs2.length>rs1.length/2){
+                flag = true;
+            }else{
+                flag = false;
+            }
+        }
+        if(flag){//通过  继续走到会签join
+            var next_detail = results.data.next_detail;
+            var current_detail=results.data.current_detail;
+            var next_node = results.data.next_node;
+            normal_process(current_detail,next_detail, next_node, proc_inst_id, resolve, reject,proc_define_id,proc_inst_task_id,user_code,node_code,params,biz_vars,prev_node,prev_user,proc_vars,memo);//next_detail, next_node, proc_inst_id, resolve,reject,proc_define_id,proc_inst_task_id,user_code,current_node
+        }else{//未通过  跳到当前节点的上一节点
+            let results1=await nodeAnalysisService.getNode(proc_inst_id, node_code, params, true);
+            var next_detail = results1.data.next_detail;
+            var current_detail=results1.data.current_detail;
+            var next_node = results1.data.next_node;
+
+            normal_process(current_detail,next_detail, next_node, proc_inst_id, resolve, reject,proc_define_id,proc_inst_task_id,user_code,node_code,params,biz_vars,prev_node,prev_user,proc_vars,memo);
+        }
+
     }
 }
 

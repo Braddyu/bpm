@@ -628,7 +628,6 @@ router.route('/process/version/:id')
                     }
                     taskNodeDatas[i].item_assignee_type = taskNodeDatas[i].selectType;
                     taskNodeDatas[i].item_show_text = taskNodeDatas[i].selectVal;
-                    console.log(taskNodeDatas[i]);
                     processItemEntity = model.$ProcessItem(taskNodeDatas[i]);
                     processItemEntity.isNew = false;
                 }

@@ -2584,7 +2584,7 @@ function findNextHandler(user_code,proc_define_id,node_code,params,proc_inst_id)
                 let returnMap = {};
                 returnMap.proc_inst_task_assignee = "";
                 returnMap.proc_inst_task_assignee_name = "";
-                returnMap.user_org_id = next_detail.item_assignee_org_ids ? next_detail.item_assignee_org_ids.split(",") : [];
+                returnMap.user_role_id = next_detail.item_assignee_role ? next_detail.item_assignee_role.split(",") : [];
                 resolve(utils.returnMsg(true, '10000', '查询用户org', returnMap, null))
 
             } else if (type == 3) {
@@ -2801,7 +2801,6 @@ exports.getNextNodeAndHandlerInfo=function(node_code,proc_task_id,proc_inst_id,p
         var next_detail=rsss.data.next_detail;
         var next_node=rsss.data.next_node;
 
-
         var data_s=await findNextHandler(user_code,rs[0].proc_define_id,node_code,params,proc_inst_id);
         if(next_node.type=='end  round'){
             let ret_map=[];
@@ -2837,6 +2836,23 @@ exports.getNextNodeAndHandlerInfo=function(node_code,proc_task_id,proc_inst_id,p
                         temp.node_code=next_detail.item_code;
                         ret_map.push(temp);
                         resolve({"data":ret_map,"msg":"查询完成","error":null,"success":true,"next_node":next_detail.item_code})
+                    }else if(next_detail.item_assignee_ref_type==2){
+                        let match={};
+                        if(next_detail.item_assignee_role){
+                            match.user_roles={$in:next_detail.item_assignee_role?next_detail.item_assignee_role.split(","):[next_detail.item_assignee_role]};
+                        }
+                        let res=await model_user.$User.find(match);
+                        if(res.length==0){ resolve({"data":null,"msg":"查询出错1","error":null,"success":false});return ;}
+                        var ret_map=[];
+                        for(let  i in res ){
+                            let temp={};
+                            temp.user_no=res[i].user_no;
+                            temp.user_name=res[i].user_name;
+                            temp.node_name=next_node.name;
+                            temp.node_code=next_detail.item_code;
+                            ret_map.push(temp);
+                        }
+                        resolve({"data":ret_map,"msg":"查询完成","error":null,"success":true,"next_node":next_detail.item_code});
                     }else{
                         let match={};
                         if(data_s.data.user_org_id){
