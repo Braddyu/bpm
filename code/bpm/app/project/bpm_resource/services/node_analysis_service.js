@@ -150,7 +150,7 @@ function getInstNode(rs,node_code,params,flag){
             let type = node_detail.type;
             var node_array = await getValidNode(process_define, node_code, flag);
             if (type == "chat") {
-                var valid_node = await deleteInvalidNode(process_define, item_config, node_array, node_code, params)
+                var valid_node = await deleteInvalidNode(process_define, item_config, node_array, node_code, params);
                 if (valid_node.length != 1) {
                     resolve(utils.returnMsg(false, '9999', '有效节点删除不完全，或者错误', valid_node, null));
                 } else {
@@ -1776,7 +1776,6 @@ exports.findCurrentHandler=function(user_code,proc_define_id,node_code,params,pr
                             var item_assignee_ref_type=current_detail.item_assignee_ref_type;//// 参照人类别 1-当前人，2-当前机构
 
                             type=current_detail.item_assignee_type
-                            console.log("111111111111"+type)
                             if(type==1){
                                 //单人
                                 model_user.$User.find({"user_no":user_code},function(err,result){
@@ -1826,7 +1825,7 @@ exports.findCurrentHandler=function(user_code,proc_define_id,node_code,params,pr
                                         }else{
                                             // console.log("resultsresultsresultsresultsresultsresultsresultsresultsresultsresults \n",results)
                                             returnMap.proc_inst_task_assignee=results[0].proc_inst_task_assignee;
-                                            returnMap.proc_inst_task_assignee_name=results[0].proc_inst_task_assignee
+                                            returnMap.proc_inst_task_assignee_name=results[0].proc_inst_task_assignee_name
                                             returnMap.user_org_id=results[0].proc_inst_task_user_org
                                             resolve(utils.returnMsg(true, '10000', '查询用户org', returnMap, null))
                                         }
