@@ -1278,7 +1278,7 @@ exports.findNextHandler=function(user_code,proc_define_id,node_code,params,proc_
                                         }else{
                                             // console.log("resultsresultsresultsresultsresultsresultsresultsresultsresultsresults \n",results)
                                             returnMap.proc_inst_task_assignee=results[0].proc_inst_task_assignee;
-                                            returnMap.proc_inst_task_assignee_name=results[0].proc_inst_task_assignee
+                                            returnMap.proc_inst_task_assignee_name=results[0].proc_inst_task_assignee_name
                                             returnMap.user_org_id=results[0].proc_inst_task_user_org;
                                             resolve(utils.returnMsg(true, '10000', '查询用户org', returnMap, null))
                                         }

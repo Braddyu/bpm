@@ -679,7 +679,7 @@ async function joinFunction(proc_inst_id, resolve, reject, node_code, params, pr
             }
             condition_task.proc_inst_task_user_role_name = next_detail.item_show_text;// : String,// 流程处理用户角色名
 
-            if(current_detail.item_assignee_ref_type&&current_detail.item_assignee_ref_type==1){//参照当前人  为已认领
+            if(next_detail.item_assignee_ref_type&&next_detail.item_assignee_ref_type==1){//参照当前人  为已认领
                 condition_task.proc_inst_task_sign = 1;// : Number,// 流程签收(0-未认领，1-已认领)
             }
 
@@ -695,63 +695,22 @@ async function joinFunction(proc_inst_id, resolve, reject, node_code, params, pr
         }
         condition_task.proc_inst_task_opt_type = 1;
         // resolve(ergodic(r,condition_task,proc_cur_task,next_detail,proc_inst_task_params,proc_inst_node_vars,biz_vars,proc_code,proc_name));
-        //是否为拒绝
-        let is_refuse=false;
-        async function loop () {
-            if (params && undefined !== params.flag && !params.flag) {
-                let step_first = await  model.$ProcessInstTask.find({
-                    'proc_inst_id': r[0].proc_inst_id,
-                    'proc_inst_task_code': next_detail.item_code
-
-                });
-                if( step_first[0].proc_inst_task_work_id)
-                    condition_task.proc_inst_task_work_id = step_first[0].proc_inst_task_work_id;
-                condition_task.next_name = step_first[0].next_name;
-                condition_task.proc_back = 1;
-                condition_task.proc_inst_task_opt_type = 0;
-                condition_task.joinup_sys = step_first[0].joinup_sys;//工单所属编号
-                condition_task.proc_inst_id = step_first[0].proc_inst_id;
-                condition_task.proc_inst_task_assignee = step_first[0].proc_inst_task_assignee;
-                condition_task.proc_inst_task_assignee_name = step_first[0].proc_inst_task_assignee_name;
-
-                // condition_task.proc_inst_task_user_role = (next_detail.item_assignee_role).indexOf(",")?(next_detail.item_assignee_role).split(","):[next_detail.item_assignee_role];
-                condition_task.proc_inst_task_user_role_name = next_detail.item_assignee_role_name;
-                condition_task.proc_inst_task_params = proc_inst_task_params;// : String,// 流程参数(任务参数)
-                condition_task.proc_inst_node_vars = next_detail.item_node_var;// 流程节点变量
-                condition_task.proc_inst_biz_vars = biz_vars;// : String,// 业务实例变量
-                condition_task.proc_inst_task_title = step_first[0].proc_inst_task_title;
-                condition_task.proc_inst_prev_node_code = r[0].proc_inst_task_code;// : String,// 上一节点编号
-                condition_task.proc_inst_prev_node_handler_user = prev_user;// : String,// 上一节点处理人编号
-                condition_task.proc_vars =r[0].proc_vars;// 流程变量
-                condition_task.proc_inst_task_claim = "";//: Number,// 流程会签
-                condition_task.proc_inst_task_sms = next_detail.item_sms_warn;// Number,// 流程是否短信提醒
-                condition_task.proc_inst_task_sign =1 ;//是否有人认领
-                condition_task.proc_inst_task_remark = "";
-                //condition_task.proc_inst_task_remark = r[0].proc_inst_task_remark;// : String// 流程处理意见
+        condition_task.proc_inst_task_title = r[0].proc_inst_task_title;
+        condition_task.next_name = r[0].next_name;
+        condition_task.proc_back = 1;
+        condition_task.joinup_sys = r[0].joinup_sys;//工单所属编号
+        condition_task.proc_inst_task_params = proc_inst_task_params;// : String,// 流程参数(任务参数)
+        condition_task.proc_inst_node_vars = next_detail.item_node_var;// 流程节点变量
+        condition_task.proc_inst_biz_vars = biz_vars;// : String,// 业务实例变量
+        condition_task.proc_inst_prev_node_code = r[0].proc_inst_task_code;// : String,// 上一节点编号
+        condition_task.proc_inst_prev_node_handler_user = r[0].proc_inst_task_assignee_name;// : String,// 上一节点处理人编号
+        condition_task.proc_vars = r[0].proc_vars;// 流程变量
+        condition_task.proc_inst_task_claim = "";//: Number,// 流程会签
+        condition_task.proc_inst_task_sms = next_detail.item_sms_warn;// Number,// 流程是否短信提醒
+        condition_task.proc_inst_task_remark = "";// : String// 流程处理意见
+        //condition_task.proc_inst_task_sign =0 ;//是否有人认领
 
 
-                is_refuse = true;
-            }
-            else{
-
-                condition_task.proc_inst_task_title = r[0].proc_inst_task_title;
-                condition_task.next_name = r[0].next_name;
-                condition_task.proc_back = 1;
-                condition_task.joinup_sys = r[0].joinup_sys;//工单所属编号
-                condition_task.proc_inst_task_params = proc_inst_task_params;// : String,// 流程参数(任务参数)
-                condition_task.proc_inst_node_vars = next_detail.item_node_var;// 流程节点变量
-                condition_task.proc_inst_biz_vars = biz_vars;// : String,// 业务实例变量
-                condition_task.proc_inst_prev_node_code = r[0].proc_inst_task_code;// : String,// 上一节点编号
-                condition_task.proc_inst_prev_node_handler_user = r[0].proc_inst_task_assignee_name;// : String,// 上一节点处理人编号
-                condition_task.proc_vars = r[0].proc_vars;// 流程变量
-                condition_task.proc_inst_task_claim = "";//: Number,// 流程会签
-                condition_task.proc_inst_task_sms = next_detail.item_sms_warn;// Number,// 流程是否短信提醒
-                condition_task.proc_inst_task_remark = "";// : String// 流程处理意见
-                condition_task.proc_inst_task_sign =0 ;//是否有人认领
-            }
-        }
-
-        loop().then(async function(res) {
             var arr = [];
             condition_task.proc_code = proc_code;//流程编码
             condition_task.proc_name = proc_name;//流程名称
@@ -763,18 +722,15 @@ async function joinFunction(proc_inst_id, resolve, reject, node_code, params, pr
             arr.push(condition_task);
 
             //创建新流转任务
-            let rs = await model.$ProcessInstTask.create(arr);
+            let rs1 = await model.$ProcessInstTask.create(arr);
 
-            if(rs && is_refuse){
+            if(rs1){
                 conditions ={_id: proc_inst_id};
                 update={$inc: {refuse_number: 1}};
                 options={};
                 await model.$ProcessInst.update(conditions, update, options);
             }
-
-
-            resolve(utils.returnMsg(true, '1000', '流程流转新增任务信息正常。', rs, null));
-        });
+            resolve(utils.returnMsg(true, '1000', '流程流转新增任务信息正常。', rs1, null));
 
     }
 }
