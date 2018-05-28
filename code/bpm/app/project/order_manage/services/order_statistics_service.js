@@ -1248,12 +1248,12 @@ exports.getCirculation= function(monthArray) {
         for (var i in timeArray){
             var startDate=new Date(timeArray[i]);
             var endDate=new Date(timeArray[i]+' 23:59:59');
-            var total =await process_model.$ProcessTaskHistroy.find({ "proc_inst_task_complete_time":{$gte:startDate,$lte:endDate}}).count();
+            var total =await process_model.$ProcessTaskHistroy.find({ "proc_inst_task_handle_time":{$gte:startDate,$lte:endDate}}).count();
             orders+=total;
-            var error =await process_model.$ProcessTaskHistroy.find({ "proc_inst_task_complete_time":{$gte:startDate,$lte:endDate}, "proc_code" : "p-201"}).count();
-            var warning =await process_model.$ProcessTaskHistroy.find({ "proc_inst_task_complete_time":{$gte:startDate,$lte:endDate}, "proc_code" : "p-109"}).count();
-            var audit =await process_model.$ProcessTaskHistroy.find({ "proc_inst_task_complete_time":{$gte:startDate,$lte:endDate}, "proc_code" : "p-108"}).count();
-            var depth =await process_model.$ProcessTaskHistroy.find({ "proc_inst_task_complete_time":{$gte:startDate,$lte:endDate}, "proc_code" : "zj_101"}).count();
+            var error =await process_model.$ProcessTaskHistroy.find({ "proc_inst_task_handle_time":{$gte:startDate,$lte:endDate}, "proc_code" : "p-201"}).count();
+            var warning =await process_model.$ProcessTaskHistroy.find({ "proc_inst_task_handle_time":{$gte:startDate,$lte:endDate}, "proc_code" : "p-109"}).count();
+            var audit =await process_model.$ProcessTaskHistroy.find({ "proc_inst_task_handle_time":{$gte:startDate,$lte:endDate}, "proc_code" : "p-108"}).count();
+            var depth =await process_model.$ProcessTaskHistroy.find({ "proc_inst_task_handle_time":{$gte:startDate,$lte:endDate}, "proc_code" : "zj_101"}).count();
             orderTotal.push(total);
             orderError.push(error);
             orderWarning.push(warning);
