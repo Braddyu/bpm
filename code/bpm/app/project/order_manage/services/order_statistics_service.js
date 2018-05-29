@@ -1253,8 +1253,8 @@ exports.getCirculation= function(monthArray) {
             orders+=total;
             var error =await process_model.$ProcessTaskHistroy.find({ "proc_inst_task_complete_time":{$gte:startDate,$lte:endDate}, "proc_code" : "p-201"}).count();
             var warning =await process_model.$ProcessTaskHistroy.find({ "proc_inst_task_complete_time":{$gte:startDate,$lte:endDate}, "proc_code" : "p-109"}).count();
-            var audit =await process_model.$ProcessTaskHistroy.find({ "proc_inst_task_complete_time":{$gte:startDate,$lte:endDate}, "proc_code" : "p-108"}).count();
-            var depth =await process_model.$ProcessTaskHistroy.find({ "proc_inst_task_complete_time":{$gte:startDate,$lte:endDate}, "proc_code" : "zj_101"}).count();
+            var audit =await process_model.$ProcessTaskHistroy.find({ "proc_inst_task_complete_time":{$gte:startDate,$lte:endDate}, "proc_code" : "zj_101"}).count();
+            var depth =await process_model.$ProcessTaskHistroy.find({ "proc_inst_task_complete_time":{$gte:startDate,$lte:endDate}, "proc_code" : "p-108"}).count();
             orderTotal.push(total);
             orderError.push(error);
             orderWarning.push(warning);
