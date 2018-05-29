@@ -1212,16 +1212,17 @@ exports.getArchive= function(today) {
         var number=[];//返回前台的数据
             var startDate=new Date(today);
             var endDate=new Date(today+' 23:59:59');
+        console.log(startDate,endDate);
             var totalError =await process_model.$ProcessInst.find({ "proc_start_time":{$gte:startDate,$lte:endDate}, "proc_code" : "p-201"}).count();
             var totalWarning =await process_model.$ProcessInst.find({ "proc_start_time":{$gte:startDate,$lte:endDate}, "proc_code" :"p-109"}).count();
             var totalAudit =await process_model.$ProcessInst.find({ "proc_start_time":{$gte:startDate,$lte:endDate}, "proc_code" : "p-108"}).count();
             var totalDepth=await process_model.$ProcessInst.find({ "proc_start_time":{$gte:startDate,$lte:endDate}, "proc_code" : "zj_101"}).count();
             orderTotal.push(0,totalError,totalWarning,totalAudit,totalDepth);
 
-            var archiveError =await process_model.$ProcessInst.find({ "proc_start_time":{$gte:startDate,$lte:endDate}, "proc_code" : "p-201", "proc_inst_status":4}).count();
-            var archiveWarning =await process_model.$ProcessInst.find({ "proc_start_time":{$gte:startDate,$lte:endDate}, "proc_code" : "p-109", "proc_inst_status":4}).count();
-            var archiveAudit =await process_model.$ProcessInst.find({ "proc_start_time":{$gte:startDate,$lte:endDate}, "proc_code" : "p-108", "proc_inst_status":4}).count();
-            var archiveDepth =await process_model.$ProcessInst.find({ "proc_start_time":{$gte:startDate,$lte:endDate}, "proc_code" : "zj_101", "proc_inst_status":4}).count();
+            var archiveError =await process_model.$ProcessInst.find({ "proc_inst_task_complete_time":{$gte:startDate,$lte:endDate}, "proc_code" : "p-201", "proc_inst_status":4}).count();
+            var archiveWarning =await process_model.$ProcessInst.find({ "proc_inst_task_complete_time":{$gte:startDate,$lte:endDate}, "proc_code" : "p-109", "proc_inst_status":4}).count();
+            var archiveAudit =await process_model.$ProcessInst.find({ "proc_inst_task_complete_time":{$gte:startDate,$lte:endDate}, "proc_code" : "p-108", "proc_inst_status":4}).count();
+            var archiveDepth =await process_model.$ProcessInst.find({ "proc_inst_task_complete_time":{$gte:startDate,$lte:endDate}, "proc_code" : "zj_101", "proc_inst_status":4}).count();
             orderArchive.push(0,archiveError,archiveWarning,archiveAudit,archiveDepth);
             console.log("正在加载数据，请稍等。。。")
         number.push(orderTotal,orderArchive);
@@ -1248,12 +1249,12 @@ exports.getCirculation= function(monthArray) {
         for (var i in timeArray){
             var startDate=new Date(timeArray[i]);
             var endDate=new Date(timeArray[i]+' 23:59:59');
-            var total =await process_model.$ProcessTaskHistroy.find({ "proc_inst_task_handle_time":{$gte:startDate,$lte:endDate}}).count();
+            var total =await process_model.$ProcessTaskHistroy.find({ "proc_inst_task_complete_time":{$gte:startDate,$lte:endDate}}).count();
             orders+=total;
-            var error =await process_model.$ProcessTaskHistroy.find({ "proc_inst_task_handle_time":{$gte:startDate,$lte:endDate}, "proc_code" : "p-201"}).count();
-            var warning =await process_model.$ProcessTaskHistroy.find({ "proc_inst_task_handle_time":{$gte:startDate,$lte:endDate}, "proc_code" : "p-109"}).count();
-            var audit =await process_model.$ProcessTaskHistroy.find({ "proc_inst_task_handle_time":{$gte:startDate,$lte:endDate}, "proc_code" : "p-108"}).count();
-            var depth =await process_model.$ProcessTaskHistroy.find({ "proc_inst_task_handle_time":{$gte:startDate,$lte:endDate}, "proc_code" : "zj_101"}).count();
+            var error =await process_model.$ProcessTaskHistroy.find({ "proc_inst_task_complete_time":{$gte:startDate,$lte:endDate}, "proc_code" : "p-201"}).count();
+            var warning =await process_model.$ProcessTaskHistroy.find({ "proc_inst_task_complete_time":{$gte:startDate,$lte:endDate}, "proc_code" : "p-109"}).count();
+            var audit =await process_model.$ProcessTaskHistroy.find({ "proc_inst_task_complete_time":{$gte:startDate,$lte:endDate}, "proc_code" : "p-108"}).count();
+            var depth =await process_model.$ProcessTaskHistroy.find({ "proc_inst_task_complete_time":{$gte:startDate,$lte:endDate}, "proc_code" : "zj_101"}).count();
             orderTotal.push(total);
             orderError.push(error);
             orderWarning.push(warning);
