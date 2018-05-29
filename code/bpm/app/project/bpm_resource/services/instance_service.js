@@ -1144,7 +1144,7 @@ exports.getMyTaskQuery4Eui = function (page, size, userCode, joinup_sys, proc_co
                             $or: task_match
                         }
                     },
-                    skip_match,limit_match
+                    skip_match,limit_match,{$sort:{"proc_inst_task_arrive_time":-1}}
 
                 ]).exec(function (err, res) {
                     let data = {};
@@ -1380,6 +1380,9 @@ exports.getCompTaskById = function (taskId, flag) {
         //flag 等于1的时候查询任务历史表
         if (flag && flag == 1) {
             mod = model.$ProcessTaskHistroy.find({'proc_task_id': taskId});
+        }
+        if (flag && flag == 4) {//查询流程实例
+            mod = model.$ProcessInst.find({'_id': taskId});
         }
         // var query = model.$ProcessInstTask.find({'_id':taskId});
         mod.exec(function (error, rs) {
