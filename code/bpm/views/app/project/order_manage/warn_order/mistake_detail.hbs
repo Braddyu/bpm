@@ -118,7 +118,7 @@
 
             </fieldset>
             <div style="padding:5px 0;" align="center" id="button_group">
-                <input id="submitButton" type="button" onclick="submitTask(1)" style="width: 100px;" value="提交"/>
+                <input id="submitButton" type="button" onclick="submitTask(1)" style="width: 100px;" value="归档"/>
 
             </div>
 
@@ -605,7 +605,7 @@
                         /*   getNextNodeUser(node_code,task_id,inst_id);
                            $("#tr_5").show();*/
                         $("#button_group").html('');
-                        $("#button_group").append("<input id=\"submitButton1\" type=\"button\" onclick=\"submitTask(2)\" style=\"width: 100px;\" value=\"提交\"/>");
+                        $("#button_group").append("<input id=\"submitButton1\" type=\"button\" onclick=\"submitTask(2)\" style=\"width: 100px;\" value=\"通过\"/>");
                         //comboboxData.push({value: '2', text: '通过'});
                     }
                     if (data.data.haveRefuse) {

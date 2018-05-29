@@ -1213,7 +1213,7 @@ exports.getMyTaskQuery = function (taskId, user_no) {
  * @param userCode
  * @param paramMap
  */
-exports.getMyCompleteTaskQuery4Eui = function (page, size, userCode, paramMap, joinup_sys, proc_code,begin_date,end_date) {
+exports.getMyCompleteTaskQuery4Eui = function (page, size, userCode, paramMap, joinup_sys, proc_code,begin_date,end_date,param_json_str) {
 
     return new Promise(function (resolve, reject) {
         var userArr = [];
@@ -1226,6 +1226,12 @@ exports.getMyCompleteTaskQuery4Eui = function (page, size, userCode, paramMap, j
         if (proc_code) {
             match.proc_code = proc_code;
         }
+        /*if(!(!param_json_str||param_json_str=="undefined"||param_json_str=="{}")){
+            var params_json=JSON.parse(param_json_str);
+            if(params_json.proc_inst_status){
+                match.proc_inst_status = proc_inst_status;
+            }
+        }*/
         if (begin_date && end_date) {
             match['$and'] = [{"proc_inst_task_arrive_time":{"$gte": new Date(begin_date+" 00:00:00"),"$lte": new Date(end_date+" 23:59:59")}}];
         }else if (begin_date) {
@@ -1233,11 +1239,12 @@ exports.getMyCompleteTaskQuery4Eui = function (page, size, userCode, paramMap, j
         }else if (end_date) {
             match.proc_inst_task_arrive_time = {"$lte": new Date(end_date+" 23:59:59")};
         }
+
         conditionMap['$and'] = [match, {'proc_inst_task_assignee': {'$in': userArr}}];
         //conditionMap['$and'] = [match,{'proc_inst_task_assignee':{'$in':userArr}},{$or:[{'proc_inst_task_user_role':{'$in':paramMap.roles}},{'proc_inst_task_user_org':{'$in':paramMap.orgs}}]}];
         // conditionMap['$or'] = [{'proc_inst_task_assignee':{'$in':userArr}},{'proc_inst_task_user_role':{'$in':paramMap.roles},'proc_inst_task_user_org':{'$in':paramMap.orgs}}];
         conditionMap.proc_inst_task_status = 1;
-        utils.pagingQuery4Eui(model.$ProcessTaskHistroy, page, size, conditionMap, resolve, '', {proc_inst_task_arrive_time: -1});
+        utils.pagingQuery4Eui(model.$ProcessTaskHistroy, page, size, conditionMap, resolve, '', {proc_inst_task_complete_time: -1});
     });
 };
 

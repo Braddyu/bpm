@@ -357,10 +357,12 @@
         if(val){
             today=val;
         }else{
-            var date = new Date();
-            var y = date.getFullYear();
-            var m = date.getMonth()+1;
-            today=y+"-"+0+m+"-01";
+            var date1 =new Date();
+            var year=date1.getFullYear();
+            var month=date1.getMonth()+1;
+            var day=date1.getDate();
+            today=year+"-0"+month+"-"+day;
+
         }
         var orderArray =['','差错工单','预警工单','资金稽核工单','深度资金稽核工单'];
         ajaxLoading(2);
