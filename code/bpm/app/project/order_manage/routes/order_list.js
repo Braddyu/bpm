@@ -243,13 +243,7 @@ router.post('/complete', function (req, res, next) {
                                     var proc_inst_id = taskresult.data.proc_inst_id;
                                     var proc_code = taskresult.data.proc_code;
                                     //流程流转方法
-
-                                    console.log(id, node_code, user_code, true, memo, params, biz_vars, proc_vars);
-                                    console.info(params)
                                     nodeTransferService.transfer(id, node_code, user_code, true, memo, params, biz_vars, proc_vars).then(function (result1) {
-                                        console.log(result1);
-                                        console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", id, node_code, user_code, true, memo, params)
-
                                         //归档时,回传黄河数据
                                         if (handle == 1) {
                                             service.repare(result1, proc_code, proc_inst_id, memo).then(function (result) {
