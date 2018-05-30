@@ -103,7 +103,7 @@ exports.task=function() {
         var begin_date = req.body.begin_date;//派单开始时间
         var end_date = req.body.end_date;//派单结束时间
         var params = req.body.params;
-        var params_json=JSON.parse(params);
+        // var params_json=JSON.parse(params);
         if (!joinup_sys) {
             utils.respMsg(res, false, '2001', '工单所属系统编号不能为空。', null, null);
             return;
