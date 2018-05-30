@@ -60,7 +60,7 @@ var config = {
         saveUninitialized: false,
         rolling: true,
         //mongodb_url:'mongodb://10.196.153.11:30000/process',
-        mongodb_url: 'mongodb://192.168.9.48:27017/process',
+        mongodb_url: 'mongodb://192.168.9.48:27017/processpm',
         // mongodb_url:'mongodb://10.201.253.162:27017/process1',
         //mongodb_url:'mongodb://127.0.0.1:27017/ywcj',  //内网
         mongodb_collection: 'common_user_session'
@@ -138,7 +138,7 @@ var config = {
         ]
     },
     mongdb: {
-        url: 'mongodb://192.168.9.48:27017/process2',
+        url: 'mongodb://192.168.9.48:27017/processpm',
         // url: 'mongodb://10.196.153.11:30000/process',
         //url:'mongodb://10.201.253.162:27017/process1',
         // url: 'mongodb://10.201.253.111:27017/Examine',
@@ -301,6 +301,16 @@ var config = {
     api_interface_url: 'https://127.0.0.1:30002',
     mistake_proc_code: 'p-201',
     mistake_proc_name: '稽核差错工单',
+    //邮件服务器配置信息
+    email : {
+        host : 'smtp.qq.com',
+        port:465,
+        user:'869584164@qq.com',
+        password:'qukuvdulxgqqbfdj'
+    },
+    email_switch:true,//是否发送邮件开关
+    email_subject:'《procName》的工单任务处理通知',//邮件标题
+    email_templet:'您好，您有一张名为：《procName》的工单任务需处理，请及时处理。',//邮件内容模板
     //定时任务开关明细
     switchDetail: {
         oa_switch: false,   //同步OA数据(省、地市、区县级)作业任务开关

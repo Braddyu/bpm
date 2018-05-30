@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var logger = require('../../../../lib/logHelper').helper;
 var utils = require('../../../../lib/utils/app_utils');
+var mailutil = require('../../../utils/mail_util');
 var inst = require('../services/instance_service');
 var nodeTransferService=require("../services/node_transfer_service");
 var userService = require('../../workflow/services/user_service');
@@ -43,7 +44,7 @@ exports.task=function() {
         var length = req.body.rows;//每页条数
         var joinup_sys = req.body.joinup_sys;//工单所属系统编号
         var proc_code = req.body.proc_code;//工单所属流程
-        var work_order_number = req.body.work_order_number;//工单所属流程
+        var work_order_number = req.body.work_order_number;//工单编号
         var begin_date = req.body.begin_date;//派单开始时间
         var end_date = req.body.end_date;//派单结束时间
         var proc_inst_task_sign = req.body.proc_inst_task_sign;//待认领
@@ -727,7 +728,28 @@ exports.task=function() {
             }
         })
     });
-
+    /*
+     * 发送邮件通知接口
+     */
+    router.route("/send/email").post(function(req,res){
+        var user_no= req.body.user_no;//邮件接收人编号
+        var email_subject= req.body.email_subject;//邮件主题
+        var email_content= req.body.email_content;//邮件内容
+        try{
+            inst.userInfo(user_no).then(function (rs) {
+                if (rs.success && rs.data.length > 0) {
+                    //发送邮件
+                    mailutil.sendMail(rs.data[0].user_email,email_subject,email_content).then(function(result){
+                        utils.respJsonData(res,result);
+                    });
+                }else{
+                    utils.respMsg(res, false, '1000', '用户不存在', null, null);
+                }
+            });
+        }catch(e){
+            utils.respMsg(res, false, '1000', '发送邮件通知异常', null, e);
+        }
+    });
 
     /*
      删除任务，临时接口，勿用
