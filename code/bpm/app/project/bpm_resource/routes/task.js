@@ -99,6 +99,7 @@ exports.task=function() {
         var length = req.body.rows;//每页条数
         var joinup_sys = req.body.joinup_sys;//工单所属系统编号
         var proc_code = req.body.proc_code;//工单所属流程
+        var work_order_number = req.body.work_order_number;//工单编号
         var begin_date = req.body.begin_date;//派单开始时间
         var end_date = req.body.end_date;//派单结束时间
         var params = req.body.params;
@@ -121,7 +122,7 @@ exports.task=function() {
                 if (rs.success && rs.data.length == 1) {
                     userService.getUsreRolesByUserNo(userNo).then(function (result) {
                         if (result) {
-                            inst.getMyCompleteTaskQuery4Eui(page, length, userNo, result, joinup_sys, proc_code,begin_date,end_date,params).then(function (taskresult) {
+                            inst.getMyCompleteTaskQuery4Eui(page, length, userNo, result, joinup_sys, proc_code,begin_date,end_date,params,work_order_number).then(function (taskresult) {
                                 utils.respJsonData(res, taskresult);
                             }).catch(function (err_inst) {
                                 // console.log(err_inst);

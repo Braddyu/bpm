@@ -1213,7 +1213,7 @@ exports.getMyTaskQuery = function (taskId, user_no) {
  * @param userCode
  * @param paramMap
  */
-exports.getMyCompleteTaskQuery4Eui = function (page, size, userCode, paramMap, joinup_sys, proc_code,begin_date,end_date,param_json_str) {
+exports.getMyCompleteTaskQuery4Eui = function (page, size, userCode, paramMap, joinup_sys, proc_code,begin_date,end_date,param_json_str,work_order_number) {
 
     return new Promise(function (resolve, reject) {
         var userArr = [];
@@ -1225,6 +1225,9 @@ exports.getMyCompleteTaskQuery4Eui = function (page, size, userCode, paramMap, j
         }
         if (proc_code) {
             match.proc_code = proc_code;
+        }
+        if (work_order_number) {
+            match.work_order_number = work_order_number;
         }
         /*if(!(!param_json_str||param_json_str=="undefined"||param_json_str=="{}")){
             var params_json=JSON.parse(param_json_str);
