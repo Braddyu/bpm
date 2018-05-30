@@ -9,6 +9,7 @@ var utils = require('../../../../lib/utils/app_utils');
 var mailutil = require('../../../utils/mail_util');
 var config = require('../../../../config');
 var nodegrass = require("nodegrass");
+var ObjectID = require('mongodb').ObjectID;
 var REQ_HEADERS = {
     'Content-Type': 'application/x-www-form-urlencoded'
 };
@@ -272,13 +273,13 @@ exports.transfer=function(proc_inst_task_id,node_code,user_code,opts,memo,param_
 
 
 //并行分支任务创建
-function forkTaskCreate(item_config, proc_define, node_Array, k, user_code, proc_define_id, params, proc_inst_id, resolve, task_id_array,biz_vars,prev_node,prev_user,proc_vars,r) {
+async function forkTaskCreate(item_config, proc_define, node_Array, k, user_code, proc_define_id, params, proc_inst_id, resolve, task_id_array,biz_vars,prev_node,prev_user,proc_vars,r) {
     if(node_Array && node_Array.length>k){
         var results = nodeAnalysisService.getNodeInfo(item_config, proc_define, node_Array[k], null);
         var current_detail = results.current_detail;
         var current_nodes = results.current_node
-        nodeAnalysisService.findCurrentHandler(user_code, proc_define_id, node_Array[k], params, proc_inst_id).then(function (rs) {
-            nodeAnalysisService.findParams(proc_inst_id, node_Array[k]).then(function (result_t) {
+        await nodeAnalysisService.findCurrentHandler(user_code, proc_define_id, node_Array[k], params, proc_inst_id).then(async function (rs) {
+            await nodeAnalysisService.findParams(proc_inst_id, node_Array[k]).then(async function (result_t) {
                 var proc_cur_task = current_detail.item_code;
                 var proc_inst_node_vars = current_detail.item_node_var;
                 var proc_cur_task_name = current_nodes.type;
@@ -296,7 +297,13 @@ function forkTaskCreate(item_config, proc_define, node_Array, k, user_code, proc
                 condition_task.proc_inst_task_complete_time = "";// : Date,// 流程完成时间
                 condition_task.proc_inst_task_status = 0;// : Number,// 流程当前状态 0-未处理，1-已完成，2-拒绝
 
-                console.log("11111111111@@"+current_detail.item_assignee_type,"%%%",JSON.stringify(org))
+                if (org.proc_inst_task_assignee) {
+                    condition_task.proc_inst_task_assignee = org.proc_inst_task_assignee;
+                }
+                if (org.proc_inst_task_assignee_name) {
+                    condition_task.proc_inst_task_assignee_name = org.proc_inst_task_assignee_name;
+                }
+
                 if (current_detail.item_assignee_type == 1) {
                     condition_task.proc_inst_task_assignee = current_detail.item_assignee_user_code;//: String,// 流程处理人code
                     condition_task.proc_inst_task_assignee_name = current_detail.item_show_text;//: String,// 流程处理人名
@@ -314,16 +321,26 @@ function forkTaskCreate(item_config, proc_define, node_Array, k, user_code, proc
 
                     if(current_detail.item_assignee_ref_type&&current_detail.item_assignee_ref_type==1){//参照当前人  为已认领
                         condition_task.proc_inst_task_sign = 1;// : Number,// 流程签收(0-未认领，1-已认领)
+                    }else{
+                        let match={};
+                        if(org.user_org_id && org.user_org_id.length>0){
+                            match.user_org={$in:org.user_org_id};
+                        }
+                        if(condition_task.proc_inst_task_user_role && condition_task.proc_inst_task_user_role.length>0) {
+                            match.user_roles = {$in: condition_task.proc_inst_task_user_role};
+                        }
+                        await model_user.$User.find(match,function(err,res){
+                            if(err){
+                                console.log('获取机员失败',err);
+                            }else{
+                                condition_task.proc_inst_task_assignee = res[0].user_no;
+                                condition_task.proc_inst_task_assignee_name = res[0].user_name;
+                                condition_task.proc_inst_task_sign = 1;// : Number,// 流程签收(0-未认领，1-已认领)
+                            }
+                        });
                     }
-
                 }
                 condition_task.proc_inst_task_user_org = org.user_org_id;
-                if (org.proc_inst_task_assignee) {
-                    condition_task.proc_inst_task_assignee = org.proc_inst_task_assignee;
-                }
-                if (org.proc_inst_task_assignee_name) {
-                    condition_task.proc_inst_task_assignee_name = org.proc_inst_task_assignee_name;
-                }
 
                 condition_task.role_code = r.proc_task_start_user_role_code;//流程发起人角色编码
                 condition_task.role_name = r.proc_task_start_user_role_names;//流程发起人角色
@@ -352,16 +369,17 @@ function forkTaskCreate(item_config, proc_define, node_Array, k, user_code, proc
                 condition_task.proc_inst_task_remark = "";// : String// 流程处理意见
                 condition_task.proc_vars = proc_vars;// 流程变量
 
+
                 var arr = [];
                 arr.push(condition_task);
                 //创建新流转任务
-                model.$ProcessInstTask.create(arr, function (error, rs) {console.log("2222222222222"+error)
+                await model.$ProcessInstTask.create(arr, async function (error, rs) {
                     if (error) {
                         // resolve('新增流程实例信息时出现异常。'+error);
                         resolve(utils.returnMsg(false, '1000', '流程流转新增任务信息时出现异常。', null, error));
                     } else {
                         task_id_array.push(rs.data);
-                        forkTaskCreate(item_config, proc_define, node_Array,++k, user_code, proc_define_id, params, proc_inst_id, resolve, task_id_array,biz_vars,prev_node,prev_user,proc_vars,r);
+                        await forkTaskCreate(item_config, proc_define, node_Array,++k, user_code, proc_define_id, params, proc_inst_id, resolve, task_id_array,biz_vars,prev_node,prev_user,proc_vars,r);
 
                     }
 
