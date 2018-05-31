@@ -48,20 +48,22 @@
     "node-uuid": "~1.4.6",
     "node-xlsx": "*",
     "nodegrass": "0.0.3",
+    "nodemailer": "^4.6.5",
+    "nodemailer-smtp-transport": "^2.7.4",
     "os": "*",
     "path": "*",
+    "readline": "*",
     "require-directory": "^2.1.1",
     "serve-favicon": "~2.3.0",
     "soap": "*",
     "ssh2": "^0.5.5",
+    "ueditor": "*",
     "url": "*",
     "urlencode": "^1.1.0",
     "usage": "*",
     "when": "*",
     "x-xss-protection": "^1.0.0",
     "xml2js": "*",
-    "xss": "*",
-    "readline":"*",
-	"ueditor":"*"
+    "xss": "*"
   }
 }

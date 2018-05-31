@@ -78,6 +78,7 @@ var commonProcessItemSchema = new Schema(
         item_type : String,// 节点类型
         item_el : String,// 节点表达式
         item_sms_warn : Number,// 是否短信提醒
+        item_mail_notice : Number,// 是否邮件提醒
         item_sign : String,// 是否会签
         item_assignee_type : Number, // 参与类型
         item_assignee_role : String, // 参与角色(职务)

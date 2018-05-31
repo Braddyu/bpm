@@ -148,6 +148,7 @@
                             document.getElementById("decision").style.display="none";
                         }
                         $("input[type=radio][name='smsType'][value='0']").attr("checked",true);
+                        $("input[type=radio][name='mailType'][value='0']").attr("checked",true);
                         $("input[type=radio][name='jump'][value='0']").attr("checked",true);
                         $.each(taskNodeDatas,function(i,n){
                             if(n.item_code && n.item_code==id){
@@ -155,6 +156,7 @@
                                 $("input[type=radio][name='decisionType'][value='"+ n.item_decisionType+"']").attr("checked",true);
                                 $("input[type=radio][name='checkType'][value='"+selectType+"']").attr("checked",true);
                                 $("input[type=radio][name='smsType'][value='"+n.item_sms_warn+"']").attr("checked",true);
+                                $("input[type=radio][name='mailType'][value='"+n.item_mail_notice+"']").attr("checked",true);
                                 $("input[type=radio][name='jump'][value='"+n.item_jump+"']").attr("checked",true);
                                 $('#p2_textArea').textbox('setValue', n.selectVal);
                                 $('#p2_item_id').val(n._id);
@@ -419,7 +421,8 @@
                     taskNode.item_code = id;
                     taskNode.item_type = obj.type;
                     taskNode.item_sms_warn = $("input[name='smsType']:checked").val();
-                    taskNode.item_jump = $("input[name='jump']:checked").val()
+                    taskNode.item_mail_notice = $("input[name='mailType']:checked").val();
+                    taskNode.item_jump = $("input[name='jump']:checked").val();
                     taskNode.selectType = itemType;
                     taskNode.item_decisionType = decisionType;
                     taskNode.selectVal = itemText;
@@ -709,6 +712,7 @@
                                             taskNode.item_code = n.item_code;
                                             taskNode.item_type = n.item_type;
                                             taskNode.item_sms_warn = n.item_sms_warn;
+                                            taskNode.item_mail_notice = n.item_mail_notice;
                                             taskNode.item_jump = n.item_jump;
                                             taskNode.selectVal = n.item_show_text;
                                             if(n.item_assignee_type && n.item_assignee_type == "1"){
@@ -905,20 +909,26 @@
                     <!--<input class="easyui-textbox" name="p2_item_funName" id="p2_item_funName" style="width: 100%" data-options="prompt:'请输入方法名...'">-->
                 <!--</div>-->
                 <div style="margin-bottom:10px">
+                    <p style="margin-bottom:5px;color:#00a0e9">短信通知:</p>
+                    <input type="radio" name="smsType" value="0" />否
+                    <input type="radio" name="smsType" value="1"/>是
+                </div>
+                <div style="margin-bottom:10px">
+                    <p style="margin-bottom:5px;color:#00a0e9">邮件通知:</p>
+                    <input type="radio" name="mailType" value="0"/>否
+                    <input type="radio" name="mailType" value="1"/>是
+                </div>
+                <div style="margin-bottom:10px">
+                    <p style="margin-bottom:5px;color:#00a0e9">是否可以跳过:</p>
+                    <input type="radio" name="jump" value="0" />否
+                    <input type="radio" name="jump" value="1"/>是
+                </div>
+                <div style="margin-bottom:10px">
                     <p style="margin-bottom:5px;color:#00a0e9">备注:</p>
                     <input id="p2_textAreaRemark" class="easyui-textbox" multiline="true" style="width:100%;height:120px">
                     <input id="p2_item_id" hidden="true">
                 </div>
-                <div style="margin-bottom:10px">
-                    <p style="margin-bottom:5px;color:#00a0e9">短信通知:</p>
-                    <input type="radio" name="smsType" value="1"/>是
-                    <input type="radio" name="smsType" value="0"/>否
-                </div>
-                <div style="margin-bottom:10px">
-                    <p style="margin-bottom:5px;color:#00a0e9">是否可以跳过:</p>
-                    <input type="radio" name="jump" value="1"/>是
-                    <input type="radio" name="jump" value="0"/>否
-                </div>
+
                 <div style="text-align:right;margin-bottom:10px">
                     <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'" onclick="saveNodeData(2)">保存节点配置</a>
                 </div>

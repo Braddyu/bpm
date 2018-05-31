@@ -212,6 +212,7 @@ exports.process_instance=function() {
         var work_order_number = req.body.work_order_number;
         var startDate = req.body.startDate;//创建时间
         var endDate = req.body.endDate;//创建时间
+        var is_manager = req.body.is_manager;//是否是管理员
         var conditionMap = {};
         if (work_order_number) {
             conditionMap.work_order_number = work_order_number;
@@ -236,25 +237,37 @@ exports.process_instance=function() {
         if (!isEmptyObject(compare)) {
             conditionMap['proc_start_time'] = compare;
         }
-        if (!user_no) {
+        if (!user_no && !is_manager) {
             utils.respMsg(res, false, '1000', '当前处理人编号为空', null, null);
         } else {
-            //判断用户是否存在
-            inst.userInfo(user_no).then(function (rs) {
-                if (rs.success && rs.data.length == 1) {
-                    conditionMap.proc_start_user = user_no;
-                    // 调用分页
-                    inst.getInstanceQuery4EuiList(page, length, conditionMap).then(function (result) {
-                        utils.respJsonData(res, result);
-                    }).catch(function (err) {
-                        console.log('err');
-                        logger.error("route-list", "查询流程实例集合异常", err);
-                        utils.respMsg(res, false, '1000', '查询流程实例集合异常', null, err);
-                    });
-                } else {
-                    utils.respMsg(res, false, '1000', '用户不存在', null, null);
-                }
-            });
+            if(!user_no && is_manager){
+                // 调用分页
+                inst.getInstanceQuery4EuiList(page, length, conditionMap).then(function (result) {
+                    utils.respJsonData(res, result);
+                }).catch(function (err) {
+                    console.log('err');
+                    logger.error("route-list", "查询流程实例集合异常", err);
+                    utils.respMsg(res, false, '1000', '查询流程实例集合异常', null, err);
+                });
+            }else{
+                //判断用户是否存在
+                inst.userInfo(user_no).then(function (rs) {
+                    if (rs.success && rs.data.length == 1) {
+                        conditionMap.proc_start_user = user_no;
+                        // 调用分页
+                        inst.getInstanceQuery4EuiList(page, length, conditionMap).then(function (result) {
+                            utils.respJsonData(res, result);
+                        }).catch(function (err) {
+                            console.log('err');
+                            logger.error("route-list", "查询流程实例集合异常", err);
+                            utils.respMsg(res, false, '1000', '查询流程实例集合异常', null, err);
+                        });
+                    } else {
+                        utils.respMsg(res, false, '1000', '用户不存在', null, null);
+                    }
+                });
+            }
+
         }
     });
 

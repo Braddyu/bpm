@@ -287,7 +287,7 @@
                             }
                         },
                         legend: {
-                            data: ['派单总量', '差错工单量','预警工单量','资金稽核工单量','深度资金稽核工单量']
+                            data: ['派单总量', '稽核差错工单','渠道指标预警工单','资金稽核工单','深度稽核工单']
                         },
                         xAxis:  {
                             name:'派单日期',
@@ -313,28 +313,28 @@
                                 itemStyle : {normal : {color:'#080808'}}
                             },
                             {
-                                name:'差错工单量',
+                                name:'稽核差错工单',
                                 type:'line',
                                 data:datacount[1],
                                 //markLine: {data: [{type: 'average', name: '平均值'}]},
                                 itemStyle : {normal : {color:'#32d2c9'}}
                             },
                             {
-                                name:'预警工单量',
+                                name:'渠道指标预警工单',
                                 type:'line',
                                 data:datacount[2],
                                 //markLine: {data: [{type: 'average', name: '平均值'}]},
                                 itemStyle : {normal : {color:'#FF0000'}}
                             },
                             {
-                                name:'资金稽核工单量',
+                                name:'资金稽核工单',
                                 type:'line',
                                 data:datacount[3],
                                 //markLine: {data: [{type: 'average', name: '平均值'}]},
                                 itemStyle : {normal : {color:'#0000CD'}}
                             },
                             {
-                                name:'深度资金稽核工单量',
+                                name:'深度稽核工单',
                                 type:'line',
                                 data:datacount[4],
                                // markLine: {data: [{type: 'average', name: '平均值'}]},
@@ -362,9 +362,8 @@
             var month=date1.getMonth()+1;
             var day=date1.getDate();
             today=year+"-0"+month+"-"+day;
-
         }
-        var orderArray =['','差错工单','预警工单','资金稽核工单','深度资金稽核工单'];
+        var orderArray =['','稽核差错工单','渠道指标预警工单','资金稽核工单','深度稽核工单'];
         ajaxLoading(2);
         <!--归档情况-->
         $.ajax({
@@ -519,7 +518,7 @@
                             }
                         },
                         legend: {
-                            data: ['工单流转总量', '差错工单流转量','预警工单流转量','资金稽核工单流转量','深度资金稽核工单流转量']
+                            data: ['工单流转总量', '稽核差错工单','渠道指标预警工单','资金稽核工单','深度稽核工单']
                         },
                         xAxis:  {
                             name:'派单日期',
@@ -545,28 +544,28 @@
                                 itemStyle : {normal : {color:'#080808'}}
                             },
                             {
-                                name:'差错工单流转量',
+                                name:'稽核差错工单',
                                 type:'line',
                                 data:datacount[1],
                                 //markLine: {data: [{type: 'average', name: '平均值'}]},
                                 itemStyle : {normal : {color:'#32d2c9'}}
                             },
                             {
-                                name:'预警工单流转量',
+                                name:'渠道指标预警工单',
                                 type:'line',
                                 data:datacount[2],
                                 //markLine: {data: [{type: 'average', name: '平均值'}]},
                                 itemStyle : {normal : {color:'#FF0000'}}
                             },
                             {
-                                name:'资金稽核工单流转量',
+                                name:'资金稽核工单',
                                 type:'line',
                                 data:datacount[3],
                                 //markLine: {data: [{type: 'average', name: '平均值'}]},
                                 itemStyle : {normal : {color:'#0000CD'}}
                             },
                             {
-                                name:'深度资金稽核工单流转量',
+                                name:'深度稽核工单',
                                 type:'line',
                                 data:datacount[4],
                                // markLine: {data: [{type: 'average', name: '平均值'}]},

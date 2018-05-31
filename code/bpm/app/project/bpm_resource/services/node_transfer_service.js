@@ -6,6 +6,8 @@ var model = require('../models/process_model');
 var Promise = require("bluebird");
 var nodeAnalysisService=require("./node_analysis_service");
 var utils = require('../../../../lib/utils/app_utils');
+var mailutil = require('../../../utils/mail_util');
+var config = require('../../../../config');
 var nodegrass = require("nodegrass");
 var ObjectID = require('mongodb').ObjectID;
 var REQ_HEADERS = {
@@ -327,6 +329,7 @@ async function forkTaskCreate(item_config, proc_define, node_Array, k, user_code
                         if(condition_task.proc_inst_task_user_role && condition_task.proc_inst_task_user_role.length>0) {
                             match.user_roles = {$in: condition_task.proc_inst_task_user_role};
                         }
+                      
                         await model_user.$User.find(match,async function(err,res){
                             if(err){
                                 console.log('获取机员失败',err);
@@ -997,13 +1000,22 @@ async function normal_process(current_detail,next_detail, next_node, proc_inst_i
 
         //创建新流转任务
         let rs = await model.$ProcessInstTask.create(arr);
+
+        var mailsubj=config.email_subject.replace('procName',proc_name);
+        var mailcontext=config.email_templet.replace('procName',proc_name);
         if(rs && is_refuse){
             conditions ={_id: proc_inst_id};
             update={$inc: {refuse_number: 1}};
             options={};
+            mailsubj = '《'+proc_name+'》 的工单任务退回通知';
+            mailcontext = '您好，您有一张名为：《'+procName+'》的工单任务被退回，请查看原因并及时处理。';
             await model.$ProcessInst.update(conditions, update, options);
         }
-
+        //发送邮件通知
+        if(config.email_switch && next_detail.item_mail_notice && next_detail.item_mail_notice == 1){
+            let userobj = await  model_user.$User.find({"user_no": condition_task.proc_inst_task_assignee});
+            await mailutil.sendMail(userobj[0].user_email,mailsubj,mailcontext);
+        }
 
         resolve(utils.returnMsg(true, '1000', '流程流转新增任务信息正常。', rs, null));
     });
@@ -1054,6 +1066,7 @@ exports.assign_transfer=function(proc_task_id,node_code,user_code,assign_user_co
        }
        //是否短信通知
        var item_sm_warn=next_detail.item_sms_warn;
+       var item_mail_notice=next_detail.item_mail_notice;
        if(!next_detail||!current_detail){
            resolve(utils.returnMsg(false, '1010', '节点信息异常', null));
            return;
@@ -1181,6 +1194,10 @@ exports.assign_transfer=function(proc_task_id,node_code,user_code,assign_user_co
        var update = {$set: data};
        var options = {};
        await model.$ProcessInst.update(conditions,update,options);
+       //发送邮件通知
+       if(config.email_switch && item_mail_notice && item_mail_notice == 1){
+          await mailutil.sendMail(resultss[0].user_email,config.email_subject.replace('procName',proc_name),config.email_templet.replace('procName',proc_name))
+       }
        let res_s=await touchNode(next_detail,user_code,proc_task_id,true);
        //resolve(res_s);
        resolve({'success': true, 'code': '0000', 'msg': '任务流转正常','data':result});
@@ -1299,6 +1316,8 @@ exports.do_payout=function(proc_task_id,node_code,user_code,assign_user_code,pro
         var proc_inst_node_vars = next_detail.item_node_var;
         //是否短信通知
         var item_sm_warn=next_detail.item_sms_warn;
+        //是否邮件通知
+        let item_mail_notice=next_detail.item_mail_notice;
         var proc_cur_user;
         if (current_detail.item_assignee_type == 1) {
             proc_cur_user = current_detail.item_assignee_user;
@@ -1356,7 +1375,8 @@ exports.do_payout=function(proc_task_id,node_code,user_code,assign_user_code,pro
             for (var i = 0; i < users.length; i++) {
                 var user_no = users[i];
                 let resultss = await  model_user.$User.find({"user_no": user_no});
-                if (!resultss.length) {
+        
+                if (!resultss && resultss.length == 0) {
                     NoFound(resolve);
                     return;
                 }
@@ -1411,10 +1431,13 @@ exports.do_payout=function(proc_task_id,node_code,user_code,assign_user_code,pro
                 condition_task.publish_status = publish_status;
                 condition_task.work_order_number = work_order_number;
                 condition_task.proc_task_ver = proc_task_ver;
+                condition_task.item_mail_notice = item_mail_notice;//邮件通知
                 //创建新流转任务
                 let rs = await model.$ProcessInstTask.create(condition_task);
                 taskid = rs._id;
-
+                if(config.email_switch && item_mail_notice && item_mail_notice == 1){//发送邮件通知
+                    mailutil.sendMail(resultss[0].user_email,config.email_subject.replace('procName',proc_name),config.email_templet.replace('procName',proc_name))
+                }
                 let resss = await touchNode(next_detail, user_code, rs._id, true);
                 if(!resss.success){
                     resolve(resss);
@@ -1608,8 +1631,6 @@ exports.assigntransfer=function(proc_task_id,node_code,user_code,assign_user_cod
         condition_task.proc_task_start_user_role_names = role_name;//流程发起人角色
         condition_task.proc_task_start_user_role_code = role_code;//流程发起人id
         condition_task.proc_task_start_name = name;//流程发起人姓名
-        condition_task.proc_name=proc_name;
-        condition_task.proc_code=proc_code;
         condition_task.joinup_sys = joinup_sys;//工单所属系统编号
         condition_task.skip = skip;
         var arr = [];

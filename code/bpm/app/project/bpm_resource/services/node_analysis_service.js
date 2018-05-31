@@ -1729,7 +1729,7 @@ exports.findCurrentHandler=function(user_code,proc_define_id,node_code,params,pr
         model.$ProcessDefine.find({"_id":proc_define_id}, function (errs, result) {
             if (errs) {
                 console.log(errs)
-                reject(utils.returnMsg(false, '1000', '查询用户信息错误', null, errs))
+                reject(utils.returnMsg(false, '1000', '查询流程定义信息错误', null, errs))
             } else {
                 // console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
                 if (result.length > 0) {
