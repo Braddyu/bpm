@@ -590,7 +590,7 @@ exports.createInstance = function (proc_code, proc_ver, proc_title, param_json_s
         condition.proc_name = rs_s[0].proc_name;
         condition.next_name = next_name;
         condition.proc_task_ver = proc_ver;
-        condition.proc_inst_task_opt_type = 3;
+
         if (nodeDetail.next_detail) {
             //创建流程任务
             let taskresult = await insertTask(insresult, condition, resu, role);
@@ -733,6 +733,7 @@ function insertTask(result, condition, resu, role) {
         task.previous_step = [];
         task.publish_status = condition.publish_status;
         task.proc_task_ver = condition.proc_task_ver;
+        task.proc_inst_task_opt_type = 3;
 
         var arr = [];
         arr.push(task);

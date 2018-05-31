@@ -1356,7 +1356,7 @@ exports.do_payout=function(proc_task_id,node_code,user_code,assign_user_code,pro
         datas.proc_inst_task_status = 1;
         datas.proc_inst_task_assignee = user_code;
         datas.proc_inst_task_remark = memo;
-        data.proc_inst_task_opt_type = 1;
+        datas.proc_inst_task_opt_type = 1;
         var updates = {$set: datas};
         await model.$ProcessInstTask.update(condition, updates, options);
         let r= await model.$ProcessInstTask.find({"_id": proc_task_id});
