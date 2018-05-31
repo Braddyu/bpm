@@ -8,6 +8,7 @@ var logger = require('../../../../lib/logHelper').helper;
 var xlsx = require('node-xlsx');
 var moment = require('moment');
 var memcached_utils = require('../../../../lib/memcached_utils.js');
+var user_mode_log = require('../../../../node_modules/gmdp/lib/common/core/models/user_model');
 /**
  * 工单统计
  * @param org_id 机构id
@@ -1263,6 +1264,55 @@ exports.getCirculation= function(monthArray) {
             console.log("正在加载派单数据，请稍等。。。")
         }
         number.push(orderTotal,orderError,orderWarning,orderAudit,orderDepth,orders);
+        resolve(number);
+    });
+    return p;
+};
+
+/**
+ * 用户活跃度统计
+ * @param monthArray :日期
+ */
+exports.getLively= function(monthArray) {
+    var p = new Promise(async function(resolve,reject) {
+        var timeArray=monthArray.split(",");
+        var livelyArray=[];//活跃度
+        var orders=0;
+        var number=[];//返回前台的数据
+        for (var i in timeArray){
+            var startDate=new Date(timeArray[i]);
+            var endDate=new Date(timeArray[i]+' 23:59:59');
+            var lively =await user_mode_log.$CommonUserLoginLog.find({ "login_time":{$gte:startDate,$lte:endDate}}).count();
+            orders+=lively;
+            livelyArray.push(lively);
+            console.log("正在加载用户活跃度数据，请稍等。。。")
+        }
+        number.push(livelyArray,orders);
+        resolve(number);
+    });
+    return p;
+};
+
+
+/**
+ * 用户活跃度统计
+ * @param monthArray :日期
+ */
+exports.getEmploy= function(monthArray) {
+    var p = new Promise(async function(resolve,reject) {
+        var timeArray=monthArray.split(",");
+        var livelyArray=[];//活跃度
+        var orders=0;
+        var number=[];//返回前台的数据
+        for (var i in timeArray){
+            var startDate=new Date(timeArray[i]);
+            var endDate=new Date(timeArray[i]+' 23:59:59');
+            var lively =await user_mode_log.$CommonUserLoginLog.distinct("$user_no",{ "login_time":{$gte:startDate,$lte:endDate}}).count();
+            orders+=lively;
+            livelyArray.push(lively);
+            console.log("正在加载用户活跃度数据，请稍等。。。")
+        }
+        number.push(livelyArray,orders);
         resolve(number);
     });
     return p;
