@@ -572,7 +572,7 @@ async function rejectFunction(proc_inst_task_id, node_code, params, reject, reso
 async function joinFunction(proc_inst_id, resolve, reject, node_code, params, proc_inst_task_id,user_code,biz_vars,prev_node,prev_user,proc_vars,memo) {
     var condition={_id:proc_inst_task_id}
     var proc_inst_task_opt_type;
-    if(params.flag){
+    if(params && undefined !== params.flag && params.flag){
         proc_inst_task_opt_type=1;
     }else{
         proc_inst_task_opt_type=0
