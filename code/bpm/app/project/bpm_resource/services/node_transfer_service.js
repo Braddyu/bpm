@@ -330,7 +330,8 @@ async function forkTaskCreate(item_config, proc_define, node_Array, k, user_code
                         if(condition_task.proc_inst_task_user_role && condition_task.proc_inst_task_user_role.length>0) {
                             match.user_roles = {$in: condition_task.proc_inst_task_user_role};
                         }
-                        await model_user.$User.find(match,function(err,res){
+                      
+                        await model_user.$User.find(match,async function(err,res){
                             if(err){
                                 console.log('获取机员失败',err);
                             }else{
@@ -369,7 +370,6 @@ async function forkTaskCreate(item_config, proc_define, node_Array, k, user_code
                 condition_task.proc_inst_task_sms = "";// Number,// 流程是否短信提醒
                 condition_task.proc_inst_task_remark = "";// : String// 流程处理意见
                 condition_task.proc_vars = proc_vars;// 流程变量
-
 
                 var arr = [];
                 arr.push(condition_task);
@@ -994,7 +994,7 @@ async function normal_process(current_detail,next_detail, next_node, proc_inst_i
         }
     }
 
-    loop().then(async function(res) { console.log("22222222222222222222222")
+    loop().then(async function(res) {
         var arr = [];
         condition_task.proc_code = proc_code;//流程编码
         condition_task.proc_name = proc_name;//流程名称
@@ -1007,7 +1007,7 @@ async function normal_process(current_detail,next_detail, next_node, proc_inst_i
 
         //创建新流转任务
         let rs = await model.$ProcessInstTask.create(arr);
-        console.log(rs);console.log("33333333333333333333333")
+
         var mailsubj=config.email_subject.replace('procName',proc_name);
         var mailcontext=config.email_templet.replace('procName',proc_name);
         if(rs && is_refuse){
@@ -1385,6 +1385,7 @@ exports.do_payout=function(proc_task_id,node_code,user_code,assign_user_code,pro
             for (var i = 0; i < users.length; i++) {
                 var user_no = users[i];
                 let resultss = await  model_user.$User.find({"user_no": user_no});
+        
                 if (!resultss && resultss.length == 0) {
                     NoFound(resolve);
                     return;

@@ -2584,6 +2584,7 @@ function findNextHandler(user_code,proc_define_id,node_code,params,proc_inst_id)
                 returnMap.proc_inst_task_assignee = "";
                 returnMap.proc_inst_task_assignee_name = "";
                 returnMap.user_role_id = next_detail.item_assignee_role ? next_detail.item_assignee_role.split(",") : [];
+                returnMap.user_org_id = next_detail.item_assignee_org_ids ? next_detail.item_assignee_org_ids.split(",") : [];
                 resolve(utils.returnMsg(true, '10000', '查询用户org', returnMap, null))
 
             } else if (type == 3) {
@@ -2854,12 +2855,13 @@ exports.getNextNodeAndHandlerInfo=function(node_code,proc_task_id,proc_inst_id,p
                         resolve({"data":ret_map,"msg":"查询完成","error":null,"success":true,"next_node":next_detail.item_code});
                     }else{
                         let match={};
-                        if(data_s.data.user_org_id){
-                            match.user_org={$in:data_s.data.user_org_id[0]};
+                        if(data_s.data.user_org_id && data_s.data.user_org_id.length>0){
+                            match.user_org={$in:data_s.data.user_org_id};
                         }
-                        if(next_detail.item_assignee_role){
-                            match.user_roles={$in:next_detail.item_assignee_role?next_detail.item_assignee_role.split(","):[next_detail.item_assignee_role]};
+                        if(data_s.data.user_role_id && data_s.data.user_role_id.length>0){
+                            match.user_roles={$in:data_s.data.user_role_id};
                         }
+                        console.log(JSON.stringify(match))
                         let res=await model_user.$User.find(match);
                         if(res.length==0){ resolve({"data":null,"msg":"查询出错1","error":null,"success":false});return ;}
                         var ret_map=[];

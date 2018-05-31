@@ -342,7 +342,7 @@ exports.task=function() {
         if (!inst_id) {
             utils.respMsg(res, false, '2001', '流程实例inst_id不能为空', null, null);
             return;
-        }console.log(JSON.stringify(req.body))
+        }
         //查询日志
         nodeTransferService.find_log(inst_id, user_no, page, rows).then(function (rs) {
             utils.respJsonData(res, rs);
