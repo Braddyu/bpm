@@ -370,6 +370,7 @@ async function forkTaskCreate(item_config, proc_define, node_Array, k, user_code
                 condition_task.proc_inst_task_sms = "";// Number,// 流程是否短信提醒
                 condition_task.proc_inst_task_remark = "";// : String// 流程处理意见
                 condition_task.proc_vars = proc_vars;// 流程变量
+                condition_task.proc_inst_task_opt_type = 3;// 操作类型 0-拒绝 1-通过 2-归档 3-待处理
 
                 var arr = [];
                 arr.push(condition_task);
@@ -714,7 +715,7 @@ async function joinFunction(proc_inst_id, resolve, reject, node_code, params, pr
         if(org.proc_inst_task_assignee_name){
             condition_task.proc_inst_task_assignee_name=org.proc_inst_task_assignee_name;
         }
-        condition_task.proc_inst_task_opt_type = 1;
+        condition_task.proc_inst_task_opt_type = 3;// 操作类型 0-拒绝 1-通过 2-归档 3-待处理
         // resolve(ergodic(r,condition_task,proc_cur_task,next_detail,proc_inst_task_params,proc_inst_node_vars,biz_vars,proc_code,proc_name));
         condition_task.proc_inst_task_title = r[0].proc_inst_task_title;
         condition_task.next_name = r[0].next_name;
@@ -936,7 +937,7 @@ async function normal_process(current_detail,next_detail, next_node, proc_inst_i
     if(org.proc_inst_task_assignee_name){
         condition_task.proc_inst_task_assignee_name=org.proc_inst_task_assignee_name;
     }
-    // condition_task.proc_inst_task_opt_type = 1;
+    condition_task.proc_inst_task_opt_type = 3;// 操作类型 0-拒绝 1-通过 2-归档 3-待处理
            // resolve(ergodic(r,condition_task,proc_cur_task,next_detail,proc_inst_task_params,proc_inst_node_vars,biz_vars,proc_code,proc_name));
     //是否为拒绝
     let is_refuse=false;
@@ -1190,6 +1191,7 @@ exports.assign_transfer=function(proc_task_id,node_code,user_code,assign_user_co
        condition_task.next_name = '';
        condition_task.proc_back = proc_back;
        condition_task.previous_step = previous_step;
+       condition_task.proc_inst_task_opt_type = 3;
        var arr = [];
        arr.push(condition_task);
        //创建新流转任务
@@ -1441,7 +1443,7 @@ exports.do_payout=function(proc_task_id,node_code,user_code,assign_user_code,pro
                 condition_task.publish_status = publish_status;
                 condition_task.work_order_number = work_order_number;
                 condition_task.proc_task_ver = proc_task_ver;
-                condition_task.item_mail_notice = item_mail_notice;//邮件通知
+                condition_task.proc_inst_task_opt_type = 3;//操作类型 0不同意 1同意  2归档 3待处理
                 //创建新流转任务
                 let rs = await model.$ProcessInstTask.create(condition_task);
                 taskid = rs._id;

@@ -206,7 +206,7 @@ var commonProcessInstTaskSchema = new Schema(
         proc_inst_task_user_org_name : String,// 流程处理用户组织名
         proc_inst_task_params : String,// 流程参数(任务参数)
         proc_inst_task_claim : Number,// 流程会签
-        proc_inst_task_opt_type:Number,//0不同意 1同意  2归档 任务操作类型
+        proc_inst_task_opt_type:Number,//0不同意 1同意  2归档 3待处理 任务操作类型
         proc_inst_task_sign : Number,// 流程签收(0-未认领，1-已认领)
         proc_inst_task_sms : Number,// 流程是否短信提醒
         proc_inst_task_remark : String,// 流程处理意见
