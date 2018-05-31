@@ -60,7 +60,7 @@ var config = {
         saveUninitialized: false,
         rolling: true,
         //mongodb_url:'mongodb://10.196.153.11:30000/process',
-        mongodb_url: 'mongodb://192.168.9.48:27017/process',
+        mongodb_url: 'mongodb://192.168.9.48:27017/processpm',
         // mongodb_url:'mongodb://10.201.253.162:27017/process1',
         //mongodb_url:'mongodb://127.0.0.1:27017/ywcj',  //内网
         mongodb_collection: 'common_user_session'
@@ -138,7 +138,7 @@ var config = {
         ]
     },
     mongdb: {
-        url: 'mongodb://192.168.9.48:27017/process2',
+        url: 'mongodb://192.168.9.48:27017/processpm',
         // url: 'mongodb://10.196.153.11:30000/process',
         //url:'mongodb://10.201.253.162:27017/process1',
         // url: 'mongodb://10.201.253.111:27017/Examine',
