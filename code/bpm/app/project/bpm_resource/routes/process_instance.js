@@ -446,7 +446,7 @@ router.route("/next/nodeAnduser").post(function (req, res) {
 
     });
 
-//获取所有的下一节点 node_code node el
+    //获取所有的下一节点 node_code node el
     router.route("/get/next_nodes/info").get(function (req, req) {
         var task_id = req.query.proc_task_id;
         var node_code = req.query.node_code;
@@ -466,3 +466,15 @@ router.route("/next/nodeAnduser").post(function (req, res) {
     return router;
 
 }
+
+
+/**
+ * 实例创建前验证标题是否被占用[仅风险防控系统使用]
+ */
+router.route("/create/validate").post(function (req, res) {
+    var params = req.body.params;
+    var proc_code = req.body.proc_code;
+    inst.validateBeforeCreate(proc_code,params).then(function(rs){
+        utils.respJsonData(res, rs);
+    });
+});
