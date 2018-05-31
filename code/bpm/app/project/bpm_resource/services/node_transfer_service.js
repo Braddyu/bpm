@@ -1016,7 +1016,7 @@ async function normal_process(current_detail,next_detail, next_node, proc_inst_i
             update={$inc: {refuse_number: 1}};
             options={};
             mailsubj = '《'+proc_name+'》 的工单任务退回通知';
-            mailcontext = '您好，您有一张名为：《'+procName+'》的工单任务被退回，请查看原因并及时处理。';
+            mailcontext = '您好，您有一张名为：《'+proc_name+'》的工单任务被退回，请查看原因并及时处理。';
             await model.$ProcessInst.update(conditions, update, options);
         }
         //发送邮件通知
