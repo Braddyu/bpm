@@ -225,7 +225,8 @@ exports.transfer=function(proc_inst_task_id,node_code,user_code,opts,memo,param_
                   proc_inst_task_status: 1,
                   proc_inst_task_assignee: user_code,
                   proc_inst_task_complete_time: new Date(),
-                  proc_inst_task_remark: memo
+                  proc_inst_task_remark: memo,
+                  proc_inst_task_opt_type : 1
               };
               var updates = {$set: datas};
               await model.$ProcessInstTask.update(condition, updates, options);
@@ -865,6 +866,12 @@ async function normal_process(current_detail,next_detail, next_node, proc_inst_i
     data_original.proc_inst_task_assignee=user_code;
     data_original.proc_inst_task_remark = memo;
     data_original.proc_back = 0;
+    if (params && undefined !== params.flag && !params.flag) {
+        data_original.proc_inst_task_opt_type = 0;
+    }else{
+        data_original.proc_inst_task_opt_type = 1;
+    }
+
     var update_original={$set:data_original}
     await model.$ProcessInstTask.update(conditions_original, update_original, options);
     //let rest=await touchNode(current_detail,user_code,proc_inst_task_id,false);
@@ -1101,8 +1108,10 @@ exports.assign_transfer=function(proc_task_id,node_code,user_code,assign_user_co
        datas.proc_inst_task_assignee = user_code;
        datas.proc_inst_task_remark = memo;
        datas.next_name = next_name;
+       datas.proc_inst_task_opt_type = 1;
        if(proc_back=='1'){
            datas.proc_back = proc_back;
+           datas.proc_inst_task_opt_type = 0;
        }else{
            datas.proc_back = 0;
        }
@@ -1345,6 +1354,7 @@ exports.do_payout=function(proc_task_id,node_code,user_code,assign_user_code,pro
         datas.proc_inst_task_status = 1;
         datas.proc_inst_task_assignee = user_code;
         datas.proc_inst_task_remark = memo;
+        data.proc_inst_task_opt_type = 1;
         var updates = {$set: datas};
         await model.$ProcessInstTask.update(condition, updates, options);
         let r= await model.$ProcessInstTask.find({"_id": proc_task_id});
