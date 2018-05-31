@@ -331,3 +331,16 @@ var commonSmsInfo = new Schema(
 
 // 流程流转历史信息model
 exports.$CommonSmsInfo = mongoose.model('CommonSmsInfo', commonSmsInfo);
+
+
+//流程实例参数
+var commonProcessInstParamSchema = new Schema(
+    {
+        proc_inst_id : {type: Schema.Types.ObjectId}, // 实例id
+        proc_code : String,// 流程编码
+        proc_vars:{type: Schema.Types.Object},// 实例参数
+    },
+    {collection: "common_bpm_proc_inst_param"}// mongodb集合名
+);
+// 流程实例参数model
+exports.$CommonProcessInstParam = mongoose.model('CommonProcessInstParam', commonProcessInstParamSchema);

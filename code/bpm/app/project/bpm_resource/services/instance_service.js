@@ -546,6 +546,7 @@ exports.createInstance = function (proc_code, proc_ver, proc_title, param_json_s
         condition.publish_status = publish;
         //写入数据库 创建流程实例化方法
         let insresult = await saveIns(condition, proc_code, proc_title, user_code);
+
         if (!insresult.success) {
             resolve(insresult);
             return;
@@ -555,6 +556,23 @@ exports.createInstance = function (proc_code, proc_ver, proc_title, param_json_s
             NoFound(resolve);
             return;
         }
+
+        // ---------------------------风险防控系统调用时保存实例参数到副表-----------------------------
+        if (joinup_sys == 'riskManagementSys_node') {
+            let proc_vars_object = {};
+            if (proc_vars_json) {
+                proc_vars_object =  JSON.parse(proc_vars_json);
+            }
+            let paramStash = {};
+            paramStash.proc_code = proc_code;
+            paramStash.proc_inst_id = insresult.data;
+            let paramInsertResult = await saveInsParam(paramStash,proc_vars_object);
+            if (!paramInsertResult.success) {
+                resolve(insresult);
+                return;
+            }
+        }
+        // -----------------------------------------------------------------------------------------
         //新加字段所属系统编号
         condition.publish_status = rs_s[0].publish_status;
         condition.joinup_sys = rs_s[0].joinup_sys;
@@ -1213,7 +1231,7 @@ exports.getMyTaskQuery = function (taskId, user_no) {
  * @param userCode
  * @param paramMap
  */
-exports.getMyCompleteTaskQuery4Eui = function (page, size, userCode, paramMap, joinup_sys, proc_code,begin_date,end_date,param_json_str,work_order_number) {
+exports.getMyCompleteTaskQuery4Eui = function (page, size, userCode, paramMap, joinup_sys, proc_code,begin_date,end_date,work_order_number,proc_inst_task_title) {
 
     return new Promise(function (resolve, reject) {
         var userArr = [];
@@ -1229,12 +1247,10 @@ exports.getMyCompleteTaskQuery4Eui = function (page, size, userCode, paramMap, j
         if (work_order_number) {
             match.work_order_number = work_order_number;
         }
-        /*if(!(!param_json_str||param_json_str=="undefined"||param_json_str=="{}")){
-            var params_json=JSON.parse(param_json_str);
-            if(params_json.proc_inst_status){
-                match.proc_inst_status = proc_inst_status;
-            }
-        }*/
+
+        if (proc_inst_task_title) {
+            match['proc_inst_task_title'] = new RegExp(proc_inst_task_title);
+        }
         if (begin_date && end_date) {
             match['$and'] = [{"proc_inst_task_arrive_time":{"$gte": new Date(begin_date+" 00:00:00"),"$lte": new Date(end_date+" 23:59:59")}}];
         }else if (begin_date) {
@@ -2501,4 +2517,156 @@ exports.taskdelete = function (taskid,inststatus) {
 
     });
     return p;
+}
+
+
+/**
+ * 获取已归档数据
+ * @param page
+ * @param size
+ * @param conditionMap
+ * @returns {Promise}
+ */
+exports.getMyArchiveTaskQuery4Eui = function (page, size, userNo, result) {
+
+    var p = new Promise(function (resolve, reject) {
+
+        var inst_search = {};
+        let work_id = result.work_id;
+        //有的工号为'',为了防止查到空工号的任务
+        if (!work_id) work_id = '@@@@@@@';
+        inst_search.proc_inst_status = 4;
+        page = parseInt(page);
+        size = parseInt(size);
+        if (page == 0) {
+            page = 1;
+        }
+
+        model.$ProcessInst.aggregate([
+            {
+                $match: inst_search
+            },
+            {
+                $lookup: {
+                    from: "common_bpm_proc_task_histroy",
+                    localField: "_id",
+                    foreignField: "proc_inst_id",
+                    as: "his"
+                }
+            },
+            {
+                $match: {$or: [{"his.proc_inst_task_assignee": userNo}, {"his.proc_inst_task_work_id": work_id}]}
+            },
+            {
+                $project: {
+                    proc_start_time: 1,
+                    proc_title:1,
+                    proc_name:1,
+                    proc_inst_id:'$_id',
+                    proc_code:1,
+                    his:1,
+                }
+            },
+            {
+                $sort: {"proc_start_time": -1}
+            },
+            {
+                $skip: (page - 1) * size
+            },
+            {
+                $limit: size
+            },
+        ]).exec(function (err, res) {
+            if (err) {
+                reject(utils.returnMsg(false, '1000', '查询统计失败。', null, err));
+            } else {
+                var result = {rows: res, success: true};
+                model.$ProcessInst.aggregate([
+                    {
+                        $match: inst_search
+                    },
+                    {
+                        $lookup: {
+                            from: "common_bpm_proc_task_histroy",
+                            localField: "_id",
+                            foreignField: "proc_inst_id",
+                            as: "his"
+                        }
+                    },
+                    {
+                        $match: {"his.proc_inst_task_assignee": userNo}
+                    },
+                    {
+                        $addFields: {
+                            "isCount": "1"
+                        }
+                    },
+                    {
+                        $sortByCount: "$isCount"
+                    }
+                ]).exec(function (err, res) {
+                    if (err) {
+                        reject(utils.returnMsg(false, '1000', '查询统计失败。', null, err));
+                    } else {
+                        console.log("数量", res);
+                        if (res.length > 0)
+                            result.total = res[0].count;
+                        else
+                            result.total = 0;
+                        resolve(result)
+
+                    }
+                })
+            }
+        })
+
+    });
+    return p;
+};
+
+
+/**
+ * 实例创建前验证标题是否被占用[仅风险防控系统使用]
+ * @param proc_code
+ * @param json_str_params
+ * @returns {bluebird}
+ */
+exports.validateBeforeCreate = (proc_code,json_str_params)=>{
+    return new Promise(function(resolve,reject){
+        var json_object_params = {};
+        var conditionMap = {};
+        if(json_str_params){
+            json_object_params = JSON.parse(json_str_params);
+            for(let key in json_object_params){
+                conditionMap["proc_vars."+ key] = json_object_params[key];
+            }
+        }
+        conditionMap.proc_code = proc_code;
+        model.$CommonProcessInstParam.find(conditionMap,function (err, rs) {
+            if(err){
+                resolve(utils.returnMsg(false, '0002', '验证项目名称失败', null, err));
+            }else if(rs.length > 0){
+                resolve(utils.returnMsg(false, '0001', '该项目名称已存在,请更换后重新提交', null, err));
+            }else{
+                resolve(utils.returnMsg(true, '0000', '验证项目名称成功', null, null));
+            }
+        });
+    });
+}
+
+
+/**
+ * 保存流程实例参数
+ * @param dataMap
+ * @param proc_vars
+ * @returns {bluebird}
+ */
+function saveInsParam(dataMap,proc_vars) {
+    return new Promise(async function (resolve, reject) {
+            var data = dataMap;
+            data.proc_vars = proc_vars
+            //写入数据库
+            let rs = await model.$CommonProcessInstParam.create(data);
+            resolve(utils.returnMsg(true, '0000', '保存流程实例参数成功。', null, null));
+    });
 }

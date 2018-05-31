@@ -102,8 +102,7 @@ exports.task=function() {
         var work_order_number = req.body.work_order_number;//工单编号
         var begin_date = req.body.begin_date;//派单开始时间
         var end_date = req.body.end_date;//派单结束时间
-        var params = req.body.params;
-        // var params_json=JSON.parse(params);
+        var proc_inst_task_title = req.body.proc_inst_task_title; // 任务标题
         if (!joinup_sys) {
             utils.respMsg(res, false, '2001', '工单所属系统编号不能为空。', null, null);
             return;
@@ -122,7 +121,7 @@ exports.task=function() {
                 if (rs.success && rs.data.length == 1) {
                     userService.getUsreRolesByUserNo(userNo).then(function (result) {
                         if (result) {
-                            inst.getMyCompleteTaskQuery4Eui(page, length, userNo, result, joinup_sys, proc_code,begin_date,end_date,params,work_order_number).then(function (taskresult) {
+                            inst.getMyCompleteTaskQuery4Eui(page, length, userNo, result, joinup_sys, proc_code,begin_date,end_date,work_order_number,proc_inst_task_title).then(function (taskresult) {
                                 utils.respJsonData(res, taskresult);
                             }).catch(function (err_inst) {
                                 // console.log(err_inst);
@@ -143,8 +142,54 @@ exports.task=function() {
                 }
             });
         }
+    });
 
+    // -------------------------------查询我的已办中已归档任务-------------------------------
+    router.route('/filed').post(function (req, res) {
+        // 获取提交信息
+        var userNo = req.body.user_no;//用户编号
+        var page = req.body.page;//页码
+        var length = req.body.rows;//每页条数
+        var joinup_sys = req.body.joinup_sys;//工单所属系统编号
+        if (!joinup_sys) {
+            utils.respMsg(res, false, '2001', '工单所属系统编号不能为空。', null, null);
+            return;
+        }else{
+            if(config.joinup_sys.indexOf(joinup_sys)==-1){
+                utils.respMsg(res, false, '2001', '工单所属系统编号不存在。', null, null);
+                return ;
+            }
+        }
+        // 验证流程名是否为空
+        if (!userNo) {
+            utils.respMsg(res, false, '2001', '用户编号不能为空。', null, null);
+        } else {
+            //判断用户是否存在
+            inst.userInfo(userNo).then(function (rs) {
+                if (rs.success && rs.data.length == 1) {
+                    userService.getUsreRolesByUserNo(userNo).then(function (result) {
+                        if (result) {
+                            inst.getMyArchiveTaskQuery4Eui(page, length, userNo,result).then(function (taskresult) {
+                                utils.respJsonData(res, taskresult);
+                            }).catch(function (err_inst) {
+                                // console.log(err_inst);
+                                logger.error("route-getMyTaskList", "获取我的已办数据异常", err_inst);
+                                utils.respMsg(res, false, '1000', '获取数据异常', null, err_inst);
 
+                            });
+                        } else {
+                            utils.respMsg(res, false, '1000', '无用户数据', null, null);
+                        }
+                    }).catch(function (err_inst) {
+                        // console.log(err_inst);
+                        logger.error("route-getUsreRolesByUserNo", "根据用户编号获取用户角色异常", err_inst);
+                        utils.respMsg(res, false, '1000', '获取数据异常', null, err_inst);
+                    });
+                } else {
+                    utils.respMsg(res, false, '1000', '用户不存在', null, null);
+                }
+            });
+        }
     });
 
     router.route('/accept')
