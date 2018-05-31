@@ -936,7 +936,7 @@ async function normal_process(current_detail,next_detail, next_node, proc_inst_i
     if(org.proc_inst_task_assignee_name){
         condition_task.proc_inst_task_assignee_name=org.proc_inst_task_assignee_name;
     }
-    condition_task.proc_inst_task_opt_type = 1;
+    // condition_task.proc_inst_task_opt_type = 1;
            // resolve(ergodic(r,condition_task,proc_cur_task,next_detail,proc_inst_task_params,proc_inst_node_vars,biz_vars,proc_code,proc_name));
     //是否为拒绝
     let is_refuse=false;
@@ -951,7 +951,7 @@ async function normal_process(current_detail,next_detail, next_node, proc_inst_i
                 condition_task.proc_inst_task_work_id = step_first[0].proc_inst_task_work_id;
             condition_task.next_name = step_first[0].next_name;
             condition_task.proc_back = 1;
-            condition_task.proc_inst_task_opt_type = 0;
+            // condition_task.proc_inst_task_opt_type = 0;
             condition_task.joinup_sys = step_first[0].joinup_sys;//工单所属编号
             condition_task.proc_inst_id = step_first[0].proc_inst_id;
             condition_task.proc_inst_task_assignee = step_first[0].proc_inst_task_assignee;
