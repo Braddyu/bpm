@@ -380,7 +380,7 @@ router.route('/getEmployView').post(function(req,res){
     var monthArray = req.body.monthArray;//当前月的所有日期
     console.log(monthArray);
     service.getEmploy(monthArray).then(function(result){
-        console.log(result,"用户系统使用量统计！");
+        //console.log(result,"用户系统使用量统计！");
         utils.respJsonData(res, result);
     }).catch(function(err){
         console.log('获取派单量失败',err);

@@ -1282,7 +1282,7 @@ exports.getLively= function(monthArray) {
         for (var i in timeArray){
             var startDate=new Date(timeArray[i]);
             var endDate=new Date(timeArray[i]+' 23:59:59');
-            var lively =await user_mode_log.$CommonUserLoginLog.find({ "login_time":{$gte:startDate,$lte:endDate}}).count();
+            var lively =await user_mode_log.$CommonUserLoginLog.find({"login_time":{$gte:startDate,$lte:endDate}}).count();
             orders+=lively;
             livelyArray.push(lively);
             console.log("正在加载用户活跃度数据，请稍等。。。")
@@ -1295,7 +1295,7 @@ exports.getLively= function(monthArray) {
 
 
 /**
- * 用户活跃度统计
+ * 系统活跃度统计
  * @param monthArray :日期
  */
 exports.getEmploy= function(monthArray) {
@@ -1306,10 +1306,11 @@ exports.getEmploy= function(monthArray) {
         var number=[];//返回前台的数据
         for (var i in timeArray){
             var startDate=new Date(timeArray[i]);
-            var endDate=new Date(timeArray[i]+' 23:59:59');
-            var lively =await user_mode_log.$CommonUserLoginLog.distinct("$user_no",{ "login_time":{$gte:startDate,$lte:endDate}}).count();
-            orders+=lively;
-            livelyArray.push(lively);
+             var endDate=new Date(timeArray[i]+' 23:59:59');
+            var lively =await user_mode_log.$CommonUserLoginLog.distinct("user_no",{"login_time":{$gte:startDate,$lte:endDate}});
+            var count=lively.length;
+             orders+=count;
+            livelyArray.push(count);
             console.log("正在加载用户活跃度数据，请稍等。。。")
         }
         number.push(livelyArray,orders);
