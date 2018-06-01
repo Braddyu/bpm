@@ -356,4 +356,36 @@ router.route('/getCirculationView').post(function(req,res){
     });
 })
 
+/**
+ * 获取用户活跃量
+ * @param monthArray :日期
+ */
+router.route('/getLivelyView').post(function(req,res){
+    var monthArray = req.body.monthArray;//当前月的所有日期
+    console.log(monthArray);
+    service.getLively(monthArray).then(function(result){
+        console.log(result,"用户活跃度统计！");
+        utils.respJsonData(res, result);
+    }).catch(function(err){
+        console.log('获取派单量失败',err);
+
+    });
+})
+
+/**
+ * 获取系统使用量
+ * @param monthArray :日期
+ */
+router.route('/getEmployView').post(function(req,res){
+    var monthArray = req.body.monthArray;//当前月的所有日期
+    console.log(monthArray);
+    service.getEmploy(monthArray).then(function(result){
+        //console.log(result,"用户系统使用量统计！");
+        utils.respJsonData(res, result);
+    }).catch(function(err){
+        console.log('获取派单量失败',err);
+
+    });
+})
+
 module.exports = router;
