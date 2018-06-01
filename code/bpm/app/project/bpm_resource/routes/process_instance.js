@@ -93,6 +93,7 @@ exports.process_instance=function() {
                                             //  nodeTransferService.assign_transfer(task_id,node_code,user_code,assign_user_no,proc_title,biz_vars,proc_vars,memo).then(function(results){
                                             //批量派发
                                             nodeTransferService.do_payout(task_id, node_code, user_code, assign_user_no, proc_title, biz_vars, proc_vars, memo).then(function (results) {
+                                                console.log(JSON.stringify(results))
                                                 utils.respJsonData(res, results);
                                             }).catch(function (err_inst) {
                                                 // console.log(err_inst);

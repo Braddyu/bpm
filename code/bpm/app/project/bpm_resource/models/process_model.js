@@ -168,6 +168,7 @@ var commonProcessInstSchema = new Schema(
         proc_opt_time:Date,//流程实例操作时间
         joinup_sys:String,//所属系统编号
         pay_task_id:String ,//派单生成的任务id
+        prev_task_id:String ,//派单生成的 上一节点任务id
         publish_status : Number,//1 发布 0-未发布
         is_overtime:Number,//是否超时，0-未超时，1-超时
         proc_inst_task_complete_time:Date,// 归档时间
