@@ -2567,6 +2567,7 @@ exports.getMyArchiveTaskQuery4Eui = function (page, size, userNo, result) {
                     proc_inst_id:'$_id',
                     proc_code:1,
                     his:1,
+                    proc_vars:1
                 }
             },
             {
