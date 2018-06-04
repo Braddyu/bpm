@@ -138,7 +138,7 @@ var config = {
         ]
     },
     mongdb: {
-        url: 'mongodb://192.168.9.48:27017/processpm',
+        url: 'mongodb://192.168.9.48:27017/process2',
         // url: 'mongodb://10.196.153.11:30000/process',
         //url:'mongodb://10.201.253.162:27017/process1',
         // url: 'mongodb://10.201.253.111:27017/Examine',
@@ -291,8 +291,8 @@ var config = {
     MISTAKE_DISTRIBUTE_TASK:"差错工单量达到number上限值，自动派单失败，需手动派单",
 	MISTAKE_DISTRIBUTE_SUCCESS:"差错工单自动派单成功！派单时间:time",
     MISTAKE_DISTRIBUTE_ERROR:"差错工单自动派单失败:msg",
-    OPEN_SMS_ALL:false, //工单短信发送总开关
-    OPEN_SMS:false, //工单短信发送接口
+
+    OPEN_ORDER_SMS:false, //工单短信发送接口
     OPEN_LOGIN_SMS:false, //短信登录验证码
     GRID_COPY_SMS:false, //预警工单抄送给网格经理短信
     MISTAKE_DISTRIBUTE_TASK_SMS:false, // 差错工单系统自动派单短信提醒
