@@ -1171,31 +1171,101 @@ exports.local_user = function (user_org, user_no) {
 exports.getMonitoring= function(monthArray) {
     var p = new Promise(async function(resolve,reject) {
     var timeArray=monthArray.split(",");
+        console.log(timeArray,"正在加载派单数据，请稍等。。。")
     var orderTotal=[];//派单总量
     var orderError=[];//差错工单量
     var orderWarning=[];//预警工单量
     var orderAudit=[];//资金稽核工单量
     var orderDepth=[];//深度资金稽核工单量
+    var orderInterior=[];//内部审批流程
     var orders=0;
     var number=[];//返回前台的数据
-        for (var i in timeArray){
-        var startDate=new Date(timeArray[i]);
-        var endDate=new Date(timeArray[i]+' 23:59:59');
-        var total =await process_model.$ProcessInst.find({ "proc_start_time":{$gte:startDate,$lte:endDate}}).count();
-        orders+=total;
-        var error =await process_model.$ProcessInst.find({ "proc_start_time":{$gte:startDate,$lte:endDate}, "proc_code" : "p-201"}).count();
-        var warning =await process_model.$ProcessInst.find({ "proc_start_time":{$gte:startDate,$lte:endDate}, "proc_code" : "p-109"}).count();
-        var audit =await process_model.$ProcessInst.find({ "proc_start_time":{$gte:startDate,$lte:endDate}, "proc_code" : "zj_101"}).count();
-        var depth =await process_model.$ProcessInst.find({ "proc_start_time":{$gte:startDate,$lte:endDate}, "proc_code" : "p-108"}).count();
-            orderTotal.push(total);
-            orderError.push(error);
-            orderWarning.push(warning);
-            orderAudit.push(audit);
-            orderDepth.push(depth);
-            console.log("正在加载派单数据，请稍等。。。")
-        }
-        console.log(orders,"当月总派单量！")
-        number.push(orderTotal,orderError,orderWarning,orderAudit,orderDepth,orders);
+        await process_model.$ProcessInst.aggregate([
+            {
+                $addFields: {
+                    "start_time":  { $dateToString: { format: "%Y-%m-%d", date: "$proc_start_time" } }
+                }
+            },
+            // {
+            //     $match: {
+            //         "start_time": /^.*2018-05.*$/i
+            //     }
+            // },
+            {
+                $group: {
+                    "_id":{"proc_name":"$proc_name","start_time":"$start_time", "proc_code" : "$proc_code"},
+                    "start_time":{$first:"$start_time"},
+                    "proc_name":{$first:"$proc_name"},
+                    "proc_code" : {$first:"$proc_code"},
+                    "count":{$sum:1}
+                }
+            },
+            {
+                $sort: { start_time: 1 }
+            }
+
+        ]).exec(function (err, res) {
+            for (var i in timeArray){
+                var flag1 = false;
+                var flag2 = false;
+                var flag3 = false;
+                var flag4 = false;
+                var flag5 = false;
+                for (var j in res){
+                    if (timeArray[i]==res[j].start_time&&res[j].proc_code=="p-201"){
+                        orderError.push(res[j].count);
+                        flag1 = true;
+                    }
+
+
+                    if (timeArray[i]==res[j].start_time&&res[j].proc_code=="p-109"){
+                        orderWarning.push(res[j].count);
+                        flag2 = true;
+                    }
+
+                    if (timeArray[i]==res[j].start_time&&res[j].proc_code=="zj_101"){
+                        orderAudit.push(res[j].count);
+                        flag3 = true;
+                    }
+
+                    if (timeArray[i]==res[j].start_time&&res[j].proc_code=="p-108"){
+                        orderDepth.push(res[j].count);
+                        flag4 = true;
+                    }
+
+                    if (timeArray[i]==res[j].start_time&&res[j].proc_code=="p-inner"){
+                        orderInterior.push(res[j].count);
+                        flag5 = true;
+                    }
+
+                }
+
+                if(!flag1){
+                     orderError.push(0);
+                }
+                if(!flag2){
+                    orderWarning.push(0);
+                }
+                if(!flag3){
+                    orderAudit.push(0);
+                }
+                if(!flag4){
+                    orderDepth.push(0);
+                }
+
+                if(!flag5){
+                    orderInterior.push(0);
+                }
+
+            }
+             for (var e in orderError){
+                var count=orderError[e]+orderWarning[e]+orderAudit[e]+orderDepth[e]+orderInterior[e]
+                 orders+=count;
+                 orderTotal.push(count);
+             }
+             number.push(orderTotal,orderError,orderWarning,orderAudit,orderDepth,orderInterior,orders);
+        });
+            console.log(number,"qqqqqqq");
         resolve(number);
     });
     return p;
@@ -1213,7 +1283,7 @@ exports.getArchive= function(today) {
         var number=[];//返回前台的数据
             var startDate=new Date(today);
             var endDate=new Date(today+' 23:59:59');
-        console.log(startDate,endDate);
+            console.log(startDate,endDate);
             var totalError =await process_model.$ProcessInst.find({ "proc_start_time":{$gte:startDate,$lte:endDate}, "proc_code" : "p-201"}).count();
             var totalWarning =await process_model.$ProcessInst.find({ "proc_start_time":{$gte:startDate,$lte:endDate}, "proc_code" :"p-109"}).count();
             var totalAudit =await process_model.$ProcessInst.find({ "proc_start_time":{$gte:startDate,$lte:endDate}, "proc_code" : "zj_101"}).count();
@@ -1245,25 +1315,96 @@ exports.getCirculation= function(monthArray) {
         var orderWarning=[];//预警工单量
         var orderAudit=[];//资金稽核工单量
         var orderDepth=[];//深度资金稽核工单量
+        var orderInterior=[];//内部审批流程
         var orders=0;
         var number=[];//返回前台的数据
-        for (var i in timeArray){
-            var startDate=new Date(timeArray[i]);
-            var endDate=new Date(timeArray[i]+' 23:59:59');
-            var total =await process_model.$ProcessTaskHistroy.find({ "proc_inst_task_complete_time":{$gte:startDate,$lte:endDate}}).count();
-            orders+=total;
-            var error =await process_model.$ProcessTaskHistroy.find({ "proc_inst_task_complete_time":{$gte:startDate,$lte:endDate}, "proc_code" : "p-201"}).count();
-            var warning =await process_model.$ProcessTaskHistroy.find({ "proc_inst_task_complete_time":{$gte:startDate,$lte:endDate}, "proc_code" : "p-109"}).count();
-            var audit =await process_model.$ProcessTaskHistroy.find({ "proc_inst_task_complete_time":{$gte:startDate,$lte:endDate}, "proc_code" : "zj_101"}).count();
-            var depth =await process_model.$ProcessTaskHistroy.find({ "proc_inst_task_complete_time":{$gte:startDate,$lte:endDate}, "proc_code" : "p-108"}).count();
-            orderTotal.push(total);
-            orderError.push(error);
-            orderWarning.push(warning);
-            orderAudit.push(audit);
-            orderDepth.push(depth);
-            console.log("正在加载派单数据，请稍等。。。")
-        }
-        number.push(orderTotal,orderError,orderWarning,orderAudit,orderDepth,orders);
+        await process_model.$ProcessTaskHistroy.aggregate([
+            {
+                $addFields: {
+                    "complete_time":  { $dateToString: { format: "%Y-%m-%d", date: "$proc_inst_task_complete_time" } }
+                }
+            },
+            // {
+            //     $match: {
+            //         "start_time": /^.*2018-05.*$/i
+            //     }
+            // },
+            {
+                $group: {
+                    "_id":{"proc_name":"$proc_name","complete_time":"$complete_time", "proc_code" : "$proc_code"},
+                    "complete_time":{$first:"$complete_time"},
+                    "proc_name":{$first:"$proc_name"},
+                    "proc_code" : {$first:"$proc_code"},
+                    "count":{$sum:1}
+                }
+            },
+            {
+                $sort: { start_time: 1 }
+            }
+
+        ]).exec(function (err, res) {
+            console.log(res,"3333");
+            for (var i in timeArray){
+                var flag1 = false;
+                var flag2 = false;
+                var flag3 = false;
+                var flag4 = false;
+                var flag5 = false;
+                for (var j in res){
+                    if (timeArray[i]==res[j].complete_time&&res[j].proc_code=="p-201"){
+                        orderError.push(res[j].count);
+                        flag1 = true;
+                    }
+
+
+                    if (timeArray[i]==res[j].complete_time&&res[j].proc_code=="p-109"){
+                        orderWarning.push(res[j].count);
+                        flag2 = true;
+                    }
+
+                    if (timeArray[i]==res[j].complete_time&&res[j].proc_code=="zj_101"){
+                        orderAudit.push(res[j].count);
+                        flag3 = true;
+                    }
+
+                    if (timeArray[i]==res[j].complete_time&&res[j].proc_code=="p-108"){
+                        orderDepth.push(res[j].count);
+                        flag4 = true;
+                    }
+
+                    if (timeArray[i]==res[j].complete_time&&res[j].proc_code=="p-inner"){
+                        orderInterior.push(res[j].count);
+                        flag5 = true;
+                    }
+
+                }
+
+                if(!flag1){
+                    orderError.push(0);
+                }
+                if(!flag2){
+                    orderWarning.push(0);
+                }
+                if(!flag3){
+                    orderAudit.push(0);
+                }
+                if(!flag4){
+                    orderDepth.push(0);
+                }
+
+                if(!flag5){
+                    orderInterior.push(0);
+                }
+
+            }
+            for (var e in orderError){
+                var count=orderError[e]+orderWarning[e]+orderAudit[e]+orderDepth[e]+orderInterior[e]
+                orders+=count;
+                orderTotal.push(count);
+            }
+            number.push(orderTotal,orderError,orderWarning,orderAudit,orderDepth,orderInterior,orders);
+        });
+        //console.log(number,"qqqqqqq");
         resolve(number);
     });
     return p;

@@ -404,7 +404,7 @@
                 }else {
                     month=date.getMonth()+1;
                 }
-                $("#orders").html(month+"月总派单量："+datacount[5]+"(条)");
+                $("#orders").html(month+"月总派单量："+datacount[6]+"(条)");
                 if(datacount){
                     var orderChart = echarts.init(document.getElementById('orderChart'));
                     orderChart.setOption({
@@ -433,7 +433,7 @@
                             }
                         },
                         legend: {
-                            data: ['派单总量', '稽核差错工单','渠道指标预警工单','资金稽核工单','深度稽核工单']
+                            data: ['派单总量', '稽核差错工单','渠道指标预警工单','资金稽核工单','深度稽核工单','内部审批流程']
                         },
                         xAxis:  {
                             name:'派单日期',
@@ -485,7 +485,16 @@
                                 data:datacount[4],
                                // markLine: {data: [{type: 'average', name: '平均值'}]},
                                 itemStyle : {normal : {color:'#8B0000'}}
+                            },
+
+                            {
+                                name:'内部审批流程',
+                                type:'line',
+                                data:datacount[5],
+                                // markLine: {data: [{type: 'average', name: '平均值'}]},
+                                itemStyle : {normal : {color:'#00CD00'}}
                             }
+
                         ]
                     }) ;
 
@@ -635,7 +644,7 @@
                 }else {
                     month=date.getMonth()+1;
                 }
-                $("#lzl").html(month+"月总流转量："+datacount[5]+"(条)");
+                $("#lzl").html(month+"月总流转量："+datacount[6]+"(条)");
                 if(datacount){
                     var circulationChart = echarts.init(document.getElementById('circulationChart'));
                     circulationChart.setOption({
@@ -664,7 +673,7 @@
                             }
                         },
                         legend: {
-                            data: ['工单流转总量', '稽核差错工单','渠道指标预警工单','资金稽核工单','深度稽核工单']
+                            data: ['工单流转总量', '稽核差错工单','渠道指标预警工单','资金稽核工单','深度稽核工单','内部审批流程']
                         },
                         xAxis:  {
                             name:'派单日期',
@@ -716,6 +725,13 @@
                                 data:datacount[4],
                                // markLine: {data: [{type: 'average', name: '平均值'}]},
                                 itemStyle : {normal : {color:'#8B0000'}}
+                            },
+                            {
+                                name:'内部审批流程',
+                                type:'line',
+                                data:datacount[5],
+                                // markLine: {data: [{type: 'average', name: '平均值'}]},
+                                itemStyle : {normal : {color:'#00CD00'}}
                             }
                         ]
                     }) ;
