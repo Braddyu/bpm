@@ -294,6 +294,17 @@
                     modal : true
                 });
             },
+            rowStyler: function (index, row) {
+                var json=JSON.parse(row.proc_vars);
+                if(json){
+                    var end_time = json.end_time.replace("-","/");//替换字符，变成标准格式
+                    var d2=new Date();//取今天的日期
+                    var d1 = new Date(Date.parse(end_time));
+                    if(d1<d2){
+                        return 'color:red;';
+                    }
+                }
+            },
             onLoadSuccess:function(json) {
                 if(!json.success) {
                     msgError(json.msg + ',错误代码:' + json.code);
