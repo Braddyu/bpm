@@ -291,6 +291,7 @@ var config = {
     MISTAKE_DISTRIBUTE_TASK:"差错工单量达到number上限值，自动派单失败，需手动派单",
 	MISTAKE_DISTRIBUTE_SUCCESS:"差错工单自动派单成功！派单时间:time",
     MISTAKE_DISTRIBUTE_ERROR:"差错工单自动派单失败:msg",
+    SMS_TEMPLET_ORDER:false,
     OPEN_SMS_ALL:false, //工单短信发送总开关
     OPEN_SMS:false, //工单短信发送接口
     OPEN_LOGIN_SMS:false, //短信登录验证码
