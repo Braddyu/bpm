@@ -2657,6 +2657,8 @@ exports.validateBeforeCreate = (proc_code,json_str_params)=>{
 }
 
 
+
+
 /**
  * 保存流程实例参数
  * @param dataMap
@@ -2670,5 +2672,25 @@ function saveInsParam(dataMap,proc_vars) {
             //写入数据库
             let rs = await model.$CommonProcessInstParam.create(data);
             resolve(utils.returnMsg(true, '0000', '保存流程实例参数成功。', null, null));
+    });
+}
+
+
+/**
+ * 根据id查询流程实例详情
+ * @param instId
+ * @returns {bluebird}
+ */
+exports.getInstDetailById = function (instId) {
+    return new Promise(function (resolve, reject) {
+        var data = {};
+        data._id = instId
+         model.$ProcessInst.find(data,function(err,rs){
+             if(err){
+                 resolve(utils.returnMsg(false, '0001', '根据id查询流程实例详情失败。', null, err));
+             }else{
+                 resolve(utils.returnMsg(true, '0000', '根据id查询流程实例详情成功。', rs, null));
+             }
+         });
     });
 }

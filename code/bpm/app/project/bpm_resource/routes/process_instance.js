@@ -467,7 +467,6 @@ router.route("/next/nodeAnduser").post(function (req, res) {
 
 }
 
-
 /**
  * 实例创建前验证标题是否被占用[仅风险防控系统使用]
  */
@@ -475,6 +474,16 @@ router.route("/create/validate").post(function (req, res) {
     var params = req.body.params;
     var proc_code = req.body.proc_code;
     inst.validateBeforeCreate(proc_code,params).then(function(rs){
+        utils.respJsonData(res, rs);
+    });
+});
+
+/**
+ * 根据id查询流程实例详情
+ */
+router.route("/getInstDetailById").post(function (req, res) {
+    var instId = req.body.inst_id;
+    inst.getInstDetailById(instId).then(function(rs){
         utils.respJsonData(res, rs);
     });
 });
