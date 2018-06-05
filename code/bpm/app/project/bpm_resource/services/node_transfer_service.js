@@ -1506,6 +1506,7 @@ exports.do_payout=function(proc_task_id,node_code,user_code,assign_user_code,pro
             }
 
             res[0].pay_task_id = taskid;
+            res[0].prev_task_id = proc_task_id;
             return res;
         }
         round_task().then(function (res) {
