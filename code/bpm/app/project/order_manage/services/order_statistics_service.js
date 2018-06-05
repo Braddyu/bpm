@@ -1180,6 +1180,7 @@ exports.getMonitoring= function(monthArray) {
     var orderInterior=[];//内部审批流程
     var orders=0;
     var number=[];//返回前台的数据
+        var years =timeArray[0].substring(0,7);
         await process_model.$ProcessInst.aggregate([
             {
                 $addFields: {
@@ -1188,7 +1189,7 @@ exports.getMonitoring= function(monthArray) {
             },
             // {
             //     $match: {
-            //         "start_time": /^.*2018-05.*$/i
+            //         "start_time": "/^.*"+years+".*$/i"
             //     }
             // },
             {
@@ -1205,6 +1206,7 @@ exports.getMonitoring= function(monthArray) {
             }
 
         ]).exec(function (err, res) {
+            console.log(res,"9999999999999");
             for (var i in timeArray){
                 var flag1 = false;
                 var flag2 = false;
@@ -1278,24 +1280,72 @@ exports.getMonitoring= function(monthArray) {
  */
 exports.getArchive= function(today) {
     var p = new Promise(async function(resolve,reject) {
-        var orderTotal=[];//派单总量
-        var orderArchive=[];//归档量
+        var orderTotal=[0,0,0,0,0];//派单总量
+        var orderArchive=[0,0,0,0,0];//归档量
         var number=[];//返回前台的数据
-            var startDate=new Date(today);
-            var endDate=new Date(today+' 23:59:59');
-            console.log(startDate,endDate);
-            var totalError =await process_model.$ProcessInst.find({ "proc_start_time":{$gte:startDate,$lte:endDate}, "proc_code" : "p-201"}).count();
-            var totalWarning =await process_model.$ProcessInst.find({ "proc_start_time":{$gte:startDate,$lte:endDate}, "proc_code" :"p-109"}).count();
-            var totalAudit =await process_model.$ProcessInst.find({ "proc_start_time":{$gte:startDate,$lte:endDate}, "proc_code" : "zj_101"}).count();
-            var totalDepth=await process_model.$ProcessInst.find({ "proc_start_time":{$gte:startDate,$lte:endDate}, "proc_code" : "p-108"}).count();
-            orderTotal.push(0,totalError,totalWarning,totalAudit,totalDepth);
+        await process_model.$ProcessInst.aggregate([
+            {
+                $addFields: {
+                    "start_time":  { $dateToString: { format: "%Y-%m-%d", date: "$proc_start_time" } }
+                }
+            },
+            // {
+            //     $match: {
+            //         "start_time": /^.*2018-05.*$/i
+            //     }
+            // },
+            {
+                $group: {
+                    "_id":{
+                        "proc_name":"$proc_name",
+                        "start_time":"$start_time",
+                        "proc_code" : "$proc_code",
+                        "proc_inst_status":"$proc_inst_status"
+                    },
+                    "start_time":{$first:"$start_time"},
+                    "proc_name":{$first:"$proc_name"},
+                    "proc_code" : {$first:"$proc_code"},
+                    "proc_inst_status":{$first:"$proc_inst_status"},
+                    "count":{$sum:1}
+                }
+            },
+            {
+                $sort: { start_time: 1 }
+            }
 
-            var archiveError =await process_model.$ProcessInst.find({ "proc_start_time":{$gte:startDate,$lte:endDate}, "proc_code" : "p-201", "proc_inst_status":4}).count();
-            var archiveWarning =await process_model.$ProcessInst.find({ "proc_start_time":{$gte:startDate,$lte:endDate}, "proc_code" : "p-109", "proc_inst_status":4}).count();
-            var archiveAudit =await process_model.$ProcessInst.find({ "proc_start_time":{$gte:startDate,$lte:endDate}, "proc_code" : "zj_101", "proc_inst_status":4}).count();
-            var archiveDepth =await process_model.$ProcessInst.find({ "proc_start_time":{$gte:startDate,$lte:endDate}, "proc_code" : "p-108", "proc_inst_status":4}).count();
-            orderArchive.push(0,archiveError,archiveWarning,archiveAudit,archiveDepth);
-            console.log("正在加载数据，请稍等。。。");
+        ]).exec(function (err, res) {
+            // orderTotal.push(0);
+            // orderArchive.push(0);
+            console.log(res,"9999999");
+            for (var i in res){
+
+                if(today==res[i].start_time){
+                    if(res[i].proc_code=="p-201"){
+                        orderTotal.splice(1, 1, res[i].count);
+                    }else if(res[i].proc_code=="p-109"){
+                        orderTotal.splice(2, 1, res[i].count);
+                    }else if(res[i].proc_code=="zj_101"){
+                        orderTotal.splice(3, 1, res[i].count);
+                    }else if(res[i].proc_code=="p-108"){
+                        orderTotal.splice(4, 1, res[i].count);
+                    }
+                }
+
+                if(today==res[i].start_time&&res[i].proc_inst_status==4){
+                    if(res[i].proc_code=="p-201"){
+                        orderArchive.splice(1, 1, res[i].count);
+                    }else if(res[i].proc_code=="p-109"){
+                        orderArchive.splice(2, 1, res[i].count);
+                    }else if(res[i].proc_code=="zj_101"){
+                        orderArchive.splice(3, 1, res[i].count);
+                    }else if(res[i].proc_code=="p-108"){
+                        orderArchive.splice(4, 1, res[i].count);
+                    }
+                }
+            }
+            console.log(orderTotal,"正在加载数据，请稍等。。。");
+
+        })
         number.push(orderTotal,orderArchive);
         resolve(number);
     });
@@ -1420,14 +1470,43 @@ exports.getLively= function(monthArray) {
         var livelyArray=[];//活跃度
         var orders=0;
         var number=[];//返回前台的数据
-        for (var i in timeArray){
-            var startDate=new Date(timeArray[i]);
-            var endDate=new Date(timeArray[i]+' 23:59:59');
-            var lively =await user_mode_log.$CommonUserLoginLog.find({"login_time":{$gte:startDate,$lte:endDate}}).count();
-            orders+=lively;
-            livelyArray.push(lively);
-            console.log("正在加载用户活跃度数据，请稍等。。。")
-        }
+        await user_mode_log.$CommonUserLoginLog.aggregate([
+            {
+                $addFields: {
+                    "loginTime":  { $dateToString: { format: "%Y-%m-%d", date: "$login_time" } }                }
+            },
+            {
+                $group: {
+                    "_id":{"loginTime":"$loginTime"},
+                    "loginTime":{$first:"$loginTime"},
+                    "count":{$sum:1}
+                }
+            },
+            {
+                $sort: { loginTime: 1 }
+            }
+
+        ]).exec(function (err, res) {
+           console.log(res,"5555555555");
+            for (var i in timeArray){
+                var flag = false;
+                for (var j in res) {
+                    if (timeArray[i] == res[j].loginTime) {
+                        livelyArray.push(res[j].count);
+                        flag = true;
+                    }
+                }
+                if(!flag){
+                    livelyArray.push(0);
+                }
+            }
+
+            for (var e in livelyArray){
+                var count=livelyArray[e];
+                orders+=count;
+            }
+        });
+
         number.push(livelyArray,orders);
         resolve(number);
     });
