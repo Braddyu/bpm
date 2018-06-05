@@ -7,6 +7,7 @@
 var nodemailer = require('nodemailer');
 var smtpTransport = require('nodemailer-smtp-transport');
 var config = require('../../config');
+var encryptutil = require('./encrypt_util');
 
 
 // 开启一个 SMTP 连接池
@@ -17,21 +18,20 @@ let transport = nodemailer.createTransport(smtpTransport({
     port: config.email.port, // SMTP 端口
     auth: {
         user: config.email.user,
-        pass: config.email.password
+        pass: encryptutil.decipher('rc4','abc',config.email.password)
     }
 }));
 
 /**
- * @param {String} recipient 收件人
+ * @param {String} recipient 收件人--发件人可以是多个以逗号隔开的邮箱地址数组
  * @param {String} subject 发送的主题
  * @param {String} html 发送的html内容
  */
 exports.sendMail = function (recipient, subject, html) {
     return  new Promise(async function(resolve,reject){
         try{
-            if(recipient){
+            if(recipient && recipient.length > 0){
                 transport.sendMail({
-
                     from: config.email.user,
                     to: recipient,
                     subject: subject,
