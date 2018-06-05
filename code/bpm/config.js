@@ -138,7 +138,7 @@ var config = {
         ]
     },
     mongdb: {
-        url: 'mongodb://192.168.9.48:27017/process2',
+        url: 'mongodb://192.168.9.48:27017/processpm',
         // url: 'mongodb://10.196.153.11:30000/process',
         //url:'mongodb://10.201.253.162:27017/process1',
         // url: 'mongodb://10.201.253.111:27017/Examine',
@@ -303,10 +303,10 @@ var config = {
     mistake_proc_name: '稽核差错工单',
     //邮件服务器配置信息
     email : {
-        host : 'smtp.qq.com',
+        host : 'smtp.163.com',
         port:465,
-        user:'869584164@qq.com',
-        password:'qukuvdulxgqqbfdj'
+        user:'xmglpt@163.com',
+        password:'518390a457fee48d069c6523ab'
     },
     email_switch:true,//是否发送邮件开关
     email_subject:'《procName》的工单任务处理通知',//邮件标题

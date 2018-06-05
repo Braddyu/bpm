@@ -315,7 +315,7 @@ router.route('/getMonitoringView').post(function(req,res){
     var monthArray = req.body.monthArray;//当前月的所有日期
    // console.log(monthArray);
     service.getMonitoring(monthArray).then(function(result){
-            console.log(result,"qqqqqqq");
+            //console.log(result,"qqqqqqq");
             utils.respJsonData(res, result);
         }).catch(function(err){
             console.log('获取派单量失败',err);
