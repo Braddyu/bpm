@@ -1280,8 +1280,8 @@ exports.getMonitoring= function(monthArray) {
  */
 exports.getArchive= function(today) {
     var p = new Promise(async function(resolve,reject) {
-        var orderTotal=[0,0,0,0,0];//派单总量
-        var orderArchive=[0,0,0,0,0];//归档量
+        var orderTotal=[0,0,0,0,0,0];//派单总量
+        var orderArchive=[0,0,0,0,0,0];//归档量
         var number=[];//返回前台的数据
         await process_model.$ProcessInst.aggregate([
             {
@@ -1328,9 +1328,10 @@ exports.getArchive= function(today) {
                         orderTotal.splice(3, 1, res[i].count);
                     }else if(res[i].proc_code=="p-108"){
                         orderTotal.splice(4, 1, res[i].count);
+                    }else if(res[i].proc_code=="p-inner"){
+                        orderTotal.splice(5, 1, res[i].count);
                     }
                 }
-
                 if(today==res[i].start_time&&res[i].proc_inst_status==4){
                     if(res[i].proc_code=="p-201"){
                         orderArchive.splice(1, 1, res[i].count);
@@ -1340,6 +1341,8 @@ exports.getArchive= function(today) {
                         orderArchive.splice(3, 1, res[i].count);
                     }else if(res[i].proc_code=="p-108"){
                         orderArchive.splice(4, 1, res[i].count);
+                    }else if(res[i].proc_code=="p-inner"){
+                        orderArchive.splice(5, 1, res[i].count);
                     }
                 }
             }
