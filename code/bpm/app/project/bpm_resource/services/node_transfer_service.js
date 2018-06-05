@@ -276,7 +276,7 @@ exports.transfer=function(proc_inst_task_id,node_code,user_code,opts,memo,param_
 //并行分支任务创建
 async function forkTaskCreate(item_config, proc_define, node_Array, k, user_code, proc_define_id, params, proc_inst_id, resolve, task_id_array,biz_vars,prev_node,prev_user,proc_vars,r) {
     if(node_Array && node_Array.length>k){
-        var results = nodeAnalysisService.getNodeInfo(item_config, proc_define, node_Array[k], null);
+        var results = await nodeAnalysisService.getNodeInfo(item_config, proc_define, node_Array[k], null);
         var current_detail = results.current_detail;
         var current_nodes = results.current_node
         await nodeAnalysisService.findCurrentHandler(user_code, proc_define_id, node_Array[k], params, proc_inst_id).then(async function (rs) {
@@ -630,7 +630,7 @@ async function joinFunction(proc_inst_id, resolve, reject, node_code, params, pr
             }
             cd1.proc_inst_task_opt_type=0;
             cd1.proc_inst_task_claim=1;
-            let rs1=await model.$ProcessInstTask.find(cd);
+            let rs1=await model.$ProcessInstTask.find(cd1);
             if(rs1.length>0){//有一个不通过
                 flag = false;
             }else{
@@ -662,7 +662,7 @@ async function joinFunction(proc_inst_id, resolve, reject, node_code, params, pr
         }else{//未通过  跳到当前节点的上一节点
             let results1=await nodeAnalysisService.getNode(proc_define_id, node_code, params, false);
             next_detail = results1.data.last_detail;
-            next_node = results1.data.last_detail;
+            next_node = results1.data.last_node;
             map.flag=false;
         }
 
@@ -678,7 +678,7 @@ async function joinFunction(proc_inst_id, resolve, reject, node_code, params, pr
         var proc_inst_task_params=result_t.data;
         //创建下一步流转任务
         var condition_task = {};
-        condition_task.proc_inst_task_sign = 0;// : Number,// 流程签收(0-未认领，1-已认领)
+        condition_task.proc_inst_task_sign = 1;// : Number,// 流程签收(0-未认领，1-已认领)
         condition_task.proc_inst_id = proc_inst_id;//: {type: Schema.Types.ObjectId, ref: 'CommonCoreProcessInst'}, // 流程流转当前信息ID
         condition_task.proc_inst_task_code = next_detail.item_code;// : String,// 流程当前节点编码(流程任务编号)
         condition_task.proc_inst_task_name = next_node.name;//: String,// 流程当前节点名称(任务名称)
@@ -730,7 +730,6 @@ async function joinFunction(proc_inst_id, resolve, reject, node_code, params, pr
         condition_task.proc_inst_task_claim = "";//: Number,// 流程会签
         condition_task.proc_inst_task_sms = next_detail.item_sms_warn;// Number,// 流程是否短信提醒
         condition_task.proc_inst_task_remark = "";// : String// 流程处理意见
-        //condition_task.proc_inst_task_sign =0 ;//是否有人认领
 
 
             var arr = [];
