@@ -1149,6 +1149,7 @@ exports.getMyTaskQuery4Eui = function (page, size, userCode, joinup_sys, proc_co
                 }
                 console.log('---match---------- ',match);
                 model.$ProcessInstTask.aggregate([
+                    {$sort:{"proc_inst_task_arrive_time":-1}},
                     {
                         $match: match
                     },
@@ -1164,12 +1165,13 @@ exports.getMyTaskQuery4Eui = function (page, size, userCode, joinup_sys, proc_co
                             $or: task_match
                         }
                     },
-                    skip_match,limit_match,{$sort:{"proc_inst_task_arrive_time":-1}}
+                    skip_match,limit_match
 
                 ]).exec(function (err, res) {
                     let data = {};
                     data.rows = res;
                     model.$ProcessInstTask.aggregate([
+                        {$sort:{"proc_inst_task_arrive_time":-1}},
                         {
                             $match: match
                         },
