@@ -248,7 +248,7 @@ exports.transfer=function(proc_inst_task_id,node_code,user_code,opts,memo,param_
               await model.$ProcessTaskHistroy.create(arr_c);
               var node_Array = nodeAnalysisService.getNodeArray(proc_define, node_code);
               var k = 0;
-              await forkTaskCreate(item_config, proc_define, node_Array, k, user_code, proc_define_id, params, proc_inst_id, resolve, task_id_array, biz_vars, prev_node, prev_user, proc_vars,r[0]);
+              await forkTaskCreate(item_config, proc_define, node_Array, k, user_code, proc_define_id, params, proc_inst_id, resolve, task_id_array, biz_vars, prev_node, prev_user, proc_vars,r[0],proc_inst_task_id);
               resolve(utils.returnMsg(true, '1000', '流程流转新增任务信息时出现异常。', task_id_array, null));
           } else {
               var next_node = results.data.next_node;
@@ -274,7 +274,7 @@ exports.transfer=function(proc_inst_task_id,node_code,user_code,opts,memo,param_
 
 
 //并行分支任务创建
-async function forkTaskCreate(item_config, proc_define, node_Array, k, user_code, proc_define_id, params, proc_inst_id, resolve, task_id_array,biz_vars,prev_node,prev_user,proc_vars,r) {
+async function forkTaskCreate(item_config, proc_define, node_Array, k, user_code, proc_define_id, params, proc_inst_id, resolve, task_id_array,biz_vars,prev_node,prev_user,proc_vars,r,proc_inst_task_id) {
     if(node_Array && node_Array.length>k){
         var results = await nodeAnalysisService.getNodeInfo(item_config, proc_define, node_Array[k], null);
         var current_detail = results.current_detail;
@@ -350,7 +350,7 @@ async function forkTaskCreate(item_config, proc_define, node_Array, k, user_code
         condition_task.proc_name = r.proc_name;
         condition_task.proc_code = r.proc_code;
         condition_task.joinup_sys = r.joinup_sys;//工单所属系统编号
-        condition_task.previous_step  = r._id;
+        condition_task.previous_step  = proc_inst_task_id;
         condition_task.publish_status = r.publish_status;
         condition_task.work_order_number = r.work_order_number;
         condition_task.proc_task_ver = r.proc_task_ver;
@@ -378,7 +378,7 @@ async function forkTaskCreate(item_config, proc_define, node_Array, k, user_code
             resolve(utils.returnMsg(false, '1000', '流程流转新增任务信息时出现异常。', null, error));
         }
         task_id_array.push(rs.data);
-        await forkTaskCreate(item_config, proc_define, node_Array,++k, user_code, proc_define_id, params, proc_inst_id, resolve, task_id_array,biz_vars,prev_node,prev_user,proc_vars,r);
+        await forkTaskCreate(item_config, proc_define, node_Array,++k, user_code, proc_define_id, params, proc_inst_id, resolve, task_id_array,biz_vars,prev_node,prev_user,proc_vars,r,proc_inst_task_id);
     }
 }
 
@@ -633,7 +633,7 @@ async function joinFunction(proc_inst_id, resolve, reject, node_code, params, pr
             if (proc_inst_id){
                 cd1.proc_inst_id= proc_inst_id;
             }
-            cd1.previous_step = previous_step;//上一节点任务id  会签发起节点id  
+            cd1.previous_step = previous_step;//上一节点任务id  会签发起节点id
             cd1.proc_inst_task_claim=1;
             let rs1=await model.$ProcessInstTask.find(cd1);//查询会签总条数
             cd1.proc_inst_task_opt_type=1;
