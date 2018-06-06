@@ -350,7 +350,7 @@ async function forkTaskCreate(item_config, proc_define, node_Array, k, user_code
         condition_task.proc_name = r.proc_name;
         condition_task.proc_code = r.proc_code;
         condition_task.joinup_sys = r.joinup_sys;//工单所属系统编号
-        condition_task.previous_step  = proc_inst_id;
+        condition_task.previous_step  = r._id;
         condition_task.publish_status = r.publish_status;
         condition_task.work_order_number = r.work_order_number;
         condition_task.proc_task_ver = r.proc_task_ver;
@@ -592,6 +592,7 @@ async function joinFunction(proc_inst_id, resolve, reject, node_code, params, pr
     var proc_name = r[0].proc_name;//流程名称
     var publish_status = r[0].publish_status;
     var work_order_number   = r[0].work_order_number;
+    var previous_step   = r[0].previous_step;
     let rs=await model.$ProcessInstTask.find(cd);
     if(rs.length>0){//所有子节点没有结束，任务不流转到会签节点
         resolve(utils.returnMsg(true, '0000', '任务完成成功。', null, null));
@@ -618,6 +619,7 @@ async function joinFunction(proc_inst_id, resolve, reject, node_code, params, pr
             if (proc_inst_id){
                 cd1.proc_inst_id= proc_inst_id;
             }
+            cd1.previous_step = previous_step;
             cd1.proc_inst_task_opt_type=0;
             cd1.proc_inst_task_claim=1;
             let rs1=await model.$ProcessInstTask.find(cd1);
@@ -631,6 +633,7 @@ async function joinFunction(proc_inst_id, resolve, reject, node_code, params, pr
             if (proc_inst_id){
                 cd1.proc_inst_id= proc_inst_id;
             }
+            cd1.previous_step = previous_step;//上一节点任务id  会签发起节点id  
             cd1.proc_inst_task_claim=1;
             let rs1=await model.$ProcessInstTask.find(cd1);//查询会签总条数
             cd1.proc_inst_task_opt_type=1;
