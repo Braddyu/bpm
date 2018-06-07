@@ -208,6 +208,8 @@ var commonProcessInstTaskSchema = new Schema(
         proc_inst_task_params : String,// 流程参数(任务参数)
         proc_inst_task_claim : Number,// 流程会签
         proc_inst_task_opt_type:Number,//0不同意 1同意  2归档 3待处理 任务操作类型
+        proc_inst_repeat_task_claim:Number,//会签流程某个人重复任务标识  0没有重复任务  1有重复任务 显示给用户办理（本条任务有会重复的任务id）  2有重复任务 但本条任务不显示给用户
+        proc_inst_repeat_task_claim_ids:[{type: Schema.Types.ObjectId}],//某人的重复会签任务ID
         proc_inst_task_sign : Number,// 流程签收(0-未认领，1-已认领)
         proc_inst_task_sms : Number,// 流程是否短信提醒
         proc_inst_task_remark : String,// 流程处理意见
@@ -265,6 +267,8 @@ var commonProcessTaskHistroySchema = new Schema(
         proc_inst_task_params : String,// 流程参数(任务参数)
         proc_inst_task_claim : Number,// 流程会签
         proc_inst_task_sign : Number,// 流程签收(0-未认领，1-已认领)
+        proc_inst_repeat_task_claim:Number,//会签流程某个人重复任务标识  0没有重复任务  1有重复任务 显示给用户办理（本条任务有会重复的任务id）  2有重复任务 但本条任务不显示给用户
+        proc_inst_repeat_task_claim_ids:[{type: Schema.Types.ObjectId}],//某人的重复会签任务ID
         proc_inst_task_sms : Number,// 流程是否短信提醒
         proc_inst_task_remark : String,// 流程处理意见
         proc_inst_biz_vars : String,// 流程业务实例变量

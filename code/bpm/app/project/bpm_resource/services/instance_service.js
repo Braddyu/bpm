@@ -1147,6 +1147,7 @@ exports.getMyTaskQuery4Eui = function (page, size, userCode, joinup_sys, proc_co
                         $limit: parseInt(size)
                     };
                 }
+                match.proc_inst_repeat_task_claim={$ne:2};//会签重复的任务不显示
                 console.log('---match---------- ',match);
                 model.$ProcessInstTask.aggregate([
                     {$sort:{"proc_inst_task_arrive_time":-1}},

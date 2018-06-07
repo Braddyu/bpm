@@ -249,6 +249,7 @@ exports.transfer=function(proc_inst_task_id,node_code,user_code,opts,memo,param_
               var node_Array = nodeAnalysisService.getNodeArray(proc_define, node_code);
               var k = 0;
               await forkTaskCreate(item_config, proc_define, node_Array, k, user_code, proc_define_id, params, proc_inst_id, resolve, task_id_array, biz_vars, prev_node, prev_user, proc_vars,r[0],proc_inst_task_id);
+              await claimTasks(proc_inst_id);
               resolve(utils.returnMsg(true, '1000', '流程流转新增任务信息时出现异常。', task_id_array, null));
           } else {
               var next_node = results.data.next_node;
@@ -369,6 +370,9 @@ async function forkTaskCreate(item_config, proc_define, node_Array, k, user_code
         condition_task.proc_inst_task_remark = "";// : String// 流程处理意见
         condition_task.proc_vars = proc_vars;// 流程变量
         condition_task.proc_inst_task_opt_type = 3;// 操作类型 0-拒绝 1-通过 2-归档 3-待处理
+        condition_task.proc_inst_repeat_task_claim = 0;  //0 无重复任务  1有重复任务 显示该条任务  2有重复任务 不显示该任务
+        condition_task.proc_inst_repeat_task_claim_ids = [];//会签重复任务id
+
 
         var arr = [];
         arr.push(condition_task);
@@ -1721,6 +1725,56 @@ exports.finish_task=(task_id,user_no)=>{
         let rs=await model.$ProcessInstTask.update({"_id":task_id},{$set:{"item_assignee_user_code":user_no,"proc_inst_task_status":1}});
         resolve({"data":rs,"msg":"update the task ,","code":"00000","success":true});
     })
+}
+
+//会签任务去重操作
+async function claimTasks(proc_inst_id){
+    //查询此次会签任务 重复的人
+    await model.$ProcessInstTask.aggregate(
+        [
+            {
+                $match: {
+                    proc_inst_id:proc_inst_id,
+                    proc_inst_task_status : 0,
+                    proc_inst_task_claim : 1
+                }
+            },
+            {
+                $group: {
+                    _id: {proc_inst_task_assignee:"$proc_inst_task_assignee"},
+                    taskIds:{$push:"$_id"},
+                    count: { $sum: 1 }
+                }
+            },
+            {
+                $match: {
+                    count: { $gt: 1 }
+                }
+            }
+        ]
+    ).exec(async function(err,res){
+        if(err){
+            console.log("查询失败");
+        }else{
+            //console.log("查询成功"+res);
+            //console.log("111111111111"+JSON.stringify(res))
+            if(res && res.length>0){
+                for(let i in res){
+                    let data = res[i];
+                    let taskIds = data.taskIds;
+                    for (let j in taskIds) {
+                        //修改第一条数据，加上标识、任务数组id  后面的任务修改标识
+                        if(j==0){
+                            await model.$ProcessInstTask.update({"_id":taskIds[j]},{$set:{"proc_inst_repeat_task_claim":1,"proc_inst_repeat_task_claim_ids":taskIds}});
+                        }else{
+                            await model.$ProcessInstTask.update({"_id":taskIds[j]},{$set:{"proc_inst_repeat_task_claim":2,"proc_inst_repeat_task_claim_ids":taskIds}});
+                        }
+                    }
+                }
+            }
+        }
+    })
+
 }
 
 
