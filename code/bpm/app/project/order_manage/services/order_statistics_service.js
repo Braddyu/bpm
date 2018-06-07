@@ -1260,7 +1260,7 @@ exports.getMonitoring= function(monthArray) {
                 }
 
             }
-             for (var e in orderError){
+             for (var e in timeArray){
                 var count=orderError[e]+orderWarning[e]+orderAudit[e]+orderDepth[e]+orderInterior[e]
                  orders+=count;
                  orderTotal.push(count);
@@ -1450,7 +1450,7 @@ exports.getCirculation= function(monthArray) {
                 }
 
             }
-            for (var e in orderError){
+            for (var e in timeArray){
                 var count=orderError[e]+orderWarning[e]+orderAudit[e]+orderDepth[e]+orderInterior[e]
                 orders+=count;
                 orderTotal.push(count);
