@@ -248,7 +248,8 @@ exports.transfer=function(proc_inst_task_id,node_code,user_code,opts,memo,param_
               await model.$ProcessTaskHistroy.create(arr_c);
               var node_Array = nodeAnalysisService.getNodeArray(proc_define, node_code);
               var k = 0;
-              await forkTaskCreate(item_config, proc_define, node_Array, k, user_code, proc_define_id, params, proc_inst_id, resolve, task_id_array, biz_vars, prev_node, prev_user, proc_vars,r[0],proc_inst_task_id);
+              var useremail ="";
+              await forkTaskCreate(item_config, proc_define, node_Array, k, user_code, proc_define_id, params, proc_inst_id, resolve, task_id_array, biz_vars, prev_node, prev_user, proc_vars,r[0],proc_inst_task_id,useremail);
               await claimTasks(proc_inst_id);
               resolve(utils.returnMsg(true, '1000', '流程流转新增任务信息时出现异常。', task_id_array, null));
           } else {
@@ -275,7 +276,7 @@ exports.transfer=function(proc_inst_task_id,node_code,user_code,opts,memo,param_
 
 
 //并行分支任务创建
-async function forkTaskCreate(item_config, proc_define, node_Array, k, user_code, proc_define_id, params, proc_inst_id, resolve, task_id_array,biz_vars,prev_node,prev_user,proc_vars,r,proc_inst_task_id) {
+async function forkTaskCreate(item_config, proc_define, node_Array, k, user_code, proc_define_id, params, proc_inst_id, resolve, task_id_array,biz_vars,prev_node,prev_user,proc_vars,r,proc_inst_task_id,useremail) {
     if(node_Array && node_Array.length>k){
         var results = await nodeAnalysisService.getNodeInfo(item_config, proc_define, node_Array[k], null);
         var current_detail = results.current_detail;
@@ -381,8 +382,14 @@ async function forkTaskCreate(item_config, proc_define, node_Array, k, user_code
         if(!rs){
             resolve(utils.returnMsg(false, '1000', '流程流转新增任务信息时出现异常。', null, error));
         }
+        //发送邮件通知
+        if((!useremail || useremail.indexOf(condition_task.proc_inst_task_assignee)== -1) && config.email_switch && next_detail.item_mail_notice && next_detail.item_mail_notice == 1){
+            useremail += condition_task.proc_inst_task_assignee+',';
+            let userobj = await  model_user.$User.find({"user_no": condition_task.proc_inst_task_assignee});
+            await mailutil.sendMail(userobj[0].user_email,config.email_subject.replace('procName',condition_task.proc_name),config.email_templet.replace('procName',condition_task.proc_name));
+        }
         task_id_array.push(rs.data);
-        await forkTaskCreate(item_config, proc_define, node_Array,++k, user_code, proc_define_id, params, proc_inst_id, resolve, task_id_array,biz_vars,prev_node,prev_user,proc_vars,r,proc_inst_task_id);
+        await forkTaskCreate(item_config, proc_define, node_Array,++k, user_code, proc_define_id, params, proc_inst_id, resolve, task_id_array,biz_vars,prev_node,prev_user,proc_vars,r,proc_inst_task_id,useremail);
     }
 }
 

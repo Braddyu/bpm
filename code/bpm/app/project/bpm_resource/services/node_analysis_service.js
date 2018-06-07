@@ -2841,6 +2841,9 @@ exports.getNextNodeAndHandlerInfo=function(node_code,proc_task_id,proc_inst_id,p
                         if(next_detail.item_assignee_role){
                             match.user_roles={$in:next_detail.item_assignee_role?next_detail.item_assignee_role.split(","):[next_detail.item_assignee_role]};
                         }
+                        if(data_s.data.user_org_id && data_s.data.user_org_id.length>0){
+                            match.user_org={$in:data_s.data.user_org_id[0]};
+                        }
                         let res=await model_user.$User.find(match);
                         if(res.length==0){ resolve({"data":null,"msg":"查询出错1","error":null,"success":false});return ;}
                         var ret_map=[];
