@@ -1062,7 +1062,7 @@ exports.getMyInstList = function (userCode) {
  * @param userCode
  * @param paramMap
  */
-exports.getMyTaskQuery4Eui = function (page, size, userCode, joinup_sys, proc_code, work_order_number, proc_inst_task_sign,begin_date,end_date) {
+exports.getMyTaskQuery4Eui = function (page, size,proc_inst_task_title, userCode, joinup_sys, proc_code, work_order_number, proc_inst_task_sign,begin_date,end_date) {
     return new Promise(function (resolve, reject) {
 
         var match = {proc_inst_task_status: 0};
@@ -1074,6 +1074,9 @@ exports.getMyTaskQuery4Eui = function (page, size, userCode, joinup_sys, proc_co
         }
         if (work_order_number) {
             match.work_order_number = work_order_number;
+        }
+        if (proc_inst_task_title) {
+            match.proc_inst_task_title = new RegExp(proc_inst_task_title);
         }
         if (begin_date && end_date) {
             match['$and'] = [{"proc_inst_task_arrive_time":{"$gte": new Date(begin_date+" 00:00:00"),"$lte": new Date(end_date+" 23:59:59")}}];

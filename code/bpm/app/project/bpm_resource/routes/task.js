@@ -41,6 +41,7 @@ exports.task=function() {
         // 获取提交信息
         var userNo = req.body.user_no;//用户编号
         var page = req.body.page;//页码
+        var proc_inst_task_title = req.body.proc_inst_task_title;//页码
         var length = req.body.rows;//每页条数
         var joinup_sys = req.body.joinup_sys;//工单所属系统编号
         var proc_code = req.body.proc_code;//工单所属流程
@@ -48,7 +49,6 @@ exports.task=function() {
         var begin_date = req.body.begin_date;//派单开始时间
         var end_date = req.body.end_date;//派单结束时间
         var proc_inst_task_sign = req.body.proc_inst_task_sign;//待认领
-
         if (!joinup_sys) {
             utils.respMsg(res, false, '2001', '工单所属系统编号不能为空。', null, null);
             return;
@@ -68,7 +68,7 @@ exports.task=function() {
                 if (rs.success && rs.data.length == 1) {
                     // userService.getUsreRolesByUserNo(userNo).then(function (result) {
                     //     if (result) {
-                            inst.getMyTaskQuery4Eui(page, length, userNo, joinup_sys, proc_code,work_order_number,proc_inst_task_sign,begin_date,end_date).then(function (taskresult) {
+                            inst.getMyTaskQuery4Eui(page, length,proc_inst_task_title, userNo, joinup_sys, proc_code,work_order_number,proc_inst_task_sign,begin_date,end_date).then(function (taskresult) {
                                 utils.respJsonData(res, taskresult);
                             }).catch(function (err_inst) {
                                 // console.log(err_inst);
