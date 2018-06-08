@@ -286,6 +286,7 @@ var config = {
     AES_KEY:'1234567890ABCDEFGHIJKLMNOPQRSTUV',
     SMS_TEMPLET_ORDER:"渠道工单系统有一张需要您处理的工单，《procName》，工单号：orderNo，请及时登陆认真处理。",
     SMS_TEMPLET_MONEY_AUDIT_ORDER:"渠道工单系统有一张需要您处理的工单即将到期，《procName》，工单号：orderNo，请尽快登陆认真处理。",
+    SMS_TEMPLET_MONEY_AUDIT_ORDER_THAN:"渠道工单系统有一张需要您处理的工单已经到期，《procName》，工单号：orderNo，请登陆查看。",
     VALIDATION:"工单系统手机号登录验证码为：randomNumber，请不要透露他人。",
     GRID_COPY:"尊敬的网格管理员，您所辖渠道:channelName,渠道编码:channelCode,有一条待处理工单《procName》,工单号：orderNo，请及时催促处理。",
     MISTAKE_DISTRIBUTE_TASK:"差错工单量达到number上限值，自动派单失败，需手动派单",

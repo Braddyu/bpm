@@ -232,17 +232,17 @@ exports.getMoneyAudtiProcInsts = function() {
     var p = new Promise(async function(resolve,reject){
         var time = new Date();
         var condition={};
-        condition.proc_code  = "zj_101";
+        condition.proc_code  = {'$in':["zj_101","zj_102"]};
         condition.proc_inst_status  = {'$ne':4};
         let result= await model.$ProcessInst.find(condition);
         if (result.length > 0) {
             var resultData = [];
             for(let i in result){
-                var isoDateStr = JSON.parse(result[i].proc_vars).end_time;
+                var isoDateStr = JSON.parse(result[i].proc_vars).end_time;console.log(isoDateStr)
                 isoDateStr=isoDateStr.replace(/-/g,':').replace(' ',':');
                 isoDateStr=isoDateStr.split(':');
                 var t1 = new Date(isoDateStr[0],(isoDateStr[1]-1),isoDateStr[2],isoDateStr[3],isoDateStr[4],isoDateStr[5]);
-                var flag = exports.dateSub(t1,time);//判断完成时间
+                var flag = exports.dateSub(t1,time);//判断完成时间  预警判断
                 if(flag){
                     //获取到任务  节点处理人  发短信通知
                     let res= await model.$ProcessInstTask.find({"proc_inst_id":result[i]._id,"proc_inst_task_status":0});
@@ -251,16 +251,41 @@ exports.getMoneyAudtiProcInsts = function() {
                         if(result1.length>0) {
                             var phone = result1[0].user_phone;
                             //发短信
-                            console.log("发短信给了"+phone)
-                            var params = {
+                            console.log("预警，发短信给了"+phone+",taskId:"+result1[0]._id)
+                            /*var params = {
                                 "procName": result[i].proc_name,
                                 "orderNo":result[i].work_order_number
                             }
-                            process_utils.sendSMS(phone, params, "SMS_TEMPLET_MONEY_AUDIT_ORDER","zj_101").then(function (rs) {
+                            process_utils.sendSMS(phone, params, "SMS_TEMPLET_MONEY_AUDIT_ORDER",res[0].proc_code).then(function (rs) {
                                 console.log("短信发送成功");
                             }).catch(function (err) {
                                 console.log("短信发送失败", err);
-                            });
+                            });*/
+                        }
+                    }
+                }
+
+
+                //超时判断
+                var flag2 = exports.dateSub0(t1,time);//判断完成时间  超时判断
+                if(flag2){
+                    //获取到任务  节点处理人  发短信通知
+                    let res= await model.$ProcessInstTask.find({"proc_inst_id":result[i]._id,"proc_inst_task_status":0});
+                    if(res.length>0){
+                        let result1= await model_user.$User.find({"user_no":res[0].proc_inst_task_assignee});
+                        if(result1.length>0) {
+                            var phone = result1[0].user_phone;
+                            //发短信
+                            console.log("超时，发短信给了"+phone+",taskId:"+result1[0]._id)
+                            /*var params = {
+                                "procName": result[i].proc_name,
+                                "orderNo":result[i].work_order_number
+                            }
+                            process_utils.sendSMS(phone, params, "SMS_TEMPLET_MONEY_AUDIT_ORDER_THAN",res[0].proc_code).then(function (rs) {
+                                console.log("短信发送成功");
+                            }).catch(function (err) {
+                                console.log("短信发送失败", err);
+                            });*/
                         }
                     }
                 }
@@ -280,29 +305,59 @@ exports.getMoneyAudtiProcInsts = function() {
 exports.dateSub = function(date1,date2) {
     var year1 = (date1.getYear() < 1900) ? date1.getYear() + 1900 : date1.getYear();
     var year2 = (date2.getYear() < 1900) ? date2.getYear() + 1900 : date2.getYear();
-    console.log(year1,year2);
     if(year1!=year2){
         return false;
     }
 
     var month1 = date1.getMonth() + 1;
     var month2 = date2.getMonth() + 1;
-    console.log(month1,month2);
     if(month1!=month2){
         return false;
     }
 
     var day1 = date1.getDate();
     var day2 = date2.getDate();
-    console.log(day1,day2);
     if(day1!=day2){
         return false;
     }
 
     var hour1 = date1.getHours();
     var hour2 = date2.getHours();
-    console.log(hour1,hour2,hour1-hour2);
     if(hour1-hour2!=5){
+        return false;
+    }
+    return true;
+}
+
+
+/**
+ * 计算两个时间相减 结果是小时  超时判断
+ * @param date1
+ * @param date2
+ * @returns {format}
+ */
+exports.dateSub0 = function(date1,date2) {
+    var year1 = (date1.getYear() < 1900) ? date1.getYear() + 1900 : date1.getYear();
+    var year2 = (date2.getYear() < 1900) ? date2.getYear() + 1900 : date2.getYear();
+    if(year1!=year2){
+        return false;
+    }
+
+    var month1 = date1.getMonth() + 1;
+    var month2 = date2.getMonth() + 1;
+    if(month1!=month2){
+        return false;
+    }
+
+    var day1 = date1.getDate();
+    var day2 = date2.getDate();
+    if(day1!=day2){
+        return false;
+    }
+
+    var hour1 = date1.getHours();
+    var hour2 = date2.getHours();
+    if(hour2-hour1!=1){
         return false;
     }
     return true;
