@@ -138,7 +138,7 @@ var config = {
         ]
     },
     mongdb: {
-        url: 'mongodb://192.168.9.48:27017/processpm',
+        url: 'mongodb://192.168.9.48:27017/process',
         // url: 'mongodb://10.196.153.11:30000/process',
         //url:'mongodb://10.201.253.162:27017/process1',
         // url: 'mongodb://10.201.253.111:27017/Examine',
@@ -331,11 +331,11 @@ var config = {
     money_audit_switch_core: " 0 * */1 * *",//秒、分、时、日、月、周几
     peson_sync_data_from_Athena_url: "e:\\peasondata",//同步人员错误数据导出地址
     org_sync_data_from_Athena_url: "e:\\data",//同步机构错误数据导出地址
-    ftp_huanghe_server: {
-        host: '192.168.9.66',
-        port: 21,
-        user: 'test',
-        password: '123456'
+    sftp_huanghe_server: {
+        host:'192.168.9.66',
+        port:'22',
+        username:"ftpUser",
+        password:"ftpUser"
     },//差错工单ftp地址
     ftp_gdglFile_server: {
         host: '135.10.53.110',
@@ -347,8 +347,8 @@ var config = {
         hour: '2',
         minute: '0'
     },//同步集中稽核数据时间
-    ftp_huanghe_get: '/upload/',//获取差错工单ftp路径
-    ftp_huanghe_put: '/upload/',//上传差错工单附件路径
+    sftp_huanghe_get: '/upload/',//获取差错工单ftp路径
+    sftp_huanghe_put: '/mnt/infinitsoft/test',//上传差错工单附件路径
     local_haunghe_path: 'E:/test/',//本地存储黄河数据
     local_path: '/upload/',//本地存储附件路径
     batch_size: 2000,//差错工单每一批次数量

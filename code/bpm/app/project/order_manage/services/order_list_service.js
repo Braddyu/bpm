@@ -5,7 +5,7 @@ var mistake_model = require('../models/mistake_model');
 var process_extend_model = require('../../bpm_resource/models/process_extend_model');
 var dict_model = require('../../workflow/models/dict_model');
 var process_utils = require('../../../utils/process_util');
-var ftp_util = require('../../../utils/ftp_util');
+var sshClient = require('../../../utils/sshClient');
 var utils = require('../../../../lib/utils/app_utils');
 var xlsx = require('node-xlsx');
 var fs = require('fs');
@@ -329,14 +329,10 @@ exports.repare = function (result1, proc_code, proc_inst_id, memo) {
 
         //如果是差错工单归档则进行回传黄河数据,注：暂时不回传和不对调
         if (result1.success && proc_code == 'p-201') {
-            var server = config.ftp_huanghe_server;
-            ftp_util.connect(server);
             backHuangHe(proc_inst_id,memo).then(function (res) {
                 resolve(res);
-                ftp_util.end();
             }).catch(function (err) {
                 reject(err);
-                ftp_util.end();
             })
 
         } else if (result1.success && proc_code == 'p-109') {
@@ -942,21 +938,20 @@ exports.doBackOrder = function (status, queryDate, city_code) {
                 resolve({'success': true, 'code': '1000', 'msg': '无回传数据', "error": null});
                 return;
             }
-            var server = config.ftp_huanghe_server;
-            ftp_util.connect(server);
+
             for(let i = 0;i < resMis.length; i++)
                 model.$ProcessTaskHistroy.find({"proc_inst_id":resMis[i].proc_inst_id},function(err,res){
                 backHuangHe(resMis[i].proc_inst_id,res[0].proc_inst_task_remark,ftp_util).then(function (res) {
                     count++;
                     if(count == resMis.length ){
                         resolve({'success': true, 'code': '1000', 'msg': '回传成功', "error": null});
-                        ftp_util.end()
+
                     }
                 }).catch(function (err) {
                     count++;
                     if(count == resMis.length ){
                         resolve({'success': true, 'code': '1000', 'msg': '回传成功', "error": null});
-                        ftp_util.end()
+
                     }
                 })
             }).sort({"proc_inst_task_arrive_time":-1}).limit(1)
@@ -991,17 +986,18 @@ function backHuangHe(proc_inst_id,memo) {
         //如果有上传附件
         if (fileRes.length > 0) {
             //文件上传至ftp服务器，然后回传结果给黄河
-
+            var server = config.sftp_huanghe_server;
             var mistake_time = mistakeRes[0].mistake_time;
-            var path = config.ftp_huanghe_put + "/" + mistake_time.substring(0, 4) + "/" + mistake_time.substring(4, 6) + "/" + mistake_time.substring(6, 8) + "/" + order_num;
-            ftp_util.mkdirs(path, function (err, res) {
+            var path = config.sftp_huanghe_put + "/" + mistake_time.substring(0, 4) + "/" + mistake_time.substring(4, 6) + "/" + mistake_time.substring(6, 8) + "/" + order_num;
+            sshClient.mkFile(server,path, function (err, res) {
                 if (err) {
-                    reject({'success': false, 'code': '1000', 'msg': 'ftp创建文件夹失败', "error": err});
+                    console.log(err);
+                    reject({'success': false, 'code': '1000', 'msg': 'sftp创建文件夹失败', "error": err});
                 } else {
                     var count = 0;
-                    //将当前工单的附件传到ftp上
+                    //将当前工单的附件传到sftp上
                     for (let index = 0; index < fileRes.length; index++) {
-                        ftp_util.uploadFile(fileRes[index].file_path, path + "/" + fileRes[index].file_name, function (err, resFile) {
+                        sshClient.UploadFile(server,fileRes[index].file_path, path + "/" + fileRes[index].file_name, function (err, resFile) {
                             var conditions = {_id: fileRes[index]._id};
                             var update = {};
                             if (err) {

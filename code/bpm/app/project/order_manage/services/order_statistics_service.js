@@ -140,6 +140,8 @@ exports.getStatisticsListPage = function (org_id, proc_code, level, status, star
                     },
                     //归档工单数
                     fileNum: {$sum: {$cond: {if: {$eq: ["$inst.proc_inst_status", 4]}, then: {$sum: 1}, else: 0}}},
+                    //客户不配合工单数
+                    notCooperateNum: {$sum: {$cond: {if: {$eq: ["$inst.proc_inst_status", 7]}, then: {$sum: 1}, else: 0}}},
                     //未超时工单数
                     notOvertimeNum: {
                         $sum: {
@@ -236,7 +238,8 @@ exports.getStatisticsListPage = function (org_id, proc_code, level, status, star
                                     twiceAuditNum: 0,
                                     untreatedNum: 0,
                                     treatedNum: 0,
-                                    overtimeTreatedNum: 0
+                                    overtimeTreatedNum: 0,
+                                    notCooperateNum:0
                                 }
                                 staRes.push(staJson);
                             }
@@ -285,6 +288,7 @@ exports.createExcelOrderList = function createExcelOrderList(data) {
             '处理工单数',
             '超时处理工单数',
             '未处理工单数',
+            '客户不配合工单数',
             '归档工单数 ',
             '及时归档工单数',
             '一次归档工单数 ',
@@ -292,6 +296,7 @@ exports.createExcelOrderList = function createExcelOrderList(data) {
             '工单处理率',
             '工单超时处理率',
             '工单未处理率',
+            '客户不配合率',
             '工单归档率',
             '工单及时归档率 ',
             '一次归档率 ',
@@ -343,7 +348,18 @@ exports.createExcelOrderList = function createExcelOrderList(data) {
                 untreated_rate = re + "%";
             }
         }
-
+        // 客户不配合率
+        let notCooperateNum_rate = "0%";
+        if (c.notCooperateNum == 0 || c.notCooperateNum == 0) {
+            notCooperateNum_rate = "0%";
+        } else {
+            var re = ((parseInt(c.notCooperateNum) / c.totalNum).toFixed(5) * 100).toFixed(3);
+            if (re == 0) {
+                notCooperateNum_rate = "0%";
+            } else {
+                notCooperateNum_rate = re + "%";
+            }
+        }
         //工单归档率计算
         let filing_rate = "0%";
         if (c.fileNum == 0 || c.totalNum == 0) {
@@ -414,6 +430,7 @@ exports.createExcelOrderList = function createExcelOrderList(data) {
                 c.treatedNum,
                 c.overtimeTreatedNum,
                 c.untreatedNum,
+                c.notCooperateNum,
                 c.fileNum,
                 c.notOvertimeNum,
                 c.oneFileNum,
@@ -421,6 +438,7 @@ exports.createExcelOrderList = function createExcelOrderList(data) {
                 treated_rate,
                 overtimeTreated_rate,
                 untreated_rate,
+                notCooperateNum_rate,
                 filing_rate,
                 timely_filing_rate,
                 one_filing_rate,
@@ -438,7 +456,7 @@ exports.createExcelOrderList = function createExcelOrderList(data) {
     if(proc_code=='p-109'){
         ws['!cols'] = [{wpx: 100}, {wpx: 300}, {wpx: 100}, {wpx: 100}, {wpx: 100}, {wpx: 100}, {wpx: 100}, {wpx: 100}, {wpx: 100}, {wpx: 100}, {wpx: 100}]
     }else  if(proc_code=='p-201'){
-        ws['!cols'] = [{wpx: 100}, {wpx: 300}, {wpx: 100}, {wpx: 100}, {wpx: 100}, {wpx: 100}, {wpx: 100}, {wpx: 100}, {wpx: 100}, {wpx: 100}, {wpx: 100}, {wpx: 100}
+        ws['!cols'] = [{wpx: 100}, {wpx: 300}, {wpx: 100}, {wpx: 100}, {wpx: 100}, {wpx: 100}, {wpx: 100}, {wpx: 100}, {wpx: 100}, {wpx: 100}, {wpx: 100}, {wpx: 100}, {wpx: 100}
             , {wpx: 100}, {wpx: 100}, {wpx: 100}, {wpx: 100}, {wpx: 100}];
     }
 
@@ -571,7 +589,10 @@ exports.detail_list = function (page, size, org_id, level, status, proc_code, st
         if (status == 8) {
             inst_match['$and'] = [{"inst.refuse_number":{$gt:0}}, {"inst.proc_inst_status":{$eq:4}}];
         }
-
+        //客户不配合工单
+        if (status == 9) {
+            inst_match['inst.proc_inst_status'] = 7;
+        }
         if (work_order_number) {
             inst_match['inst.work_order_number'] = work_order_number;
         }
@@ -951,7 +972,7 @@ exports.exportDetailList = function (org_id, proc_code, level, status, startDate
                                     work_id: "$task.proc_inst_task_work_id",
                                     channel_histroy:"$channel_histroy.proc_inst_task_remark",
                                     channel_work_id: "$work_id",
-
+                                    is_overtime: "$inst.is_overtime",
                                 }
                             },
 
@@ -1037,8 +1058,11 @@ exports.createExcelOrderDetail = function createExcelOrderDetail(data) {
         let work_id = "";
         if (c.proc_inst_status == 4) {
             proc_inst_task_assignee_name = '已归档';
-            work_id = '已归档'
-        } else if (c.proc_inst_task_assignee_name) {
+            work_id = '/'
+        } else if (c.proc_inst_status == 7) {
+            proc_inst_task_assignee_name = '客户不配合';
+            work_id = '/'
+        }  else if (c.proc_inst_task_assignee_name) {
             proc_inst_task_assignee_name = c.proc_inst_task_assignee_name;
             work_id = c.work_id;
         } else {
@@ -1049,7 +1073,9 @@ exports.createExcelOrderDetail = function createExcelOrderDetail(data) {
         let proc_inst_task_type = "";
         if (c.proc_inst_status == 4) {
             proc_inst_task_type = '已归档';
-        } else {
+        } else if(c.proc_inst_status == 7){
+            proc_inst_task_type = '客户不配合';
+        }else {
             proc_inst_task_type = c.proc_inst_task_type;
         }
 

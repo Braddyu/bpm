@@ -96,6 +96,55 @@ function DownloadFile(server, remotePath, localPath, then){
 }
 
 /**
+ * 描述：创建文件夹
+ * 参数：server 远程电脑凭证；newPath 新建路径；then 回调函数
+ * 回调：then(err, result)
+ */
+function mkFile(server,newPath, then){
+    Connect(server, function(conn){
+        conn.sftp( function(err, sftp){
+            if(err){
+                then(err);
+            }else{
+                var paths=newPath.split("/");
+                let mkpath="";
+                let count = 0;
+                for(let item=0;item < paths.length; item++) {
+                    if (paths[item]) {
+                        mkpath += "/" + paths[item];
+                        let path=mkpath;
+                        sftp.exists(path, function(exists){
+                            if(!exists){
+                                sftp.mkdir(path, function(err, result){
+                                    if(err){
+                                        then(err);
+                                    }else{
+                                        count++;
+                                        if(count == paths.length-1){
+                                            conn.end();
+                                            then(null,result);
+                                        }
+                                    }
+                                });
+                            }else{
+                                count++;
+                                if(count == paths.length-1){
+                                    conn.end();
+                                    then(null,null);
+                                }
+                            }
+
+                        });
+
+                    }
+                }
+
+            }
+        });
+    });
+}
+
+/**
  * 描述：获取远程文件路径下文件列表信息
  * 参数：server 远程电脑凭证；
  *       remotePath 远程路径；
@@ -137,6 +186,9 @@ function copyFiles(server, remotePath, newPath, then){
         then(err,result);
     });
 }
+
+
+
 /**
  * 描述：控制上传或者下载一个一个的执行
  */
@@ -276,3 +328,11 @@ exports.GetFileOrDirList = GetFileOrDirList;
 exports.DownloadDir = DownloadDir;
 exports.UploadDir = UploadDir;
 exports.copyFiles = copyFiles;
+exports.mkFile = mkFile;
+
+
+
+
+
+
+

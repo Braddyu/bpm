@@ -205,6 +205,7 @@ exports.httpPost=function(postContent,options){
 };
 
 
+
 /**
  * 调用雅典娜接口
  * @param proc_inst_id
@@ -279,6 +280,10 @@ var options={
         'Content-Type':'text/plan; charset=UTF-8'
     }
 }
+/*this.httpPostChannel('','',config.repair_channel).then(function(res){
+    console.log(res);
+})*/
+
 /*this.httpPost(postData,options).then(function (rs) {
     console.log(rs);
     //{"ret_code":"0","ret_msg":"工单复核归档成功"}

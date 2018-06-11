@@ -607,6 +607,7 @@ function insertMistake(mistake, three_node_config, proc_code, user_name, role_na
 
                                     })
                                 } else {
+                                    console.log("proc_code",proc_code, "proc_ver",proc_ver, "proc_title",proc_title, "parm","","proc_vars", proc_vars,"biz_vars", biz_vars,"user_code", user_code,"userName", userName, "errorSys_node")
                                     var conditions = {_id: mistake._id};
                                     var update = {
                                         $set: {
