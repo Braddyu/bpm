@@ -68,7 +68,7 @@ exports.task=function() {
                 if (rs.success && rs.data.length == 1) {
                     // userService.getUsreRolesByUserNo(userNo).then(function (result) {
                     //     if (result) {
-                            inst.getMyTaskQuery4Eui(page, length,proc_inst_task_title, userNo, joinup_sys, proc_code,work_order_number,proc_inst_task_sign,begin_date,end_date).then(function (taskresult) {
+                            inst.getMyTaskQuery4Eui(page, length, userNo, joinup_sys, proc_code,work_order_number,proc_inst_task_sign,begin_date,end_date,proc_inst_task_title).then(function (taskresult) {
                                 utils.respJsonData(res, taskresult);
                             }).catch(function (err_inst) {
                                 // console.log(err_inst);

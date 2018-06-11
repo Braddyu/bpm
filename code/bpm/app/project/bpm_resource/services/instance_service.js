@@ -1062,7 +1062,7 @@ exports.getMyInstList = function (userCode) {
  * @param userCode
  * @param paramMap
  */
-exports.getMyTaskQuery4Eui = function (page, size,proc_inst_task_title, userCode, joinup_sys, proc_code, work_order_number, proc_inst_task_sign,begin_date,end_date) {
+exports.getMyTaskQuery4Eui = function (page, size, userCode, joinup_sys, proc_code, work_order_number, proc_inst_task_sign,begin_date,end_date,proc_inst_task_title) {
     return new Promise(function (resolve, reject) {
 
         var match = {proc_inst_task_status: 0};
