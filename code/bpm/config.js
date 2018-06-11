@@ -309,7 +309,7 @@ var config = {
         user:'xmglpt@163.com',
         password:'518390a457fee48d069c6523ab'
     },
-    email_switch:true,//是否发送邮件开关
+    email_switch:false,//是否发送邮件开关
     email_subject:'《procName》的工单任务处理通知',//邮件标题
     email_templet:'您好，您有一张名为：《procName》的工单任务需处理，请及时处理。',//邮件内容模板
     //定时任务开关明细
