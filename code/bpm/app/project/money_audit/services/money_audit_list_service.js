@@ -252,7 +252,7 @@ exports.getMoneyAudtiProcInsts = function() {
                             var phone = result1[0].user_phone;
                             //发短信
                             console.log("预警，发短信给了"+phone+",taskId:"+result1[0]._id)
-                            /*var params = {
+                            var params = {
                                 "procName": result[i].proc_name,
                                 "orderNo":result[i].work_order_number
                             }
@@ -260,7 +260,7 @@ exports.getMoneyAudtiProcInsts = function() {
                                 console.log("短信发送成功");
                             }).catch(function (err) {
                                 console.log("短信发送失败", err);
-                            });*/
+                            });
                         }
                     }
                 }
@@ -277,7 +277,7 @@ exports.getMoneyAudtiProcInsts = function() {
                             var phone = result1[0].user_phone;
                             //发短信
                             console.log("超时，发短信给了"+phone+",taskId:"+result1[0]._id)
-                            /*var params = {
+                            var params = {
                                 "procName": result[i].proc_name,
                                 "orderNo":result[i].work_order_number
                             }
@@ -285,7 +285,7 @@ exports.getMoneyAudtiProcInsts = function() {
                                 console.log("短信发送成功");
                             }).catch(function (err) {
                                 console.log("短信发送失败", err);
-                            });*/
+                            });
                         }
                     }
                 }
