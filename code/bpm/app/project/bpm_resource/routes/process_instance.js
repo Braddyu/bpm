@@ -210,10 +210,18 @@ exports.process_instance=function() {
         var proc_code = req.body.proc_code;
         var user_no = req.body.user_no;
         var work_order_number = req.body.work_order_number;
+        var proc_title = req.body.proc_title;//标题
+        var joinup_sys = req.body.joinup_sys;//工单所属系统编号
         var startDate = req.body.startDate;//创建时间
         var endDate = req.body.endDate;//创建时间
         var is_manager = req.body.is_manager;//是否是管理员
         var conditionMap = {};
+        if (proc_title) {
+            conditionMap.proc_title = new RegExp(proc_title);
+        }
+        if (joinup_sys) {
+            conditionMap.joinup_sys = joinup_sys;
+        }
         if (work_order_number) {
             conditionMap.work_order_number = work_order_number;
         }
