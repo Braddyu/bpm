@@ -8,7 +8,7 @@ var logger = require('../../../../lib/logHelper').helper;
 var xlsx = require('node-xlsx');
 var moment = require('moment');
 var memcached_utils = require('../../../../lib/memcached_utils.js');
-var user_mode_log = require('../../../../node_modules/gmdp/lib/common/core/models/user_model');
+
 /**
  * 工单统计
  * @param org_id 机构id
@@ -856,6 +856,10 @@ exports.exportDetailList = function (org_id, proc_code, level, status, startDate
         if (status == 8) {
             inst_match['$and'] = [{"inst.refuse_number":{$gt:0}}, {"inst.proc_inst_status":{$eq:4}}];
         }
+        //客户不配合工单
+        if (status == 9) {
+            inst_match['inst.proc_inst_status'] = 7;
+        }
         if (work_order_number) {
             inst_match['inst.work_order_number'] = work_order_number;
         }
@@ -1499,7 +1503,7 @@ exports.getLively= function(monthArray) {
         var livelyArray=[];//活跃度
         var orders=0;
         var number=[];//返回前台的数据
-        await user_mode_log.$CommonUserLoginLog.aggregate([
+        await user_model.$CommonUserLoginLog.aggregate([
             {
                 $addFields: {
                     "loginTime":  { $dateToString: { format: "%Y-%m-%d", date: "$login_time" } }                }
@@ -1556,7 +1560,7 @@ exports.getEmploy= function(monthArray) {
         for (var i in timeArray){
             var startDate=new Date(timeArray[i]);
              var endDate=new Date(timeArray[i]+' 23:59:59');
-            var lively =await user_mode_log.$CommonUserLoginLog.distinct("user_no",{"login_time":{$gte:startDate,$lte:endDate}});
+            var lively =await user_model.$CommonUserLoginLog.distinct("user_no",{"login_time":{$gte:startDate,$lte:endDate}});
             var count=lively.length;
              orders+=count;
             livelyArray.push(count);

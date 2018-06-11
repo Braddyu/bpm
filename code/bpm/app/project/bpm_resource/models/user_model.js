@@ -338,3 +338,23 @@ var commonMenuSchema = new Schema(
 // model
 var CommonCoreRoleMenu = mongoose.model('CommonCoreRoleMenu', commonMenuSchema);
 exports.$CommonCoreRoleMenu = CommonCoreRoleMenu;
+
+
+var commonUserLoginLogSchema = new Schema(
+    {
+        login_account : {type:String, index:true},// 登陆账号
+        org_name:String,
+        org_id:String,
+        login_port:String,
+        login_time:Date,
+        user_phone:String,
+        user_tag:String,
+        user_name:String,
+        user_no:String
+
+    },
+    {collection: "common_user_login_log"}//mongodb集合名
+);
+//login_account,user_id,name,user_tag,phone_info,create_time,login_port,org_id,org_name
+// 账号model
+exports.$CommonUserLoginLog = mongoose.model('commonUserLoginLog', commonUserLoginLogSchema);
