@@ -40,6 +40,17 @@ if(logEnable )
                 flags: 'w+'
             },
             {
+                "category": "info4A",
+                type: "file",
+                filename: logPath+"/info_4A.log",
+                maxLogSize: 10*1024*1024, // = 10Mb
+                numBackups: 50, // keep five backup files
+                compress: true, // compress the backups
+                encoding: 'utf-8',
+                mode: parseInt('0640', 8),
+                flags: 'w+'
+            },
+            {
                 "category": "warn",
                 type: "file",
                 filename: logPath+"/app_warn.log",
@@ -50,6 +61,7 @@ if(logEnable )
                 mode: parseInt('0640', 8),
                 flags: 'w+'
             },
+
             {
                 "category": "error",
                 type: "file",
@@ -61,6 +73,7 @@ if(logEnable )
                 mode: parseInt('0640', 8),
                 flags: 'w+'
             },
+
             {
                 "category": "debug",
                 type: "file",
@@ -213,6 +226,7 @@ helper.debug = function(code,info,msg){
     logDebug.debug({code:code,info:info,msg:JSON.stringify(msg)});
     logConsole.debug({code:code,info:info,msg:JSON.stringify(msg)});
 };
+
 helper.info = function(code,info,msg){
     if(msg == null)
         msg = "";
@@ -234,6 +248,21 @@ helper.error = function(code,info,msg, exp){
     logErr.error({code:code,info:info,msg:JSON.stringify(msg)});
     logConsole.error({code:code,info:info,msg:JSON.stringify(msg)});
 };
+
+var logInfo4A = log4js.getLogger('info4A');
+var logError4A = log4js.getLogger('error4A');
+helper.info4A = function(code,info,msg){
+    if(msg == null)
+        msg = "";
+    logInfo4A.info({code:code,info:info,msg:msg});
+    logConsole.info({code:code,info:info,msg:msg});
+
+};
+
+
+
+
+
 // 配合express用的方法
 exports.use = function(app) {
     //页面请求日志, level用auto时,默认级别是WARN

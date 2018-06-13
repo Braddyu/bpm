@@ -1,10 +1,9 @@
 ﻿const process_model = require('../../../../app/project/bpm_resource/models/process_model');
-const user_model = require('../../../../app/project/bpm_resource/models/user_model');
 var service = require('../services/mistake_list_service');
 var utils = require('../../../../lib/utils/app_utils');
 var dictModel = require('../../workflow/models/dict_model');
 var config = require('../../../../config');
-var process_utils = require('../../../utils/process_util');
+var mistakeService = require('../../order_manage/services/mistake_list_service');
 var moment = require('moment');
 
 exports.task_job=function(){
@@ -91,7 +90,6 @@ function handle_overtime_order(page,size){
 exports.mistake_distribute_task=function(){
     mistake_distribute_task ();
 }
-
 function mistake_distribute_task() {
 
     moment.locale('zh-cn');
@@ -139,7 +137,7 @@ function mistake_distribute_task() {
                     data.proc_code = config.mistake_proc_code;
                     data.proc_name = config.mistake_proc_name;
                     data.dispatch_time = queryDate;
-                    data.create_user_no ="99999";
+                    data.create_user_no ="13511927000";
                     data.create_user_name = '系统自动派发';
                     data.update_user_no = '';
                     data.dispatch_cond_one = dict_data.mistake_task_check_status;
@@ -152,9 +150,25 @@ function mistake_distribute_task() {
 
                     service.addMistakeLog(datas).then(function(result){
                         var mlog_id = result.data[0]._id.toString();
-                        service.getInterface(queryDate,data.dispatch_cond_one,'99999','系统自动派发','系统自动派发',data.dispatch_cond_thr,data.dispatch_cond_two,data.create_user_no,0,mlog_id).then(function(dispres){
+                        var check_status= dict_data.mistake_task_check_status;//稽核状态
+                        var business_code=dict_data.mistake_task_business_code;//业务名称
+                        var city_code=dict_data.mistake_task_city_code;//地州
+                        var status= 0;//派单状态
+                        var user_no='13511927000';
+                        var work_id='18600834';
+                        var user_name='系统自动派发';
+                        var role_name='系统自动派发';
 
-                        });
+                        console.log(queryDate,check_status,user_no,user_name,role_name,business_code,city_code,work_id,mlog_id);
+                        // 调用分页
+                        mistakeService.dispatch(queryDate,check_status,user_no,user_name,role_name,business_code,city_code,work_id,status,mlog_id)
+                            .then(function(result){
+                                console.log("派发工单成功",result);
+                            })
+                            .catch(function(err){
+                                console.log('派发工单失败',err);
+
+                            });
                     });
                 }else{
                     console.log("自动派单定时任务关闭");

@@ -25,6 +25,7 @@ var userSchema = new Schema(
             user_tel : String,// 用户联系电话
             user_email : String,// 用户邮箱
             login_password : String,// 登录密码
+            login_plain_password : String,// 登录密码明文
             user_org :  [{type: Schema.Types.ObjectId}],// 所在部门
             user_sys : String,// 所属系统
             user_org_desc:String,//所属系统的 描述
@@ -109,6 +110,7 @@ var roleSchema = new Schema(
         role_status:Number,//状态：1-有效，2-停用
         role_remark:String,//角色描述
         role_order : Number,//序号
+        sys_id : String,//系统编号
         smart_visual_sys_role_id:String,//慧眼系统的role_id
         athena_sys_role_id:String,//Athena系统的role_id
         athena_app_sys_role_id:String,//Athena_app系统的role_id
@@ -336,3 +338,23 @@ var commonMenuSchema = new Schema(
 // model
 var CommonCoreRoleMenu = mongoose.model('CommonCoreRoleMenu', commonMenuSchema);
 exports.$CommonCoreRoleMenu = CommonCoreRoleMenu;
+
+
+var commonUserLoginLogSchema = new Schema(
+    {
+        login_account : {type:String, index:true},// 登陆账号
+        org_name:String,
+        org_id:String,
+        login_port:String,
+        login_time:Date,
+        user_phone:String,
+        user_tag:String,
+        user_name:String,
+        user_no:String
+
+    },
+    {collection: "common_user_login_log"}//mongodb集合名
+);
+//login_account,user_id,name,user_tag,phone_info,create_time,login_port,org_id,org_name
+// 账号model
+exports.$CommonUserLoginLog = mongoose.model('commonUserLoginLog', commonUserLoginLogSchema);

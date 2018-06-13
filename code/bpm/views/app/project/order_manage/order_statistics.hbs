@@ -384,6 +384,21 @@
                         }
                     }
                 },
+                {"field": "notCooperateNum","title":"客户不配合工单数","width":"120px",
+                    formatter:function(value,row,index){
+                        //大于6表示已经下砖到渠道层级
+
+                        if(level+1>6){
+                            return value;
+                        }else if(value>0){
+                            return '<a href="javascript:void(0)" onclick="openDetail(9,\''+row._id+'\')">'+value+'</a>';
+
+                        }else{
+                            return value;
+
+                        }
+                    }
+                },
 
                 {"field": "fileNum","title":"归档工单数","width":"120px","sortable":true,sorter:function(a,b){
                     return a>b?1:-1;
@@ -495,6 +510,22 @@
 
 
                     }},
+                {"field": "p7","title":"客户不配合率","width":"150px",
+                    formatter:function(value,row,index){
+                        if(row.notCooperateNum==0|| row.notCooperateNum==0){
+                            return "0%";
+                        }else{
+                            var re=((parseInt(row.notCooperateNum)/row.totalNum).toFixed(5)*100).toFixed(3);
+                            if(re==0){
+                                return"0%";
+                            }else{
+                                return re+"%";
+                            }
+
+                        }
+
+
+                    }},
                 {"field": "p3","title":"工单归档率","width":"150px",
                     formatter:function(value,row,index){
                         if(row.fileNum==0|| row.totalNum==0){
@@ -590,8 +621,8 @@
             selectOnCheck:true,
             checkOnSelect:true,
             sortName:'company_code',
+            showFooter:true,
             columns:[fields],
-
             onLoadSuccess:function(json){
                 if (json.success && json.rows.length > 0) {
                     level = Number(json.rows[0].level);
@@ -609,7 +640,9 @@
 
             loadMsg:'正在加载...'
         });
+
     }
+
     //点击表格的区域名称进行下钻
     function doSearchOrg(org_id_){
         org_status=0;
@@ -805,7 +838,7 @@
             {"field": "work_id","title":"当前处理人BOSS工号","width":"150px"},
             {"field": "proc_inst_task_assignee_name","title":"当前处理人","width":"150px",
                 formatter:function(value,row,index){
-                    if(row.proc_inst_status==4){
+                    if(row.proc_inst_status==4 || row.proc_inst_status==7){
                         return  '<span style="color:green">/</span>';
                     }else if(value){
                         return value;
@@ -817,6 +850,8 @@
                 formatter:function(value,row,index){
                     if(row.proc_inst_status==4){
                         return  '<span style="color:green">已归档</span>';
+                    }else if( row.proc_inst_status==7){
+                        return  '<span style="color:red">客户不配合</span>';
                     }else{
                         return value;
                     }
