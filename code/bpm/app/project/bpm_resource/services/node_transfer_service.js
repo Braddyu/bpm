@@ -226,7 +226,8 @@ exports.transfer=function(proc_inst_task_id,node_code,user_code,opts,memo,param_
                   proc_inst_task_assignee: user_code,
                   proc_inst_task_complete_time: new Date(),
                   proc_inst_task_remark: memo,
-                  proc_inst_task_opt_type : 1
+                  proc_inst_task_opt_type : 1,
+                  proc_vars:proc_vars
               };
               var updates = {$set: datas};
               await model.$ProcessInstTask.update(condition, updates, options);
@@ -1134,6 +1135,9 @@ exports.assign_transfer=function(proc_task_id,node_code,user_code,assign_user_co
            datas.proc_inst_task_opt_type = 0;
        }else{
            datas.proc_back = 0;
+       }
+       if(proc_vars){
+           datas.proc_vars=proc_vars;
        }
        var updates = {$set: datas};
        await model.$ProcessInstTask.update(condition, updates, options);
