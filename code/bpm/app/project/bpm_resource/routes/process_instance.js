@@ -495,3 +495,13 @@ router.route("/getInstDetailById").post(function (req, res) {
         utils.respJsonData(res, rs);
     });
 });
+
+/**
+ * 根据流程编码统计流程实例数
+ */
+router.route("/countInstByProcCode").post(function (req, res) {
+    var proc_code = req.body.proc_code;
+    inst.countInstByProcCode(proc_code).then(function(rs){
+        utils.respJsonData(res, rs);
+    });
+});

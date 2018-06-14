@@ -2535,7 +2535,7 @@ exports.taskdelete = function (taskid,inststatus) {
  * @param conditionMap
  * @returns {Promise}
  */
-exports.getMyArchiveTaskQuery4Eui = function (page, size, userNo, result) {
+exports.getMyArchiveTaskQuery4Eui = function (page, size, userNo, result,proc_code,proc_inst_task_title) {
 
     var p = new Promise(function (resolve, reject) {
 
@@ -2544,6 +2544,12 @@ exports.getMyArchiveTaskQuery4Eui = function (page, size, userNo, result) {
         //有的工号为'',为了防止查到空工号的任务
         if (!work_id) work_id = '@@@@@@@';
         inst_search.proc_inst_status = 4;
+        if(proc_code){
+            inst_search.proc_code = proc_code;
+        }
+        if(proc_inst_task_title){
+            inst_search['proc_title'] = new RegExp(proc_inst_task_title);
+        }
         page = parseInt(page);
         size = parseInt(size);
         if (page == 0) {
@@ -2699,5 +2705,25 @@ exports.getInstDetailById = function (instId) {
                  resolve(utils.returnMsg(true, '0000', '根据id查询流程实例详情成功。', rs, null));
              }
          });
+    });
+}
+
+
+/**
+ * 根据流程编码统计流程实例数
+ * @param proc_code
+ * @returns {bluebird}
+ */
+exports.countInstByProcCode = function (proc_code) {
+    return new Promise(function (resolve, reject) {
+        var data = {};
+        data.proc_code = proc_code;
+        model.$ProcessInst.find(data,function (err, rs) {
+            if(err){
+                resolve(utils.returnMsg(false, '0001', '根据流程编码统计流程实例数失败。', null, err));
+            } else{
+                resolve(utils.returnMsg(true, '0000', '根据流程编码统计流程实例数成功。', rs.length, null));
+            }
+        });
     });
 }
