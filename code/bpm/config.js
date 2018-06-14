@@ -60,7 +60,7 @@ var config = {
         saveUninitialized: false,
         rolling: true,
         //mongodb_url:'mongodb://10.196.153.11:30000/process',
-        mongodb_url: 'mongodb://192.168.9.48:27017/processpm',
+        mongodb_url: 'mongodb://192.168.9.48:27017/process',
         // mongodb_url:'mongodb://10.201.253.162:27017/process1',
         //mongodb_url:'mongodb://127.0.0.1:27017/ywcj',  //内网
         mongodb_collection: 'common_user_session'
@@ -310,8 +310,10 @@ var config = {
         password:'518390a457fee48d069c6523ab'
     },
     email_switch:false,//是否发送邮件开关
-    email_subject:'《procName》的工单任务处理通知',//邮件标题
-    email_templet:'您好，您有一张名为：《procName》的工单任务需处理，请及时处理。',//邮件内容模板
+    email_subject:'【procName】的工单处理通知',//邮件标题
+    email_templet:'您现在有【taskTitle】的工单需处理，请及时登录<a href="http://192.168.9.65:30008">贵州信科项目管理平台</a>进行处理。',//邮件内容模板
+    email_back_subject:'【procName】的工单退回处理通知',//邮件标题
+    email_back_templet:'您现在有【taskTitle】的工单被退回处理，请及时登录<a href="http://192.168.9.65:30008">贵州信科项目管理平台</a>查看原因并进行处理。',//邮件内容模板
     //定时任务开关明细
     switchDetail: {
         oa_switch: false,   //同步OA数据(省、地市、区县级)作业任务开关

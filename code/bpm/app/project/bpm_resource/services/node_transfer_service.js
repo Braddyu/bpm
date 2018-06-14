@@ -387,7 +387,7 @@ async function forkTaskCreate(item_config, proc_define, node_Array, k, user_code
         if((!useremail || useremail.indexOf(condition_task.proc_inst_task_assignee)== -1) && config.email_switch && next_detail.item_mail_notice && next_detail.item_mail_notice == 1){
             useremail += condition_task.proc_inst_task_assignee+',';
             let userobj = await  model_user.$User.find({"user_no": condition_task.proc_inst_task_assignee});
-            await mailutil.sendMail(userobj[0].user_email,config.email_subject.replace('procName',condition_task.proc_name),config.email_templet.replace('procName',condition_task.proc_name));
+            await mailutil.sendMail(userobj[0].user_email,config.email_subject.replace('procName',condition_task.proc_name),config.email_templet.replace('taskTitle',condition_task.proc_inst_task_title));
         }
         task_id_array.push(rs.data);
         await forkTaskCreate(item_config, proc_define, node_Array,++k, user_code, proc_define_id, params, proc_inst_id, resolve, task_id_array,biz_vars,prev_node,prev_user,proc_vars,r,proc_inst_task_id,useremail);
@@ -1030,13 +1030,13 @@ async function normal_process(current_detail,next_detail, next_node, proc_inst_i
         }
 
         var mailsubj=config.email_subject.replace('procName',proc_name);
-        var mailcontext=config.email_templet.replace('procName',proc_name);
+        var mailcontext=config.email_templet.replace('taskTitle',condition_task.proc_inst_task_title);
         if(rs && is_refuse){
             conditions ={_id: proc_inst_id};
             update={$inc: {refuse_number: 1}};
             options={};
-            mailsubj = '《'+proc_name+'》 的工单任务退回通知';
-            mailcontext = '您好，您有一张名为：《'+proc_name+'》的工单任务被退回，请查看原因并及时处理。';
+            mailsubj = config.email_back_subject.replace('procName',proc_name);
+            mailcontext = config.email_back_templet.replace('taskTitle',condition_task.proc_inst_task_title);
             await model.$ProcessInst.update(conditions, update, options);
         }
         //发送邮件通知
@@ -1245,7 +1245,7 @@ exports.assign_transfer=function(proc_task_id,node_code,user_code,assign_user_co
        await model.$ProcessInst.update(conditions,update,options);
        //发送邮件通知
        if(config.email_switch && item_mail_notice && item_mail_notice == 1){
-          await mailutil.sendMail(resultss[0].user_email,config.email_subject.replace('procName',proc_name),config.email_templet.replace('procName',proc_name))
+          await mailutil.sendMail(resultss[0].user_email,config.email_subject.replace('procName',proc_name),config.email_templet.replace('taskTitle',condition_task.proc_inst_task_title))
        }
        let res_s=await touchNode(next_detail,user_code,proc_task_id,true);
        //resolve(res_s);
@@ -1502,7 +1502,7 @@ exports.do_payout=function(proc_task_id,node_code,user_code,assign_user_code,pro
                 }
 
                 if(config.email_switch && item_mail_notice && item_mail_notice == 1){//发送邮件通知
-                    mailutil.sendMail(resultss[0].user_email,config.email_subject.replace('procName',proc_name),config.email_templet.replace('procName',proc_name))
+                    mailutil.sendMail(resultss[0].user_email,config.email_subject.replace('procName',proc_name),config.email_templet.replace('taskTitle',condition_task.proc_inst_task_title))
                 }
                 let resss = await touchNode(next_detail, user_code, rs._id, true);
                 if(!resss.success){

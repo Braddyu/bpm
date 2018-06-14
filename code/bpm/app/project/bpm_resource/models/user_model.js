@@ -358,3 +358,20 @@ var commonUserLoginLogSchema = new Schema(
 //login_account,user_id,name,user_tag,phone_info,create_time,login_port,org_id,org_name
 // 账号model
 exports.$CommonUserLoginLog = mongoose.model('commonUserLoginLog', commonUserLoginLogSchema);
+
+//邮件发送日志
+var commonEmailLogSchema = new Schema(
+    {
+        from: String,// 发送邮箱
+        recipient: String,// 发送目标邮箱
+        subject: String,// 邮件标题
+        context: String,// 邮件内容
+        send_status: String,// 发送状态
+        send_date: Date// 发送时间
+    },
+    {collection: "common_email_info_log"}//mongodb集合名
+);
+
+// model
+var CommonEmailLogSchema = mongoose.model('CommonEmailLogSchema', commonEmailLogSchema);
+exports.$CommonEmailLogSchema = CommonEmailLogSchema;
