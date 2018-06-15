@@ -24,7 +24,7 @@ router.route('/list').post(function(req,res){
     // 调用分页
     service.getStatisticsListPage(org_id,proc_code,level,status,startDate,endDate)
         .then(function(result){
-           //  console.log("获取所有工单列表成功",result);
+           console.log("获取所有工单列表成功",result);
 
             utils.respJsonData(res, result);
         })

@@ -1,10 +1,9 @@
 ﻿const process_model = require('../../../../app/project/bpm_resource/models/process_model');
-const user_model = require('../../../../app/project/bpm_resource/models/user_model');
 var service = require('../services/mistake_list_service');
 var utils = require('../../../../lib/utils/app_utils');
 var dictModel = require('../../workflow/models/dict_model');
 var config = require('../../../../config');
-var process_utils = require('../../../utils/process_util');
+var mistakeService = require('../../order_manage/services/mistake_list_service');
 var moment = require('moment');
 
 exports.task_job=function(){
@@ -14,198 +13,173 @@ exports.task_job=function(){
 async function task() {
     try{
         //查询未归档未超时的差错工单和预警工单
-        let instList=await process_model.$ProcessInst.find({"proc_inst_status":{$nin:4},"proc_code":{$in:['p-201']},"is_overtime":'0',"proc_cur_task_name" :"厅店处理回复"});
-       console.log(instList.length);
-        let now=new Date().getTime();
-        for(let item in instList){
-            let proc_vars=JSON.parse(instList[item].proc_vars);
-            let endTime=new Date(proc_vars.end_time).getTime();
-            //判断是否是超时
-            if(now > endTime){
-                var conditions = {_id: instList[item]._id};
-                var update = {$set: {is_overtime:1}};
-                var options = {};
-                process_model.$ProcessInst.update(conditions, update, options,async function (error) {
-                    if(error) {
-                    }else {
-                        let taskList=await process_model.$ProcessInstTask.find({"proc_inst_id":instList[item]._id,"proc_inst_task_status" :0})
-                        if(taskList.length>0){
-                            let userList=await user_model.$User.find({"user_no":taskList[0].proc_inst_task_assignee});
-                            //发送短信通知当前节点处理人
-                  /*          if (userList.length>0) {
-                                var process_utils = require('../../../utils/process_util');
-                                var mobile = userList[0].user_phone;
+        let length=await process_model.$ProcessInst.count({"proc_inst_status":2,"proc_code":{$in:['p-201']},"is_overtime":'0',"proc_cur_task_name" :"厅店处理回复"});
+        let size = 200;
+        let pool_size = Math.ceil(length / size);
+        console.log('pool_size', pool_size)
+        for (let i = 0; i < pool_size; i++) {
+            console.log("=================第", i, "次====================");
+            let start = i * size;
 
-                                var params = {
-                                    "procName": instList[item].proc_title,
-                                    "orderNo":  instList[item].work_order_number
-                                }
-                                process_utils.sendSMS(mobile, params, "SMS_TEMPLET_ORDER").then(function (rs) {
-                                    console.log("短信发送成功");
-                                }).catch(function (err) {
-                                    console.log("短信发送失败", err);
-                                });
-                            }*/
-                        }
-                    }
-                });
-            }
+            await handle_overtime_order(i,size);
         }
     }catch(e){
         console.log("处理超时任务失败",e);
     }
 }
 
-exports.mistake_distribute_task = async function () {
-    // --------------------------- 查询所有省级管理员的手机号 ---------------------------
-    let role = await user_model.$Role.find({"role_code" : "check_manager", "role_status" : 1});
-    let users = await user_model.$User.find({"user_roles":role[0]._id,"user_status" : 1});
-    let user_mobiles = [];
-    for(let i in users){
-        let user_mobile = users[i].user_phone;
-        if(user_mobile){
-            user_mobiles.push(user_mobile);
-        }
-    }
-    // ---------------------------------------------------------------------------------
+function handle_overtime_order(page,size){
+    return new Promise(function(resolve,reject){
+
+        process_model.$ProcessInst.find({"proc_inst_status":2,"proc_code":{$in:['p-201']},"is_overtime":'0',"proc_cur_task_name" :"厅店处理回复"},function(err,instList){
+            let count=0;
+
+            let now=new Date().getTime();
+            for(let item in instList){
+                console.log(instList[item]);
+                let proc_vars=JSON.parse(instList[item].proc_vars);
+                let endTime=new Date(proc_vars.end_time).getTime();
+                //判断是否是超时
+                if(now > endTime){
+                    var conditions = {_id: instList[item]._id};
+                    var update = {$set: {is_overtime:1}};
+                    var options = {};
+                    process_model.$ProcessInst.update(conditions, update, options, function (error) {
+                        if(error) {
+                        }else {
+                            count++;
+                            if(count==instList.length){
+                                resolve()
+                            }
+                          /*  let taskList=await process_model.$ProcessInstTask.find({"proc_inst_id":instList[item]._id,"proc_inst_task_status" :0})
+                            if(taskList.length>0){
+                                let userList=await user_model.$User.find({"user_no":taskList[0].proc_inst_task_assignee});
+                                //发送短信通知当前节点处理人
+                                       if (userList.length>0) {
+                                              var process_utils = require('../../../utils/process_util');
+                                              var mobile = userList[0].user_phone;
+
+                                              var params = {
+                                                  "procName": instList[item].proc_title,
+                                                  "orderNo":  instList[item].work_order_number
+                                              }
+                                              process_utils.sendSMS(mobile, params, "SMS_TEMPLET_ORDER").then(function (rs) {
+                                                  console.log("短信发送成功");
+                                              }).catch(function (err) {
+                                                  console.log("短信发送失败", err);
+                                              });
+                                          }
+                            }*/
+                        }
+                    });
+                }else{
+                    count++;
+                    if(count==instList.length){
+                        resolve()
+                    }
+                }
+            }
+        }).skip(page*size).limit(size)
+
+    })
+
+}
+
+
+
+exports.mistake_distribute_task=function(){
+    mistake_distribute_task ();
+}
+function mistake_distribute_task() {
+
     moment.locale('zh-cn');
     var _today = moment();
-    var queryDate =  _today.subtract(1, 'days').format('YYYY-MM-DD');
-    var check_status = "";
-    var business_name = "";
-    var flag = "";
-    var order_number = "";
-    var city_code = "";
+    var queryDate =  _today.subtract(1, 'days').format('YYYY-MM-DD').replace(/\-/g,'');
+    console.log(queryDate)
 
-    var status= 0;//派单状态
-    var user_no ="13511927000";
-    var work_id = "18600834";
-    var user_name = "曹锡江";
-    var role_name = "省级管理人员";
-    var mlog_id ='';
-    var datas = [];
-    var data = {};
-    var match = {};
-    match['dict_code'] = {$in:[ "mistake_task_check_status", "mistake_task_business_name",
-            "mistake_take_order_number","mistake_task_flag","mistake_task_city_code"]};
-    match.dict_status = 1;
+    //获取定时派单字典数据
     dictModel.$.aggregate([
         {
-            $match:match
+            $match:{"dict_code" : "mistake_task_code"}
         },
         {
-            $graphLookup: {
+            $lookup: {
                 from: "common_dict_attr_info",
-                startWith: "$_id",
-                connectFromField: "_id",
-                connectToField: "dict_id",
-                as: "dict_attr_info",
-                restrictSearchWithMatch: {}
+                localField: '_id',
+                foreignField: "dict_id",
+                as: "dict_attr_info"
             }
         },
         {
             $unwind: {path: "$dict_attr_info", preserveNullAndEmptyArrays: true}
         },
         {
-            $match:{"dict_attr_info.field_status":1,"dict_attr_info.field_checked":1}
-        },
+            $project:{
+                field_name:"$dict_attr_info.field_name",
+                field_value:"$dict_attr_info.field_value"
+            }
+        }
     ]).exec(function (err, res) {
-        if(res.length){
-            for(let item in res){
-                var dict = res[item];
-                 if(dict.dict_code == "mistake_task_check_status"){
-                    check_status =  dict.dict_attr_info.field_value;
-                }else if(dict.dict_code == "mistake_task_business_name"){
-                    business_name = dict.dict_attr_info.field_value;
-                }else if(dict.dict_code == "mistake_task_flag"){
-                    flag = dict.dict_attr_info.field_value;
-                }else if(dict.dict_code == "mistake_take_order_number"){
-                    order_number = dict.dict_attr_info.field_value;
-                }else if(dict.dict_code == "mistake_task_city_code"){
-                    city_code = dict.dict_attr_info.field_value;
+        if(err){
+            console.log(utils.returnMsg(false, '0001', '开启开关失败:查询筛选条件失败!', null, err));
+        }else{
+            if(res.length>0){
+                var dict_data = {};
+                for (let item in res) {
+                    let dict = res[item];
+                    dict_data[dict.field_name]=dict.field_value;
                 }
-            }
+                console.log(dict_data);
+                if(dict_data.mistake_task_flag=='1'){
+                    var datas = [];
+                    var data = {};
 
-            // 开关未开时停止程序继续向下执行
-            if (flag == "0") {
-                return false;
-            }
+                    data.proc_code = config.mistake_proc_code;
+                    data.proc_name = config.mistake_proc_name;
+                    data.dispatch_time = queryDate;
+                    data.create_user_no ="13511927000";
+                    data.create_user_name = '系统自动派发';
+                    data.update_user_no = '';
+                    data.dispatch_cond_one = dict_data.mistake_task_check_status;
+                    data.dispatch_cond_two = dict_data.mistake_task_city_code;
+                    data.dispatch_cond_thr = dict_data.mistake_task_business_code;
+                    data.create_time = new Date();
+                    data.status = 0;
+                    data.dispatch_remark = '';
+                    datas.push(data);
 
-            new Promise(function(resolve,reject){
-                var conditionMap = {}
-                if(queryDate){
-                    conditionMap.mistake_time =queryDate.replace(/\-/g,'');
-                }
-                if(status){
-                    var dataIntArr=[]
-                    status=status.split(",").forEach(function(data,index,arr){
-                        dataIntArr.push(+data);
+                    service.addMistakeLog(datas).then(function(result){
+                        var mlog_id = result.data[0]._id.toString();
+                        var check_status= dict_data.mistake_task_check_status;//稽核状态
+                        var business_code=dict_data.mistake_task_business_code;//业务名称
+                        var city_code=dict_data.mistake_task_city_code;//地州
+                        var status= 0;//派单状态
+                        var user_no='13511927000';
+                        var work_id='18600834';
+                        var user_name='系统自动派发';
+                        var role_name='系统自动派发';
+
+                        console.log(queryDate,check_status,user_no,user_name,role_name,business_code,city_code,work_id,mlog_id);
+                        // 调用分页
+                        mistakeService.dispatch(queryDate,check_status,user_no,user_name,role_name,business_code,city_code,work_id,status,mlog_id)
+                            .then(function(result){
+                                console.log("派发工单成功",result);
+                            })
+                            .catch(function(err){
+                                console.log('派发工单失败',err);
+
+                            });
                     });
-                    conditionMap.status={$in:dataIntArr};
                 }else{
-                    conditionMap.status={$nin:[-2]};
+                    console.log("自动派单定时任务关闭");
                 }
-                if(check_status){
-                    conditionMap.remark=check_status;
-                }
-                if(business_name){
-                    conditionMap.business_name=business_name;
-                }
-                service.getMistakeListPage(0,20,conditionMap).then(function(result){
-                    resolve(result);
-                });
-            }).then(function(result){
-                var smsParams = {};
-                if(!result.success){
-                    smsParams['msg'] = "查询工单数量失败";
-                    for(let i in user_mobiles){
-                        process_utils.sendSMS(user_mobiles[i],smsParams,"MISTAKE_DISTRIBUTE_ERROR","");
-                    }
-                    return false;
-                }
-                if (order_number < result.total) {
-                    // 超量情况发送短信给管理员
-                    for(let i in user_mobiles){
-                        process_utils.sendSMS(user_mobiles[i],"","MISTAKE_DISTRIBUTE_TASK","");
-                    }
-                    return false;
-                }
-                data.proc_code = config.mistake_proc_code;
-                data.proc_name = config.mistake_proc_name;
-                data.dispatch_time = queryDate.replace(/\-/g,'');
-                data.create_user_no = work_id?work_id:user_no;
-                data.create_user_name = user_name;
-                data.update_user_no = '';
-                data.dispatch_cond_one = check_status?check_status:'';
-                data.dispatch_cond_thr = business_name?business_name:'';
-                data.dispatch_cond_two = city_code?city_code:'';
-                data.create_time = new Date();
-                //0表示派单中，1表示：派单全部成功。2表示：派单部分成功。3表示：派单全部失败。
-                data.status = 0;
-                data.dispatch_remark = '';
-                datas.push(data);
 
-                service.addMistakeLog(datas).then(function(result){
-                    mlog_id = result.data[0]._id.toString();
-                    service.getInterface(queryDate,data.dispatch_cond_one,user_no,user_name,role_name,data.dispatch_cond_thr,data.dispatch_cond_two,data.create_user_no,status,mlog_id).then(function(dispres){
-                        if(dispres.success){
-                            var now = moment();
-                            var time =  now.format('YYYY-MM-DD HH:mm:ss');
-                            smsParams['time'] = time;
-                            for(let i in user_mobiles){
-                                process_utils.sendSMS(user_mobiles[i],smsParams,"MISTAKE_DISTRIBUTE_SUCCESS","");
-                            }
-                        }else{
-                            smsParams['msg'] = dispres.msg;
-                            for(let i in user_mobiles){
-                                process_utils.sendSMS(user_mobiles[i],smsParams,"MISTAKE_DISTRIBUTE_ERROR","");
-                            }
-                        }
-                    });
-                });
-            });
+            }else{
+                console.log(utils.returnMsg(false, '0001', '请添加定时派单字典!', null, err));
+            }
 
         }
-    });
+
+    })
 }
 

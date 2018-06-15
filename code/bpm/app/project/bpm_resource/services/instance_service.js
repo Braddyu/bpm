@@ -379,7 +379,7 @@ exports.create_instance_only = function (proc_code, proc_ver, proc_title, user_c
             if (res_user[0].work_id) {
                 task.proc_inst_task_work_id = res_user[0].work_id;
             } else {
-                task.proc_inst_task_work_id = '';
+                task.proc_inst_task_work_id = '@@@@@';
             }
             task.publish_status = results[0].publish_status;
             task.work_order_number = results[0].work_order_number;
@@ -546,6 +546,7 @@ exports.createInstance = function (proc_code, proc_ver, proc_title, param_json_s
         condition.publish_status = publish;
         //写入数据库 创建流程实例化方法
         let insresult = await saveIns(condition, proc_code, proc_title, user_code);
+
         if (!insresult.success) {
             resolve(insresult);
             return;
@@ -555,6 +556,23 @@ exports.createInstance = function (proc_code, proc_ver, proc_title, param_json_s
             NoFound(resolve);
             return;
         }
+
+        // ---------------------------风险防控系统调用时保存实例参数到副表-----------------------------
+        if (joinup_sys == 'riskManagementSys_node') {
+            let proc_vars_object = {};
+            if (proc_vars_json) {
+                proc_vars_object =  JSON.parse(proc_vars_json);
+            }
+            let paramStash = {};
+            paramStash.proc_code = proc_code;
+            paramStash.proc_inst_id = insresult.data;
+            let paramInsertResult = await saveInsParam(paramStash,proc_vars_object);
+            if (!paramInsertResult.success) {
+                resolve(insresult);
+                return;
+            }
+        }
+        // -----------------------------------------------------------------------------------------
         //新加字段所属系统编号
         condition.publish_status = rs_s[0].publish_status;
         condition.joinup_sys = rs_s[0].joinup_sys;
@@ -572,6 +590,7 @@ exports.createInstance = function (proc_code, proc_ver, proc_title, param_json_s
         condition.proc_name = rs_s[0].proc_name;
         condition.next_name = next_name;
         condition.proc_task_ver = proc_ver;
+
         if (nodeDetail.next_detail) {
             //创建流程任务
             let taskresult = await insertTask(insresult, condition, resu, role);
@@ -670,7 +689,7 @@ function insertTask(result, condition, resu, role) {
         if (resu[0].work_id) {
             task.proc_inst_task_work_id = resu[0].work_id;
         } else {
-            task.proc_inst_task_work_id = '';
+            task.proc_inst_task_work_id = '@@@@@';
         }
 
         task.work_order_number = condition.work_order_number//工单编号
@@ -714,6 +733,7 @@ function insertTask(result, condition, resu, role) {
         task.previous_step = [];
         task.publish_status = condition.publish_status;
         task.proc_task_ver = condition.proc_task_ver;
+        task.proc_inst_task_opt_type = 3;
 
         var arr = [];
         arr.push(task);
@@ -1042,7 +1062,7 @@ exports.getMyInstList = function (userCode) {
  * @param userCode
  * @param paramMap
  */
-exports.getMyTaskQuery4Eui = function (page, size, userCode, joinup_sys, proc_code, work_order_number, proc_inst_task_sign) {
+exports.getMyTaskQuery4Eui = function (page, size, userCode, joinup_sys, proc_code, work_order_number, proc_inst_task_sign,begin_date,end_date,proc_inst_task_title) {
     return new Promise(function (resolve, reject) {
 
         var match = {proc_inst_task_status: 0};
@@ -1055,6 +1075,16 @@ exports.getMyTaskQuery4Eui = function (page, size, userCode, joinup_sys, proc_co
         if (work_order_number) {
             match.work_order_number = work_order_number;
         }
+        if (proc_inst_task_title) {
+            match.proc_inst_task_title = new RegExp(proc_inst_task_title);
+        }
+        if (begin_date && end_date) {
+            match['$and'] = [{"proc_inst_task_arrive_time":{"$gte": new Date(begin_date+" 00:00:00"),"$lte": new Date(end_date+" 23:59:59")}}];
+        }else if (begin_date) {
+            match.proc_inst_task_arrive_time = {"$gte": new Date(begin_date+" 00:00:00")};
+        }else if (end_date) {
+            match.proc_inst_task_arrive_time = {"$lte": new Date(end_date+" 23:59:59")};
+        }
 
         //查询用户所在机构和角色
         model_user.$User.find({"user_no": userCode}, function (err, res) {
@@ -1066,7 +1096,7 @@ exports.getMyTaskQuery4Eui = function (page, size, userCode, joinup_sys, proc_co
                 let work_id = res[0].work_id
                 //有的工号为'',为了防止查到空工号的任务
                 if (!work_id)
-                    if (!work_id) work_id = '@@@@@@@';
+                    if (!work_id) work_id = '@@@@@@';
 
 
                 //待处理任务
@@ -1107,7 +1137,8 @@ exports.getMyTaskQuery4Eui = function (page, size, userCode, joinup_sys, proc_co
                     task_match=task_match.concat(wait_handle_match)
                     task_match=task_match.concat(wait_claim_match)
                 }
-                if(page==0)page=1;
+                if(!page || page==0)page=1;
+                if(!size || size==0)size=20;
                 let skip_match={};
                 let limit_match={};
                 if(page && size ){
@@ -1119,7 +1150,10 @@ exports.getMyTaskQuery4Eui = function (page, size, userCode, joinup_sys, proc_co
                         $limit: parseInt(size)
                     };
                 }
+                match.proc_inst_repeat_task_claim={$ne:2};//会签重复的任务不显示
+                console.log('---match---------- ',match);
                 model.$ProcessInstTask.aggregate([
+                    {$sort:{"proc_inst_task_arrive_time":-1}},
                     {
                         $match: match
                     },
@@ -1141,6 +1175,7 @@ exports.getMyTaskQuery4Eui = function (page, size, userCode, joinup_sys, proc_co
                     let data = {};
                     data.rows = res;
                     model.$ProcessInstTask.aggregate([
+                        {$sort:{"proc_inst_task_arrive_time":-1}},
                         {
                             $match: match
                         },
@@ -1149,6 +1184,7 @@ exports.getMyTaskQuery4Eui = function (page, size, userCode, joinup_sys, proc_co
                                 {
                                     org_length: {$size: "$proc_inst_task_user_org"},
                                     role_length: {$size: "$proc_inst_task_user_role"},
+                                    task_id: "$_id"
                                 }
                         },
                         {
@@ -1157,13 +1193,12 @@ exports.getMyTaskQuery4Eui = function (page, size, userCode, joinup_sys, proc_co
                             }
                         },
                         {
-                            $count: "proc_inst_id"
+                            $count: "task_id"
                         }
                     ]).exec(function (err, res) {
                         let count = 0;
-
                         if (res.length > 0)
-                            count = res[0].proc_inst_id;
+                            count = res[0].task_id;
                         data.total = count;
                         data.success = true;
                         data.msg = "获取待办成功";
@@ -1204,7 +1239,7 @@ exports.getMyTaskQuery = function (taskId, user_no) {
  * @param userCode
  * @param paramMap
  */
-exports.getMyCompleteTaskQuery4Eui = function (page, size, userCode, paramMap, joinup_sys, proc_code) {
+exports.getMyCompleteTaskQuery4Eui = function (page, size, userCode, paramMap, joinup_sys, proc_code,begin_date,end_date,work_order_number,proc_inst_task_title) {
 
     return new Promise(function (resolve, reject) {
         var userArr = [];
@@ -1217,11 +1252,26 @@ exports.getMyCompleteTaskQuery4Eui = function (page, size, userCode, paramMap, j
         if (proc_code) {
             match.proc_code = proc_code;
         }
+        if (work_order_number) {
+            match.work_order_number = work_order_number;
+        }
+
+        if (proc_inst_task_title) {
+            match['proc_inst_task_title'] = new RegExp(proc_inst_task_title);
+        }
+        if (begin_date && end_date) {
+            match['$and'] = [{"proc_inst_task_arrive_time":{"$gte": new Date(begin_date+" 00:00:00"),"$lte": new Date(end_date+" 23:59:59")}}];
+        }else if (begin_date) {
+            match.proc_inst_task_arrive_time = {"$gte": new Date(begin_date+" 00:00:00")};
+        }else if (end_date) {
+            match.proc_inst_task_arrive_time = {"$lte": new Date(end_date+" 23:59:59")};
+        }
+
         conditionMap['$and'] = [match, {'proc_inst_task_assignee': {'$in': userArr}}];
         //conditionMap['$and'] = [match,{'proc_inst_task_assignee':{'$in':userArr}},{$or:[{'proc_inst_task_user_role':{'$in':paramMap.roles}},{'proc_inst_task_user_org':{'$in':paramMap.orgs}}]}];
         // conditionMap['$or'] = [{'proc_inst_task_assignee':{'$in':userArr}},{'proc_inst_task_user_role':{'$in':paramMap.roles},'proc_inst_task_user_org':{'$in':paramMap.orgs}}];
         conditionMap.proc_inst_task_status = 1;
-        utils.pagingQuery4Eui(model.$ProcessTaskHistroy, page, size, conditionMap, resolve, '', {proc_inst_task_arrive_time: -1});
+        utils.pagingQuery4Eui(model.$ProcessTaskHistroy, page, size, conditionMap, resolve, '', {proc_inst_task_complete_time: -1});
     });
 };
 
@@ -1364,6 +1414,9 @@ exports.getCompTaskById = function (taskId, flag) {
         //flag 等于1的时候查询任务历史表
         if (flag && flag == 1) {
             mod = model.$ProcessTaskHistroy.find({'proc_task_id': taskId});
+        }
+        if (flag && flag == 4) {//查询流程实例
+            mod = model.$ProcessInst.find({'_id': taskId});
         }
         // var query = model.$ProcessInstTask.find({'_id':taskId});
         mod.exec(function (error, rs) {
@@ -2180,7 +2233,8 @@ exports.return_task = function (task_id, user_no, memo, node_code, node_name) {
                                 } else {
                                     //创建下一步流转任务
                                     var condition_task = {};
-                                    condition_task.proc_inst_task_work_id = rsu[0].proc_inst_task_work_id;
+                                    if(rsu[0].proc_inst_task_work_id)
+                                        condition_task.proc_inst_task_work_id = rsu[0].proc_inst_task_work_id;
                                     condition_task.proc_task_ver = rsu[0].proc_task_ver;
                                     condition_task.work_order_number = rsu[0].work_order_number;
                                     condition_task.publish_status = rsu[0].publish_status;//1-发布 0- 未发布
@@ -2449,4 +2503,227 @@ exports.delete = function (joinup_sys) {
 
     });
     return p;
+}
+
+/*
+删除任务数据 临时接口，勿用
+ */
+
+exports.taskdelete = function (taskid,inststatus) {
+    var p = new Promise(async function (resolve, reject) {
+
+        if (inststatus == '4') {//实例归档
+            await model.$ProcessTaskHistroy.remove({"proc_task_id" : taskid},function(err,result){if(err){resolve(utils.returnMsg(false, '1000', '历史数据删除异常', null, err));}else{console.log('删除历史任务 ',taskid,' 成功');}});
+        } else if(inststatus == '2') {//流转中
+            await model.$ProcessInstTask.remove({"_id" : taskid},function(err,result){if(err){resolve(utils.returnMsg(false, '1000', '数据删除异常', null, err));}else{console.log('删除任务 ',taskid,' 成功');}});
+            await model.$ProcessTaskHistroy.remove({"proc_task_id" : taskid},function(err,result){if(err){resolve(utils.returnMsg(false, '1000', '历史数据删除异常', null, err));}else{console.log('删除历史任务 ',taskid,' 成功');}});
+        }else{
+            resolve(utils.returnMsg(false, '1000', '实例状态不对无法删除', null, null));
+            return;
+        }
+        resolve(utils.returnMsg(true, '0000', '删除数据成功', null, null));
+
+    });
+    return p;
+}
+
+
+/**
+ * 获取已归档数据
+ * @param page
+ * @param size
+ * @param conditionMap
+ * @returns {Promise}
+ */
+exports.getMyArchiveTaskQuery4Eui = function (page, size, userNo, result,proc_code,proc_inst_task_title) {
+
+    var p = new Promise(function (resolve, reject) {
+
+        var inst_search = {};
+        let work_id = result.work_id;
+        //有的工号为'',为了防止查到空工号的任务
+        if (!work_id) work_id = '@@@@@@@';
+        inst_search.proc_inst_status = 4;
+        if(proc_code){
+            inst_search.proc_code = proc_code;
+        }
+        if(proc_inst_task_title){
+            inst_search['proc_title'] = new RegExp(proc_inst_task_title);
+        }
+        page = parseInt(page);
+        size = parseInt(size);
+        if (page == 0) {
+            page = 1;
+        }
+
+        model.$ProcessInst.aggregate([
+            {
+                $match: inst_search
+            },
+            {
+                $lookup: {
+                    from: "common_bpm_proc_task_histroy",
+                    localField: "_id",
+                    foreignField: "proc_inst_id",
+                    as: "his"
+                }
+            },
+            {
+                $match: {$or: [{"his.proc_inst_task_assignee": userNo}, {"his.proc_inst_task_work_id": work_id}]}
+            },
+            {
+                $project: {
+                    proc_start_time: 1,
+                    proc_title:1,
+                    proc_name:1,
+                    proc_inst_id:'$_id',
+                    proc_code:1,
+                    proc_vars:1,
+                    his:1,
+                }
+            },
+            {
+                $sort: {"proc_start_time": -1}
+            },
+            {
+                $skip: (page - 1) * size
+            },
+            {
+                $limit: size
+            },
+        ]).exec(function (err, res) {
+            if (err) {
+                reject(utils.returnMsg(false, '1000', '查询统计失败。', null, err));
+            } else {
+                var result = {rows: res, success: true};
+                model.$ProcessInst.aggregate([
+                    {
+                        $match: inst_search
+                    },
+                    {
+                        $lookup: {
+                            from: "common_bpm_proc_task_histroy",
+                            localField: "_id",
+                            foreignField: "proc_inst_id",
+                            as: "his"
+                        }
+                    },
+                    {
+                        $match: {"his.proc_inst_task_assignee": userNo}
+                    },
+                    {
+                        $addFields: {
+                            "isCount": "1"
+                        }
+                    },
+                    {
+                        $sortByCount: "$isCount"
+                    }
+                ]).exec(function (err, res) {
+                    if (err) {
+                        reject(utils.returnMsg(false, '1000', '查询统计失败。', null, err));
+                    } else {
+                        console.log("数量", res);
+                        if (res.length > 0)
+                            result.total = res[0].count;
+                        else
+                            result.total = 0;
+                        resolve(result)
+
+                    }
+                })
+            }
+        })
+
+    });
+    return p;
+};
+
+
+/**
+ * 实例创建前验证标题是否被占用[仅风险防控系统使用]
+ * @param proc_code
+ * @param json_str_params
+ * @returns {bluebird}
+ */
+exports.validateBeforeCreate = (proc_code,json_str_params)=>{
+    return new Promise(function(resolve,reject){
+        var json_object_params = {};
+        var conditionMap = {};
+        if(json_str_params){
+            json_object_params = JSON.parse(json_str_params);
+            for(let key in json_object_params){
+                conditionMap["proc_vars."+ key] = json_object_params[key];
+            }
+        }
+        conditionMap.proc_code = proc_code;
+        model.$CommonProcessInstParam.find(conditionMap,function (err, rs) {
+            if(err){
+                resolve(utils.returnMsg(false, '0002', '验证项目名称失败', null, err));
+            }else if(rs.length > 0){
+                resolve(utils.returnMsg(false, '0001', '该项目名称已存在,请更换后重新提交', null, err));
+            }else{
+                resolve(utils.returnMsg(true, '0000', '验证项目名称成功', null, null));
+            }
+        });
+    });
+}
+
+
+
+
+/**
+ * 保存流程实例参数
+ * @param dataMap
+ * @param proc_vars
+ * @returns {bluebird}
+ */
+function saveInsParam(dataMap,proc_vars) {
+    return new Promise(async function (resolve, reject) {
+            var data = dataMap;
+            data.proc_vars = proc_vars
+            //写入数据库
+            let rs = await model.$CommonProcessInstParam.create(data);
+            resolve(utils.returnMsg(true, '0000', '保存流程实例参数成功。', null, null));
+    });
+}
+
+
+/**
+ * 根据id查询流程实例详情
+ * @param instId
+ * @returns {bluebird}
+ */
+exports.getInstDetailById = function (instId) {
+    return new Promise(function (resolve, reject) {
+        var data = {};
+        data._id = instId
+         model.$ProcessInst.find(data,function(err,rs){
+             if(err){
+                 resolve(utils.returnMsg(false, '0001', '根据id查询流程实例详情失败。', null, err));
+             }else{
+                 resolve(utils.returnMsg(true, '0000', '根据id查询流程实例详情成功。', rs, null));
+             }
+         });
+    });
+}
+
+
+/**
+ * 根据流程编码统计流程实例数
+ * @param proc_code
+ * @returns {bluebird}
+ */
+exports.countInstByProcCode = function (proc_code) {
+    return new Promise(function (resolve, reject) {
+        var data = {};
+        data.proc_code = proc_code;
+        model.$ProcessInst.find(data,function (err, rs) {
+            if(err){
+                resolve(utils.returnMsg(false, '0001', '根据流程编码统计流程实例数失败。', null, err));
+            } else{
+                resolve(utils.returnMsg(true, '0000', '根据流程编码统计流程实例数成功。', rs.length, null));
+            }
+        });
+    });
 }

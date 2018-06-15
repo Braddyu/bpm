@@ -1,2 +1,15 @@
 /code/bpm/node_modules
 /class
+/code/**/.idea
+
+*.class
+~*.*
+*.bak
+*.tmp
+*.MF
+*.war
+*.iml
+
+
+/code/**/.classpath
+/code/**/.mymetadata

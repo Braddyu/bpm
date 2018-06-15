@@ -13,16 +13,15 @@ var model = require('../project/bpm_resource/models/process_model');
  * @param tmplet_key 模板编码，必须在config.js定义
  * @param proc_code 允许发送短信的流程
  */
-exports.sendSMS=function(mobile,params,tmplet_key,proc_code){
+exports.sendSMS=function(mobile,params,tmplet_key){
     return  new Promise(function(resolve,reject){
         try{
-            console.log("mobile",mobile,"params",params,"tmplet_key",tmplet_key,"proc_code",proc_code);
-            let isOpen = config.OPEN_SMS_ALL;
+            console.log("mobile",mobile,"params",params,"tmplet_key",tmplet_key);
             let open=false;
             if(tmplet_key){
 
-                //是否开启短信服务
-                var OPEN_SMS=config.OPEN_SMS;
+                //是否开启工单派发短信通知服务
+                var OPEN_ORDER_SMS=config.OPEN_ORDER_SMS;
                 //验证码登录
                 var OPEN_LOGIN_SMS=config.OPEN_LOGIN_SMS
                 //抄送
@@ -39,19 +38,9 @@ exports.sendSMS=function(mobile,params,tmplet_key,proc_code){
                     reject("短信服务未开启");
                     return;
                 }
-
                 //是否开通工单派发接收短信
-                if(tmplet_key == 'SMS_TEMPLET_ORDER' && OPEN_SMS){
-                    //只有开通的流程能发送短信
-                    console.log(proc_code);
-                    if(proc_code){
-                        var allowSMS=config.allowSMS;
-                        console.log(config.allowSMS);
-                        if(allowSMS[proc_code]){
-                            open = true;
-                        }
-                    }
-
+                if(tmplet_key == 'SMS_TEMPLET_ORDER' && OPEN_ORDER_SMS){
+                    open = true;
                 }else if(tmplet_key == 'SMS_TEMPLET_ORDER'){
                     reject("短信服务未开启");
                     return;
@@ -72,32 +61,16 @@ exports.sendSMS=function(mobile,params,tmplet_key,proc_code){
                     reject("短信服务未开启");
                     return;
                 }
-
-                if(tmplet_key == 'MISTAKE_DISTRIBUTE_SUCCESS' && MISTAKE_DISTRIBUTE_TASK_SMS){
-                    open = true;
-                }else if(tmplet_key == 'MISTAKE_DISTRIBUTE_SUCCESS'){
-                    reject("短信服务未开启");
-                    return;
-                }
-
-                if(tmplet_key == 'MISTAKE_DISTRIBUTE_ERROR' && MISTAKE_DISTRIBUTE_TASK_SMS){
-                    open = true;
-                }else if(tmplet_key == 'MISTAKE_DISTRIBUTE_ERROR'){
-                    reject("短信服务未开启");
-                    return;
-                }
-
-                //差错工单派单定时任务短信提醒
+                //资金稽核定时任务短信提醒
                 if(tmplet_key == 'SMS_TEMPLET_MONEY_AUDIT_ORDER' && MONEY_AUDIT_SMS){
                     open = true;
                 }else if(tmplet_key == 'GRID_COPY'){
                     reject("短信服务未开启");
                     return;
                 }
-
             }
 
-            if(isOpen && open){
+            if( open){
                 //获取请求内容
                 var postContent=config.SMS.postContent;
                 var SMS_TEMPLET;
@@ -145,8 +118,7 @@ exports.sendSMS=function(mobile,params,tmplet_key,proc_code){
                         let sms={
                             sms_content:SMS_TEMPLET,
                             sms_phone:mobile,
-                            sms_create_time:new Date(),
-                            proc_code:proc_code
+                            sms_create_time:new Date()
                         }
                         model.$CommonSmsInfo(sms).save();
                         resolve(chun);
@@ -201,12 +173,15 @@ exports.httpPost=function(postContent,options){
                     console.log('Status:',res.statusCode);
                     console.log('headers:',JSON.stringify(res.headers));
                     res.setEncoding('utf-8');
+                    let result="";
                     res.on('data',function(chun){
                         console.log('body分隔线---------------------------------\r\n');
                         console.info(chun);
-                        resolve(chun);
+                        result+=chun;
+
                     });
                     res.on('end',function(){
+                        resolve(result);
                         console.log('No more data in response.********');
                     });
                 });
@@ -228,6 +203,7 @@ exports.httpPost=function(postContent,options){
     })
 
 };
+
 
 
 /**
@@ -287,7 +263,31 @@ exports.httpPostChannel=function(proc_inst_id,warn_date,options){
     })
 
 };
+var postData={
+    jobId: 'GDBH201848221525',
+    orderId: '85514055864734',
+    orderCode: '85520180502082448B55405628',
+    crmTradeDate: '20180502',
+    suggestion:'补录'
+}
 
+var options={
+    hostname:'135.10.20.51',
+    port:8080,
+    path:'/ewfs/client/ewf4store/repaper.do',
+    method:'POST',
+    headers:{
+        'Content-Type':'text/plan; charset=UTF-8'
+    }
+}
+/*this.httpPostChannel('','',config.repair_channel).then(function(res){
+    console.log(res);
+})*/
+
+/*this.httpPost(postData,options).then(function (rs) {
+    console.log(rs);
+    //{"ret_code":"0","ret_msg":"工单复核归档成功"}
+})*/
 // var moment = require('moment');
 // var postData={
 //     'jobId':'GDBH2018123387571',//工单系统订单编号
@@ -311,6 +311,9 @@ var options={
         'Content-Type':'text/plan; charset=UTF-8'
     }
 }
+
+
+
 this.httpPost(postData,options).then(function (rs) {
 console.log(rs);
 })*/

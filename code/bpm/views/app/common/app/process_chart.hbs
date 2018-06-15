@@ -141,13 +141,22 @@
                         $('#p2').panel('open');
                         $('#p2_item_code').textbox('setValue', id);
                         $('#p2_item_type').textbox('setValue', obj.type);
+                        if(obj.type=="join"){
+                            document.getElementById("decision").style.display="";
+
+                        }else{
+                            document.getElementById("decision").style.display="none";
+                        }
                         $("input[type=radio][name='smsType'][value='0']").attr("checked",true);
+                        $("input[type=radio][name='mailType'][value='0']").attr("checked",true);
                         $("input[type=radio][name='jump'][value='0']").attr("checked",true);
                         $.each(taskNodeDatas,function(i,n){
                             if(n.item_code && n.item_code==id){
                                 var selectType = n.selectType;
+                                $("input[type=radio][name='decisionType'][value='"+ n.item_decisionType+"']").attr("checked",true);
                                 $("input[type=radio][name='checkType'][value='"+selectType+"']").attr("checked",true);
                                 $("input[type=radio][name='smsType'][value='"+n.item_sms_warn+"']").attr("checked",true);
+                                $("input[type=radio][name='mailType'][value='"+n.item_mail_notice+"']").attr("checked",true);
                                 $("input[type=radio][name='jump'][value='"+n.item_jump+"']").attr("checked",true);
                                 $('#p2_textArea').textbox('setValue', n.selectVal);
                                 $('#p2_item_id').val(n._id);
@@ -401,12 +410,21 @@
 
                     var id = $('#p2_task_id').val();
                     var obj = processDefineDiv.getItemInfo(id,'node');
+
+                    var decisionType = $("input[name='decisionType']:checked").val();
+                    if(!decisionType && obj.type=="join"){
+                        $.messager.alert('提示','请选择决策类型','error');
+                        return;
+                    }
+
                     var taskNode = {};
                     taskNode.item_code = id;
                     taskNode.item_type = obj.type;
                     taskNode.item_sms_warn = $("input[name='smsType']:checked").val();
-                    taskNode.item_jump = $("input[name='jump']:checked").val()
+                    taskNode.item_mail_notice = $("input[name='mailType']:checked").val();
+                    taskNode.item_jump = $("input[name='jump']:checked").val();
                     taskNode.selectType = itemType;
+                    taskNode.item_decisionType = decisionType;
                     taskNode.selectVal = itemText;
                     if(itemType == 1){//参与人
                         taskNode.item_assignee_user = $('#p2_task_val').val();
@@ -694,6 +712,7 @@
                                             taskNode.item_code = n.item_code;
                                             taskNode.item_type = n.item_type;
                                             taskNode.item_sms_warn = n.item_sms_warn;
+                                            taskNode.item_mail_notice = n.item_mail_notice;
                                             taskNode.item_jump = n.item_jump;
                                             taskNode.selectVal = n.item_show_text;
                                             if(n.item_assignee_type && n.item_assignee_type == "1"){
@@ -732,6 +751,7 @@
                                             taskNode.item_filePath = n.item_filePath;
                                             taskNode.item_funName = n.item_funName;
                                             taskNode.item_remark = n.item_remark;
+                                            taskNode.item_decisionType = n.item_decisionType;
                                             taskNodeDatas.push(taskNode);
                                         }
                                     });
@@ -824,6 +844,11 @@
                     <input type="radio" name="checkType" onclick="openWindow(2)" value="2"/>参与角色
                     <input type="radio" name="checkType" onclick="openWindow(3)" value="3"/>参照人
                 </div>
+                <div id="decision" style="margin-bottom:10px;display:none">
+                    <p style="margin-bottom:5px;color:#00a0e9">决策类型:</p>
+                    <input type="radio" name="decisionType"  value="1"/>一票否决
+                    <input type="radio" name="decisionType"  value="2"/>半数通过
+                </div>
                 <div style="margin-bottom:10px">
                     <input id="p2_textArea" class="easyui-textbox" data-options="prompt:'参与类型选取的结果显示在此',editable:false,disabled:true,readonly:true" multiline="true" style="width:100%;height:120px">
                     <input type="hidden" id="p2_task_id"/>
@@ -884,20 +909,26 @@
                     <!--<input class="easyui-textbox" name="p2_item_funName" id="p2_item_funName" style="width: 100%" data-options="prompt:'请输入方法名...'">-->
                 <!--</div>-->
                 <div style="margin-bottom:10px">
+                    <p style="margin-bottom:5px;color:#00a0e9">短信通知:</p>
+                    <input type="radio" name="smsType" value="0" />否
+                    <input type="radio" name="smsType" value="1"/>是
+                </div>
+                <div style="margin-bottom:10px">
+                    <p style="margin-bottom:5px;color:#00a0e9">邮件通知:</p>
+                    <input type="radio" name="mailType" value="0"/>否
+                    <input type="radio" name="mailType" value="1"/>是
+                </div>
+                <div style="margin-bottom:10px">
+                    <p style="margin-bottom:5px;color:#00a0e9">是否可以跳过:</p>
+                    <input type="radio" name="jump" value="0" />否
+                    <input type="radio" name="jump" value="1"/>是
+                </div>
+                <div style="margin-bottom:10px">
                     <p style="margin-bottom:5px;color:#00a0e9">备注:</p>
                     <input id="p2_textAreaRemark" class="easyui-textbox" multiline="true" style="width:100%;height:120px">
                     <input id="p2_item_id" hidden="true">
                 </div>
-                <div style="margin-bottom:10px">
-                    <p style="margin-bottom:5px;color:#00a0e9">短信通知:</p>
-                    <input type="radio" name="smsType" value="1"/>是
-                    <input type="radio" name="smsType" value="0"/>否
-                </div>
-                <div style="margin-bottom:10px">
-                    <p style="margin-bottom:5px;color:#00a0e9">是否可以跳过:</p>
-                    <input type="radio" name="jump" value="1"/>是
-                    <input type="radio" name="jump" value="0"/>否
-                </div>
+
                 <div style="text-align:right;margin-bottom:10px">
                     <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'" onclick="saveNodeData(2)">保存节点配置</a>
                 </div>

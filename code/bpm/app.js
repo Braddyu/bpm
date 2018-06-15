@@ -236,6 +236,7 @@ app.use("/ueditor/ue", ueditor(path.join(__dirname, 'public'), function (req, re
         res.redirect('/gdgl/static/js/ueditor/nodejs/config.json');
     }
 }));
+app.use('/gdgl/api/basedata/', require('./app/project/bpm_resource/routes/basedata').basedata())
 // -------------------------------------------------------------------------------------
 
 // app.use(cookieParser());

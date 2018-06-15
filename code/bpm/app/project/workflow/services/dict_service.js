@@ -83,154 +83,18 @@ exports.getUserRoleList= function(page, size, conditionMap) {
 /**
  * 开启差错工单派单定时任务
  */
-exports.openTask = function(params){
-    // update query date
-    /*function updateQueryDate(params){
-        return new Promise(function(resolve,reject){
-            dictModel.$.find({'dict_code':"mistake_task_date"},function(err,result){
-                if(err){
-                    resolve(utils.returnMsg(false, '0001', '开关开启失败。', null, err));
-                }else if(result.length == 0){
-                    resolve(utils.returnMsg(false, '0001', '开关开启失败。', null, null));
-                }else{
-                    var conditions = {"dict_id": result[0]._id};
-                    var update = {$set: {"field_value": params.query_date}};
-                    dictModel.$DictAttr.update(conditions,update,{safe:true}, function (errors,updateResult){
-                        if(updateResult.ok > 0){
-                            resolve(utils.returnMsg(true, '0000', '更新数据成功。', params, null));
-                        }else{
-                            resolve(utils.returnMsg(false, '0001', '开关开启失败。', null, null));
-                        }
-                    })
-                }
-            })
-        });
-    }*/
+exports.openTask = function(check_status,business_code,city_code,work_order_number,mistake_task_phone){
+    return new Promise(async function(resolve,reject){
+        await dictModel.$DictAttr.update( {"field_name": "mistake_task_flag"}, {$set: {"field_value": 1}})
+        await dictModel.$DictAttr.update( {"field_name": "mistake_task_check_status"}, {$set: {"field_value": check_status}})
+        await dictModel.$DictAttr.update( {"field_name": "mistake_task_business_code"}, {$set: {"field_value": business_code}})
+        await dictModel.$DictAttr.update( {"field_name": "mistake_task_city_code"}, {$set: {"field_value": city_code}})
+        await dictModel.$DictAttr.update( {"field_name": "mistake_task_order_number"}, {$set: {"field_value": work_order_number}})
+        await dictModel.$DictAttr.update( {"field_name": "mistake_task_phone"}, {$set: {"field_value": mistake_task_phone}})
+        resolve(utils.returnMsg(true, '1000', '开启成功。', null, null));
 
-    // update check status
-    function updateCheckStatus(params){
-        return new Promise(function(resolve,reject){
-            dictModel.$.find({'dict_code':"mistake_task_check_status"},function(err,result){
-                if(err){
-                    resolve(utils.returnMsg(false, '0001', '开关开启失败。', null, err));
-                }else if(result.length == 0){
-                    resolve(utils.returnMsg(false, '0001', '开关开启失败。', null, null));
-                }else{
-                    var conditions = {"dict_id": result[0]._id};
-                    var update = {$set: {"field_value": params.check_status}};
-                    dictModel.$DictAttr.update(conditions,update,{safe:true}, function (errors,updateResult){
-                        if(updateResult.ok > 0){
-                            resolve(utils.returnMsg(true, '0000', '更新数据成功。', params, null));
-                        }else{
-                            resolve(utils.returnMsg(false, '0001', '开关开启失败。', null, null));
-                        }
-                    })
-                }
-            })
-        });
-    }
+    })
 
-    // update business name
-    function updateBusinessName(res){
-        return new Promise(function(resolve,reject){
-            if(res.success){
-                dictModel.$.find({'dict_code':"mistake_task_business_name"},function(err,result){
-                    if(err){
-                        resolve(utils.returnMsg(false, '0001', '开关开启失败。', null, err));
-                    }else if(result.length == 0){
-                        resolve(utils.returnMsg(false, '0001', '开关开启失败。', null, null));
-                    }else{
-                        var conditions = {"dict_id": result[0]._id};
-                        var update = {$set: {"field_value": res.data.business_name}};
-                        dictModel.$DictAttr.update(conditions,update,{safe:true}, function (errors,updateResult){
-                            if(updateResult.ok > 0){
-                                resolve(utils.returnMsg(true, '0000', '更新数据成功。', res.data, null));
-                            }else{
-                                resolve(utils.returnMsg(false, '0001', '开关开启失败。', null, null));
-                            }
-                        })
-                    }
-                })
-            }else{
-                resolve(result);
-            }
-        });
-
-    }
-
-    // update city code
-    function updateCityCode(res){
-        return new Promise(function(resolve,reject){
-            if(res.success){
-                dictModel.$.find({'dict_code':"mistake_task_city_code"},function(err,result){
-                    if(err){
-                        resolve(utils.returnMsg(false, '0001', '开关开启失败。', null, err));
-                    }else if(result.length == 0){
-                        resolve(utils.returnMsg(false, '0001', '开关开启失败。', null, null));
-                    }else{
-                        var conditions = {"dict_id": result[0]._id};
-                        var update = {$set: {"field_value": res.data.city_code}};
-                        dictModel.$DictAttr.update(conditions,update,{safe:true}, function (errors,updateResult){
-                            if(updateResult.ok > 0){
-                                resolve(utils.returnMsg(true, '0000', '更新数据成功。', res.data, null));
-                            }else{
-                                resolve(utils.returnMsg(false, '0001', '开关开启失败。', null, null));
-                            }
-                        })
-                    }
-                })
-            }else{
-                resolve(result);
-            }
-        });
-
-    }
-    // update flag
-    function updateFlag(res){
-        return new Promise(function(resolve,reject){
-            if(res.success){
-                dictModel.$.find({'dict_code':"mistake_task_flag"},function(err,result){
-                    if(err){
-                        resolve(utils.returnMsg(false, '0001', '开关开启失败。', null, err));
-                    }else if(result.length == 0){
-                        resolve(utils.returnMsg(false, '0001', '开关开启失败。', null, null));
-                    }else{
-                        var conditions = {"dict_id": result[0]._id,"field_value":0};
-                        var update = {
-                            $set: {
-                                "field_checked": 0,
-                            }
-                        };
-                        dictModel.$DictAttr.update(conditions,update,{safe:true}, function (errors,updateResult){
-                            if(updateResult.ok > 0){
-                                conditions = {"dict_id": result[0]._id,"field_value":1};
-                                update = {
-                                    $set: {
-                                        "field_checked": 1,
-                                    }
-                                }
-                                dictModel.$DictAttr.update(conditions,update,{safe:true}, function (errors,updateResult){
-                                    if(updateResult.ok > 0){
-                                        resolve(utils.returnMsg(true, '0000', '开关开启成功。', null, null));
-                                    }else{
-                                        resolve(utils.returnMsg(false, '0001', '开关开启失败。', null, errors));
-                                    }
-                                });
-                            }else{
-                                resolve(utils.returnMsg(false, '0001', '开关开启失败。', null, errors));
-                            }
-
-                        });
-                    }
-                })
-            }else{
-                resolve(result);
-            }
-        })
-
-    }
-
-    return updateCheckStatus(params).then(updateBusinessName).then(updateCityCode).then(updateFlag);
 };
 
 /**
@@ -238,78 +102,64 @@ exports.openTask = function(params){
  */
 exports.closeTask = function(){
     var p = new Promise(function(resolve,reject){
-        dictModel.$.find({'dict_code':"mistake_task_flag"},function(err,result){
-            if(err){
-                resolve(utils.returnMsg(false, '0001', '开关关闭失败。', null, err));
-            }else if(result.length == 0){
-                resolve(utils.returnMsg(false, '0001', '开关关闭失败。', null, null));
-            }else{
-                var conditions = {"dict_id": result[0]._id,"field_value":0};
-                var update = {
-                    $set: {
-                        "field_checked": 1,
-                    }
-                };
-                dictModel.$DictAttr.update(conditions,update,{safe:true}, function (errors,updateResult){
-                    if(updateResult.ok > 0){
-                        conditions = {"dict_id": result[0]._id,"field_value":1};
-                        update = {
-                            $set: {
-                                "field_checked": 0,
-                            }
-                        }
-                        dictModel.$DictAttr.update(conditions,update,{safe:true}, function (errors,updateResult){
-                            if(updateResult.ok > 0){
-                                resolve(utils.returnMsg(true, '0000', '更新开关状态成功。', null, null));
-                            }else{
-                                resolve(utils.returnMsg(false, '0001', '更新开关状态失败。', null, errors));
-                            }
-                        });
-                    }else{
-                        resolve(utils.returnMsg(false, '0001', '更新开关状态失败。', null, errors));
-                    }
-
-                });
-            }
-
-        });
-
+         dictModel.$DictAttr.update( {"field_name": "mistake_task_flag"}, {$set: {"field_value": 0}},function(err) {
+             if(err){
+                 resolve(utils.returnMsg(false, '1000', '关闭失败。', null, null));
+             }else{
+                 resolve(utils.returnMsg(true, '1000', '关闭成功。', null, null));
+             }
+         })
 
     });
     return p;
 };
+
+
+
 /**
- * 获取差错工单派单定时任务开关状态
+ * 获取差错工单派单定时任务筛选条件
  */
-exports.getSwitch = function(){
+exports.getConditions = function(){
     var p = new Promise(function(resolve,reject){
-        var match = {};
-        match['dict_code'] = "mistake_task_flag";
         dictModel.$.aggregate([
             {
-                $match:match
+                $match:{"dict_code" : "mistake_task_code"}
             },
             {
-                $graphLookup: {
+                $lookup: {
                     from: "common_dict_attr_info",
-                    startWith: "$_id",
-                    connectFromField: "_id",
-                    connectToField: "dict_id",
-                    as: "dict_attr_info",
-                    restrictSearchWithMatch: {}
+                    localField: '_id',
+                    foreignField: "dict_id",
+                    as: "dict_attr_info"
                 }
             },
             {
                 $unwind: {path: "$dict_attr_info", preserveNullAndEmptyArrays: true}
             },
             {
-                $match:{"dict_attr_info.field_status":1,"dict_attr_info.field_checked":1}
-            },
-        ]).exec(function(err, res){
-            if(res.length > 0){
-                resolve(utils.returnMsg(true, '0000', '获取数据成功。', res[0], null));
+                $project:{
+                    field_name:"$dict_attr_info.field_name",
+                    field_value:"$dict_attr_info.field_value"
+                }
             }
-        });
+        ]).exec(function (err, res) {
+            if(err){
+                resolve(utils.returnMsg(false, '0001', '开启开关失败:查询筛选条件失败!', null, err));
+            }else{
+                if(res.length>0){
+                    var data = {};
+                    for (let item in res) {
+                        let dict = res[item];
+                        data[dict.field_name]=dict.field_value;
+                    }
+                    resolve(utils.returnMsg(true, '0000', 'success!', data, null));
+                }else{
+                    resolve(utils.returnMsg(false, '0001', '请添加定时派单字典!', null, err));
+                }
+
+            }
+
+        })
     });
     return p;
 };

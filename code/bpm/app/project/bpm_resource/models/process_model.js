@@ -78,6 +78,7 @@ var commonProcessItemSchema = new Schema(
         item_type : String,// 节点类型
         item_el : String,// 节点表达式
         item_sms_warn : Number,// 是否短信提醒
+        item_mail_notice : Number,// 是否邮件提醒
         item_sign : String,// 是否会签
         item_assignee_type : Number, // 参与类型
         item_assignee_role : String, // 参与角色(职务)
@@ -105,7 +106,8 @@ var commonProcessItemSchema = new Schema(
         item_filePath : String,//文件路径
         item_funName : String,//方法名
         item_remark : String,//节点备注
-        item_jump : Number//是否跳过(1-可以跳过 0-不可以跳过)
+        item_jump : Number,//是否跳过(1-可以跳过 0-不可以跳过)
+        item_decisionType : Number//决策类型(1-一票否决 2-半数通过)
     },
     {collection: "common_bpm_proc_item_cfg"}// mongodb集合名
 );
@@ -140,7 +142,7 @@ var commonProcessInstSchema = new Schema(
         proc_content : String,// 流程派单内容
         proc_params : String,// 流转参数
         proc_inst_status : Number,// 流程流转状态
-        // 1 已启用  0 已禁用,2 流转中，3子流程流转中 ,4  归档,5 回退，6 废弃
+        // 1 已启用  0 已禁用,2 流转中，3子流程流转中 ,4  归档,5 回退，6 废弃 ,7:针对差错工单新建"客户不配合"状态
         proc_attached_type : Number,// 流程附加类型(1:待办业务联系函;2:待办工单;3:待办考核;4:其他待办)
         proce_attached_params : {},// 流程附加属性
         //proce_reject_params : {},// 流程驳回附加参数
@@ -166,12 +168,15 @@ var commonProcessInstSchema = new Schema(
         proc_opt_time:Date,//流程实例操作时间
         joinup_sys:String,//所属系统编号
         pay_task_id:String ,//派单生成的任务id
+        prev_task_id:String,//上一节点任务
         publish_status : Number,//1 发布 0-未发布
         is_overtime:Number,//是否超时，0-未超时，1-超时
         proc_inst_task_complete_time:Date,// 归档时间
         refuse_number:Number,// 拒绝次数
-        is_check:Number,// 是否被复核
-        check_time:Date//复核时间
+        is_check:Number,// 复核1：表示复核不通过，0：表示复核通过
+        check_time:Date,//复核时间
+        check_user_no:String,//复核人编号
+        check_user_name:String//复核人姓名
     },
     {collection: "common_bpm_proc_inst"}// mongodb集合名
 );
@@ -202,6 +207,9 @@ var commonProcessInstTaskSchema = new Schema(
         proc_inst_task_user_org_name : String,// 流程处理用户组织名
         proc_inst_task_params : String,// 流程参数(任务参数)
         proc_inst_task_claim : Number,// 流程会签
+        proc_inst_task_opt_type:Number,//0不同意 1同意  2归档 3待处理 任务操作类型
+        proc_inst_repeat_task_claim:Number,//会签流程某个人重复任务标识  0没有重复任务  1有重复任务 显示给用户办理（本条任务有会重复的任务id）  2有重复任务 但本条任务不显示给用户
+        proc_inst_repeat_task_claim_ids:[{type: Schema.Types.ObjectId}],//某人的重复会签任务ID
         proc_inst_task_sign : Number,// 流程签收(0-未认领，1-已认领)
         proc_inst_task_sms : Number,// 流程是否短信提醒
         proc_inst_task_remark : String,// 流程处理意见
@@ -246,6 +254,7 @@ var commonProcessTaskHistroySchema = new Schema(
         proc_inst_task_arrive_time : Date,// 流程到达时间
         proc_inst_task_handle_time : Date,// 流程认领时间
         proc_inst_task_complete_time : Date,// 流程完成时间
+        proc_inst_task_opt_type:Number,//0不同意 1同意  2归档 任务操作类型
         proc_inst_task_status : Number,// 流程当前状态 0-未处理，1-已完成
         proc_inst_task_assignee : String,// 流程处理人code
         proc_inst_task_assignee_name : String,// 流程处理人名
@@ -258,6 +267,8 @@ var commonProcessTaskHistroySchema = new Schema(
         proc_inst_task_params : String,// 流程参数(任务参数)
         proc_inst_task_claim : Number,// 流程会签
         proc_inst_task_sign : Number,// 流程签收(0-未认领，1-已认领)
+        proc_inst_repeat_task_claim:Number,//会签流程某个人重复任务标识  0没有重复任务  1有重复任务 显示给用户办理（本条任务有会重复的任务id）  2有重复任务 但本条任务不显示给用户
+        proc_inst_repeat_task_claim_ids:[{type: Schema.Types.ObjectId}],//某人的重复会签任务ID
         proc_inst_task_sms : Number,// 流程是否短信提醒
         proc_inst_task_remark : String,// 流程处理意见
         proc_inst_biz_vars : String,// 流程业务实例变量
@@ -325,3 +336,16 @@ var commonSmsInfo = new Schema(
 
 // 流程流转历史信息model
 exports.$CommonSmsInfo = mongoose.model('CommonSmsInfo', commonSmsInfo);
+
+
+//流程实例参数
+var commonProcessInstParamSchema = new Schema(
+    {
+        proc_inst_id : {type: Schema.Types.ObjectId}, // 实例id
+        proc_code : String,// 流程编码
+        proc_vars:{type: Schema.Types.Object},// 实例参数
+    },
+    {collection: "common_bpm_proc_inst_param"}// mongodb集合名
+);
+// 流程实例参数model
+exports.$CommonProcessInstParam = mongoose.model('CommonProcessInstParam', commonProcessInstParamSchema);

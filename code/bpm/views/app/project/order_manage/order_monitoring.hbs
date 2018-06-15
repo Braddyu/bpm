@@ -1,0 +1,827 @@
+<script src="{{projcfg.appurl}}/static/js/echart/v3.1.3/echarts.min.js"></script>
+<script src="{{projcfg.appurl}}/static/js/My97DatePicker/WdatePicker.js"></script>
+    <div class="row">
+    <div class="col-xs-12 col-md-12">
+        <div class="widget">
+            <div class="widget-body">
+                <div class="row" >
+                    <div  class="col-xs-12 col-md-12" >
+                        <div class="row" >
+                            <div  class="col-xs-12 col-md-12" >
+                                <div class="widget widget-spacing">
+                                    <div class="widget-header bordered-bottom bordered-themeprimary">
+                                        <i class="widget-icon fa fa-tags themeprimary"></i>
+                                        <span class="widget-caption themeprimary">系统工单量维度监控(图表)</span>
+                                    </div>
+                                    <!--Widget Header-->
+                                    <div class="col-xs-11 col-md-11">
+                                        <div class="btn-group" role="group" aria-label="...">
+                                            <label for="filterParam3">派单日期：</label>
+                                            <input id="datetime" value="" type="text" maxlength="10"
+                                                   class="input-medium  Wdate required  " readonly
+                                                   onclick="WdatePicker({dateFmt:'yyyy-MM',isShowClear:false});"/>
+                                        </div>
+                                        <h4 id="orders" style="text-align: center"></h4>
+                                    </div>
+
+                                    <div class="col-xs-1 col-md-1 text-right">
+                                        <form class="form-inline">
+                                            <div class="form-group">
+                                                <div class="input-group">
+                                        <span class="input-group-btn">
+                                                <button class="btn btn-default" type="button" onclick="loadOrderMonitoring()"><i class="fa fa-search"></i>查询</button>
+                                        </span>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+
+                                    <div class="widget-body" id="pdtj" style="height:450px;">
+                                        <div style="height:350px;">
+                                            <div id="orderChart" style="width:100%;height:350px;"></div>
+                                        </div>
+                                    </div>
+
+                                        <br>  <br>  <br>  <br>
+                                    <div class="col-xs-11 col-md-11">
+                                        <div class="btn-group" role="group" aria-label="...">
+                                            <label for="filterParam3">派单日期：</label>
+                                            <input id="archive" value="" type="text" maxlength="10"
+                                                   class="input-medium  Wdate required  " readonly
+                                                   onclick="WdatePicker({dateFmt:'yyyy-MM-dd',maxDate:'%y-%M-%d',isShowClear:false});"/>
+
+                                        </div>
+                                    </div>
+
+                                    <div class="col-xs-1 col-md-1 text-right">
+                                        <form class="form-inline">
+                                            <div class="form-group">
+                                                <div class="input-group">
+                                        <span class="input-group-btn">
+                                                <button class="btn btn-default" type="button" onclick="loadOrderArchive()"><i class="fa fa-search"></i>查询</button>
+                                        </span>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="widget-body" id="gdtj" style="height: 400px">
+                                        <div style="height:350px;">
+                                            <div id="archiveChart" style="width:100%;height:350px;"></div>
+                                        </div>
+                                    </div>
+
+                                        <br>  <br>  <br>  <br>
+                                    <div class="col-xs-11 col-md-11">
+                                        <div class="btn-group" role="group" aria-label="...">
+                                            <label for="filterParam3">流转日期：</label>
+                                            <input id="circulation" value="" type="text" maxlength="10"
+                                                   class="input-medium  Wdate required  " readonly
+                                                   onclick="WdatePicker({dateFmt:'yyyy-MM',isShowClear:false});"/>
+
+                                        </div>
+                                        <h4 id="lzl" style="text-align: center"></h4>
+                                    </div>
+
+                                    <div class="col-xs-1 col-md-1 text-right">
+                                        <form class="form-inline">
+                                            <div class="form-group">
+                                                <div class="input-group">
+                                        <span class="input-group-btn">
+                                                <button class="btn btn-default" type="button" onclick="loadOrderCirculation()"><i class="fa fa-search"></i>查询</button>
+                                        </span>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="widget-body" id="lztj" style="height: 450px">
+                                        <div style="height:350px;">
+                                            <div id="circulationChart" style="width:100%;height:350px;"></div>
+                                        </div>
+                                    </div>
+
+
+                                    <br>  <br>  <br>  <br>
+                                    <div class="col-xs-11 col-md-11">
+                                        <div class="btn-group" role="group" aria-label="...">
+                                            <label for="filterParam3">登录日期：</label>
+                                            <input id="lively" value="" type="text" maxlength="10"
+                                                   class="input-medium  Wdate required  " readonly
+                                                   onclick="WdatePicker({dateFmt:'yyyy-MM',isShowClear:false});"/>
+
+                                        </div>
+                                        <h4 id="hyd" style="text-align: center"></h4>
+                                    </div>
+
+                                    <div class="col-xs-1 col-md-1 text-right">
+                                        <form class="form-inline">
+                                            <div class="form-group">
+                                                <div class="input-group">
+                                        <span class="input-group-btn">
+                                                <button class="btn btn-default" type="button" onclick="loadOrderLively()"><i class="fa fa-search"></i>查询</button>
+                                        </span>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="widget-body" id="hydtj" style="height: 450px">
+                                        <div style="height:350px;">
+                                            <div id="livelyChart" style="width:100%;height:350px;"></div>
+                                        </div>
+                                    </div>
+
+
+                                    <br>  <br>  <br>  <br>
+                                    <div class="col-xs-11 col-md-11">
+                                        <div class="btn-group" role="group" aria-label="...">
+                                            <label for="filterParam3">登录日期：</label>
+                                            <input id="employ" value="" type="text" maxlength="10"
+                                                   class="input-medium  Wdate required  " readonly
+                                                   onclick="WdatePicker({dateFmt:'yyyy-MM',isShowClear:false});"/>
+
+                                        </div>
+                                        <h4 id="xtsy" style="text-align: center"></h4>
+                                    </div>
+
+                                    <div class="col-xs-1 col-md-1 text-right">
+                                        <form class="form-inline">
+                                            <div class="form-group">
+                                                <div class="input-group">
+                                        <span class="input-group-btn">
+                                                <button class="btn btn-default" type="button" onclick="loadOrderEmploy()"><i class="fa fa-search"></i>查询</button>
+                                        </span>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="widget-body" id="xthyti" style="height: 450px">
+                                        <div style="height:350px;">
+                                            <div id="employChart" style="width:100%;height:350px;"></div>
+                                        </div>
+                                    </div>
+
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        loadOrderMonitoring();
+        loadOrderArchive();
+        loadOrderCirculation();
+        loadOrderLively();
+        loadOrderEmploy();
+    });
+
+     //派单统计
+    function loadOrderMonitoring() {
+        var val = $("#datetime").val();
+        var d1;
+        var d2;
+        if(val){
+            var q=val.toString();
+            var m =val.substr(0,4);
+            var d=parseInt(q.substring(q.length-1))+1;
+            d1= new Date(val+'-1');
+            d2=new Date(m+'-'+d+''+'-1');
+        }else {
+            var date = new Date();
+            var y = date.getFullYear();
+            var m1 = date.getMonth()+1;
+            var m2 = date.getMonth()+1+1;
+            var today1=y+"-"+m1+"-1";
+            var today2=y+"-"+m2+"-1";
+            d1 = new Date(today1);
+            d2 = new Date(today2);
+        }
+        var d3;
+        var monthArray =[];
+        for (var i = d1.getTime() ; i < d2.getTime() ; i += 24*60*60*1000){
+            d3 = new Date(i);
+            var time=d3.toISOString().slice(0,10);
+            monthArray.push(time);
+        }
+        ajaxLoading(1);
+        //派单量折线图统计图
+        $.ajax({
+            url: '{{projcfg.appurl}}/api/order_manage/order_statistics/getMonitoringView',
+            type: 'post',
+            dataType:'json',
+            data: {"monthArray":monthArray.toString()},
+            success: function (datacount) {
+                ajaxLoadEnd(1);
+                var month;
+                if(val){
+                    var q=val.toString();
+                    month=q.substring(q.length-1);
+                }else {
+                    month=date.getMonth()+1;
+                }
+                $("#orders").html(month+"月总派单量："+datacount[6]+"(条)");
+                if(datacount){
+                    var orderChart = echarts.init(document.getElementById('orderChart'));
+                    orderChart.setOption({
+                        title: {
+                            x: 'left',
+                            text: '派单统计',
+                            textStyle: {
+                                fontSize: '18',
+                                color: '#4c4c4c',
+                                fontWeight: 'bolder'
+                            }
+                        },
+                        tooltip: {
+                            trigger: 'axis'
+                        },
+                        calculable : true,
+                        toolbox: {
+                            show: true,
+                            feature: {
+                                dataZoom: {
+                                    yAxisIndex: 'none'
+                                },
+                                dataView: {readOnly: false},
+                                magicType: {type: ['line', 'bar']}
+
+                            }
+                        },
+                        legend: {
+                            data: ['派单总量', '稽核差错工单','渠道指标预警工单','资金稽核工单','深度稽核工单','内部审批流程']
+                        },
+                        xAxis:  {
+                            name:'派单日期',
+                            type: 'category',
+                            boundaryGap: false,
+                            data: monthArray,
+                            axisLabel: {
+                                interval:0,
+                                rotate:-30//-30度角倾斜显示
+                            }
+                        },
+                        yAxis: {
+                            type: 'value',
+                            name:'派单量(条)',
+                            splitNumber:10
+                        },
+                        series: [
+                            {
+                                name:'派单总量',
+                                type:'line',
+                                data:datacount[0],
+                               // markLine: {data: [{type: 'average', name: '平均值'}]},
+                                itemStyle : {normal : {color:'#080808'}}
+                            },
+                            {
+                                name:'稽核差错工单',
+                                type:'line',
+                                data:datacount[1],
+                                //markLine: {data: [{type: 'average', name: '平均值'}]},
+                                itemStyle : {normal : {color:'#32d2c9'}}
+                            },
+                            {
+                                name:'渠道指标预警工单',
+                                type:'line',
+                                data:datacount[2],
+                                //markLine: {data: [{type: 'average', name: '平均值'}]},
+                                itemStyle : {normal : {color:'#FF0000'}}
+                            },
+                            {
+                                name:'资金稽核工单',
+                                type:'line',
+                                data:datacount[3],
+                                //markLine: {data: [{type: 'average', name: '平均值'}]},
+                                itemStyle : {normal : {color:'#0000CD'}}
+                            },
+                            {
+                                name:'深度稽核工单',
+                                type:'line',
+                                data:datacount[4],
+                               // markLine: {data: [{type: 'average', name: '平均值'}]},
+                                itemStyle : {normal : {color:'#8B0000'}}
+                            },
+
+                            {
+                                name:'内部审批流程',
+                                type:'line',
+                                data:datacount[5],
+                                // markLine: {data: [{type: 'average', name: '平均值'}]},
+                                itemStyle : {normal : {color:'#00CD00'}}
+                            }
+
+                        ]
+                    }) ;
+
+                }else{
+                    $.messager.alert('错误提示','数据异常！');
+                }
+
+            }
+        });
+    }
+    //归档情况统计
+    function loadOrderArchive() {
+        var val = $("#archive").val();
+        var today;
+        if(val){
+            today=val;
+        }else{
+            var date1 =new Date();
+            var year=date1.getFullYear();
+            var month=date1.getMonth()+1;
+            var day=date1.getDate();
+            today=year+"-0"+month+"-"+day;
+        }
+        var orderArray =['','稽核差错工单','渠道指标预警工单','资金稽核工单','深度稽核工单','内部审批流程'];
+        ajaxLoading(2);
+        <!--归档情况-->
+        $.ajax({
+            url: '{{projcfg.appurl}}/api/order_manage/order_statistics/getArchiveView',
+            type: 'post',
+            dataType:'json',
+            data: {"today":today.toString()},
+            success: function (datacount) {
+                ajaxLoadEnd(2);
+                if(datacount){
+                    var archiveChart = echarts.init(document.getElementById('archiveChart'));
+                    archiveChart.setOption({
+                        title: {
+                            x: 'left',
+                            text: '归档情况统计',
+                            textStyle: {
+                                fontSize: '18',
+                                color: '#4c4c4c',
+                                fontWeight: 'bolder'
+                            }
+                        },
+                        tooltip: {
+                            trigger: 'axis'
+                        },
+                        calculable : true,
+                        toolbox: {
+                            show: true,
+                            feature: {
+                                dataZoom: {
+                                    yAxisIndex: 'none'
+                                },
+                                dataView: {readOnly: false},
+                                magicType: {type: ['line', 'bar']}
+
+                            }
+                        },
+                        barWidth : 30,//柱图宽度
+                        legend: {
+                            data: ['派单总量','归档量']
+                        },
+                        xAxis:  {
+                            name:'工单类型',
+                            type: 'category',
+                            boundaryGap: false,
+                            data: orderArray,
+                            axisLabel: {
+                                interval:0
+                                //rotate:-30//-30度角倾斜显示
+                            }
+                        },
+                        yAxis: {
+                            type: 'value',
+                            name:'数量(条)',
+                            splitNumber:10
+                        },
+                        series: [
+                            {
+                                name:'派单总量',
+                                type:'bar',
+                                data:datacount[0],
+                               // markLine: {data: [{type: 'average', name: '平均值'}]},
+                                itemStyle : {normal : {color:'#050505'}}
+                            },
+                            {
+                                name:'归档量',
+                                type:'bar',
+                                data:datacount[1],
+                                //markLine: {data: [{type: 'average', name: '平均值'}]},
+                                itemStyle : {normal : {color:'#AE57E4'}}
+                            }
+
+                        ]
+                    }) ;
+
+                }else{
+                    $.messager.alert('错误提示','数据异常！');
+                }
+
+            }
+        });
+    }
+    //流转工单统计
+    function loadOrderCirculation() {
+        var val = $("#circulation").val();
+        var d1;
+        var d2;
+        if(val){
+            var q=val.toString();
+            var m =val.substr(0,4);
+            var d=parseInt(q.substring(q.length-1))+1;
+            d1= new Date(val+'-1');
+            d2=new Date(m+'-'+d+''+'-1');
+        }else {
+            var date = new Date();
+            var y = date.getFullYear();
+            var m1 = date.getMonth()+1;
+            var m2 = date.getMonth()+1+1;
+            var today1=y+"-"+m1+"-1";
+            var today2=y+"-"+m2+"-1";
+            d1 = new Date(today1);
+            d2 = new Date(today2);
+        }
+        var d3;
+        var monthArray =[];
+        for (var i = d1.getTime() ; i < d2.getTime() ; i += 24*60*60*1000){
+            d3 = new Date(i);
+            var time=d3.toISOString().slice(0,10);
+            monthArray.push(time);
+        }
+        ajaxLoading(3);
+        //派单量折线图统计图
+        $.ajax({
+            url: '{{projcfg.appurl}}/api/order_manage/order_statistics/getCirculationView',
+            type: 'post',
+            dataType:'json',
+            data: {"monthArray":monthArray.toString()},
+            success: function (datacount) {
+                ajaxLoadEnd(3);
+                var month;
+                if(val){
+                    var q=val.toString();
+                    month=q.substring(q.length-1);
+                }else {
+                    month=date.getMonth()+1;
+                }
+                $("#lzl").html(month+"月总流转量："+datacount[6]+"(条)");
+                if(datacount){
+                    var circulationChart = echarts.init(document.getElementById('circulationChart'));
+                    circulationChart.setOption({
+                        title: {
+                            x: 'left',
+                            text: '工单流转统计',
+                            textStyle: {
+                                fontSize: '18',
+                                color: '#4c4c4c',
+                                fontWeight: 'bolder'
+                            }
+                        },
+                        tooltip: {
+                            trigger: 'axis'
+                        },
+                        calculable : true,
+                        toolbox: {
+                            show: true,
+                            feature: {
+                                dataZoom: {
+                                    yAxisIndex: 'none'
+                                },
+                                dataView: {readOnly: false},
+                                magicType: {type: ['line', 'bar']}
+
+                            }
+                        },
+                        legend: {
+                            data: ['工单流转总量', '稽核差错工单','渠道指标预警工单','资金稽核工单','深度稽核工单','内部审批流程']
+                        },
+                        xAxis:  {
+                            name:'派单日期',
+                            type: 'category',
+                            boundaryGap: false,
+                            data: monthArray,
+                            axisLabel: {
+                                interval:0,
+                                rotate:-30//-30度角倾斜显示
+                            }
+                        },
+                        yAxis: {
+                            type: 'value',
+                            name:'流转量(条)',
+                            splitNumber:10
+                        },
+                        series: [
+                            {
+                                name:'工单流转总量',
+                                type:'line',
+                                data:datacount[0],
+                                //markLine: {data: [{type: 'average', name: '平均值'}]},
+                                itemStyle : {normal : {color:'#080808'}}
+                            },
+                            {
+                                name:'稽核差错工单',
+                                type:'line',
+                                data:datacount[1],
+                                //markLine: {data: [{type: 'average', name: '平均值'}]},
+                                itemStyle : {normal : {color:'#32d2c9'}}
+                            },
+                            {
+                                name:'渠道指标预警工单',
+                                type:'line',
+                                data:datacount[2],
+                                //markLine: {data: [{type: 'average', name: '平均值'}]},
+                                itemStyle : {normal : {color:'#FF0000'}}
+                            },
+                            {
+                                name:'资金稽核工单',
+                                type:'line',
+                                data:datacount[3],
+                                //markLine: {data: [{type: 'average', name: '平均值'}]},
+                                itemStyle : {normal : {color:'#0000CD'}}
+                            },
+                            {
+                                name:'深度稽核工单',
+                                type:'line',
+                                data:datacount[4],
+                               // markLine: {data: [{type: 'average', name: '平均值'}]},
+                                itemStyle : {normal : {color:'#8B0000'}}
+                            },
+                            {
+                                name:'内部审批流程',
+                                type:'line',
+                                data:datacount[5],
+                                // markLine: {data: [{type: 'average', name: '平均值'}]},
+                                itemStyle : {normal : {color:'#00CD00'}}
+                            }
+                        ]
+                    }) ;
+
+                }else{
+                    $.messager.alert('错误提示','数据异常！');
+                }
+
+            }
+        });
+    }
+    //用户活跃度统计
+    function loadOrderLively(){
+        var val = $("#lively").val();
+        var d1;
+        var d2;
+        if(val){
+            var q=val.toString();
+            var m =val.substr(0,4);
+            var d=parseInt(q.substring(q.length-1))+1;
+            d1= new Date(val+'-1');
+            d2=new Date(m+'-'+d+''+'-1');
+        }else {
+            var date = new Date();
+            var y = date.getFullYear();
+            var m1 = date.getMonth()+1;
+            var m2 = date.getMonth()+1+1;
+            var today1=y+"-"+m1+"-1";
+            var today2=y+"-"+m2+"-1";
+            d1 = new Date(today1);
+            d2 = new Date(today2);
+        }
+        var d3;
+        var monthArray =[];
+        for (var i = d1.getTime() ; i < d2.getTime() ; i += 24*60*60*1000){
+            d3 = new Date(i);
+            var time=d3.toISOString().slice(0,10);
+            monthArray.push(time);
+        }
+        ajaxLoading(4);
+        //派单量折线图统计图
+        $.ajax({
+            url: '{{projcfg.appurl}}/api/order_manage/order_statistics/getLivelyView',
+            type: 'post',
+            dataType:'json',
+            data: {"monthArray":monthArray.toString()},
+            success: function (datacount) {
+                ajaxLoadEnd(4);
+                var month;
+                if(val){
+                    var q=val.toString();
+                    month=q.substring(q.length-1);
+                }else {
+                    month=date.getMonth()+1;
+                }
+                $("#hyd").html(month+"月用户活跃度总次数："+datacount[1]+"(次)");
+                if(datacount){
+                    var livelyChart = echarts.init(document.getElementById('livelyChart'));
+                    livelyChart.setOption({
+                        title: {
+                            x: 'left',
+                            text: '用户活跃度统计',
+                            textStyle: {
+                                fontSize: '18',
+                                color: '#4c4c4c',
+                                fontWeight: 'bolder'
+                            }
+                        },
+                        tooltip: {
+                            trigger: 'axis'
+                        },
+                        calculable : true,
+                        toolbox: {
+                            show: true,
+                            feature: {
+                                dataZoom: {
+                                    yAxisIndex: 'none'
+                                },
+                                dataView: {readOnly: false},
+                                magicType: {type: ['line', 'bar']}
+
+                            }
+                        },
+                        legend: {
+                            data: ['用户量']
+                        },
+                        xAxis:  {
+                            name:'登录时间',
+                            type: 'category',
+                            boundaryGap: false,
+                            data: monthArray,
+                            axisLabel: {
+                                interval:0,
+                                rotate:-30//-30度角倾斜显示
+                            }
+                        },
+                        yAxis: {
+                            type: 'value',
+                            name:'用户量(个)',
+                            splitNumber:10
+                        },
+                        series: [
+                            {
+                                name:'用户量',
+                                type:'line',
+                                data:datacount[0],
+                                //markLine: {data: [{type: 'average', name: '平均值'}]},
+                                itemStyle : {normal : {color:'#080808'}}
+                            }
+                        ]
+                    }) ;
+
+                }else{
+                    $.messager.alert('错误提示','数据异常！');
+                }
+
+            }
+        });
+    }
+    //用户系统使用量使用
+    function loadOrderEmploy(){
+        var val = $("#employ").val();
+        var d1;
+        var d2;
+        if(val){
+            var q=val.toString();
+            var m =val.substr(0,4);
+            var d=parseInt(q.substring(q.length-1))+1;
+            d1= new Date(val+'-1');
+            d2=new Date(m+'-'+d+''+'-1');
+        }else {
+            var date = new Date();
+            var y = date.getFullYear();
+            var m1 = date.getMonth()+1;
+            var m2 = date.getMonth()+1+1;
+            var today1=y+"-"+m1+"-1";
+            var today2=y+"-"+m2+"-1";
+            d1 = new Date(today1);
+            d2 = new Date(today2);
+        }
+        var d3;
+        var monthArray =[];
+        for (var i = d1.getTime() ; i < d2.getTime() ; i += 24*60*60*1000){
+            d3 = new Date(i);
+            var time=d3.toISOString().slice(0,10);
+            monthArray.push(time);
+        }
+        ajaxLoading(5);
+        //派单量折线图统计图
+        $.ajax({
+            url: '{{projcfg.appurl}}/api/order_manage/order_statistics/getEmployView',
+            type: 'post',
+            dataType:'json',
+            data: {"monthArray":monthArray.toString()},
+            success: function (datacount) {
+                ajaxLoadEnd(5);
+                var month;
+                if(val){
+                    var q=val.toString();
+                    month=q.substring(q.length-1);
+                }else {
+                    month=date.getMonth()+1;
+                }
+                $("#xtsy").html(month+"月系统使用跃度总次数："+datacount[1]+"(次)");
+                if(datacount){
+                    var employChart = echarts.init(document.getElementById('employChart'));
+                    employChart.setOption({
+                        title: {
+                            x: 'left',
+                            text: '系统使用活跃度统计',
+                            textStyle: {
+                                fontSize: '18',
+                                color: '#4c4c4c',
+                                fontWeight: 'bolder'
+                            }
+                        },
+                        tooltip: {
+                            trigger: 'axis'
+                        },
+                        calculable : true,
+                        toolbox: {
+                            show: true,
+                            feature: {
+                                dataZoom: {
+                                    yAxisIndex: 'none'
+                                },
+                                dataView: {readOnly: false},
+                                magicType: {type: ['line', 'bar']}
+
+                            }
+                        },
+                        legend: {
+                            data: ['用户量']
+                        },
+                        xAxis:  {
+                            name:'登录时间',
+                            type: 'category',
+                            boundaryGap: false,
+                            data: monthArray,
+                            axisLabel: {
+                                interval:0,
+                                rotate:-30//-30度角倾斜显示
+                            }
+                        },
+                        yAxis: {
+                            type: 'value',
+                            name:'用户量(个)',
+                            splitNumber:10
+                        },
+                        series: [
+                            {
+                                name:'用户量',
+                                type:'line',
+                                data:datacount[0],
+                                //markLine: {data: [{type: 'average', name: '平均值'}]},
+                                itemStyle : {normal : {color:'#080808'}}
+                            }
+                        ]
+                    }) ;
+
+                }else{
+                    $.messager.alert('错误提示','数据异常！');
+                }
+
+            }
+        });
+    }
+
+    function ajaxLoading(value){
+        if(value==1){
+            $("<div class=\"datagrid-mask\" id=\"pdtj1\"></div>").css({display:"block",width:50,height:150}).appendTo("#pdtj");
+            $("<div class=\"datagrid-mask-msg\" id=\"pdtj2\"></div>").html("正在加载数据，请稍候...").appendTo("#pdtj").css({display:"block",left:400,top:250});
+
+        }else if (value==2){
+            $("<div class=\"datagrid-mask\" id=\"gdtj1\"></div>").css({display:"block",width:50,height:150}).appendTo("#gdtj");
+            $("<div class=\"datagrid-mask-msg\" id=\"gdtj2\"></div>").html("正在加载数据，请稍候...").appendTo("#gdtj").css({display:"block",left:400,top:750});
+
+        }else if (value==3){
+            $("<div class=\"datagrid-mask\" id=\"lztj1\"></div>").css({display:"block",width:50,height:150}).appendTo("#lztj");
+            $("<div class=\"datagrid-mask-msg\" id=\"lztj2\"></div>").html("正在加载数据，请稍候...").appendTo("#lztj").css({display:"block",left:400,top:1250});
+
+        }else if(value==4){
+            $("<div class=\"datagrid-mask\" id=\"hydtj1\"></div>").css({display:"block",width:50,height:150}).appendTo("#hydtj");
+            $("<div class=\"datagrid-mask-msg\" id=\"hydtj2\"></div>").html("正在加载数据，请稍候...").appendTo("#hydtj").css({display:"block",left:400,top:1750});
+
+        }else if(value==5){
+            $("<div class=\"datagrid-mask\" id=\"xthyti1\"></div>").css({display:"block",width:50,height:150}).appendTo("#xthyti");
+            $("<div class=\"datagrid-mask-msg\" id=\"xthyti2\"></div>").html("正在加载数据，请稍候...").appendTo("#xthyti").css({display:"block",left:400,top:2250});
+
+        }
+    }
+
+    function ajaxLoadEnd(value){
+        if(value==1){
+            $("#pdtj1").remove();
+            $("#pdtj2").remove();
+        }else if(value==2){
+            $("#gdtj1").remove();
+            $("#gdtj2").remove();
+        }else if(value==3){
+            $("#lztj1").remove();
+            $("#lztj2").remove();
+        }else if(value==4){
+            $("#hydtj1").remove();
+            $("#hydtj2").remove();
+        }else if(value==5){
+            $("#xthyti1").remove();
+            $("#xthyti2").remove();
+        }
+
+    }
+</script>
+
+

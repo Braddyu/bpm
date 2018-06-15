@@ -8,6 +8,7 @@ var logger = require('../../../../lib/logHelper').helper;
 var xlsx = require('node-xlsx');
 var moment = require('moment');
 var memcached_utils = require('../../../../lib/memcached_utils.js');
+
 /**
  * 工单统计
  * @param org_id 机构id
@@ -126,7 +127,7 @@ exports.getStatisticsListPage = function (org_id, proc_code, level, status, star
             {
                 $match: inst
             },
-            {
+           {
                 $group: {
                     _id: "$_id",
                     org_fullname: {$first: "$org_fullname"},
@@ -135,16 +136,12 @@ exports.getStatisticsListPage = function (org_id, proc_code, level, status, star
                     level:{$first: "$level"},
                     //总工单数
                     totalNum: {
-                        $sum: {
-                            $cond: {
-                                if: {$in: ["$inst.proc_inst_status", [1, 2, 3, 4]]},
-                                then: {$sum: 1},
-                                else: 0
-                            }
-                        }
+                        $sum: 1
                     },
                     //归档工单数
                     fileNum: {$sum: {$cond: {if: {$eq: ["$inst.proc_inst_status", 4]}, then: {$sum: 1}, else: 0}}},
+                    //客户不配合工单数
+                    notCooperateNum: {$sum: {$cond: {if: {$eq: ["$inst.proc_inst_status", 7]}, then: {$sum: 1}, else: 0}}},
                     //未超时工单数
                     notOvertimeNum: {
                         $sum: {
@@ -215,7 +212,8 @@ exports.getStatisticsListPage = function (org_id, proc_code, level, status, star
                 reject(utils.returnMsg(false, '1000', '查询统计失败。', null, err));
             } else {
                 //统计后的组织只统计有数据的组织，没数据的组织会没有，这里将没数据的组织的数据全部为0的插入统计数据
-                user_model.$CommonCoreOrg.find(match, function (err, res) {
+
+               user_model.$CommonCoreOrg.find(match, function (err, res) {
                     if (res && res.length > 0) {
                         for (let i in res) {
                             let is_exists = false;
@@ -240,7 +238,8 @@ exports.getStatisticsListPage = function (org_id, proc_code, level, status, star
                                     twiceAuditNum: 0,
                                     untreatedNum: 0,
                                     treatedNum: 0,
-                                    overtimeTreatedNum: 0
+                                    overtimeTreatedNum: 0,
+                                    notCooperateNum:0
                                 }
                                 staRes.push(staJson);
                             }
@@ -248,7 +247,7 @@ exports.getStatisticsListPage = function (org_id, proc_code, level, status, star
                         console.log(res);
                         let end_time = new Date().getTime();
                         console.log("时间", end_time - start_time);
-                        var result = {rows: staRes, success: true};
+                        var result = {rows: staRes, success: true,proc_code:proc_code};
                         console.log("结果", result);
                         resolve(result);
 
@@ -268,25 +267,43 @@ exports.getStatisticsListPage = function (org_id, proc_code, level, status, star
 
 exports.createExcelOrderList = function createExcelOrderList(data) {
     let list=data.rows;
-    const headers = [
-        '区域编码',
-        '区域名称',
-        '工单数',
-        '补录工单数',
-        '超时补录工单数',
-        '未补录工单数',
-        '归档工单数 ',
-        '及时归档工单数',
-        '一次归档工单数 ',
-        '二次及以上归档工单数 ',
-        '工单补录率',
-        '工单超时补录率',
-        '工单未补录率',
-        '工单归档率',
-        '工单及时归档率 ',
-        '一次归档率 ',
-        '二次及以上归档率 ',
-    ];
+    let proc_code = data.proc_code;
+    let headers=[];
+    if(proc_code=='p-109'){
+        headers = [
+            '区域编码',
+            '区域名称',
+            '工单数',
+            '归档工单数 ',
+            '及时归档工单数',
+            '工单归档率',
+            '工单及时归档率 ',
+
+        ];
+    }else if(proc_code=='p-201'){
+        headers = [
+            '区域编码',
+            '区域名称',
+            '工单数',
+            '处理工单数',
+            '超时处理工单数',
+            '未处理工单数',
+            '客户不配合工单数',
+            '归档工单数 ',
+            '及时归档工单数',
+            '一次归档工单数 ',
+            '二次及以上归档工单数 ',
+            '工单处理率',
+            '工单超时处理率',
+            '工单未处理率',
+            '客户不配合率',
+            '工单归档率',
+            '工单及时归档率 ',
+            '一次归档率 ',
+            '二次及以上归档率 ',
+        ];
+    }
+
 
     var data = [headers];
 
@@ -331,7 +348,18 @@ exports.createExcelOrderList = function createExcelOrderList(data) {
                 untreated_rate = re + "%";
             }
         }
-
+        // 客户不配合率
+        let notCooperateNum_rate = "0%";
+        if (c.notCooperateNum == 0 || c.notCooperateNum == 0) {
+            notCooperateNum_rate = "0%";
+        } else {
+            var re = ((parseInt(c.notCooperateNum) / c.totalNum).toFixed(5) * 100).toFixed(3);
+            if (re == 0) {
+                notCooperateNum_rate = "0%";
+            } else {
+                notCooperateNum_rate = re + "%";
+            }
+        }
         //工单归档率计算
         let filing_rate = "0%";
         if (c.fileNum == 0 || c.totalNum == 0) {
@@ -383,26 +411,40 @@ exports.createExcelOrderList = function createExcelOrderList(data) {
             }
 
         }
-
-        const tmp = [
-            c.company_code,
-            c.org_fullname,
-            c.totalNum,
-            c.treatedNum,
-            c.overtimeTreatedNum,
-            c.untreatedNum,
-            c.fileNum,
-            c.notOvertimeNum,
-            c.oneFileNum,
-            c.twiceAuditNum,
-            treated_rate,
-            overtimeTreated_rate,
-            untreated_rate,
-            filing_rate,
-            timely_filing_rate,
-            one_filing_rate,
-            two_filing_rate,
-        ]
+        let tmp=[];
+        if(proc_code=='p-109'){
+            tmp = [
+                c.company_code,
+                c.org_fullname,
+                c.totalNum,
+                c.fileNum,
+                c.notOvertimeNum,
+                filing_rate,
+                timely_filing_rate,
+            ]
+        }else if(proc_code=='p-201'){
+            tmp = [
+                c.company_code,
+                c.org_fullname,
+                c.totalNum,
+                c.treatedNum,
+                c.overtimeTreatedNum,
+                c.untreatedNum,
+                c.notCooperateNum,
+                c.fileNum,
+                c.notOvertimeNum,
+                c.oneFileNum,
+                c.twiceAuditNum,
+                treated_rate,
+                overtimeTreated_rate,
+                untreated_rate,
+                notCooperateNum_rate,
+                filing_rate,
+                timely_filing_rate,
+                one_filing_rate,
+                two_filing_rate,
+            ]
+        }
 
         data.push(tmp);
     });
@@ -411,8 +453,13 @@ exports.createExcelOrderList = function createExcelOrderList(data) {
             "!row": [{wpx: 67}]
         }
     };
-    ws['!cols'] = [{wpx: 100}, {wpx: 300}, {wpx: 100}, {wpx: 100}, {wpx: 100}, {wpx: 100}, {wpx: 100}, {wpx: 100}, {wpx: 100}, {wpx: 100}, {wpx: 100}, {wpx: 100}
-        , {wpx: 100}, {wpx: 100}, {wpx: 100}, {wpx: 100}, {wpx: 100}];
+    if(proc_code=='p-109'){
+        ws['!cols'] = [{wpx: 100}, {wpx: 300}, {wpx: 100}, {wpx: 100}, {wpx: 100}, {wpx: 100}, {wpx: 100}, {wpx: 100}, {wpx: 100}, {wpx: 100}, {wpx: 100}]
+    }else  if(proc_code=='p-201'){
+        ws['!cols'] = [{wpx: 100}, {wpx: 300}, {wpx: 100}, {wpx: 100}, {wpx: 100}, {wpx: 100}, {wpx: 100}, {wpx: 100}, {wpx: 100}, {wpx: 100}, {wpx: 100}, {wpx: 100}, {wpx: 100}
+            , {wpx: 100}, {wpx: 100}, {wpx: 100}, {wpx: 100}, {wpx: 100}];
+    }
+
 
 
     return xlsx.build([{name: 'Sheet1', data: data}], ws);
@@ -542,7 +589,10 @@ exports.detail_list = function (page, size, org_id, level, status, proc_code, st
         if (status == 8) {
             inst_match['$and'] = [{"inst.refuse_number":{$gt:0}}, {"inst.proc_inst_status":{$eq:4}}];
         }
-
+        //客户不配合工单
+        if (status == 9) {
+            inst_match['inst.proc_inst_status'] = 7;
+        }
         if (work_order_number) {
             inst_match['inst.work_order_number'] = work_order_number;
         }
@@ -806,6 +856,10 @@ exports.exportDetailList = function (org_id, proc_code, level, status, startDate
         if (status == 8) {
             inst_match['$and'] = [{"inst.refuse_number":{$gt:0}}, {"inst.proc_inst_status":{$eq:4}}];
         }
+        //客户不配合工单
+        if (status == 9) {
+            inst_match['inst.proc_inst_status'] = 7;
+        }
         if (work_order_number) {
             inst_match['inst.work_order_number'] = work_order_number;
         }
@@ -922,7 +976,7 @@ exports.exportDetailList = function (org_id, proc_code, level, status, startDate
                                     work_id: "$task.proc_inst_task_work_id",
                                     channel_histroy:"$channel_histroy.proc_inst_task_remark",
                                     channel_work_id: "$work_id",
-
+                                    is_overtime: "$inst.is_overtime",
                                 }
                             },
 
@@ -1008,8 +1062,11 @@ exports.createExcelOrderDetail = function createExcelOrderDetail(data) {
         let work_id = "";
         if (c.proc_inst_status == 4) {
             proc_inst_task_assignee_name = '已归档';
-            work_id = '已归档'
-        } else if (c.proc_inst_task_assignee_name) {
+            work_id = '/'
+        } else if (c.proc_inst_status == 7) {
+            proc_inst_task_assignee_name = '客户不配合';
+            work_id = '/'
+        }  else if (c.proc_inst_task_assignee_name) {
             proc_inst_task_assignee_name = c.proc_inst_task_assignee_name;
             work_id = c.work_id;
         } else {
@@ -1020,7 +1077,9 @@ exports.createExcelOrderDetail = function createExcelOrderDetail(data) {
         let proc_inst_task_type = "";
         if (c.proc_inst_status == 4) {
             proc_inst_task_type = '已归档';
-        } else {
+        } else if(c.proc_inst_status == 7){
+            proc_inst_task_type = '客户不配合';
+        }else {
             proc_inst_task_type = c.proc_inst_task_type;
         }
 
@@ -1133,6 +1192,385 @@ exports.local_user = function (user_org, user_no) {
     })
 
 }
+
+
+/**
+ * 获取派单量
+ * @param monthArray :日期
+ */
+exports.getMonitoring= function(monthArray) {
+    var p = new Promise(async function(resolve,reject) {
+    var timeArray=monthArray.split(",");
+        console.log(timeArray,"正在加载派单数据，请稍等。。。")
+    var orderTotal=[];//派单总量
+    var orderError=[];//差错工单量
+    var orderWarning=[];//预警工单量
+    var orderAudit=[];//资金稽核工单量
+    var orderDepth=[];//深度资金稽核工单量
+    var orderInterior=[];//内部审批流程
+    var orders=0;
+    var number=[];//返回前台的数据
+        var years =timeArray[0].substring(0,7);
+        await process_model.$ProcessInst.aggregate([
+            {
+                $addFields: {
+                    "start_time":  { $dateToString: { format: "%Y-%m-%d", date: "$proc_start_time" } }
+                }
+            },
+            // {
+            //     $match: {
+            //         "start_time": "/^.*"+years+".*$/i"
+            //     }
+            // },
+            {
+                $group: {
+                    "_id":{"proc_name":"$proc_name","start_time":"$start_time", "proc_code" : "$proc_code"},
+                    "start_time":{$first:"$start_time"},
+                    "proc_name":{$first:"$proc_name"},
+                    "proc_code" : {$first:"$proc_code"},
+                    "count":{$sum:1}
+                }
+            },
+            {
+                $sort: { start_time: 1 }
+            }
+
+        ]).exec(function (err, res) {
+            console.log(res,"9999999999999");
+            for (var i in timeArray){
+                var flag1 = false;
+                var flag2 = false;
+                var flag3 = false;
+                var flag4 = false;
+                var flag5 = false;
+                for (var j in res){
+                    if (timeArray[i]==res[j].start_time&&res[j].proc_code=="p-201"){
+                        orderError.push(res[j].count);
+                        flag1 = true;
+                    }
+
+
+                    if (timeArray[i]==res[j].start_time&&res[j].proc_code=="p-109"){
+                        orderWarning.push(res[j].count);
+                        flag2 = true;
+                    }
+
+                    if (timeArray[i]==res[j].start_time&&res[j].proc_code=="zj_101"){
+                        orderAudit.push(res[j].count);
+                        flag3 = true;
+                    }
+
+                    if (timeArray[i]==res[j].start_time&&res[j].proc_code=="p-108"){
+                        orderDepth.push(res[j].count);
+                        flag4 = true;
+                    }
+
+                    if (timeArray[i]==res[j].start_time&&res[j].proc_code=="p-inner"){
+                        orderInterior.push(res[j].count);
+                        flag5 = true;
+                    }
+
+                }
+
+                if(!flag1){
+                     orderError.push(0);
+                }
+                if(!flag2){
+                    orderWarning.push(0);
+                }
+                if(!flag3){
+                    orderAudit.push(0);
+                }
+                if(!flag4){
+                    orderDepth.push(0);
+                }
+
+                if(!flag5){
+                    orderInterior.push(0);
+                }
+
+            }
+             for (var e in timeArray){
+                var count=orderError[e]+orderWarning[e]+orderAudit[e]+orderDepth[e]+orderInterior[e]
+                 orders+=count;
+                 orderTotal.push(count);
+             }
+             number.push(orderTotal,orderError,orderWarning,orderAudit,orderDepth,orderInterior,orders);
+        });
+            console.log(number,"qqqqqqq");
+        resolve(number);
+    });
+    return p;
+};
+
+
+/**
+ * 归档情况
+ * @param monthArray :日期
+ */
+exports.getArchive= function(today) {
+    var p = new Promise(async function(resolve,reject) {
+        var orderTotal=[0,0,0,0,0,0];//派单总量
+        var orderArchive=[0,0,0,0,0,0];//归档量
+        var number=[];//返回前台的数据
+        await process_model.$ProcessInst.aggregate([
+            {
+                $addFields: {
+                    "start_time":  { $dateToString: { format: "%Y-%m-%d", date: "$proc_start_time" } }
+                }
+            },
+            // {
+            //     $match: {
+            //         "start_time": /^.*2018-05.*$/i
+            //     }
+            // },
+            {
+                $group: {
+                    "_id":{
+                        "proc_name":"$proc_name",
+                        "start_time":"$start_time",
+                        "proc_code" : "$proc_code",
+                        "proc_inst_status":"$proc_inst_status"
+                    },
+                    "start_time":{$first:"$start_time"},
+                    "proc_name":{$first:"$proc_name"},
+                    "proc_code" : {$first:"$proc_code"},
+                    "proc_inst_status":{$first:"$proc_inst_status"},
+                    "count":{$sum:1}
+                }
+            },
+            {
+                $sort: { start_time: 1 }
+            }
+
+        ]).exec(function (err, res) {
+            // orderTotal.push(0);
+            // orderArchive.push(0);
+            console.log(res,"9999999");
+            for (var i in res){
+
+                if(today==res[i].start_time){
+                    if(res[i].proc_code=="p-201"){
+                        orderTotal.splice(1, 1, res[i].count);
+                    }else if(res[i].proc_code=="p-109"){
+                        orderTotal.splice(2, 1, res[i].count);
+                    }else if(res[i].proc_code=="zj_101"){
+                        orderTotal.splice(3, 1, res[i].count);
+                    }else if(res[i].proc_code=="p-108"){
+                        orderTotal.splice(4, 1, res[i].count);
+                    }else if(res[i].proc_code=="p-inner"){
+                        orderTotal.splice(5, 1, res[i].count);
+                    }
+                }
+                if(today==res[i].start_time&&res[i].proc_inst_status==4){
+                    if(res[i].proc_code=="p-201"){
+                        orderArchive.splice(1, 1, res[i].count);
+                    }else if(res[i].proc_code=="p-109"){
+                        orderArchive.splice(2, 1, res[i].count);
+                    }else if(res[i].proc_code=="zj_101"){
+                        orderArchive.splice(3, 1, res[i].count);
+                    }else if(res[i].proc_code=="p-108"){
+                        orderArchive.splice(4, 1, res[i].count);
+                    }else if(res[i].proc_code=="p-inner"){
+                        orderArchive.splice(5, 1, res[i].count);
+                    }
+                }
+            }
+            console.log(orderTotal,"正在加载数据，请稍等。。。");
+
+        })
+        number.push(orderTotal,orderArchive);
+        resolve(number);
+    });
+    return p;
+};
+
+
+/**
+ * 获取工单流转量
+ * @param monthArray :日期
+ */
+exports.getCirculation= function(monthArray) {
+    var p = new Promise(async function(resolve,reject) {
+        var timeArray=monthArray.split(",");
+        var orderTotal=[];//派单总量
+        var orderError=[];//差错工单量
+        var orderWarning=[];//预警工单量
+        var orderAudit=[];//资金稽核工单量
+        var orderDepth=[];//深度资金稽核工单量
+        var orderInterior=[];//内部审批流程
+        var orders=0;
+        var number=[];//返回前台的数据
+        await process_model.$ProcessTaskHistroy.aggregate([
+            {
+                $addFields: {
+                    "complete_time":  { $dateToString: { format: "%Y-%m-%d", date: "$proc_inst_task_complete_time" } }
+                }
+            },
+            // {
+            //     $match: {
+            //         "start_time": /^.*2018-05.*$/i
+            //     }
+            // },
+            {
+                $group: {
+                    "_id":{"proc_name":"$proc_name","complete_time":"$complete_time", "proc_code" : "$proc_code"},
+                    "complete_time":{$first:"$complete_time"},
+                    "proc_name":{$first:"$proc_name"},
+                    "proc_code" : {$first:"$proc_code"},
+                    "count":{$sum:1}
+                }
+            },
+            {
+                $sort: { start_time: 1 }
+            }
+
+        ]).exec(function (err, res) {
+            console.log(res,"3333");
+            for (var i in timeArray){
+                var flag1 = false;
+                var flag2 = false;
+                var flag3 = false;
+                var flag4 = false;
+                var flag5 = false;
+                for (var j in res){
+                    if (timeArray[i]==res[j].complete_time&&res[j].proc_code=="p-201"){
+                        orderError.push(res[j].count);
+                        flag1 = true;
+                    }
+
+
+                    if (timeArray[i]==res[j].complete_time&&res[j].proc_code=="p-109"){
+                        orderWarning.push(res[j].count);
+                        flag2 = true;
+                    }
+
+                    if (timeArray[i]==res[j].complete_time&&res[j].proc_code=="zj_101"){
+                        orderAudit.push(res[j].count);
+                        flag3 = true;
+                    }
+
+                    if (timeArray[i]==res[j].complete_time&&res[j].proc_code=="p-108"){
+                        orderDepth.push(res[j].count);
+                        flag4 = true;
+                    }
+
+                    if (timeArray[i]==res[j].complete_time&&res[j].proc_code=="p-inner"){
+                        orderInterior.push(res[j].count);
+                        flag5 = true;
+                    }
+
+                }
+
+                if(!flag1){
+                    orderError.push(0);
+                }
+                if(!flag2){
+                    orderWarning.push(0);
+                }
+                if(!flag3){
+                    orderAudit.push(0);
+                }
+                if(!flag4){
+                    orderDepth.push(0);
+                }
+
+                if(!flag5){
+                    orderInterior.push(0);
+                }
+
+            }
+            for (var e in timeArray){
+                var count=orderError[e]+orderWarning[e]+orderAudit[e]+orderDepth[e]+orderInterior[e]
+                orders+=count;
+                orderTotal.push(count);
+            }
+            number.push(orderTotal,orderError,orderWarning,orderAudit,orderDepth,orderInterior,orders);
+        });
+        //console.log(number,"qqqqqqq");
+        resolve(number);
+    });
+    return p;
+};
+
+/**
+ * 用户活跃度统计
+ * @param monthArray :日期
+ */
+exports.getLively= function(monthArray) {
+    var p = new Promise(async function(resolve,reject) {
+        var timeArray=monthArray.split(",");
+        var livelyArray=[];//活跃度
+        var orders=0;
+        var number=[];//返回前台的数据
+        await user_model.$CommonUserLoginLog.aggregate([
+            {
+                $addFields: {
+                    "loginTime":  { $dateToString: { format: "%Y-%m-%d", date: "$login_time" } }                }
+            },
+            {
+                $group: {
+                    "_id":{"loginTime":"$loginTime"},
+                    "loginTime":{$first:"$loginTime"},
+                    "count":{$sum:1}
+                }
+            },
+            {
+                $sort: { loginTime: 1 }
+            }
+
+        ]).exec(function (err, res) {
+           console.log(res,"5555555555");
+            for (var i in timeArray){
+                var flag = false;
+                for (var j in res) {
+                    if (timeArray[i] == res[j].loginTime) {
+                        livelyArray.push(res[j].count);
+                        flag = true;
+                    }
+                }
+                if(!flag){
+                    livelyArray.push(0);
+                }
+            }
+
+            for (var e in livelyArray){
+                var count=livelyArray[e];
+                orders+=count;
+            }
+        });
+
+        number.push(livelyArray,orders);
+        resolve(number);
+    });
+    return p;
+};
+
+
+/**
+ * 系统活跃度统计
+ * @param monthArray :日期
+ */
+exports.getEmploy= function(monthArray) {
+    var p = new Promise(async function(resolve,reject) {
+        var timeArray=monthArray.split(",");
+        var livelyArray=[];//活跃度
+        var orders=0;
+        var number=[];//返回前台的数据
+        for (var i in timeArray){
+            var startDate=new Date(timeArray[i]);
+             var endDate=new Date(timeArray[i]+' 23:59:59');
+            var lively =await user_model.$CommonUserLoginLog.distinct("user_no",{"login_time":{$gte:startDate,$lte:endDate}});
+            var count=lively.length;
+             orders+=count;
+            livelyArray.push(count);
+            console.log("正在加载用户活跃度数据，请稍等。。。")
+        }
+        number.push(livelyArray,orders);
+        resolve(number);
+    });
+    return p;
+};
 
 
 function isEmptyObject(e) {

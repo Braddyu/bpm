@@ -414,6 +414,7 @@ router.route('/version')
                                 processItemEntity.item_code = taskNodeDatas[i].item_code;
                                 processItemEntity.item_type = taskNodeDatas[i].item_type;
                                 processItemEntity.item_sms_warn = taskNodeDatas[i].item_sms_warn;
+                                processItemEntity.item_mail_notice = taskNodeDatas[i].item_mail_notice;
                                 processItemEntity.item_jump = taskNodeDatas[i].jump;
                                 processItemEntity.item_show_text = taskNodeDatas[i].selectVal;
                                 if(taskNodeDatas[i].selectType == 1){//参与人
@@ -546,12 +547,13 @@ router.route('/process/version/:id')
                 processItemEntity.proc_code = result2.proc_code;
                 processItemEntity.version = result2.version;
                 processItemEntity.proc_define_id = id;
+
                 if(taskNodeDatas[i]._id == ''){
                     processItemEntity.item_code = taskNodeDatas[i].item_code;
                     processItemEntity.item_type = taskNodeDatas[i].item_type;
                     processItemEntity.item_sms_warn = taskNodeDatas[i].item_sms_warn;
+                    processItemEntity.item_mail_notice = taskNodeDatas[i].item_mail_notice;
                     processItemEntity.item_jump = taskNodeDatas[i].item_jump;
-                    processItemEntity.item_show_text = taskNodeDatas[i].selectVal;
                     if(taskNodeDatas[i].selectType == 1){//参与人
                         processItemEntity.item_assignee_type = taskNodeDatas[i].selectType;
                         processItemEntity.item_assignee_user = taskNodeDatas[i].item_assignee_user;
@@ -637,6 +639,7 @@ router.route('/process/version/:id')
                 var itemjsonstr = JSON.stringify(itemArray);
                 processDefineEntity.item_config = itemjsonstr;
             }
+
             // 调用修改方法
             proc.updateProcessDefine(id, processDefineEntity).then(function(result1) {
                 utils.respJsonData(res, result1);

@@ -243,13 +243,7 @@ router.post('/complete', function (req, res, next) {
                                     var proc_inst_id = taskresult.data.proc_inst_id;
                                     var proc_code = taskresult.data.proc_code;
                                     //流程流转方法
-
-                                    console.log(id, node_code, user_code, true, memo, params, biz_vars, proc_vars);
-                                    console.info(params)
                                     nodeTransferService.transfer(id, node_code, user_code, true, memo, params, biz_vars, proc_vars).then(function (result1) {
-                                        console.log(result1);
-                                        console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", id, node_code, user_code, true, memo, params)
-
                                         //归档时,回传黄河数据
                                         if (handle == 1) {
                                             service.repare(result1, proc_code, proc_inst_id, memo).then(function (result) {
@@ -307,7 +301,17 @@ router.get('/showDetailView', function (req, res, next) {
     var proc_code = req.query.proc_code;
     var status = req.query.status;
     var change_id = req.query.change_id;
-    console.log("proc_code",proc_code,"status",status,"change_id",change_id);
+    let current_user = req.session.current_user;
+
+    let user_roles =current_user.user_roles;
+    let is_admin = 0;
+    //判断当前角色是否可以进行复核
+    for(let i in user_roles){
+        if(user_roles[i].role_code=='check_manager'){
+            is_admin = 1;
+        }
+    }
+    console.log("proc_code",proc_code,"status",status,"change_id",change_id,"is_admin",is_admin);
     //获取字典中配置对应流程的详proc_code细处理界面
     service.getViewUrl(proc_code)
         .then(function (result) {
@@ -321,6 +325,7 @@ router.get('/showDetailView', function (req, res, next) {
                     status: status,
                     change_id:change_id,
                     proc_code:proc_code,
+                    is_admin :is_admin
                 });
             }
         })
@@ -496,10 +501,9 @@ router.post('/deleteFile', function (req, res) {
 router.post('/checkFile', function (req, res) {
     console.log("开始复核...");
     let inst_id = req.body.inst_id;
-    let node = req.body.node;
+    let status = req.body.status;
     let check_memo = req.body.check_memo;
     let current_user = req.session.current_user;
-
     let user_roles =current_user.user_roles;
     let is_admin = false;
     //判断当前角色是否可以进行复核
@@ -512,7 +516,7 @@ router.post('/checkFile', function (req, res) {
     if(!is_admin){
         utils.respMsg(res, false, '1000', '抱歉，您不能进行复核', null, null);
     }else{
-        service.checkFile(inst_id, node,check_memo,current_user.user_name,current_user.user_no)
+        service.checkFile(inst_id, status,check_memo,current_user.user_name,current_user.user_no)
             .then(function (result) {
                 utils.respJsonData(res, result);
             })
@@ -521,8 +525,6 @@ router.post('/checkFile', function (req, res) {
 
             });
     }
-
-
 });
 
 

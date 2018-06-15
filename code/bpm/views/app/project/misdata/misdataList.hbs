@@ -1,0 +1,174 @@
+<div id="processDiv" class="row">
+    <div class="col-xs-12 col-md-12">
+        <div class="widget">
+            <div class="widget-body">
+                <div id="processLayout" class="easyui-layout" data-options="fit:true" style="padding-bottom:60px;background:#eee;width:1000px;height:666px;"  >
+                    <div id="toolbar1" class="row tbRow">
+                        <div class="col-xs-1 col-md-1 text-right">
+                            <form class="form-inline">
+                                <div class="form-group">
+                                    <div class="input-group">
+                                        <span class="input-group-btn">
+                                                 <button class="btn btn-default" type="button" id="exportData"><i class="glyphicon glyphicon-open"></i>导出</button>
+                                        </span>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <table id="orderTablelist">
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        //加载我的待办列表
+        loadOrderTodaoListDatagrid();
+        $('#startDate').datebox().datebox('calendar').calendar({
+            validator: function(date){
+                var endDate = new Date($('#endDate').datebox('getValue'));
+                if($('#endDate').datebox('getValue')){
+                    var d1 = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate());
+                    return  date<=d1;
+                }else{
+                    return true;
+                }
+            }
+        });
+        $('#endDate').datebox().datebox('calendar').calendar({
+            validator: function(date){
+                var startDate = new Date($('#startDate').datebox('getValue'));
+                if($('#startDate').datebox('getValue')){
+                    var d1 = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
+                    return  date>=d1;
+                }else{
+                    return true;
+                }
+            }
+        });
+
+    });
+
+    //时间格式化:new Date().Format("yyyy-MM-dd hh:mm:ss");
+    Date.prototype.Format = function (fmt) { //author: meizz
+        var o = {
+            "M+": this.getMonth() + 1, //月份
+            "d+": this.getDate(), //日
+            "h+": this.getHours(), //小时
+            "m+": this.getMinutes(), //分
+            "s+": this.getSeconds(), //秒
+            "q+": Math.floor((this.getMonth() + 3) / 3), //季度
+            "S": this.getMilliseconds() //毫秒
+        };
+        if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+        for (var k in o)
+            if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+        return fmt;
+    }
+    // 加载工单基本属性列表
+    function loadOrderTodaoListDatagrid(){
+        $('#orderTablelist').datagrid({
+            url:'{{projcfg.appurl}}/api/misdata/misdata/misdataList',
+            method:'post',
+            rownumbers:true,
+            striped:true,
+            border:false,
+            fitColumns:true,
+            fit:true,
+            pageSize:30 ,
+            selectOnCheck:true,
+            checkOnSelect:true,
+            columns:[[
+                {"field":"id",checkbox:true},
+                {"field": "grid_manager_tel","title":"手机号码","width":"120px"},
+                {"field": "grid_manager_name","title":"姓名","width":"100px",
+                    formatter:function(value,row,index){
+                        return "<span title='" + value + "'>" + value + "</span>";
+                    }},
+                {"field": "grid_manager_id","title":"工号","width":"80px", formatter: function (value) {
+                        return "<span title='" + value + "'>" + value + "</span>";
+                    },},
+                {"field": "channel_id","title":"网格编码","width":"80px", formatter: function (value) {
+                        return "<span title='" + value + "'>" + value + "</span>";
+                    }},
+
+                {"field": "channel_name","title":"网格名称","width":"150px",
+                    formatter: function (value) {
+                        return "<span title='" + value + "'>" + value + "</span>";
+                    }
+                },
+
+                {"field": "grid_coding","title":"区县编码","width":"60px",formatter: function (value) {
+                        return "<span title='" + value + "'>" + value + "</span>";
+                    }},
+                {"field": "grid_name","title":"区县名称","width":"90px",formatter: function (value) {
+                        return "<span title='" + value + "'>" + value + "</span>";
+                    }},
+                {"field": "district_code","title":"地州编码","width":"70px",formatter: function (value) {
+                        return "<span title='" + value + "'>" + value + "</span>";
+                    }},
+                {"field": "district_name","title":"地州姓名","width":"120px",formatter: function (value) {
+                        return "<span title='" + value + "'>" + value + "</span>";
+                    }},
+                {"field": "city_code","title":"城市编码","width":"60px",formatter: function (value) {
+                        return "<span title='" + value + "'>" + value + "</span>";
+                    }},
+                {"field": "city_name","title":"城市名字","width":"60px",formatter: function (value) {
+                        return "<span title='" + value + "'>" + value + "</span>";
+                    }},
+            ]],
+            onLoadError:function() {
+                msgError('加载数据出现时发生错误,请稍候重试...');
+            },
+			onDblClickRow:function(rowIndex, rowData){
+               // orderHistoryDetail(rowData);
+            },
+            pagination:true,
+            loadMsg:'正在加载...'
+        });
+    }
+    //查询
+    <!--function  doSearch(){-->
+        <!--$('#orderTablelist').datagrid({-->
+            <!--url:'{{projcfg.appurl}}/api/order_manage/order_history/list',-->
+            <!--queryParams: {-->
+                <!--startDate: $("#startDate").datebox('getValue'),-->
+                <!--endDate: $("#endDate").datebox('getValue'),-->
+                <!--SCLASS_ID:$("#SCLASS_ID").combobox('getValue'),-->
+                <!--job_id:$("#job_id").val(),-->
+                <!--chlId:$("#chlId").val(),-->
+            <!--}-->
+        <!--});-->
+    <!--}-->
+
+    //导出查询结果
+    $("#exportData").click(function () {
+        $.messager.confirm('导出', '确定要导出吗?', function(r) {
+            if (r) {
+                downloadExcel();
+            }
+        });
+    });
+    /**
+     * 是否在下载中 防止重复点击
+     */
+    var downloadExcelIng = false;
+    /**
+     * 下载excel
+     */
+    function downloadExcel() {
+        if (downloadExcelIng) {
+            msgError('正在导出中,请导出成功后再试！');
+            return;
+        }
+        downloadExcelIng = true;
+
+        var downloadUrl = '{{projcfg.appurl}}/api/misdata/misdata/export_excel_misdata'
+        window.location.href=downloadUrl;
+        downloadExcelIng = false;
+    }
+</script>

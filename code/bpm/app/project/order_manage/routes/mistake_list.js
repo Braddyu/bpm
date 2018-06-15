@@ -15,7 +15,7 @@ router.route('/list').post(function(req,res){
     var queryDate = req.body.queryDate;//查询时间
     var status = req.body.status;//查询状态
     var check_status= req.body.check_status;//稽核状态
-    var business_name= req.body.business_name;//业务名称
+    var business_code= req.body.business_code;//业务名称
     var city_code= req.body.city_code;//地州
 
     var page = req.body.page;
@@ -38,10 +38,10 @@ router.route('/list').post(function(req,res){
         conditionMap.city_code=city_code;
     }
     if(check_status){
-        conditionMap.remark=check_status;
+        conditionMap.check_status=check_status;
     }
-    if(business_name){
-        conditionMap.business_name=business_name;
+    if(business_code){
+        conditionMap.business_code=business_code;
     }
     if(city_code){
         conditionMap.city_code=city_code;
@@ -67,9 +67,8 @@ router.route('/dispatch').post(function(req,resp){
     console.log("开始派单...");
     var queryDate = req.body.queryDate.replace(/\-/g,'');//查询时间
     var check_status= req.body.check_status;//稽核状态
-    var business_name= req.body.business_name;//业务名称
+    var business_code= req.body.business_code;//业务名称
     var city_code= req.body.city_code;//地州
-    var mlog_id= req.body.mlog_id;//预先插入的日志ID
     var status= req.body.status;//派单状态
     if(!queryDate){
         var result={"success":false,"msg":"查询时间不得为空"};
@@ -92,7 +91,8 @@ router.route('/dispatch').post(function(req,resp){
     data.create_user_name = user_name;
     data.update_user_no = '';
     data.dispatch_cond_one = check_status?check_status:'';
-    data.dispatch_cond_thr = business_name?business_name:'';
+    data.dispatch_cond_two = city_code?city_code:'';
+    data.dispatch_cond_thr = business_code?business_code:'';
     data.create_time = new Date();
     //0表示派单中，1表示：派单全部成ond_two = city_code?city_code:'';
     //     data.dispatch_c功。2表示：派单部分成功。3表示：派单全部失败。
@@ -116,7 +116,7 @@ router.route('/mistakelog').post(function(req,res){
     var queryDate = req.body.queryDate;//查询时间
     var city_code= req.body.city_code;//地市编码
     var check_status= req.body.check_status;//稽核状态
-    var business_name= req.body.business_name;//业务名称
+    var business_code= req.body.business_code;//业务名称
     var city_code= req.body.city_code;//地州
     var conditionMap = {};
     if(queryDate){
@@ -128,8 +128,8 @@ router.route('/mistakelog').post(function(req,res){
     if(check_status){
         conditionMap.dispatch_cond_one=check_status;
     }
-    if(business_name){
-        conditionMap.dispatch_cond_thr=business_name;
+    if(business_code){
+        conditionMap.dispatch_cond_thr=business_code;
     }
     conditionMap.proc_code = config.mistake_proc_code;
     conditionMap.proc_name = config.mistake_proc_name;
@@ -268,32 +268,12 @@ router.route('/export_overtimeList').get(function(req,res){
  * 开启差错工单派单定时任务
  */
 router.route("/openTask").post(function(req,res){
-    //var query_date = req.body.query_date.replace(/\-/g,'');;
     var check_status = req.body.check_status;
-    var business_name = req.body.business_name;
+    var business_code = req.body.business_code;
     var city_code = req.body.city_code;
-    var params = {};
-    /*if (query_date){
-        params['query_date'] = query_date;
-    }else{
-        params['query_date'] = "";
-    }*/
-    if(check_status && 0!=check_status){
-        params['check_status'] = check_status;
-    }else{
-        params['check_status'] = "";
-    }
-    if (business_name && 0!=business_name) {
-        params['business_name'] = business_name;
-    }else{
-        params['business_name'] = "";
-    }
-    if (city_code && 0!=city_code) {
-        params['city_code'] = city_code;
-    }else{
-        params['city_code'] = "";
-    }
-    dict_service.openTask(params).then(function(result){
+    var work_order_number = req.body.work_order_number;
+    var mistake_task_phone = req.body.mistake_task_phone;
+    dict_service.openTask(check_status,business_code,city_code,work_order_number,mistake_task_phone).then(function(result){
         if(result.success){
             utils.respJsonData(res,result);
         }
@@ -309,14 +289,71 @@ router.route("/closeTask").post(function(req,res){
         }
     });
 });
+
+
 /**
- * 获取差错工单派单定时任务开关状态
+ * 获取筛选条件
  */
-router.route("/getSwitch").get(function(req,res){
-    dict_service.getSwitch().then(function(result){
-        if(result.success){
-            utils.respJsonData(res,result);
-        }
+router.route("/getConditions").get(function(req,res){
+    dict_service.getConditions().then(function(result){
+        utils.respJsonData(res,result);
     });
 });
+
+
+/**
+ * 获取黄河通过的差错工单
+ */
+router.route("/getHuanghePassOrder").post(function(req,res){
+    console.log("开始获取黄河通过工单..");
+    let beginDate= req.body.beginDate;
+    let endDate= req.body.endDate;
+    let dataCount= req.body.dataCount;
+    let tradeTypeCode= req.body.tradeTypeCode;
+    service.getHuanghePassOrderList(beginDate,endDate,dataCount,tradeTypeCode)
+        .then(function(result){
+            utils.respJsonData(res, result);
+        }) .catch(function(err){
+        utils.respJsonData(res, err);
+    });
+});
+
+router.route("/huangheFileDownload/:tradeId").get(function(req,res){
+    console.log("开始下载黄河附件..");
+    let tradeId= req.params.tradeId;
+    service.huangheFileDownload(tradeId)
+        .then(function(buffer){
+
+            res.setHeader('Content-Type', 'application/vnd.openxmlformats');
+            res.setHeader(
+                'Content-Disposition',
+                'attachment; filename=' + tradeId + '.pdf'
+            );
+            res.end(buffer, 'binary');
+        }) .catch(function(err){
+        utils.respJsonData(res, err);
+    });
+});
+
+
+/**
+ * 针对黄河通过数据工单，创建工单系统工单
+ */
+router.route("/createHuangheOrder").post(function(req,res){
+    console.log("开始创建工单系统工单..");
+    let body= req.body;
+    let current_user = req.session.current_user;
+    body.start_user='省级管理人员';
+    body.proc_start_user=current_user.user_no;
+    body.start_user_name=current_user.user_name;
+    console.log(body);
+    service.createHuangheOrder(body)
+        .then(function(result){
+            utils.respJsonData(res, result);
+        }) .catch(function(err){
+        utils.respJsonData(res, err);
+    });
+});
+
+
 module.exports = router;

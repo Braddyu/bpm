@@ -5,7 +5,7 @@ var mistake_model = require('../models/mistake_model');
 var process_extend_model = require('../../bpm_resource/models/process_extend_model');
 var dict_model = require('../../workflow/models/dict_model');
 var process_utils = require('../../../utils/process_util');
-var ftp_util = require('../../../utils/ftp_util');
+var sshClient = require('../../../utils/sshClient');
 var utils = require('../../../../lib/utils/app_utils');
 var xlsx = require('node-xlsx');
 var fs = require('fs');
@@ -329,14 +329,10 @@ exports.repare = function (result1, proc_code, proc_inst_id, memo) {
 
         //如果是差错工单归档则进行回传黄河数据,注：暂时不回传和不对调
         if (result1.success && proc_code == 'p-201') {
-            var server = config.ftp_huanghe_server;
-            ftp_util.connect(server);
             backHuangHe(proc_inst_id,memo).then(function (res) {
                 resolve(res);
-                ftp_util.end();
             }).catch(function (err) {
                 reject(err);
-                ftp_util.end();
             })
 
         } else if (result1.success && proc_code == 'p-109') {
@@ -369,8 +365,14 @@ function postHuanghe(proc_inst_id, mistakeRes, memo, order_num) {
             "suggestion": memo,
             "crmTradeDate": mistakeRes[0].mistake_time
         };
-        //回传地址
-        var options = config.repair_huanghe;
+        var options={};
+        //1:表示不通过补录，11：表示通过补录，两个回传地址不同
+        if(mistakeRes[0].status==1){
+            options = config.repair_huanghe;
+        }else if(mistakeRes[0].status==11){
+            options = config.repair_pass_huanghe;
+        }
+
         console.log(postData);
         //开始回传
         process_utils.httpPost(postData, options).then(function (rs) {
@@ -386,12 +388,20 @@ function postHuanghe(proc_inst_id, mistakeRes, memo, order_num) {
             var rs_json = JSON.parse(rs);
             if (rs_json.ret_code == 0) {
                 update.status = 3;
-                update.dispatch_remark = "补录成功";
+                if(mistakeRes[0].status==1){
+                    update.dispatch_remark = "不通过工单补录成功";
+                }else if(mistakeRes[0].status==11){
+                    update.dispatch_remark = "通过工单补录成功";
+                }
             } else {
                 update.status = 2;
-                update.dispatch_remark = "回传结果:" + rs_json.ret_msg;
-            }
+                if(mistakeRes[0].status==1){
+                    update.dispatch_remark = "不通过工单回传结果:" + rs_json.ret_msg;
+                }else if(mistakeRes[0].status==11){
+                    update.dispatch_remark = "通过工单回传结果:" + rs_json.ret_msg;
+                }
 
+            }
             //修改状态
             mistake_model.$ProcessMistake.update(conditions, update, {}, function (errors) {
                 if (errors) {
@@ -582,82 +592,124 @@ exports.fileLogs = function (inst_id) {
  * @param user_no
  * @returns {Promise}
  */
-exports.checkFile = function (inst_id, node,check_memo,user_name,user_no) {
+exports.checkFile = function (inst_id, status,check_memo,user_name,user_no) {
 
     return new Promise(function (resolve, reject) {
-        console.log("node",node);
-        model.$ProcessTaskHistroy.find({"proc_inst_id":inst_id},function(err,res){
-            if(err || res.length == 0){
-                reject({'success': false, 'code': '1000', 'msg': '复核失败0', "error": null})
-            }else{
-                let task_history={};
-                let task_arr=[];
-                //获取复核的节点信息
-                for(let i in res){
-                    let his=JSON.parse(JSON.stringify(res[i]));
-                    delete his["_id"];
-                    task_arr.push(his);
-                    if(his.proc_inst_task_code==node){
-                        task_history=res[i];
+        //0：表示复核通过，1：表示复核不通过
+        console.log("status",status);
+        if(status=='0'){
+            model.$ProcessInst.find({_id:inst_id},function(err,res){
+                if(res && res.length >0){
+                    if(res[0].is_check=='0'){
+                        resolve({'success': true, 'code': '2000', 'msg': '复核通过的工单不可重复复核！', "error": null})
+                    }else{
+                        let his={};
+                        his.proc_name=res[0].proc_name;
+                        his.proc_code=res[0].proc_code;
+                        his.proc_task_start_user_role_names=res[0].proc_task_start_user_role_names;
+                        his.proc_task_start_name=res[0].proc_task_start_name;
+                        his.proc_vars=res[0].proc_vars;
+                        his.proc_inst_task_remark='复核意见：复核通过';
+                        his.proc_inst_task_sign=1;
+                        his.proc_inst_task_assignee=user_no;
+                        his.proc_inst_task_assignee_name=user_name;
+                        his.proc_inst_task_status=1;
+                        his.proc_inst_task_complete_time=new Date();
+                        his.proc_inst_task_handle_time=new Date();
+                        his.proc_inst_task_arrive_time=new Date();
+                        his.proc_inst_task_title=res[0].proc_inst_task_title;
+                        his.proc_inst_task_name='归档工单复核';
+                        his.proc_inst_id=inst_id;
+                        his.work_order_number=res[0].work_order_number;
+                        model.$ProcessTaskHistroy.create(his,function(err,doc){
+                            if(err){
+                                reject({'success': false, 'code': '1000', 'msg': '复核失败00', "error": null})
+                            }else{
+                                model.$ProcessInst.update({_id:inst_id},{$set:{is_check:0,check_time:new Date(),check_user_no:user_no,check_user_name:user_name}},{},function(err){
+                                    resolve({'success': true, 'code': '2000', 'msg': '复核成功', "error": null})
+                                })
+                            }
+                        })
                     }
                 }
+            })
 
-                //修改工单状态，将归档工单改为处理中，已经新增复核字段
-                model.$ProcessInst.update({_id:inst_id},{$set:{is_check:1,proc_inst_status:2,check_time:new Date()}},{},function(err){
-                    let history={};
-                    history.proc_inst_task_assignee=user_no;
-                    history.proc_inst_task_assignee_name=user_name;
-                    history.proc_inst_task_remark="复核意见:"+check_memo;
-                    history.proc_inst_task_status=1;
-                    history.joinup_sys=task_history.joinup_sys;
-                    history.proc_name=task_history.proc_name;
-                    history.proc_code=task_history.proc_code;
-                    history.proc_task_start_user_role_names=task_history.proc_task_start_user_role_names;
-                    history.proc_task_start_name=task_history.proc_task_start_name;
-                    history.proc_vars=task_history.proc_vars;
-                    history.proc_inst_task_title=task_history.proc_inst_task_title;
-                    history.proc_inst_task_complete_time=new Date();
-                    history.proc_inst_task_handle_time=new Date();
-                    history.proc_inst_task_arrive_time=new Date();
-                    history.proc_inst_id=task_history.proc_inst_id;
-                    history.proc_task_start_user_role_code=task_history.proc_task_start_user_role_code;
-                    history.proc_inst_task_name ="归档工单复核"
-                    history.work_order_number =task_history.work_order_number
-                    task_arr.push(history)
-
-
-                    task_history.proc_inst_task_status=0;
-                    task_history.proc_inst_task_remark='';
-                    task_history=JSON.parse(JSON.stringify(task_history))
-                    delete task_history["_id"];
-                    task_history.proc_inst_task_complete_time=new Date();
-                    task_history.proc_inst_task_handle_time=new Date();
-                    task_history.proc_inst_task_arrive_time=new Date();
-                    task_arr.push(task_history);
-                    console.log(task_arr);
-//将历史表的中记录重新插入任务表，表示此工单重新处理
-                    model.$ProcessInstTask.create(task_arr,function(err){
-                        console.log(err);
-                        if(err){
-                            reject({'success': false, 'code': '1000', 'msg': '复核失败1', "error": null})
-                        }else{
-                            model.$ProcessTaskHistroy(history).save(function(err){
-                                if(err){
-                                    reject({'success': false, 'code': '1000', 'msg': '复核失败2', "error": null})
-                                }else{
-                                    resolve({'success': true, 'code': '2000', 'msg': '复核成功', "error": null})
-                                }
-                            })
+        }else{
+            model.$ProcessTaskHistroy.find({"proc_inst_id":inst_id},function(err,res){
+                if(err || res.length == 0){
+                    reject({'success': false, 'code': '1000', 'msg': '复核失败0', "error": null})
+                }else{
+                    let task_history={};
+                    let task_arr=[];
+                    //获取复核的节点信息
+                    for(let i in res){
+                        let his=JSON.parse(JSON.stringify(res[i]));
+                        delete his["_id"];
+                        task_arr.push(his);
+                        if(his.proc_inst_task_type=='厅店处理回复'){
+                            task_history=res[i];
                         }
+                    }
+
+                    //修改工单状态，将归档工单改为处理中，已经新增复核字段
+                    model.$ProcessInst.update({_id:inst_id},{$set:{is_check:1,proc_inst_status:2,check_time:new Date(),check_user_no:user_no,check_user_name:user_name,proc_cur_task:'processDefineDiv_node_3',proc_cur_task_name : "厅店处理回复"}},{},function(err){
+                        let history={};
+                        history.proc_inst_task_assignee=user_no;
+                        history.proc_inst_task_assignee_name=user_name;
+                        history.proc_inst_task_remark="复核意见:"+check_memo;
+                        history.proc_inst_task_status=1;
+                        history.joinup_sys=task_history.joinup_sys;
+                        history.proc_name=task_history.proc_name;
+                        history.proc_code=task_history.proc_code;
+                        history.proc_task_start_user_role_names=task_history.proc_task_start_user_role_names;
+                        history.proc_task_start_name=task_history.proc_task_start_name;
+                        history.proc_vars=task_history.proc_vars;
+                        history.proc_inst_task_title=task_history.proc_inst_task_title;
+                        history.proc_inst_task_complete_time=new Date();
+                        history.proc_inst_task_handle_time=new Date();
+                        history.proc_inst_task_arrive_time=new Date();
+                        history.proc_inst_id=task_history.proc_inst_id;
+                        history.proc_task_start_user_role_code=task_history.proc_task_start_user_role_code;
+                        history.proc_inst_task_name ="归档工单复核"
+                        history.work_order_number =task_history.work_order_number
+                        task_arr.push(history)
+
+
+                        task_history.proc_inst_task_status=0;
+                        task_history.proc_inst_task_remark='';
+                        task_history=JSON.parse(JSON.stringify(task_history))
+                        delete task_history["_id"];
+                        task_history.proc_inst_task_complete_time=new Date();
+                        task_history.proc_inst_task_handle_time=new Date();
+                        task_history.proc_inst_task_arrive_time=new Date();
+                        task_arr.push(task_history);
+                        console.log(task_arr);
+                        //将历史表的中记录重新插入任务表，表示此工单重新处理
+                        model.$ProcessInstTask.create(task_arr,function(err){
+                            console.log(err);
+                            if(err){
+                                reject({'success': false, 'code': '1000', 'msg': '复核失败1', "error": null})
+                            }else{
+                                model.$ProcessTaskHistroy(history).save(function(err){
+                                    if(err){
+                                        reject({'success': false, 'code': '1000', 'msg': '复核失败2', "error": null})
+                                    }else{
+                                        resolve({'success': true, 'code': '2000', 'msg': '复核成功', "error": null})
+                                    }
+                                })
+                            }
+
+                        })
+
 
                     })
+                }
 
 
-                })
-            }
+            })
+        }
 
 
-        })
     })
 }
 /**
@@ -811,7 +863,7 @@ exports.updateInstTask = function (id,memo,result1) {
     return new Promise(async function (resolve, reject) {
         if (id) {
             let res = await model.$ProcessTaskHistroy.find({proc_task_id: id});
-            await model.$ProcessInst.update({_id:res[0].proc_inst_id},{$set: {proc_inst_status: 5,proc_cur_task_remark:memo}});
+            await model.$ProcessInst.update({_id:res[0].proc_inst_id},{$set: {proc_inst_status: 7,proc_cur_task_remark:memo}});
             resolve(result1)
         }
     })
@@ -825,33 +877,41 @@ exports.updateOvertime = function (result1) {
     return new Promise(async function (resolve, reject) {
         if (result1.success) {
             let data = result1.data[0];
+
             //获取任务id
             let _id = data._id;
             let proc_vars = JSON.parse(data.proc_vars);
             let work_day = parseInt(proc_vars.work_day);
             //获取实例id
             let proc_inst_id = data.proc_inst_id;
-            //任务到达时间即为超时时间的开始时间
-            let proc_inst_task_arrive_time = moment(new Date(data.proc_inst_task_arrive_time)).format('YYYY-MM-DD HH:mm:ss');
 
-            console.log(proc_inst_task_arrive_time);
-            //到达时间+工作天数=结束时间
-            let end_time = moment(new Date(new Date(new Date(data.proc_inst_task_arrive_time)
-                .setDate(new Date(data.proc_inst_task_arrive_time)
-                    .getDate() + work_day))))
-                .format('YYYY-MM-DD HH:mm:ss');
-            //重新修改流程参数
-            proc_vars.start_time = proc_inst_task_arrive_time;
-            proc_vars.end_time = end_time;
+            let inset_result= await  model.$ProcessInst.find({_id:proc_inst_id});
+            //如果工单未超时，则重置处理时间
+            if(inset_result[0].is_overtime==0){
+                //任务到达时间即为超时时间的开始时间
+                let proc_inst_task_arrive_time = moment(new Date(data.proc_inst_task_arrive_time)).format('YYYY-MM-DD HH:mm:ss');
 
-            proc_vars = JSON.stringify(proc_vars)
-            let conditions = {_id: proc_inst_id};
-            let update = {$set: {proc_vars: proc_vars}};
-            let options = {};
-            await  model.$ProcessInst.update(conditions, update, options);
-            conditions = {_id: _id};
-            await model.$ProcessInstTask.update(conditions, update, options);
+                console.log(proc_inst_task_arrive_time);
+                //到达时间+工作天数=结束时间
+                let end_time = moment(new Date(new Date(new Date(data.proc_inst_task_arrive_time)
+                    .setDate(new Date(data.proc_inst_task_arrive_time)
+                        .getDate() + work_day))))
+                    .format('YYYY-MM-DD HH:mm:ss');
+                //重新修改流程参数
+                proc_vars.start_time = proc_inst_task_arrive_time;
+                proc_vars.end_time = end_time;
+
+                proc_vars = JSON.stringify(proc_vars)
+                let conditions = {_id: proc_inst_id};
+                let update = {$set: {proc_vars: proc_vars}};
+                let options = {};
+                await  model.$ProcessInst.update(conditions, update, options);
+                conditions = {_id: _id};
+                await model.$ProcessInstTask.update(conditions, update, options);
+
+            }
             resolve(result1)
+
         }
     })
 }
@@ -878,21 +938,20 @@ exports.doBackOrder = function (status, queryDate, city_code) {
                 resolve({'success': true, 'code': '1000', 'msg': '无回传数据', "error": null});
                 return;
             }
-            var server = config.ftp_huanghe_server;
-            ftp_util.connect(server);
+
             for(let i = 0;i < resMis.length; i++)
                 model.$ProcessTaskHistroy.find({"proc_inst_id":resMis[i].proc_inst_id},function(err,res){
                 backHuangHe(resMis[i].proc_inst_id,res[0].proc_inst_task_remark,ftp_util).then(function (res) {
                     count++;
                     if(count == resMis.length ){
                         resolve({'success': true, 'code': '1000', 'msg': '回传成功', "error": null});
-                        ftp_util.end()
+
                     }
                 }).catch(function (err) {
                     count++;
                     if(count == resMis.length ){
                         resolve({'success': true, 'code': '1000', 'msg': '回传成功', "error": null});
-                        ftp_util.end()
+
                     }
                 })
             }).sort({"proc_inst_task_arrive_time":-1}).limit(1)
@@ -927,17 +986,18 @@ function backHuangHe(proc_inst_id,memo) {
         //如果有上传附件
         if (fileRes.length > 0) {
             //文件上传至ftp服务器，然后回传结果给黄河
-
+            var server = config.sftp_huanghe_server;
             var mistake_time = mistakeRes[0].mistake_time;
-            var path = config.ftp_huanghe_put + "/" + mistake_time.substring(0, 4) + "/" + mistake_time.substring(4, 6) + "/" + mistake_time.substring(6, 8) + "/" + order_num;
-            ftp_util.mkdirs(path, function (err, res) {
+            var path = config.sftp_huanghe_put + "/" + mistake_time.substring(0, 4) + "/" + mistake_time.substring(4, 6) + "/" + mistake_time.substring(6, 8) + "/" + order_num;
+            sshClient.mkFile(server,path, function (err, res) {
                 if (err) {
-                    reject({'success': false, 'code': '1000', 'msg': 'ftp创建文件夹失败', "error": err});
+                    console.log(err);
+                    reject({'success': false, 'code': '1000', 'msg': 'sftp创建文件夹失败', "error": err});
                 } else {
                     var count = 0;
-                    //将当前工单的附件传到ftp上
+                    //将当前工单的附件传到sftp上
                     for (let index = 0; index < fileRes.length; index++) {
-                        ftp_util.uploadFile(fileRes[index].file_path, path + "/" + fileRes[index].file_name, function (err, resFile) {
+                        sshClient.UploadFile(server,fileRes[index].file_path, path + "/" + fileRes[index].file_name, function (err, resFile) {
                             var conditions = {_id: fileRes[index]._id};
                             var update = {};
                             if (err) {

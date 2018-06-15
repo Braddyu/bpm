@@ -11,7 +11,8 @@ exports.init = function() {
     if($mongoose == null) {
         mongoose.connect(config.mongdb.url,
             {
-                server: {poolSize: config.mongdb.poolsize}/*,
+                server: {poolSize: config.mongdb.poolsize ,
+                    auto_reconnect:true}/*,
                 user: config.mongdb.user,
                 pass: config.mongdb.pass*/
             },
