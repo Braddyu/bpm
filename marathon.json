@@ -1,0 +1,45 @@
+{
+  "id": "/projects/gdgl/pm",
+  "cmd": null,
+  "cpus": 1,
+  "mem": 1024,
+  "disk": 0,
+  "instances": 1,
+  "container": {
+    "type": "DOCKER",
+    "docker": {
+      "forcePullImage": true,
+      "image": "218.201.251.104:15000/gdgl/pm:latest",
+      "parameters": [],
+      "privileged": false
+    },
+    "volumes": [],
+    "portMappings": [
+      {
+        "containerPort": 3000,
+        "hostPort": 0,
+        "labels": {},
+        "name": "http",
+        "protocol": "tcp",
+        "servicePort": 10010
+      }
+    ]
+  },
+  "networks": [
+    {
+      "mode": "container/bridge"
+    }
+  ],
+  "healthChecks": [
+    {
+      "gracePeriodSeconds": 30,
+      "intervalSeconds": 5,
+      "timeoutSeconds": 5,
+      "maxConsecutiveFailures": 5,
+      "port": 9090,
+      "path": "/",
+      "protocol": "HTTP",
+      "ignoreHttp1xx": false
+    }
+  ]
+}
