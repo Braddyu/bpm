@@ -119,3 +119,13 @@ beta_push_image:
     - /^[0-9]{1,2}\.[0-9]{1,2}\.[0-9]{0,1}[1|3|5|7|9].[0-9]{9}$/
   except:
     - dev 
+
+
+latest_deploy:
+  stage: deploy
+  script:
+    - curl -s -XDELETE http://10.196.130.89:8080/v2/apps/projects/gdgl/pm
+    - 'curl -s -XPOST -H "Content-Type: application/json" http://10.196.130.89:8080/v2/apps?force=true -d @marathon.json'    
+  only:
+    - master  
+
