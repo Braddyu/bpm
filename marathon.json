@@ -16,7 +16,7 @@
     "volumes": [],
     "portMappings": [
       {
-        "containerPort": 3000,
+        "containerPort": 30002,
         "hostPort": 0,
         "labels": {},
         "name": "http",
