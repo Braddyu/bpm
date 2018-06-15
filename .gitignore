@@ -1,3 +1,15 @@
 /code/bpm/node_modules
 /class
-/code/bpm/.idea/workspace.xml
+/code/**/.idea
+
+*.class
+~*.*
+*.bak
+*.tmp
+*.MF
+*.war
+*.iml
+
+
+/code/**/.classpath
+/code/**/.mymetadata
