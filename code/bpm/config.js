@@ -298,6 +298,7 @@ var config = {
     GRID_COPY_SMS:false, //预警工单抄送给网格经理短信
     MISTAKE_DISTRIBUTE_TASK_SMS:false, // 差错工单系统自动派单短信提醒
     MONEY_AUDIT_SMS:true,//资金稽核工单 预警短信开关
+    MONEY_AUDIT_THAN_SMS: false, //资金稽核工单 超时短信开关
     //派单接口信息
     api_interface_url: 'https://127.0.0.1:30002',
     mistake_proc_code: 'p-201',
