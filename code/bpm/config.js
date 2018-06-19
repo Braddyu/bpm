@@ -59,8 +59,9 @@ var config = {
         resave: false,
         saveUninitialized: false,
         rolling: true,
+        mongodb_url:'mongodb://process:processcmcc@10.196.130.82:27017,10.196.130.83:27017,10.196.130.84:27017/process?replicaSet=dev&connectTimeoutMS=10000&socketTimeoutMS=20000',
         //mongodb_url:'mongodb://10.196.153.11:30000/process',
-        mongodb_url: 'mongodb://192.168.9.48:27017/process',
+        //mongodb_url: 'mongodb://192.168.9.48:27017/process',
         // mongodb_url:'mongodb://10.201.253.162:27017/process1',
         //mongodb_url:'mongodb://127.0.0.1:27017/ywcj',  //内网
         mongodb_collection: 'common_user_session'
@@ -138,8 +139,8 @@ var config = {
         ]
     },
     mongdb: {
-        url: 'mongodb://192.168.9.48:27017/process',
-        // url: 'mongodb://10.196.153.11:30000/process',
+        //url: 'mongodb://192.168.9.48:27017/process',
+        url: 'mongodb://process:processcmcc@10.196.130.82:27017,10.196.130.83:27017,10.196.130.84:27017/process?replicaSet=dev&connectTimeoutMS=10000&socketTimeoutMS=20000',
         //url:'mongodb://10.201.253.162:27017/process1',
         // url: 'mongodb://10.201.253.111:27017/Examine',
         //url: 'mongodb://127.0.0.1:27017/ywcj',   //内网

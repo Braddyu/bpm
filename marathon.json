@@ -11,12 +11,11 @@
       "forcePullImage": true,
       "image": "218.201.251.104:15000/gdgl/pm:latest",
       "parameters": [],
-      "privileged": false
+      "privileged": true
     },
-    "volumes": [],
     "portMappings": [
       {
-        "containerPort": 30002,
+        "containerPort": 0,
         "hostPort": 0,
         "labels": {},
         "name": "http",
@@ -25,21 +24,21 @@
       }
     ]
   },
-  "networks": [
-    {
-      "mode": "container/bridge"
-    }
-  ],
   "healthChecks": [
     {
-      "gracePeriodSeconds": 30,
+      "gracePeriodSeconds": 300,
       "intervalSeconds": 5,
-      "timeoutSeconds": 5,
-      "maxConsecutiveFailures": 5,
-      "port": 9090,
+      "timeoutSeconds": 20,
+      "maxConsecutiveFailures": 3,
+      "portIndex": 0,
       "path": "/",
       "protocol": "HTTP",
       "ignoreHttp1xx": false
+    }
+  ],
+  "networks": [
+    {
+      "mode": "container/bridge"
     }
   ]
 }
