@@ -29,12 +29,7 @@ exports.sendSMS=function(mobile,params,tmplet_key){
                 //差错工单系统自动派单
                 var MISTAKE_DISTRIBUTE_TASK_SMS = config.MISTAKE_DISTRIBUTE_TASK_SMS;
 
-                //资金稽核预警
                 var MONEY_AUDIT_SMS = config.MONEY_AUDIT_SMS;
-
-                //资金稽核超时
-                var MONEY_AUDIT_THAN_SMS = config.MONEY_AUDIT_THAN_SMS;
-
 
                 //是否开通短信登录
                 if(tmplet_key == 'VALIDATION' && OPEN_LOGIN_SMS){
@@ -69,23 +64,13 @@ exports.sendSMS=function(mobile,params,tmplet_key){
                 //资金稽核定时任务短信提醒
                 if(tmplet_key == 'SMS_TEMPLET_MONEY_AUDIT_ORDER' && MONEY_AUDIT_SMS){
                     open = true;
-                }else if(tmplet_key == 'SMS_TEMPLET_MONEY_AUDIT_ORDER'){
+                }else if(tmplet_key == 'GRID_COPY'){
                     reject("短信服务未开启");
                     return;
                 }
-
-                //资金稽核定时任务短信提醒
-                if(tmplet_key == 'SMS_TEMPLET_MONEY_AUDIT_ORDER_THAN' && MONEY_AUDIT_THAN_SMS){
-                    open = true;
-                }else if(tmplet_key == 'SMS_TEMPLET_MONEY_AUDIT_ORDER_THAN'){
-                    reject("短信服务未开启");
-                    return;
-                }
-
-
             }
 
-            if(open){
+            if( open){
                 //获取请求内容
                 var postContent=config.SMS.postContent;
                 var SMS_TEMPLET;

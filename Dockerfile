@@ -6,7 +6,7 @@ COPY ./code/bpm/package.json /usr/src/app
 WORKDIR /usr/src/app
 RUN cnpm install --production
 
-
+RUN cnpm install hooks
 
 COPY ./code/bpm /usr/src/app
 
