@@ -1,0 +1,88 @@
+{
+  "success": true,
+  "code": "0000",
+  "msg": "查询成功",
+  "total": 125,
+  "rows": [
+    {
+      "job_id": 1,
+      "job_type": "动态巡检",
+      "job_code": "XJJZ001",
+      "job_name": "基站动态巡检",
+      "job_last_time": "2016-08-01 02:00",
+      "job_next_time": "2016-08-05 02:00"
+    },
+    {
+      "job_id": 2,
+      "job_type": "动态巡检",
+      "job_code": "XJZFZ001",
+      "job_name": "直放站动态巡检",
+      "job_last_time": "2016-07-25 02:00",
+      "job_next_time": "2016-08-25 02:00"
+    },
+    {
+      "job_id": 3,
+      "job_type": "风险分析",
+      "job_code": "FXPD001",
+      "job_name": "派单风险点分析",
+      "job_last_time": "2016-07-25 02:00",
+      "job_next_time": "2016-08-25 02:00"
+    },
+    {
+      "job_id": 4,
+      "job_type": "风险分析",
+      "job_code": "FXCJ001",
+      "job_name": "工单抽检分析",
+      "job_last_time": "2016-07-25 02:00",
+      "job_next_time": "2016-08-25 02:00"
+    },
+    {
+      "job_id": 5,
+      "job_type": "动态巡检",
+      "job_code": "XJZH001",
+      "job_name": "工单追回",
+      "job_last_time": "2016-07-25 02:00",
+      "job_next_time": "2016-08-25 02:00"
+    },
+    {
+      "job_id": 6,
+      "job_type": "监控预警",
+      "job_code": "YJYC001",
+      "job_name": "派单异常预警",
+      "job_last_time": "2016-07-25 02:00",
+      "job_next_time": "2016-08-25 02:00"
+    },
+    {
+      "job_id": 7,
+      "job_type": "监控预警",
+      "job_code": "YJYC002",
+      "job_name": "设备异常预警",
+      "job_last_time": "2016-07-25 02:00",
+      "job_next_time": "2016-08-25 02:00"
+    },
+    {
+      "job_id": 8,
+      "job_type": "告警采集",
+      "job_code": "GJSB001",
+      "job_name": "设备告警数据采集",
+      "job_last_time": "2016-07-25 02:00",
+      "job_next_time": "2016-08-25 02:00"
+    },
+    {
+      "job_id": 9,
+      "job_type": "动态巡检",
+      "job_code": "XJZFZ001",
+      "job_name": "直放站动态巡检",
+      "job_last_time": "2016-07-25 02:00",
+      "job_next_time": "2016-08-25 02:00"
+    },
+    {
+      "job_id": 10,
+      "job_type": "动态巡检",
+      "job_code": "XJZFZ001",
+      "job_name": "直放站动态巡检",
+      "job_last_time": "2016-07-25 02:00",
+      "job_next_time": "2016-08-25 02:00"
+    }
+  ]
+}

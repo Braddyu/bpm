@@ -1,0 +1,226 @@
+<link rel="stylesheet" type="text/css" href="{{projcfg.appurl}}/static/order/css/order_detail.css">
+<div id="processDiv" class="row">
+    <div class="col-xs-12 col-md-12">
+        <div class="widget">
+            <div class="widget-body">
+                <div id="processLayout" class="easyui-layout" data-options="fit:true" style="width:600px;height:666px;">
+
+                        <div id="toolbar1" class="row tbRow">
+                            <div class="col-xs-8 col-md-8">
+                                <div class="btn-group" role="group" aria-label="...">
+                                    <label for="filterParam3">日期：</label>
+                                    <input id="queryDate" class="easyui-datebox" label="Start Date:" labelPosition="top" style="width:130px;height:35px">
+
+                                </div>
+                                <div class="btn-group" role="group" aria-label="...">
+                                    <label for="filterParam3">稽核说明：</label>
+                                    <select class="easyui-combobox"id="check_status" style="width: 230px;height:31px;">
+                                        <option value="">=========全部========</option>
+                                        <option value="无纸化打印传送中">无纸化打印传送中</option>
+                                        <option value="前端软件异常退出电子工单">前端软件异常退出电子工单</option>
+                                        <option value="纸质重打成功">纸质重打成功</option>
+                                        <option value="[用户没有签名笔迹]">[用户没有签名笔迹]</option>
+                                        <option value="进入电子免填单，营业员不扫描证件，不签字，不盖章，退出电子工单">进入电子免填单，营业员不扫描证件，不签字，不盖章，退出电子工单</option>
+                                        <option value="[身份证扫描件不清晰或未扫描证件]">[身份证扫描件不清晰或未扫描证件]</option>
+                                        <option value="已撤单">已撤单</option>
+                                        <option value="无纸化打印控件未安装">无纸化打印控件未安装</option>
+                                        <option value="无纸化补打传送中">无纸化补打传送中</option>
+                                        <option value="纸质打印成功">纸质打印成功</option>
+                                        <option value="纸质补打成功">纸质补打成功</option>
+                                        <option value="[没有身份证正面]">[没有身份证正面]</option>
+                                        <option value="无纸化重打传送中">无纸化重打传送中</option>
+                                        <option value="盖章时异常退出电子工单">盖章时异常退出电子工单</option>
+                                        <option value="未打印">未打印</option>
+                                        <option value="[受理人员没有扫描客户证件信息, 未扫描证件]">[受理人员没有扫描客户证件信息, 未扫描证件]</option>
+                                        <option value="纸质打印控件未安装">纸质打印控件未安装</option>
+                                        <option value="[客户证号与受理客户信息不一致]">[客户证号与受理客户信息不一致]</option>
+                                        <option value="签字屏故障退出电子工单">签字屏故障退出电子工单</option>
+                                        <option value="证件识读设备故障退出电子工单">证件识读设备故障退出电子工单</option>
+                                        <option value="[未扫描证件]">[未扫描证件]</option>
+
+                                    </select>
+                                </div>
+                                <div class="btn-group" role="group" aria-label="...">
+                                    <label for="filterParam3">地州：</label>
+                                    <select class="easyui-combobox"id="city_code" style="width: 100px;height:31px;">
+                                        <option value="">=全省=</option>
+                                        <option value="850">贵安</option>
+                                        <option value="851">贵阳</option>
+                                        <option value="852">遵义</option>
+                                        <option value="853">安顺</option>
+                                        <option value="854">黔南</option>
+                                        <option value="855">黔东南</option>
+                                        <option value="856">铜仁</option>
+                                        <option value="857">毕节</option>
+                                        <option value="858">六盘水</option>
+                                        <option value="859">黔西南</option>
+
+                                    </select>
+                                </div>
+                                <div class="btn-group" role="group" aria-label="...">
+                                    <label for="filterParam3">业务：</label>
+                                    <select class="easyui-combobox"id="business_name" style="width: 100px;height:31px;">
+
+                                        <option value="">=全部=</option>
+                                        <option value="集团新增">集团新增</option>
+                                        <option value="补换卡">补换卡</option>
+                                        <option value="营业复机">营业复机</option>
+                                        <option value="营业停机">营业停机</option>
+                                        <option value="群组销户">群组销户</option>
+                                        <option value="群组成员变更">群组成员变更</option>
+                                        <option value="物联网销户">物联网销户</option>
+                                        <option value="物联网新装">物联网新装</option>
+                                        <option value="物联网开户">物联网开户</option>
+                                        <option value="注销">注销</option>
+                                        <option value="朋友网组网">朋友网组网</option>
+                                        <option value="朋友网变更">朋友网变更</option>
+                                        <option value="有线固话开户">有线固话开户</option>
+                                        <option value="普通销户">普通销户</option>
+                                        <option value="普通成员批量增加">普通成员批量增加</option>
+                                        <option value="普通GSM开户">普通GSM开户</option>
+                                        <option value="新装">新装</option>
+                                        <option value="携号转网">携号转网</option>
+                                        <option value="拆机复装">拆机复装</option>
+                                        <option value="成员添加">成员添加</option>
+                                        <option value="成员删除">成员删除</option>
+                                        <option value="密码重置">密码重置</option>
+                                        <option value="客户资料变更">客户资料变更</option>
+                                        <option value="删除普通成员">删除普通成员</option>
+                                        <option value="分合户">分合户</option>
+                                        <option value="修改密码">修改密码</option>
+                                        <option value="任我看副卡组网">任我看副卡组网</option>
+                                        <option value="任我看副卡拆网">任我看副卡拆网</option>
+                                        <option value="代付关系变更">代付关系变更</option>
+                                        <option value="亲友网组网">亲友网组网</option>
+                                        <option value="亲友网拆网">亲友网拆网</option>
+                                        <option value="2/3G升级为4G">2/3G升级为4G</option>
+                                        <option value="4G群组开户">4G群组开户</option>
+                                        <option value="4G群组成员变更">4G群组成员变更</option>
+                                        <option value="4G群组销户">4G群组销户</option>
+                                        <option value="IMS固话成员批量增加">IMS固话成员批量增加</option>
+                                        <option value="IMS营业停机">IMS营业停机</option>
+                                        <option value="二次确认普通成员批量增加">二次确认普通成员批量增加</option>
+                                        <option value="亲友网成员变更">亲友网成员变更</option>
+
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-xs-4 col-md-4 text-right">
+                                <form class="form-inline">
+                                    <div class="form-group">
+                                        <div class="input-group">
+                                            <span class="input-group-btn">
+                                                <button class="btn btn-default" type="button" onclick="doSearch()"><i class="fa fa-search"></i>查询</button>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        <table id="mistakeTablelist">
+
+                        </table>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="dd"></div>
+
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+
+        $('#queryDate').datebox().datebox('calendar').calendar({
+            validator: function(date){
+                var now = new Date();
+                var d1 = new Date(now.getFullYear(), now.getMonth(), now.getDate()-1);
+                return  date<=d1;
+
+            }
+        });
+        var now = new Date();
+        var day =now.getFullYear()+"-"+(now.getMonth()+1)+"-"+(now.getDate()-1);
+        $('#queryDate').datebox('setValue',day);
+        //加载列表
+        loadMistakeListDatagrid();
+    });
+
+    function loadMistakeListDatagrid(){
+        // 加载工单基本属性列表
+        $('#mistakeTablelist').datagrid({
+            url:'{{projcfg.appurl}}/api/order_manage/mistake_list/list',
+            method:'post',
+            queryParams:{
+                queryDate:$('#queryDate').datebox('getValue'),
+            },
+            rownumbers:true,
+            striped:true,
+            fitColumns:true,
+            border:false,
+            fit:true,
+            pageSize: 20,
+            singleSelect:true,
+            selectOnCheck:true,
+            checkOnSelect:true,
+            toolbar: '#toolbar1',
+            columns:[[
+                {"field":"_id",hidden:true},
+                {"field": "mistake_time","title":"日期","width":50},
+                {"field": "city_name","title":"地市","width":50},
+                {"field": "channel_id","title":"渠道编码","width":30},
+                {"field": "channel_name","title":"渠道名称","width":100,
+                    formatter:function(value,row,index){
+                    if(!value)
+                        return "<span style='color:red'>不存在的渠道</span>";
+                    else
+                        return value;
+
+                }},
+                {"field": "BOSS_CODE","title":"BOSS订单编码","width":80},
+                {"field": "client_tel","title":"客户号码","width":50},
+                {"field": "salesperson_code","title":"营业员工号","width":50},
+                {"field": "channel_code","title":"渠道类型","width":30},
+                {"field": "business_code","title":"业务编码","width":50},
+                {"field": "business_name","title":"业务名称","width":50},
+                {"field": "remark","title":"稽核说明","width":70,
+                    formatter:function(value,row,index){
+                        return "<span title='" + value + "'>" + value + "</span>";
+                    }
+                }
+            ]],
+            onLoadSuccess:function(json) {
+                if(!json.success) {
+                    msgError(json.msg + ',错误代码:' + json.code);
+                }
+            },
+            onLoadError:function() {
+                msgError('加载数据出现时发生错误,请稍候重试...');
+            },
+            pagination:true,
+            loadMsg:'正在加载...'
+        });
+    }
+
+    //搜索
+    function doSearch(){
+
+            $('#mistakeTablelist').datagrid(
+                    {   url:'{{projcfg.appurl}}/api/order_manage/mistake_list/list',
+                        queryParams:{
+                            queryDate:$('#queryDate').datebox('getValue'),
+                            check_status:$('#check_status').combobox('getValue'),
+                            business_name:$('#business_name').combobox('getValue'),
+                            city_code:$('#city_code').combobox('getValue'),
+                        }
+                    }
+            );
+
+
+ }
+
+</script>

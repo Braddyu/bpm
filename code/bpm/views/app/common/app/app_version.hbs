@@ -1,0 +1,609 @@
+<link href="{{projcfg.appurl}}/static/css/dedicated.css" rel="stylesheet"/>
+<script type="text/javascript" src="static/js/ajaxfileupload.js"></script>
+<script type="text/javascript" src="{{projcfg.appurl}}/static/js/singularity/beseUtil.js"></script>
+<div class="row">
+    <div class="col-xs-12 col-md-12">
+        <div class="widget">
+            <div class="widget-body">
+                <div class="tabbable">
+                    <div class="tab-content tabs-flat" style="padding: 1px 0px;">
+                        <div id="api_mgr" class="tab-pane active">
+                            <div id="cc" class="easyui-layout" data-options="fit:true,border:false"
+                                 style="width: 800px; height:585px;background-color: #fbfbfb;">
+                                <div data-options="region:'center',border:false" style="overflow-x:hidden;overflow-y:hidden">
+                                    <div id="apitoolbar" class="row tbRow">
+                                        <div class="col-xs-12 col-md-12">
+                                            <div class="widget" style="margin: 0 0 5px 0;">
+                                                <div class="widget-body">
+                                                    <form id="searchFrom" class="form-inline">
+                                                        <div class="form-group query-list">
+                                                            <li>版本类型: <input id="v_type" name="v_type"
+                                                                             class="easyui-combobox form-control"
+                                                                             data-options="required:false,prompt:'请选择版本类型',panelHeight:120"
+                                                                             style="width: 190px;height: 34px"></li>
+                                                            <li>版本状态: <input id="v_status" name="v_status"
+                                                                             class="easyui-combobox form-control"
+                                                                             data-options="required:false,prompt:'请选择版本状态',panelHeight:120"
+                                                                             style="width: 190px;height: 34px"></li>
+                                                            <li>
+                                                                <button type="button" class="btn btn-default" onclick="doSearch()"
+                                                                        id="research" data-title="查询">
+                                                                    <i class="fa fa-search"></i> 查询
+                                                                </button>
+                                                                <button type="button" class="btn btn-default" onclick="doReset()"
+                                                                        id="reset" data-title="重置">
+                                                                    <i class="fa fa-mail-reply"></i> 重置
+                                                                </button>
+                                                                <button type="button" class="btn btn-default"
+                                                                        onclick="showOpen()"
+                                                                        data-title="新增">
+                                                                    <i class="fa fa-plus"></i> 新增
+                                                                </button>
+                                                                <button type="button" class="btn btn-default" onclick="toApiEdit()"
+                                                                        data-title="修改">
+                                                                    <i class="fa fa-edit"></i> 修改
+                                                                </button>
+                                                            </li>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!--<div class="col-xs-12 col-md-12">
+                                            <div class="btn-group" role="group" aria-label="..." style="float:right;">
+                                                <button type="button" class="btn btn-default"
+                                                        onclick="showOpen()"
+                                                        data-title="新增">
+                                                    <i class="fa fa-plus"></i> 新增
+                                                </button>
+                                                <button type="button" class="btn btn-default" onclick="toApiEdit()"
+                                                        data-title="修改">
+                                                    <i class="fa fa-edit"></i> 修改
+                                                </button>
+                                            </div>
+                                        </div>-->
+                                    </div>
+                                    <table id="apiGrid"></table>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="ver_mgr" class="tab-pane">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="appVersionModa" class="mydialog" style="padding-top:0px;">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="widget flat radius-bordered">
+                <div class="widget-body" style="background-color: #fff;">
+                    <div id="registration-form">
+                        <form id="appApiForm" role="form">
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <label class="control-label">外部版本号</label><br/>
+                                        <input type="text" id="external_version" name="EXTERNAL_VERSION"
+                                               class="easyui-validatebox form-control"
+                                               data-options="required:true" placeholder="外部版本号">
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <label class="control-label">内部版本号</label><br/>
+                                        <input type="text" id="inner_version" name="INNER_VERSION"
+                                               class="easyui-validatebox form-control"
+                                               data-options="required:true" placeholder="内部版本号">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <label class="control-label">版本类型</label><br/>
+                                        <select name="VERSION_TYPE" id="version_type"
+                                                class="easyui-combobox form-control"
+                                                data-options="required:true,panelHeight:50"
+                                                style="width:100%;height:34px;">
+                                            <option value="1"></option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <label class="control-label">版本状态</label><br/>
+                                        <select name="VERSION_STATUS" id="version_status"
+                                                class="easyui-combobox form-control"
+                                                data-options="required:true,panelHeight:75"
+                                                style="width:100%;height:34px;">
+                                            <option value="1"></option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <div class="form-group">
+                                        <label class="control-label">APK附件</label><br/>
+                                        <!--<input class="form-control" data-options="required:true" type="file"
+                                               name="apk_url" id="apk_url" value="">-->
+                                        <div id="inputBox">
+                                            <input class="form-control" data-options="required:true" type="file"
+                                                   name="apk_url" id="apk_url" value="">
+                                        </div>
+                                        <div id="aBox" style="border-radius: 7px;height:34px;border: 1px solid #d4d4d4;padding: 3px 5px;">
+                                            <a href="#" id="appLink"></a>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <label class="control-label">是否强制升级</label><br/>
+                                        <select name="IS_FORCED_UPDATE" id="is_forced_update"
+                                                class="easyui-combobox form-control"
+                                                data-options="required:true,editable:false,panelHeight:50"
+                                                style="width:100%;height:34px;">
+                                            <option value="0">否</option>
+                                            <option value="1">是</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <label class="control-label">强制升级条件</label><br/>
+                                        <input type="text" id="forced_updata_condution" name="FORCED_UPDATA_CONDUTION"
+                                               class="easyui-validatebox form-control"
+                                               data-options="required:true" placeholder="强制升级为否时，值填为0！">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <div class="form-group">
+                                        <label class="control-label">备注</label><br/>
+                                        <textarea id="memo" name="MEMO" class="form-control" rows="3"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function closeVersionDialog() {
+        $("#apk_url").attr('type','file');
+        $('#appVersionModa').dialog('close');
+    }
+    function clearVersion() {
+        $('#appApiForm').form('reset');
+        $('#api_demo_result').attr({readonly: true});
+        $('#api_demo_result').validatebox({required: false});
+        $('#api_expdt_start').datebox({disabled: true});
+        $('#api_expdt_end').datebox({disabled: true});
+    }
+    var tempApiTypeId = '';
+
+
+    /*APP版本类型*/
+    function getVersion_type(dict_code) {
+        var dict_code = 'app_version_type';
+        $("#version_type").combobox({
+            //url: basePath+'/api/aptitude/org/org_station/findMaintainPro.do?dict_code=' + dict_code,
+            url: '{{projcfg.appurl}}/api/process_management/step_setting/findMaintainPro.do?dict_code=' + dict_code,
+            method: 'get',
+            editable: false,
+            valueField: 'field_value',
+            textField: 'field_name',
+            id: 'id',
+            /*设置是否多选*/
+            multiple: false,
+            required: true,
+            formatter: function (row) {
+                var opts = $(this).combobox('options');
+                return '<input type="checkbox" class="combobox-checkbox">' + row[opts.valueField] + '-' + row[opts.textField];
+            }
+        });
+    }
+
+    /*APP版本状态*/
+    function getVersion_status(dict_code) {
+        var dict_code = 'app_version_status';
+        $("#version_status").combobox({
+            //url: basePath+'/api/aptitude/org/org_station/findMaintainPro.do?dict_code=' + dict_code,
+            url: '{{projcfg.appurl}}/api/process_management/step_setting/findMaintainPro.do?dict_code=' + dict_code,
+            method: 'get',
+            editable: false,
+            valueField: 'field_value',
+            textField: 'field_name',
+            id: 'id',
+            /*设置是否多选*/
+            multiple: false,
+            required: true,
+            formatter: function (row) {
+                var opts = $(this).combobox('options');
+                return '<input type="checkbox" class="combobox-checkbox">' + row[opts.valueField] + '-' + row[opts.textField];
+            }
+        });
+    }
+
+    /*APP版本类型*/
+    function v_type(dict_code) {
+        var dict_code = 'app_version_type';
+        $("#v_type").combobox({
+            //url: basePath+'/api/aptitude/org/org_station/findMaintainPro.do?dict_code=' + dict_code,
+            url: '{{projcfg.appurl}}/api/process_management/step_setting/findMaintainPro.do?dict_code=' + dict_code,
+            method: 'get',
+            editable: false,
+            valueField: 'field_value',
+            textField: 'field_name',
+            id: 'id',
+            /*设置是否多选*/
+            multiple: false,
+            required: false,
+            formatter: function (row) {
+                var opts = $(this).combobox('options');
+                return '<input type="checkbox" class="combobox-checkbox">' + row[opts.valueField] + '-' + row[opts.textField];
+            }
+        });
+    }
+
+    /*APP版本状态*/
+    function v_status(dict_code) {
+        var dict_code = 'app_version_status';
+        $("#v_status").combobox({
+            //url: basePath+'/api/aptitude/org/org_station/findMaintainPro.do?dict_code=' + dict_code,
+            url: '{{projcfg.appurl}}/api/process_management/step_setting/findMaintainPro.do?dict_code=' + dict_code,
+            method: 'get',
+            editable: false,
+            valueField: 'field_value',
+            textField: 'field_name',
+            id: 'id',
+            /*设置是否多选*/
+            multiple: false,
+            required: false,
+            formatter: function (row) {
+                var opts = $(this).combobox('options');
+                return '<input type="checkbox" class="combobox-checkbox">' + row[opts.valueField] + '-' + row[opts.textField];
+            }
+        });
+    }
+
+    function is_forced_update(dict_code) {
+        var dict_code = 'isNot';
+        $("#is_forced_update").combobox({
+            //url: basePath+'/api/aptitude/org/org_station/findMaintainPro.do?dict_code=' + dict_code,
+            url: '{{projcfg.appurl}}/api/process_management/step_setting/findMaintainPro.do?dict_code=' + dict_code,
+            method: 'get',
+            editable: false,
+            valueField: 'field_value',
+            textField: 'field_name',
+            id: 'id',
+            /*设置是否多选*/
+            multiple: false,
+            required: true,
+            formatter: function (row) {
+                var opts = $(this).combobox('options');
+                return '<input type="checkbox" class="combobox-checkbox">' + row[opts.valueField] + '-' + row[opts.textField];
+            }
+        });
+    }
+
+
+    $(document).ready(function () {
+        v_type();
+        v_status();
+        getVersion_type();
+        getVersion_status();
+        is_forced_update();
+        // TODO
+        $('#apiGrid').datagrid({
+            url: '{{projcfg.appurl}}/api/app/version',
+            method: 'get',
+            rownumbers: true,
+            striped: true,
+            fitColumns: true,
+            toolbar: '#apitoolbar',
+            fit: true,
+            border: true,
+            singleSelect: true,
+            selectOnCheck: false,
+            columns: [[
+                {field: 'id', checkbox: true},
+                {"field": "VERSION_TYPE", "title": "版本类型", "align": "center", "width": 12,formatter:function (value, rows, index) {
+                    return value.name;
+                }},
+                {"field": "APK_URL", "title": "上传地址", "align": "center", "width": 45},
+                {"field": "EXTERNAL_VERSION", "title": "外部版本号", "align": "center", "width": 10},
+                {"field": "INNER_VERSION", "title": "内部版本号", "align": "center", "width": 10},
+                {"field": "IS_FORCED_UPDATE", "title": "是否强制升级", "align": "center", "width": 8,formatter:function (value, rows, index) {
+                    return value==='1'?'是':'否';
+                }},
+                {"field": "MEMO", "title": "备注描述", "align": "center", "width": 25},
+                {"field": "CREATION_TIME", "title": "上传时间", "align": "center", "width": 20,formatter:function (value, rows, index) {
+                    return $.formatDate(new Date(Date.parse(value)));
+                }},
+                {"field": "VERSION_STATUS", "title": "版本状态", "align": "center", "width": 8,formatter:function (value, rows, index) {
+                    return value.name;
+                }}
+            ]],
+            onDblClickRow: function (rowIndex, rowData) {
+                //doEdit(1,rowIndex,rowData);
+            },
+            onLoadSuccess: function (json) {
+                if (!json.success) {
+                    msgError(json.msg + ',错误代码:' + json.code);
+                }
+            },
+            onLoadError: function () {
+                msgError('加载数据出现时发生错误,请稍候重试...');
+            },
+            pagination: true,
+            loadMsg: '正在加载...'
+        });
+    });
+
+    function doAppVersionSearch() {
+        $('#apiGrid').datagrid('reload', {
+            'filter_name': $('#filter_name').val(),
+            'filter_type': tempApiTypeId
+        });
+    }
+    function openApiPage(title, value, callback) {
+        clearVersion();
+        if(title=='新增APP版本'){
+            $("#inputBox").show();
+            $("#aBox").hide();
+            $("#apk_url").attr('type','file');
+        }else{
+            $("#aBox").show();
+            $("#inputBox").hide();
+        }
+        $('#appVersionModa').show();
+        $('#appVersionModa').mydialog({
+            title: title,
+            width: 550,
+            height: 475,
+            top: 100,
+            modal: true,
+            myButtons: [
+                {
+                    text: '确定',
+                    btnCls: 'btn btn-blue',
+                    handler: function () {
+                        callback(value);
+                        cancelReadOnly();
+                    }
+                },
+                {
+                    text: '关闭',
+                    btnCls: 'btn btn-danger',
+                    handler: function () {
+                        closeVersionDialog();
+                        cancelReadOnly();
+                    }
+                }
+            ]
+        });
+    }
+
+    function showOpen() {
+        $("#version_status").combobox('select',1);
+        $("#version_type").combobox('select',1);
+
+        openApiPage('新增APP版本', '', doAppVersionAdd);
+    }
+    function doAppVersionAdd(value) {//alert(JSON.stringify($('#userForm').serializeJson()));
+
+        if (validateDate()) {
+//        if (true) {
+            msgConfirm("确认保存数据？", function (result) {
+                if (result) {
+                    $.ajaxFileUpload({
+                        url: '{{projcfg.appurl}}/api/app/version/upload.html',
+                        secureuri: false,
+                        method: "post",
+                        fileElementId: "apk_url",
+                        data: {
+                            external_version: $("#external_version").val(),
+                            inner_version: $("#inner_version").val(),
+                            version_type: $("#version_type").combobox('getValue'),
+                            version_status: $("#version_status").combobox('getValue'),
+                            is_forced_update: $("#is_forced_update").val(),
+                            apk_url: $("#apk_url").val(),
+                            forced_updata_condution: $("#forced_updata_condution").val(),
+                            memo: $("#memo").val()
+                        },
+                        dataType: 'JSON',
+                        success: function (data) {
+                            //console.log(data);
+                            var result = $.parseJSON(data.replace(/<.*?>/ig, ""));
+                            if (result.success == true) {
+                                doSearch();
+                                msgSuccess(result.msg);
+                                closeVersionDialog();
+                            } else {
+                                msgError(result.msg);
+                            }
+                        }
+                    });
+                }
+            });
+        }
+    }
+
+    function validateDate() {
+        var external_version = $("#external_version").val();
+        if (external_version == "") {
+            $.messager.alert("温馨提示","请填入外部版本号！", "warning");
+            return false;
+        }
+
+        var inner_version = $("#inner_version").val();
+        if (inner_version == "") {
+            $.messager.alert("温馨提示","请填入内部版本号！", "warning");
+            return false;
+        }
+        if(!checkVersionNum()){
+            $.messager.alert("温馨提示","请填入更高数字的内部版本号！", "warning");
+            return false;
+        };
+
+        var version_type = $("#version_type").combobox('getValue');
+        if (version_type == "") {
+            $.messager.alert("温馨提示","请选择App版本类型！", "warning");
+            return false;
+        }
+
+        var version_status = $("#version_status").combobox('getValue');
+        if (version_status == "") {
+            $.messager.alert("温馨提示","请选择App版本状态！", "warning");
+            return false;
+        }
+
+        /*var apk_url = $("#apk_url").val();
+
+        if (apk_url == "" || apk_url.substr(apk_url.lastIndexOf('.'),apk_url.length) != '.apk') {
+            $.messager.alert("温馨提示","请选择上传的apk文件！", "warning");
+            return false;
+        }*/
+
+        var is_forced_update = $("#is_forced_update").val();
+        if (is_forced_update == "") {
+            $.messager.alert("温馨提示","请选择是否强制更新！", "warning");
+            return false;
+        }
+
+        var forced_updata_condution = $("#forced_updata_condution").val();
+        if (forced_updata_condution == "" && is_forced_update != 0) {
+            $.messager.alert("温馨提示","请填入强制更新条件！", "warning");
+            return false;
+        } else if (is_forced_update == 1) {
+            $.messager.alert("温馨提示","请填入强制更新条件只能输入 0", "warning");
+        }
+        return true;
+
+    }
+
+    function toApiEdit() {
+
+        $("#apk_url").attr('type','text');
+
+
+        // 获得选择行
+        var rows = $('#apiGrid').datagrid('getChecked');
+        if (rows.length != 1) {
+            msgError('提示,请选择一条数据再进行修改');
+            return false;
+        }
+
+        var id = rows[0].ID;
+        openApiPage("修改接口定义", id, doAppVersionEdit);
+        $('#appApiForm').form('load', rows[0]);
+        $("#external_version").val();
+        $("#inner_version").val();
+        $("#version_status").combobox('setValue',rows[0].VERSION_STATUS.value);
+        $("#version_type").combobox('setValue',rows[0].VERSION_TYPE.value);
+
+        $("#is_forced_update").val();
+        $("#apk_url").val(rows[0].APK_NAME);
+        $("#appLink").attr("href",rows[0].APK_URL);
+        $("#appLink").text(rows[0].APK_NAME);
+        $("#forced_updata_condution").val();
+        $("#memo").val();
+        setReadOnly();
+        $("#apk_name").attr("readOnly",true)
+
+    }
+    // 修改数据
+    function doAppVersionEdit(value) {
+//        if(validateDate()){
+            // 验证表单
+            var validate = $('#appApiForm').form('validate');
+            if (!validate) {
+                return false;
+            }
+            //alert(JSON.stringify($('#appApiForm').serializeJson()));
+            $.ajax({
+                url: '{{projcfg.appurl}}/api/app/version/update.do?ID=' + value,
+                type: 'post',
+                data: $('#appApiForm').serializeJson(),
+                success: function (data) {
+                    if (data.success) {
+                        msgSuccess(data.msg);
+                        closeVersionDialog();
+                        doAppVersionSearch();
+                        cancelReadOnly();
+                    }
+                    else {
+                        msgError(data.msg + ',错误代码:' + data.code);
+                        cancelReadOnly();
+                    }
+                }
+            });
+//        }
+
+    }
+
+    function doSearch() {
+        var queryParams = {
+            'v_type': $('#v_type').combobox('getValue'),
+            'v_status': $('#v_status').combobox('getValue')
+        };
+        console.log('queryParams:', JSON.stringify(queryParams));
+        $('#apiGrid').datagrid('reload', queryParams);
+    }
+
+    function doReset() {
+        $('#v_type').combobox('setValue','');
+        $('#v_status').combobox('setValue','');
+    }
+
+   /* if ($('#inner_version').attr('inner_version_status')) {
+        $.messager.alert("温馨提示","请填入更高数字的内部版本号！", "warning");
+        return false;
+    }*/
+
+    function checkVersionNum() {
+        var inner_version = $("#inner_version").val();
+        var flag = false;
+        $.ajax({
+            url: '{{projcfg.appurl}}/api/app/version/checkVersionNum.html',
+            async:false,
+            data:{
+                inner_version:inner_version
+            },
+            method: 'post',
+            success: function (data) {
+                console.log(data);
+                if (data.success) {
+                    if(data.data != false) {
+                        flag = true;
+                    }
+                }
+                else {
+                    msgError(data.msg + ',错误代码:' + data.code);
+                }
+            }
+        });
+        return flag;
+    }
+
+    //设置组件只读
+    function setReadOnly(){
+        $("#apk_url").attr("readOnly",true)
+    }
+    //设置取消只读
+    function cancelReadOnly(){
+        $("#apk_url").attr("readOnly",false)
+    }
+</script>

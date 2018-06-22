@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- Metadata -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta http-equiv="content-type" content="text/html;charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{projcfg.apptitle}}</title>
+    <meta name="keywords" content="{{projcfg.keywords}}">
+    <meta name="description" content="{{projcfg.appdescription}}">
+
+    <!--Basic Styles-->
+    <link href="{{projcfg.appurl}}/static/{{projcfg.theme}}css/bootstrap.min.css" rel="stylesheet"/>
+
+    <!-- font awesome -->
+    <link href="{{projcfg.appurl}}/static/css/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet"/>
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="{{projcfg.appurl}}/static/js/html5shiv/3.7.2/html5shiv.js"></script>
+    <script src="{{projcfg.appurl}}/static/js/respond/1.4.2/respond.js"></script>
+    <script src="{{projcfg.appurl}}/static/{{projcfg.theme}}js/jquery-1.11.0.js"></script>
+    <![endif]-->
+
+    <!--Beyond styles-->
+    <link id="beyond-link-bak" href="{{projcfg.appurl}}/static/{{projcfg.theme}}css/beyond.min.css" rel="stylesheet"
+          type="text/css"/>
+    <!--Skin Script: Place this script in head to load scripts for skins and rtl support-->
+    <script src="{{projcfg.appurl}}/static/{{projcfg.theme}}js/skins.js"></script>
+
+    <!--Basic Scripts-->
+    <script src="{{projcfg.appurl}}/static/js/common/md5.js"></script>
+    <script src="{{projcfg.appurl}}/static/{{projcfg.theme}}js/jquery.min.js"></script>
+    <script src="{{projcfg.appurl}}/static/{{projcfg.theme}}js/bootstrap.min.js"></script>
+    <script src="{{projcfg.appurl}}/static/{{projcfg.theme}}js/jquery.placeholder.min.js"></script>
+    <script src="{{projcfg.appurl}}/static/{{projcfg.theme}}js/slimscroll/jquery.slimscroll.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="{{projcfg.appurl}}/static/js/easyui/themes/bootstrap/easyui.css">
+    <link rel="stylesheet" type="text/css" href="{{projcfg.appurl}}/static/js/easyui/themes/icon.css">
+    <script type="text/javascript" src="{{projcfg.appurl}}/static/js/easyui/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="{{projcfg.appurl}}/static/js/easyui/locale/easyui-lang-zh_CN.js"></script>
+    <link rel="stylesheet" type="text/css" href="{{projcfg.appurl}}/static/css/common/style.css">
+    <script src="{{projcfg.appurl}}/static/js/tingyun-rum.js"></script>
+    <script>
+        $.ajaxSettings.beforeSend = function (xhr, request) {
+            xhr.setRequestHeader('csrf-token', '{{_csrfToken}}');
+        };
+        $(function () {
+            $('input, textarea').placeholder();
+        });
+    </script>
+</head>
+<style type="text/css">
+    .help-res:hover {
+        box-shadow: 0 2px 40px rgba(0, 0, 0, .4);
+        border-top: 2px solid #ffffff;
+    }
+</style>
+<body class="{{projcfg.skin}}" style="font-family:'Microsoft YaHei'">
+<!-- Loading Container -->
+<div class="hidden loading-container">
+    <div class="loader"></div>
+</div>
+<!--  /Loading Container -->
+<!-- Navbar -->
+<div class="navbar">
+    <div class="navbar-inner">
+        <div class="navbar-container">
+            <!-- Navbar Barnd -->
+            <div class="navbar-header pull-left">
+                <a href="#" class="navbar-brand">
+                    <img src="{{projcfg.appurl}}/static/images/top_logo.png" alt=""/>
+                </a>
+
+            </div>
+            <!-- /Navbar Barnd -->
+            <!-- Sidebar Collapse -->
+            <!--<div class="sidebar-collapse" id="sidebar-collapse">
+                <i class="collapse-icon fa fa-bars"></i>
+            </div>-->
+            <!-- /Sidebar Collapse -->
+            <!-- Account Area and Settings -->
+            <div class="navbar-header pull-right">
+                <div class="navbar-account">
+                    <ul class="account-area ">
+                        <li >
+                            <a class="help-res"style=" padding: 8px 20px 10px 20px;height: 45px;cursor:pointer;" href="{{projcfg.appurl}}/api/res_down/res_download/list">
+                                <div style="height:100%;width:100%;line-height:25px;color:white;font-size:14px;"><span>帮助</span></div>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="login-area dropdown-toggle" data-toggle="dropdown">
+                                <div class="avatar" title="View your public profile">
+                                    <img src="{{projcfg.appurl}}/static/{{projcfg.theme}}img/avatars/adam-jansen.jpg">
+                                </div>
+                                <section>
+                                    <h2><span class="profile"><span>{{currentUser.user_name}}&nbsp;&nbsp;</span></span>
+                                    </h2>
+                                </section>
+                            </a>
+                            {{#if currentUser.login_account}}
+
+
+                                <!--Login Area Dropdown-->
+                                <ul class="pull-right dropdown-menu dropdown-arrow dropdown-login-area">
+                                    <li class="username"><a>{{currentUser.login_account}}</a></li>
+                                    <li class="email"><a>{{currentUser.login_account}}</a></li>
+                                    <!--  <li class="email"><a href="javascript:openCurtUserRoleModal()">(点击查看角色:{{currentUserRole.role_name}})</a></li>-->
+                                    <li class="email"><a href="javascript:openCurtUserRoleModal()">(点击查看角色)</a></li>
+
+                                    <!--Avatar Area-->
+                                    <li class="hidden">
+                                        <div class="avatar-area">
+                                            <img src="{{projcfg.appurl}}/static/{{projcfg.theme}}img/avatars/adam-jansen.jpg"
+                                                 class="avatar">
+                                            <span class="caption">Change Photo</span>
+                                        </div>
+                                    </li>
+                                    <!--Avatar Area-->
+                                    <!--<li class="edit">-->
+                                    <!--<a href="{{projcfg.appurl}}{{__ "link_profile"}}" class="pull-left">{{__
+                                            "btn_profile"}}</a>-->
+                                    <!--<a href="{{projcfg.appurl}}{{__ "link_setting"}}" class="pull-right">{{__
+                                            "btn_setting"}}</a>-->
+                                    <!--</li>-->
+                                    <!--<li class="edit">-->
+                                    <!--<a href="{{__ "link_profile"}}" class="pull-left">{{__ "btn_profile"}}</a>-->
+                                    <!--<a href="{{__ "link_setting"}}" class="pull-right">{{__ "btn_setting"}}</a>-->
+                                    <!--</li>-->
+                                    <li class="edit">
+                                        <!--<a href="{{projcfg.appurl}}/api/common_user_profile/user_profile/to_profile" class="pull-left">{{__
+                                                "btn_profile"}}</a>-->
+                                        <a href="javascript:openMyProfileModal();" class="pull-left">{{__
+                                                "btn_profile"}}</a>
+                                        <!--<a href="{{projcfg.appurl}}/api/common_user_profile/user_profile/to_edit" class="pull-right">{{__
+                                                "btn_setting"}}</a>-->
+                                        <a href="javascript:openEditProfileModal()" class="pull-right">{{__
+                                                "btn_setting"}}</a>
+                                    </li>
+                                    <!--Theme Selector Area-->
+                                    <li class="theme-area">
+                                        <ul class="colorpicker" id="skin-changer">
+                                            <li><a class="colorpick-btn" href="#" style="background-color:#5DB2FF;"
+                                                   rel="{{projcfg.appurl}}/static/{{projcfg.theme}}css/skins/blue.min.css"></a>
+                                            </li>
+                                            <li><a class="colorpick-btn" href="#" style="background-color:#2dc3e8;"
+                                                   rel="{{projcfg.appurl}}/static/{{projcfg.theme}}css/skins/azure.min.css"></a>
+                                            </li>
+                                            <li><a class="colorpick-btn" href="#" style="background-color:#03B3B2;"
+                                                   rel="{{projcfg.appurl}}/static/{{projcfg.theme}}css/skins/teal.min.css"></a>
+                                            </li>
+                                            <li><a class="colorpick-btn" href="#" style="background-color:#53a93f;"
+                                                   rel="{{projcfg.appurl}}/static/{{projcfg.theme}}css/skins/green.min.css"></a>
+                                            </li>
+                                            <li><a class="colorpick-btn" href="#" style="background-color:#FF8F32;"
+                                                   rel="{{projcfg.appurl}}/static/{{projcfg.theme}}css/skins/orange.min.css"></a>
+                                            </li>
+                                            <li><a class="colorpick-btn" href="#" style="background-color:#cc324b;"
+                                                   rel="{{projcfg.appurl}}/static/{{projcfg.theme}}css/skins/pink.min.css"></a>
+                                            </li>
+                                            <li><a class="colorpick-btn" href="#" style="background-color:#AC193D;"
+                                                   rel="{{projcfg.appurl}}/static/{{projcfg.theme}}css/skins/darkred.min.css"></a>
+                                            </li>
+                                            <li><a class="colorpick-btn" href="#" style="background-color:#8C0095;"
+                                                   rel="{{projcfg.appurl}}/static/{{projcfg.theme}}css/skins/purple.min.css"></a>
+                                            </li>
+                                            <li><a class="colorpick-btn" href="#" style="background-color:#0072C6;"
+                                                   rel="{{projcfg.appurl}}/static/{{projcfg.theme}}css/skins/darkblue.min.css"></a>
+                                            </li>
+                                            <li><a class="colorpick-btn" href="#" style="background-color:#585858;"
+                                                   rel="{{projcfg.appurl}}/static/{{projcfg.theme}}css/skins/gray.min.css"></a>
+                                            </li>
+                                            <li><a class="colorpick-btn" href="#" style="background-color:#474544;"
+                                                   rel="{{projcfg.appurl}}/static/{{projcfg.theme}}css/skins/black.min.css"></a>
+                                            </li>
+                                            <li><a class="colorpick-btn" href="#" style="background-color:#001940;"
+                                                   rel="{{projcfg.appurl}}/static/{{projcfg.theme}}css/skins/deepblue.min.css"></a>
+                                            </li>
+                                        </ul>
+                                    </li>
+
+                                <li class="edit">
+                                    <!--<a href="{{projcfg.appurl}}/api/common_user_profile/user_profile/to_profile" class="pull-left">{{__
+                                            "btn_profile"}}</a>-->
+                                    <a href="{{projcfg.appurl}}/api/suggestion/suggestion/list" class="pull-left">意见填写</a>
+                                    <!--<a href="{{projcfg.appurl}}/api/common_user_profile/user_profile/to_edit" class="pull-right">{{__
+                                            "btn_setting"}}</a>-->
+                                    <a href="{{projcfg.appurl}}/api/suggestion/common_problem/common_answer" class="pull-right">常见解答</a>
+                                </li>
+                                <!--/Theme Selector Area-->
+                                <li class="dropdown-footer">
+                                    <a href="javascript:InitSys.logout('{{projcfg.appurl}}')">
+                                        {{__ "btn_logout"}}
+                                    </a>
+                                </li>
+                            </ul>
+
+
+                            {{/if}}
+                            <!--/Login Area Dropdown-->
+                        </li>
+                        <!-- /Account Area -->
+                        <!--Note: notice that setting div must start right after account area list.
+                        no space must be between these elements-->
+                        <!-- Settings -->
+                    </ul>
+                    <div class="setting">
+                        <a id="btn-setting" title="{{__ "tips_setting"}}" href="#">
+                            <i class="icon glyphicon glyphicon-cog"></i>
+                        </a>
+                    </div>
+                    <div class="setting-container">
+                        <label>
+                            <input type="checkbox" id="checkbox_fixednavbar">
+                            <span class="text">{{__ "tips_fixed_navbar"}}</span>
+                        </label>
+                        <label>
+                            <input type="checkbox" id="checkbox_fixedsidebar">
+                            <span class="text">{{__ "tips_fixed_sideBar"}}</span>
+                        </label>
+                        <label>
+                            <input type="checkbox" id="checkbox_fixedbreadcrumbs">
+                            <span class="text">{{__ "tips_fixed_breadcrumbs"}}</span>
+                        </label>
+                        <label>
+                            <input type="checkbox" id="checkbox_fixedheader">
+                            <span class="text">{{__ "tips_fixed_header"}}</span>
+                        </label>
+                    </div>
+                    <!-- Settings -->
+                </div>
+            </div>
+            <!-- /Account Area and Settings -->
+        </div>
+    </div>
+</div>
+<!-- /Navbar -->
+<!-- Main Container -->
+<div class="main-container container-fluid">
+    <!-- Page Container -->
+    <div class="page-container">
+        <!-- Page Sidebar -->
+        <div class="page-sidebar" id="sidebar">
+            <!-- Page Sidebar Header-->
+            <!--<div class="sidebar-header-wrapper">
+                <input type="text" class="searchinput" value=""/>
+                <i class="searchicon fa fa-search"></i>
+                <div class="searchhelper">{{__ "tips_input_keyword"}}</div>
+            </div>-->
+            <!-- /Page Sidebar Header -->
+            <!-- Sidebar Menu -->
+            <ul class="nav sidebar-menu">
+                {{#each sysmenus}}
+                    {{#ifCond @key ../currentUserRole.sys_id}}
+                        {{#each this}}
+                            {{#containKey ../../../currentUserRoleMenus menu_code ../../../currentUser.login_account}}
+                                <li>
+                                    {{#if children}}
+                                    <a href="#" class="menu-dropdown">
+                                    {{else}}
+                                    <a target="{{menu_target}}" href="{{../../../../../projcfg.appurl}}/{{menu_code}}">
+                                    {{/if}}
+                                    <i class="{{menu_cls}}"></i>
+                                    <span class="menu-text"> {{menu_name}} </span>
+                                    {{#if children}}
+                                        <i class="menu-expand"></i>
+                                    {{/if}}
+                                     </a>
+                                    {{#if children}}
+                                        <ul class="submenu">
+                                            {{#each children}}
+                                                {{#containKey ../../../../../../currentUserRoleMenus menu_code
+                                                              ../../../../../../currentUser.login_account}}
+                                                    <li>
+                                                        {{#if children}}
+                                                        <a href="#" class="menu-dropdown">
+                                                        {{else}}
+                                                        <a target="{{menu_target}}"
+                                                           href="{{../../../../../../../../projcfg.appurl}}/{{menu_code}}">
+                                                        {{/if}}
+                                                        <span class="menu-text">{{menu_name}}</span>
+                                                        {{#if children}}
+                                                            <i class="menu-expand"></i>
+                                                        {{/if}}
+                                                    </a>
+                                                        {{#if children}}
+                                                            <ul class="submenu">
+                                                                {{#each children}}
+                                                                    {{#containKey
+                                                                            ../../../../../../../../../currentUserRoleMenus
+                                                                            menu_code
+                                                                            ../../../../../../../../../currentUser.login_account}}
+                                                                        <li>
+                                                                            <a target="{{menu_target}}"
+                                                                               href="{{../../../../../../../../../../projcfg.appurl}}/{{menu_code}}">
+                                                                                <i class="{{menu_cls}}"></i>
+                                                                                <span class="menu-text">{{menu_name}}</span>
+                                                                            </a>
+                                                                        </li>
+                                                                    {{/containKey}}
+                                                                {{/each}}
+                                                            </ul>
+                                                        {{/if}}
+                                                    </li>
+                                                {{/containKey}}
+                                            {{/each}}
+                                        </ul>
+                                    {{/if}}
+                                </li>
+                            {{/containKey}}
+                        {{/each}}
+                    {{/ifCond}}
+                {{/each}}
+            </ul>
+
+            <!-- /Sidebar Menu -->
+        </div>
+        <!-- /Page Sidebar -->
+
+        <!-- Page Content -->
+        <div class="page-content">
+            <!-- Page Breadcrumb -->
+            <!--<div class="page-breadcrumbs">
+                <ul class="breadcrumb">
+                    <li class="active">
+                        <i class="{{menu.menu_cls}}"></i>
+                        <a href="#">{{menu.menu_nav}}</a>
+                    </li>
+                </ul>
+            </div>-->
+            <!-- /Page Breadcrumb -->
+            <!-- Page Header -->
+            <div class="page-header position-relative">
+                <div class="header-title" style="line-height: 40px;">
+                    <!--<h1>
+                        {{menu.menu_name}}
+                    </h1>-->
+                    <a href="#">{{menu.menu_nav}}</a>
+                </div>
+                <!--Header Buttons-->
+                <div class="header-buttons">
+                    <a class="sidebar-toggler" href="#">
+                        <i class="fa fa-arrows-h"></i>
+                    </a>
+                    <a class="refresh" id="refresh-toggler" href="">
+                        <i class="glyphicon glyphicon-refresh"></i>
+                    </a>
+                    <a class="fullscreen" id="fullscreen-toggler" href="#">
+                        <i class="glyphicon glyphicon-fullscreen"></i>
+                    </a>
+                    {{#if can_customize}}
+                        <a id="setting-toggler" href="javascript:openModuleDialog();">
+                            <i class="glyphicon glyphicon-plus"></i>
+                        </a>
+                    {{/if}}
+                </div>
+                <!--Header Buttons End-->
+            </div>
+            <!-- /Page Header -->
+            <!-- Page Body -->
+            <div class="page-body" style="padding: 18px 20px 0px;">
+                <!-- Your Content Goes Here -->
+                {{{body}}}
+            </div>
+            <!-- /Page Body -->
+        </div>
+        <!-- /Page Content -->
+    </div>
+    <!-- /Page Container -->
+    <!-- Main Container -->
+    <!--Beyond Scripts-->
+    <script src="{{projcfg.appurl}}/static/{{projcfg.theme}}js/beyond.min.js"></script>
+    <script src="{{projcfg.appurl}}/static/js/bootbox/bootbox.js"></script>
+    <script src="{{projcfg.appurl}}/static/js/common/sys-init.js"></script>
+    <script src="{{projcfg.appurl}}/static/themes/beyond/js/toastr/toastr.js"></script>
+    <script>
+        InitSys.init();
+        InitSys.initMenu('{{projcfg.appurl}}/{{menu.menu_code}}');
+    </script>
+</div>
+<div id="currentUserRoleModal" style="display:none;">
+    <div class="row">
+        <div class="tickets-container padding-0" style="background-color:#fff;padding-top: 0px;">
+            <ul class="tickets-list">
+                {{#each currentUser.user_roles}}
+                    <li class="ticket-item margin-10" style="width:29%;float:left;cursor: pointer;">
+                        <!--<li class="ticket-item margin-10" onclick="switchRole('{{../projcfg.appurl}}','{{_id}}')" style="width:29%;float:left;cursor: pointer;">-->
+                        <div class="row">
+                            <div class="ticket-type">
+                                <i class="fa fa-users blue"></i>
+                                <span class="type">{{role_name}}</span>
+                            </div>
+                            <!--<div class="ticket-state {{#ifCond _id ../currentUserRole._id}}bg-palegreen{{/ifCond}}">
+                            <i class="fa fa-check"></i>
+                        </div>-->
+                            <div class="ticket-state bg-palegreen">
+                                <i class="fa fa-check"></i>
+                            </div>
+                        </div>
+                    </li>
+                {{/each}}
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div id="myProfileModal" class="mydialog">
+    <div class="row">
+        <div class="col-lg-12 col-sm-12 col-xs-12">
+            <div class="row">
+                <div class="col-lg-12 col-sm-12 col-xs-12">
+                    <div class="widget flat radius-bordered">
+                        <div class="widget-body">
+                            <div id="registration-form">
+                                <form role="form" id="editMyForm">
+                                    <div class="form-title">
+                                        基本信息
+                                    </div>
+                                    <div class="row">
+                                        <label class="col-sm-3 control-label no-padding-right"
+                                               style="line-height: 34px">姓　　名：</label>
+                                        <div class="col-sm-9">
+                                            <div class="last-form-group">
+                                        <span class="input-icon icon-right">
+                                            <input type="text" value="{{currentUser.user_name}}" class="form-control"
+                                                   id="" disabled="disabled" placeholder="">
+                                            <!--<i class="fa fa-user"></i>-->
+                                        </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <label class="col-sm-3 control-label no-padding-right"
+                                               style="line-height: 34px">手机号码：</label>
+                                        <div class="col-sm-9">
+                                            <div class="last-form-group">
+                                        <span class="input-icon icon-right">
+                                            <input type="text" class="form-control" value="{{currentUser.user_phone}}"
+                                                   id="" disabled="disabled" placeholder="">
+                                            <!--<i class="glyphicon glyphicon-earphone"></i>-->
+                                        </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <label class="col-sm-3 control-label no-padding-right"
+                                               style="line-height: 34px">工号：</label>
+                                        <div class="col-sm-9">
+                                            <div class="last-form-group">
+                                        <span class="input-icon icon-right">
+                                            <input type="text" class="form-control" value="{{currentUser.user_no}}"
+                                                   id="" disabled="disabled" placeholder="">
+                                        </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <label class="col-sm-3 control-label no-padding-right"
+                                               style="line-height: 34px">邮　　箱：</label>
+                                        <div class="col-sm-9">
+                                            <div class="last-form-group">
+                                        <span class="input-icon icon-right">
+                                            <input type="text" class="form-control" value="{{currentUser.user_email}}"
+                                                   id="" disabled="disabled" placeholder="">
+                                            <!--<i class="glyphicon glyphicon-earphone"></i>-->
+                                        </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <label class="col-sm-3 control-label no-padding-right"
+                                               style="line-height: 34px">所属机构：</label>
+                                        <div class="col-sm-9">
+                                            <div class="last-form-group">
+                                                <span class="input-icon icon-right">
+                                                    <input type="text" class="form-control" id="org_name"
+                                                           disabled="disabled">
+                                                    <!--<i class="fa fa-user"></i>-->
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <label class="col-sm-3 control-label no-padding-right"
+                                               style="line-height: 34px">所属机构编码：</label>
+                                        <div class="col-sm-9">
+                                            <div class="last-form-group">
+                                        <span class="input-icon icon-right">
+                                            <input type="text" class="form-control"
+                                                   id="org_code" disabled="disabled" value=""
+                                                   placeholder="">
+                                            <!--<i class="glyphicon glyphicon-earphone"></i>-->
+                                        </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="editProfileModal" style="display: none">
+    <div class="row">
+        <div class="col-lg-12 col-sm-12 col-xs-12">
+            <div class="row">
+                <div class="col-lg-12 col-sm-12 col-xs-12">
+                    <div class="widget flat radius-bordered">
+                        <div class="widget-body">
+                            <div id="registration-form">
+                                <form role="form" id="editMyForm">
+                                    <div class="form-title">
+                                        基本信息
+                                    </div>
+                                    <div class="row">
+                                        <label class="col-sm-3 control-label no-padding-right"
+                                               style="line-height: 34px">姓　　名：</label>
+                                        <div class="col-sm-9">
+                                            <div class="last-form-group">
+                                        <span class="input-icon icon-right">
+                                            <input type="text" value="{{currentUser.user_name}}" class="form-control"
+                                                   id="edit_user_name" disabled="disabled" placeholder="姓名">
+                                            <i class="fa fa-user"></i>
+                                        </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <label class="col-sm-3 control-label no-padding-right"
+                                               style="line-height: 34px">手机号码：</label>
+                                        <div class="col-sm-9">
+                                            <div class="last-form-group">
+                                        <span class="input-icon icon-right">
+                                            <input type="text" class="form-control" value="{{currentUser.user_phone}}"
+                                                   id="edit_user_phone" disabled="disabled" placeholder="手机号码">
+                                            <i class="glyphicon glyphicon-earphone"></i>
+                                        </span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <hr class="wide"/>
+                                    <div class="form-title">
+                                        密码修改
+                                    </div>
+                                    <div class="row">
+                                        <label class="col-sm-3 control-label no-padding-right"
+                                               style="line-height: 34px">登录账号：</label>
+                                        <div class="col-sm-9">
+                                            <div class="form-group">
+                                        <span class="input-icon icon-right">
+                                            <input type="text" class="form-control"
+                                                   value="{{currentUser.login_account}}" data-value2=""
+                                                   disabled="disabled" id="user_account_" placeholder="账号">
+                                            <i class="glyphicon glyphicon-user circular"></i>
+                                        </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <label class="col-sm-3 control-label no-padding-right"
+                                               style="line-height: 34px">密　　码：</label>
+                                        <div class="col-sm-9">
+                                            <div class="form-group">
+                                        <span class="input-icon icon-right">
+                                            <input type="password" class="form-control" data-value=""
+                                                   name="old_password_" id="old_password_" placeholder="请输入旧密码">
+                                            <i class="fa fa-lock circular"></i>
+                                        </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <label class="col-sm-3 control-label no-padding-right"
+                                               style="line-height: 34px">新 密 码：</label>
+                                        <div class="col-sm-9">
+                                            <div class="form-group">
+                                        <span class="input-icon icon-right">
+                                            <input type="password" class="form-control" data-value=""
+                                                   name="new_password" id="new_password" placeholder="请输入新密码">
+                                            <i class="fa fa-lock circular"></i>
+                                        </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <label class="col-sm-3 control-label no-padding-right"
+                                               style="line-height: 34px">确认密码：</label>
+                                        <div class="col-sm-9">
+                                            <div class="form-group">
+                                        <span class="input-icon icon-right">
+                                            <input type="password" class="form-control" data-value=""
+                                                   name="confirm_password" id="confirm_password" placeholder="请确认新密码">
+                                            <i class="fa fa-lock circular"></i>
+                                        </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    /**/
+    var user_tag = '{{currentUser.user_tag}}';
+    var user_id = '{{currentUser._id}}';
+
+
+    function openMyProfileModal() {
+        info();
+        $('#myProfileModal').show();
+        $('#myProfileModal').mydialog({
+            title: "个人信息",
+            width: 700,
+            height: 425,
+            top: 100,
+            modal: true,
+            myButtons: [
+                {
+                    text: '关闭',
+                    btnCls: 'btn btn-danger',
+                    handler: function () {
+                        $('#myProfileModal').dialog('close');
+                    }
+                }
+            ]
+        });
+
+    }
+
+    function info() {
+        var flag = false;
+        $.ajax({
+            url: "{{projcfg.appurl}}/api/workflow/process/information",
+            method: "post",
+            async: false,
+            data: {
+                tag: user_tag,
+                user_id: user_id,
+            },
+            success: function (data) {
+                if (data.success == true) {
+                    $("#org_code").val(data.data[0].org_code);
+                    $("#org_name").val(data.data[0].org_name);
+                    //msgSuccess(data.msg);
+                    flag = true;
+                } else {
+                    msgError(data.msg);
+                }
+            }
+        });
+        return flag;
+    }
+
+    function openEditProfileModal() {
+        bootbox.dialog({
+            message: $("#editProfileModal").html(),
+            title: '信息修改',
+            className: "modal-blue",
+            buttons: {
+                "修改": {
+                    className: "btn-danger",
+                    callback: function () {
+                        //保存数据
+                        return submitPwdInfo();
+                    }
+                },
+                "关闭": {
+                    className: "btn-danger",
+                    callback: function () {
+                        $("#editProfileModal").modal('hide');
+                    }
+                },
+            }
+        });
+    }
+
+    function submitPwdInfo() {
+        /*var edit_user_name = $("input[id='edit_user_name']").get(1).value;
+        var edit_user_phone = $("input[id='edit_user_phone']").get(1).value;*/
+        var old_password = $("input[id='old_password_']").get(1).value;
+        var new_password = $("input[id='new_password']").get(1).value;
+        var confirm_password = $("input[id='confirm_password']").get(1).value;
+        if (old_password == '') {
+//            bootbox.alert('请输入原密码！', function(result){});
+            msgError("请输入原密码！");
+            return false;
+        }
+        if (new_password == '') {
+            msgError("请输入新密码！");
+            return false;
+        }
+        //var reg = /^(?:(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!@$%^&*])(?=.*[^A-Za-z0-9])).{6,18}$/;
+//        if (!reg.test(new_password)) {
+//            msgError("密码格式需要长度在6~18之间，必须包含大写、小写、数字、特殊字符(特殊字符不能是#号)！");
+//            return false;
+//        }
+
+        if (new_password.length < 6 || new_password.length >18) {
+            msgError("密码格式需要长度在6~18之间！");
+            return false;
+        }
+        if (new_password != confirm_password) {
+            msgError("两次输入的密码不一致！");
+            return false;
+        }
+        var oldpwd = hex_md5(old_password);
+        var newpwd = hex_md5(new_password);
+        var cfmpwd = hex_md5(confirm_password);
+        var flag = false;
+        $.ajax({
+            url: "{{projcfg.appurl}}/api/workflow/process/edit_info",
+            method: "post",
+            async: false,
+            data: {
+                tag: user_tag,
+                user_id: user_id,
+//                user_name:edit_user_name,
+//                user_phone:edit_user_phone,
+                old_pwd: oldpwd,
+                new_pwd: newpwd,
+                cfm_pwd: cfmpwd
+            },
+            success: function (data) {
+                if (data.success == true) {
+                    msgSuccess(data.msg);
+
+                    flag = true;
+                } else {
+                    msgError(data.msg);
+                }
+            }
+        });
+        return flag;
+    }
+
+</script>
+</body>
+</html>

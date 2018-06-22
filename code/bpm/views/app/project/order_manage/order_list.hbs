@@ -1,0 +1,466 @@
+<link rel="stylesheet" type="text/css" href="{{projcfg.appurl}}/static/order/css/order_detail.css">
+<div id="processDiv" class="row">
+    <div class="col-xs-12 col-md-12">
+        <div class="widget">
+            <div class="widget-body">
+                <div id="processLayout" class="easyui-layout" data-options="fit:true" style="width:600px;height:666px;">
+
+                        <div id="toolbar1" class="row tbRow">
+                            <div class="col-xs-8 col-md-8">
+                                <div class="btn-group" role="group" aria-label="...">
+                                    <label for="filterParam3">工单类型：</label>
+                                    <select class="easyui-combobox"id="proc_task_code"  style="width: 180px;height:31px;">
+                                    </select>
+                                </div>
+                                <div class="btn-group" role="group" aria-label="...">
+
+                                    <label for="filterParam3">工单编号：</label>
+                                    <input class="easyui-textbox"id="work_order_number"  style="width: 180px;height:31px;">
+                                    </input>
+                                </div>
+
+                                <div class="btn-group" role="group" aria-label="...">
+                                    <label for="filterParam3">开始时间：</label>
+                                    <input id="startDate" class="easyui-datebox" label="Start Date:" labelPosition="top" style="width:130px;height:30px">
+                                </div>
+                                <div class="btn-group" role="group" aria-label="...">
+                                    <label for="filterParam3">结束时间：</label>
+                                    <input id="endDate" class="easyui-datebox" label="Start Date:" labelPosition="top" style="width:130px;height:30px">
+                                </div>
+                            </div>
+                            <div class="col-xs-4 col-md-4 text-right">
+                                <form class="form-inline">
+                                    <div class="form-group">
+
+                                        <div class="input-group">
+                                            <!--<input type="input" id="filterParam1" class="form-control" style="width:130px;" placeholder="输入标题查询"/>-->
+                                            <span class="input-group-btn">
+                                                <button class="btn btn-default" type="button" onclick="doSearch()"><i class="fa fa-search"></i>查询</button>
+                                               <!-- <button class="btn btn-default" type="button" id="exportData"><i class="glyphicon glyphicon-open"></i>导出</button>-->
+                                            </span>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        <table id="orderTablelist">
+
+                        </table>
+
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="dd"></div>
+
+<script type="text/javascript">
+
+
+    $(document).ready(function () {
+        //初始化工单类型下拉框
+        getAllProBase();
+        //加载列表
+        loadOrderListDatagrid();
+
+        $('#startDate').datebox().datebox('calendar').calendar({
+            validator: function(date){
+                var endDate = new Date($('#endDate').datebox('getValue'));
+                if($('#endDate').datebox('getValue')){
+                    var d1 = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate());
+                    return  date<=d1;
+                }else{
+                    return true;
+                }
+            }
+        });
+
+        $('#endDate').datebox().datebox('calendar').calendar({
+            validator: function(date){
+                var startDate = new Date($('#startDate').datebox('getValue'));
+                if($('#startDate').datebox('getValue')){
+                    var d1 = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
+                    return  date>=d1;
+                }else{
+                    return true;
+                }
+
+            }
+        });
+    });
+
+    //时间格式化:new Date().Format("yyyy-MM-dd hh:mm:ss");
+    Date.prototype.Format = function (fmt) { //author: meizz
+        var o = {
+            "M+": this.getMonth() + 1, //月份
+            "d+": this.getDate(), //日
+            "h+": this.getHours(), //小时
+            "m+": this.getMinutes(), //分
+            "s+": this.getSeconds(), //秒
+            "q+": Math.floor((this.getMonth() + 3) / 3), //季度
+            "S": this.getMilliseconds() //毫秒
+        };
+        if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+        for (var k in o)
+            if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+        return fmt;
+    }
+
+    function loadOrderListDatagrid(){
+        // 加载工单基本属性列表
+        $('#orderTablelist').datagrid({
+            url:'{{projcfg.appurl}}/api/order_manage/order_list/list',
+            method:'post',
+            rownumbers:true,
+            striped:true,
+            fitColumns:true,
+            border:false,
+            queryParams: {
+                proc_code: $("#proc_task_code").combobox('getValue'),
+            },
+            fit:true,
+            toolbar: '#toolbar1',
+            singleSelect:true,
+            selectOnCheck:true,
+            checkOnSelect:true,
+            pageSize: 20,
+            columns:[[
+                {"field":"_id",hidden:true},
+                {"field": "work_order_number","title":"工单编号","width":55},
+                {"field": "proc_title","title":"工单标题","width":100,
+                    formatter:function(value,row,index){
+                        return "<span title='" + value + "'>" + value + "</span>";
+
+                    }},
+                {"field": "proc_name","title":"所属流程","width":50},
+                {"field": "proc_ver","title":"版本","width":20},
+                {"field": "proc_cur_task_name","title":"当前处理节点","width":50},
+                {"field": "proc_inst_status","title":"状态","width":50,
+                    formatter:function(value,row,index){
+                        //1 已启用  0 已禁用,2 流转中，3子流程流转中 ,4  归档,5 回退，6 废弃
+                        if(value == '1'){
+                            return "启用";
+                        }else if(value == '2'){
+                            return "流转中";
+                        }else if(value == '3'){
+                            return "子流程流转中";
+                        }else if(value == '4'){
+                            return "归档";
+                        }else if(value == '5'){
+                            return "回退";
+                        }else if(value == '6'){
+                            return "废弃";
+                        }else if(value == '0'){
+                            return "已禁用";
+                        }
+
+                    }
+                },
+                {"field": "proc_start_user_name","title":"申请人","width":50},
+                {"field": "proc_start_time","title":"派单时间","width":80,
+                    formatter:function(value,row,index){
+                        var isoDateStr = value.substring(0,value.indexOf('.'));
+                        var date=new Date(isoDateStr.replace(/-/g,'/').replace(/T|Z/g,' '));
+                        date.setHours(date.getHours()+8)
+                        return  date.Format("yyyy-MM-dd hh:mm:ss");
+                    }}
+            ]],
+            onDblClickRow:function(rowIndex, rowData){
+                var url='{{projcfg.appurl}}/api/order_manage/order_list/showDetailView?proc_code='+rowData.proc_code+'&change_id='+rowData._id+'&status=1';
+
+                $('#dd').dialog({
+                    title : '工单详情',
+                    width : 1250,
+                    height : 650,
+                    closed : false,
+                    cache : false,
+                    href :url ,
+                    modal : true
+                });
+
+            },
+            onLoadSuccess:function(json) {
+                if(!json.success) {
+                    msgError(json.msg + ',错误代码:' + json.code);
+                }
+            },
+            onLoadError:function() {
+                msgError('加载数据出现时发生错误,请稍候重试...');
+            },
+            pagination:true,
+            loadMsg:'正在加载...'
+        });
+    }
+
+
+
+    //新增工单
+    function addNewOrder(){
+        $('#orderDetailForm').form('clear');
+        //基本信息显示
+        $("#detail").show();
+        //节点处理隐藏
+        $("#handlerTable").hide();
+        //日志隐藏
+        $("#log").hide();
+
+        //隐藏流程图,且选回第一个tab
+        $("#tabs").tabs("select",0);
+        var tab = $('#tabs').tabs('getTab',"流程图").panel('options').tab; //title替换成tab的title
+        tab.hide();
+        //表单编辑
+        $("#proc_work_day").numberbox("enable");
+        $("#proc_content").textbox("enable");
+        $("#proc_title").textbox("enable");
+        $("#proc_code").combobox("enable");
+        //当前登录用户名
+        var user_name = '{{currentUser.user_name}}';
+        //用户角色
+        var user_roles = '{{currentUserRole.role_name}}';
+        //用户名
+        $("#proc_start_user_name").textbox("setValue",user_name);
+        //用户角色
+        $("#proc_start_user_role_names").textbox("setValue",user_roles);
+        $("#handle").combobox("setValue","1");
+
+        //当前填单时间
+        var time=new Date();
+        $("#proc_start_time").textbox("setValue",time.Format("yyyy-MM-dd hh:mm:ss"));
+        $('#orderDetail').show();
+        $('#orderDetail').mydialog({
+            title:"新增工单",
+            width: 900,
+            height: 550,
+            top:150,
+            modal: true,
+            myButtons:[
+                {
+                    text:'下一步',
+                    btnCls:'btn btn-blue',
+                    handler:function(){
+                        nextNewOrder();
+                    }
+                },
+                {
+                    text:'暂存',
+                    btnCls:'btn btn-blue',
+                    handler:function(){
+                        saveDrafts();
+                    }
+                },
+                {
+                    text:'关闭',
+                    btnCls:'btn btn-danger',
+                    handler:function(){
+
+                        $('#orderDetail').dialog("close");
+                    }
+                }
+            ]
+        });
+    }
+
+
+    //获取下一节点信息
+    function nextNewOrder(){
+        // 验证表单
+        var validate = $('#orderDetailForm').form('validate');
+        if(!validate) {
+            return false;
+        }
+        //先创建工单，才能获取下一节点信息
+        $.ajax({
+            url: '{{projcfg.appurl}}/api/order_manage/order_list/createInstance',
+            type: 'post',
+            dataType:'json',
+            data: $('#orderDetailForm').serializeJson(),
+            success: function (data) {
+                if(data.success){
+                    var taskData=data.data[0];
+                    //实例id
+                    $("#proc_inst_id").val(taskData.proc_inst_id);
+                    //节点编码
+                    $("#node_code").val(taskData.proc_inst_task_code);
+                    //任务id
+                    $("#proc_task_id").val(taskData._id);
+
+                    getNextNodeUser();
+                    //基本信息隐藏
+                    $("#detail").hide();
+                    //节点处理显示
+                    $("#handlerTable").show();
+                    //日志显示
+                    $("#log").hide();
+
+                    $('#orderDetail').show();
+                    $('#orderDetail').mydialog({
+                        title:"新增工单",
+                        width: 900,
+                        height: 550,
+                        top:150,
+                        modal: true,
+                        myButtons:[
+
+                            {
+                                text:'提交',
+                                btnCls:'btn btn-blue',
+                                handler:function(){
+                                    saveNewOrder();
+                                }
+                            },
+                            {
+                                text:'关闭',
+                                btnCls:'btn btn-danger',
+                                handler:function(){
+
+                                    $('#orderDetail').dialog("close");
+                                }
+                            }
+                        ]
+                    });
+                }else{
+                    $.messager.alert('错误提示','工单创建失败');
+
+                }
+            }
+        });
+
+
+
+
+    }
+
+
+    /**
+     * 提交新工单
+     */
+    function saveNewOrder(){
+        // 验证表单
+
+        var validate = $('#orderDetailForm').form('validate');
+        if(!validate) {
+            return false;
+        }
+
+        var nextNodeUser= $('#nextJobHandler').combobox('getValue');
+        if(!nextNodeUser){
+            $.messager.alert('提示','请选择下一节点处理人');
+            return false;
+
+        }
+        var formData=$('#orderDetailForm').serializeJson();
+        formData.proc_inst_task_title=$("#proc_title").textbox('getValue');
+
+        $.ajax({
+            url: '{{projcfg.appurl}}/api/order_manage/order_list/assignTask',
+            type: 'post',
+            dataType:'json',
+            data: formData,
+            success: function (data) {
+                if(data.success){
+                    $('#orderDetail').dialog("close");
+                    $('#orderTablelist').datagrid('reload');
+                    $.messager.alert('提示','处理成功');
+                }else{
+                    $.messager.alert('错误提示',data.error);
+                }
+            }
+        });
+
+    }
+
+    /**
+     * 获取下一节点处理人
+     */
+    function getNextNodeUser(){
+        $.ajax({
+            url: '{{projcfg.appurl}}/api/order_manage/order_list/nextNodeUser',
+            type: 'post',
+            dataType:'json',
+            data: {
+                node_code:$("#node_code").val(),
+                proc_task_id:$("#proc_task_id").val(),
+                proc_inst_id:$("#proc_inst_id").val()
+            },
+            success: function (data) {
+                if(data.success){
+                    //初始化加载
+                    $("#nextJobHandler").combobox({
+                        method: 'get',
+                        valueField:'user_no',
+                        textField:'user_name',
+                        onSelect:function(record){
+                            //下一节点处理编码
+                            $("#next_code").val(record.node_code);
+
+                        }
+                    });
+                    $("#nextJobHandler").combobox("loadData",data.data);
+                }else{
+                    $.messager.alert('错误提示',data.error);
+                }
+            }
+        });
+
+
+    }
+    /**
+     * 初始化工单类型下拉框
+     */
+    function getAllProBase(){
+        $("#proc_task_code").combobox({
+            method: 'get',
+            url: '{{projcfg.appurl}}/api/order_manage/order_list/proBase',
+            valueField:'proc_code',
+            textField:'proc_name'
+        });
+        $("#proc_task_code").combobox("setValue","p-109");
+    }
+
+    //查询
+   function  doSearch(){
+       $('#orderTablelist').datagrid({
+           url: '{{projcfg.appurl}}/api/order_manage/order_list/list',
+           queryParams: {
+               proc_code: $("#proc_task_code").combobox('getValue'),
+               startDate: $("#startDate").datebox('getValue'),
+               endDate: $("#endDate").datebox('getValue'),
+               work_order_number:$("#work_order_number").val(),
+
+           }
+       });
+    }
+
+    /**
+     * 导出数据
+     */
+   /* $("#exportData").click(function () {
+        $.messager.confirm('导出', '确定要导出吗?', function(r) {
+            if (r) {
+                downloadExcel();
+            }
+        });
+    });*/
+
+    /**
+     * 是否在下载中 防止重复点击
+     */
+  /*  var downloadExcelIng = false;*/
+    /**
+     * 下载excel
+     */
+  /*  function downloadExcel() {
+        if (downloadExcelIng) {
+            return;
+        }
+        downloadExcelIng = true;
+
+        var downloadUrl = '{{projcfg.appurl}}/api/order_manage/order_list/export_excel';
+
+        window.open(downloadUrl);
+        downloadExcelIng = false;
+    }*/
+
+</script>

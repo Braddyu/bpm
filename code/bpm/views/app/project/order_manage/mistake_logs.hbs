@@ -1,0 +1,151 @@
+<link rel="stylesheet" type="text/css" href="{{projcfg.appurl}}/static/order/css/order_detail.css">
+<div id="processDiv" class="row">
+    <div class="col-xs-12 col-md-12">
+        <div class="widget">
+            <div class="widget-body">
+                <div id="processLayout" class="easyui-layout" data-options="fit:true" style="width:600px;height:666px;">
+
+                        <div id="toolbar1" class="row tbRow">
+                            <div class="col-xs-8 col-md-8">
+                                <div class="btn-group" role="group" aria-label="...">
+                                    <label for="filterParam3">派单状态：</label>
+                                    <select class="easyui-combobox"id="status"  data-options="panelHeight:'auto'"style="width: 180px;height:31px;">
+                                        <option value="1">全部派单成功</option>
+                                        <option value="2">派单部分成功</option>
+                                        <option value="3">全部派单失败</option>
+                                    </select>
+                                </div>
+                                <div class="btn-group" role="group" aria-label="...">
+                                    <label for="filterParam3">派单时间：</label>
+                                    <input id="queryDate" class="easyui-datebox" label="Start Date:" labelPosition="top" style="width:130px;height:30px">
+                                </div>
+                            </div>
+                            <div class="col-xs-4 col-md-4 text-right">
+                                <form class="form-inline">
+                                    <div class="form-group">
+                                        <div class="input-group">
+
+                                            <span class="input-group-btn">
+                                                <button class="btn btn-default" type="button" onclick="doSearch()"><i class="fa fa-search"></i>查询</button>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        <table id="mistakeTablelist">
+
+                        </table>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="dd"></div>
+
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        //加载列表
+        loadMistakeListDatagrid();
+
+        $('#queryDate').datebox().datebox('calendar').calendar({
+            validator: function(date){
+                var now = new Date();
+                var d1 = new Date(now.getFullYear(), now.getMonth(), now.getDate()-1);
+                return  date<=d1;
+
+            }
+        });
+    });
+
+    function loadMistakeListDatagrid(){
+        // 加载工单基本属性列表
+        $('#mistakeTablelist').datagrid({
+            url:'{{projcfg.appurl}}/api/order_manage/mistake_list/dispatch_logs',
+            method:'post',
+            rownumbers:true,
+            striped:true,
+            fitColumns:true,
+            border:false,
+            fit:true,
+            pageSize: 20,
+            singleSelect:true,
+            selectOnCheck:true,
+            checkOnSelect:true,
+            toolbar: '#toolbar1',
+            columns:[[
+                {"field":"_id",hidden:true},
+                {"field": "proc_name","title":"名称","width":"200px"},
+                {"field": "dispatch_time","title":"派单日期","width":"100px"},
+                {"field": "status","title":"派单状态","width":"100px",
+                    formatter:function(value,row,index){
+                    if(value==1){
+                            return '派单全部成功';
+                    }else if(value==2){
+                        return '派单部分成功';
+                    }else if(value==3){
+                        return '派单全部失败';
+                    }
+                }},
+                {"field": "dispatch_remark","title":"派单描述","width":"250px"},
+                {"field": "create_user_no","title":"创建者工号","width":"150px"},
+                {"field": "create_user_name","title":"创建者姓名","width":"150px"},
+                {"field": "create_time","title":"创建者时间","width":"200px",
+                    formatter:function(value,row,index){
+                        var isoDateStr = value.substring(0,value.indexOf('.'));
+                        var date=new Date(isoDateStr.replace(/-/g,'/').replace(/T|Z/g,' '));
+                        date.setHours(date.getHours()+8)
+                        return  date.Format("yyyy-MM-dd hh:mm:ss");
+                }},
+//                {"field": "update_user_no","title":"修改者工号","width":"130px"}
+            ]],
+            onLoadSuccess:function(json) {
+                if(!json.success) {
+                    msgError(json.msg + ',错误代码:' + json.code);
+                }
+            },
+            onLoadError:function() {
+                msgError('加载数据出现时发生错误,请稍候重试...');
+            },
+            pagination:true,
+            loadMsg:'正在加载...'
+        });
+    }
+
+    //搜索
+    function doSearch(){
+
+     $('#mistakeTablelist').datagrid(
+             {   url:'{{projcfg.appurl}}/api/order_manage/mistake_list/dispatch_logs',
+                 queryParams:{
+                     queryDate:$('#queryDate').datebox('getValue'),
+                     status: $("#status").combobox('getValue')
+
+
+                 }
+             }
+     );
+ }
+
+
+    Date.prototype.Format = function (fmt) { //author: meizz
+        var o = {
+            "M+": this.getMonth() + 1, //月份
+            "d+": this.getDate(), //日
+            "h+": this.getHours(), //小时
+            "m+": this.getMinutes(), //分
+            "s+": this.getSeconds(), //秒
+            "q+": Math.floor((this.getMonth() + 3) / 3), //季度
+            "S": this.getMilliseconds() //毫秒
+        };
+        if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+        for (var k in o)
+            if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+        return fmt;
+    }
+</script>

@@ -1,0 +1,215 @@
+<script src="{{projcfg.appurl}}/static/js/echart/v3.1.3/echarts.min.js"></script>
+<style type="text/css">
+    .table-hover tbody tr td:first-child{width:72%;}
+    .table-hover tbody tr td:last-child{vertical-align: middle;}
+    .myTabCls li{width:20%;text-align: center;}
+    .widget-spacing{margin: 0 0 15px 0;}
+    .widget-spacing2{margin: 0 0 2px 0;}
+    .col-spacing{
+        padding-right:0px;
+    }
+    .nav-tabs li a .badge{margin-top:-5px;}
+</style>
+<div class="row">
+    <div class="col-xs-12 col-md-12">
+        <div class="widget">
+            <div class="widget-body">
+                <div class="row" >
+                    <div  class="col-xs-12 col-md-12" >
+                        <div class="row" >
+                            <div  class="col-xs-3 col-md-3 col-spacing" >
+                                <div class="widget widget-spacing">
+                                    <div class="widget-header bordered-bottom bordered-themeprimary">
+                                        <i class="widget-icon fa fa-tags themeprimary"></i>
+                                        <span class="widget-caption themeprimary">通知公告</span>
+                                    </div>
+                                    <!--Widget Header-->
+                                    <div class="widget-body">
+                                        <div style="height:230px;">
+
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="widget widget-spacing">
+                                    <div class="widget-header bordered-bottom bordered-themeprimary">
+                                        <i class="widget-icon fa fa-tags themeprimary"></i>
+                                        <span class="widget-caption themeprimary">通知公告</span>
+                                    </div>
+                                    <!--Widget Header-->
+                                    <div class="widget-body">
+                                        <div style="height:230px;">
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div  class="col-xs-6 col-md-6 col-spacing" >
+                                <div class="widget widget-spacing">
+                                    <div class="widget-header bordered-bottom bordered-themeprimary">
+                                        <i class="widget-icon fa fa-tags themeprimary"></i>
+                                        <span class="widget-caption themeprimary">工单情况</span>
+                                    </div>
+                                    <!--Widget Header-->
+                                    <div class="widget-body">
+                                        <div style="height:535px;">
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div  class="col-xs-3 col-md-3" >
+                                <div class="widget widget-spacing">
+                                    <div class="widget-header bordered-bottom bordered-themeprimary">
+                                        <i class="widget-icon fa fa-tags themeprimary"></i>
+                                        <span class="widget-caption themeprimary">通知公告</span>
+                                    </div>
+                                    <!--Widget Header-->
+                                    <div class="widget-body">
+                                        <div style="height:230px;">
+
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="widget widget-spacing">
+                                    <div class="widget-header bordered-bottom bordered-themeprimary">
+                                        <i class="widget-icon fa fa-tags themeprimary"></i>
+                                        <span class="widget-caption themeprimary">通知公告</span>
+                                    </div>
+                                    <!--Widget Header-->
+                                    <div class="widget-body">
+                                        <div style="height:230px;">
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row" >
+                            <div  class="col-xs-3 col-md-3 col-spacing" >
+                                <div class="widget widget-spacing2">
+                                    <div class="widget-header bordered-bottom bordered-themeprimary">
+                                        <i class="widget-icon fa fa-tags themeprimary"></i>
+                                        <span class="widget-caption themeprimary">通知公告</span>
+                                    </div>
+                                    <!--Widget Header-->
+                                    <div class="widget-body">
+                                        <div style="height:230px;">
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div  class="col-xs-3 col-md-3 col-spacing" >
+                                <div class="widget widget-spacing2">
+                                    <div class="widget-header bordered-bottom bordered-themeprimary">
+                                        <i class="widget-icon fa fa-tags themeprimary"></i>
+                                        <span class="widget-caption themeprimary">通知公告</span>
+                                    </div>
+                                    <!--Widget Header-->
+                                    <div class="widget-body">
+                                        <div style="height:230px;">
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div  class="col-xs-3 col-md-3 col-spacing" >
+                                <div class="widget widget-spacing2">
+                                    <div class="widget-header bordered-bottom bordered-themeprimary">
+                                        <i class="widget-icon fa fa-tags themeprimary"></i>
+                                        <span class="widget-caption themeprimary">通知公告</span>
+                                    </div>
+                                    <!--Widget Header-->
+                                    <div class="widget-body">
+                                        <div style="height:230px;">
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div  class="col-xs-3 col-md-3" >
+                                <div class="widget widget-spacing2">
+                                    <div class="widget-header bordered-bottom bordered-themeprimary">
+                                        <i class="widget-icon fa fa-tags themeprimary"></i>
+                                        <span class="widget-caption themeprimary">通知公告</span>
+                                    </div>
+                                    <!--Widget Header-->
+                                    <div class="widget-body">
+                                        <div style="height:230px;">
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    //待办工单
+    /*var dbgdChart = echarts.init(document.getElementById('dbgdChart'));
+    var gjoption = {
+        tooltip : {
+            trigger: 'axis'
+        },
+        legend: {
+            data:['巡检','发电','投诉','工程验收','故障','专项任务']
+        },
+        toolbox: {
+            show : true,
+            feature : {
+                magicType : {show: true, type: ['line', 'bar']}
+            }
+        },
+        calculable : true,
+        xAxis : [
+            {
+                type : 'category',
+                data : ['基站','直放站及室分与WLAN','集客家客','本地网传输','基站系统与配套设备']
+            }
+        ],
+        yAxis : [
+            {
+                type : 'value'
+            }
+        ],
+        series : [
+            {
+                name:'巡检',
+                type:'bar',
+                data:[2, 12, 7, 20, 8]
+            },
+            {
+                name:'发电',
+                type:'bar',
+                data:[10, 5, 7, 6, 5]
+            },
+            {
+                name:'投诉',
+                type:'bar',
+                data:[6, 4, 29, 13, 10]
+            },
+            {
+                name:'工程验收',
+                type:'bar',
+                data:[1, 9, 0, 5, 1]
+            },
+            {
+                name:'故障',
+                type:'bar',
+                data:[0, 6, 4, 16, 12]
+            }
+            ,
+            {
+                name:'专项任务',
+                type:'bar',
+                data:[8, 2, 8, 5, 6]
+            }
+        ]
+    };
+    dbgdChart.setOption(gjoption);*/
+
+</script>

@@ -1,0 +1,228 @@
+<style type="text/css">
+.tdLabel {
+	color: #5495A8;
+	font-size: 13px;
+	width: 100px;
+}
+
+fieldset {
+	border-width: 1px;
+	border-color: #5495A8;
+}
+
+legend {
+	font-size: 13px;
+	color: #5495A8;
+}
+</style>
+<div id="processDiv" class="row">
+    <div class="col-xs-12 col-md-12">
+        <div class="widget">
+            <div class="widget-body">
+                <div id="processLayout" class="easyui-layout" data-options="fit:true" style="width:600px;height:666px;">
+                    <div id="toolbar1" class="row tbRow">
+                        <div class="col-xs-8 col-md-8">
+                            <div class="btn-group" role="group" aria-label="...">
+                            </div>
+                        </div>
+                        <div class="col-xs-4 col-md-4 text-right">
+                            <form class="form-inline">
+                                <div class="form-group">
+                                    <div class="input-group">
+                                        <input type="input" id="filterParam1" class="form-control" style="width:130px;" placeholder="输入标题查询"/>
+                                        <span class="input-group-btn">
+                                                <button class="btn btn-default" type="button" onclick="doSearch(1)"><i class="fa fa-search"></i>
+                                                    查询</button>
+                                                <i class="fa fa-search"></i><input id="retunBtn" class="btn" onclick="javascript:history.go(-1)" value="返回" type="button">
+                                            </span>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <table id="commProblemTablelist">
+
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="dd"></div>
+<div id="commProblem"  class="dialog">
+    <form id="commProblemForm" method="post" enctype="multipart/form-data">
+        <fieldset>
+            <table cellpadding="5" align="center" style="border-collapse:separate; border-spacing:0px 5px;">
+                <tr>
+                    <h3 style="text-align: center" id="suggestion_title" name="suggestion_title"></h3>
+                    <div style="text-align: center">
+                        <span id="creator" name="creator"></span>
+                        <span id="create_time" name="create_time"></span>
+                    </div>
+                </tr>
+                <tr>
+                    <td colspan="3">
+                        <div name="answer" id="answer"></div>
+                </tr>
+            </table>
+
+        </fieldset>
+
+    </form>
+
+</div>
+
+<script type="text/javascript">
+    window.is_admin=false;
+    $(document).ready(function () {
+        //加载列表
+        listAnswersDatagrid();
+        checkPower();
+    });
+    //检测权限
+    function checkPower(){
+        $.ajax({
+            url: "{{projcfg.appurl}}/api/suggestion/suggestion/check_power",
+            type: "post",
+            success: function (data) {
+                is_admin=data.isAdmin;
+                console.log(data,is_admin)
+            },
+        })
+    }
+    //时间格式化:new Date().Format("yyyy-MM-dd hh:mm:ss");
+    Date.prototype.Format = function (fmt) { //author: meizz
+        var o = {
+            "M+": this.getMonth() + 1, //月份
+            "d+": this.getDate(), //日
+            "h+": this.getHours(), //小时
+            "m+": this.getMinutes(), //分
+            "s+": this.getSeconds(), //秒
+            "q+": Math.floor((this.getMonth() + 3) / 3), //季度
+            "S": this.getMilliseconds() //毫秒
+        };
+        if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+        for (var k in o)
+            if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+        return fmt;
+    }
+
+    function listAnswersDatagrid(){
+        // 加载问答基本属性列表
+        $('#commProblemTablelist').datagrid({
+            url:'{{projcfg.appurl}}/api/suggestion/common_problem/list_answers',
+            method:'post',
+            rownumbers:true,
+            striped:true,
+            fitColumns:true,
+            border:false,
+            fit:true,
+            toolbar: '#toolbar1',
+            singleSelect:true,
+            selectOnCheck:true,
+            checkOnSelect:true,
+            columns:[[
+                //{"field":"_id",checkbox:true},
+                {"field": "suggestion_title","title":"标题","width":50,"align":"center"},
+                // {"field": "answer","title":"解答","width":100},
+                // {"field": "creator","title":"创建人","width":40},
+                {"field": "create_time","title":"创建时间","width":50,"align":"center",
+                    formatter:function(value,row,index){
+                        var date = value.substring(0,value.indexOf('.'));
+                        return  new Date(date.replace(/-/g,'/').replace(/T|Z/g,' ')).Format("yyyy-MM-dd hh:mm:ss");
+                    }},
+                {"field": "operation","title":"操作","width":20,"align":"center",formatter(value,row,index){
+                        var html= "<a  onclick=\"detail_comm_problem()\">详情</a> </span>"
+                        console.log(html)
+                        return html;
+                    }
+                }
+            ]],
+            onDblClickRow:function(rowIndex, rowData){
+                detail_comm_problem()
+            },
+            onLoadSuccess:function(json) {
+                if(!json.success) {
+                    msgError(json.msg + ',错误代码:' + json.code);
+                }
+            },
+            onLoadError:function() {
+                msgError('加载数据出现时发生错误,请稍候重试...');
+            },
+            pagination:true,
+            loadMsg:'正在加载...'
+        });
+    }
+
+
+    // 常见问题详情
+    function detail_comm_problem(){
+        var row=$('#commProblemTablelist').datagrid('getSelected')
+        if(row){
+            $('#commProblemForm').form('clear');
+            //$('#commProblemForm').form('load', row);
+            $('#suggestion_title').html(row.suggestion_title);
+            $('#creator').html(row.creator);
+            var time = row.create_time.substring(0,row.create_time.indexOf('.'));
+            var create_time =new Date(time.replace(/-/g,'/').replace(/T|Z/g,' ')).Format("yyyy-MM-dd hh:mm:ss");
+            $('#create_time').html(create_time);
+            $('#answer').html('');
+            $('#answer').append(row.answer);
+            if(!is_admin){
+                $('#commProblemForm :input').attr("disabled","disabled")
+            }
+            $('#commProblem').show();
+            $('#commProblem').dialog({
+                title:"常见问题详情",
+                width: 900,
+                height: 500,
+                top:100,
+                modal: true,
+                myButtons:[
+                    {
+                        text:'提交',
+                        btnCls:'btn btn-blue',
+                        handler:function(){
+                            var validate = $('#commProblem').form('validate');
+                            if(!validate) {
+                                return false;
+                            }
+                            $.ajax({
+                                //几个参数需要注意一下
+                                type: "POST",//方法类型
+                                dataType: "json",//预期服务器返回的数据类型
+                                url: "{{projcfg.appurl}}/api/suggestion/common_problem/update_problem" ,//url
+                                data: $('#commProblemForm').serialize(),
+                                success: function (json) {
+                                    if(json.success){
+                                        $('#commProblemTablelist').datagrid('reload')
+                                        $('#commProblem').dialog("close");
+                                    }else{
+                                        msgError(json.msg + ',错误代码:' + json.code);
+                                    }
+                                },
+                            });
+                        }
+                    },
+                    {
+                        text:'关闭',
+                        btnCls:'btn btn-danger',
+                        handler:function(){
+                            $('#commProblem').dialog("close");
+                        }
+                    }
+                ]
+            });
+        }
+    }
+    //查询
+   function  doSearch(){
+       $('#commProblemTablelist').datagrid({
+           url: '{{projcfg.appurl}}/api/suggestion/common_problem/list_answers',
+           queryParams: {
+               suggestion_title: $("#filterParam1").val(),
+           }
+       });
+    }
+
+</script>

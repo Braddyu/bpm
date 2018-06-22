@@ -1,0 +1,337 @@
+<style type="text/css">
+.tdLabel {
+	color: #5495A8;
+	font-size: 13px;
+	width: 100px;
+}
+
+fieldset {
+	border-width: 1px;
+	border-color: #5495A8;
+}
+
+legend {
+	font-size: 13px;
+	color: #5495A8;
+}
+#edui1{
+    z-index: 2147483647 !important;
+}
+</style>
+<div id="processDiv" class="row">
+    <div class="col-xs-12 col-md-12">
+        <div class="widget">
+            <div class="widget-body">
+                <div id="processLayout" class="easyui-layout" data-options="fit:true" style="width:600px;height:666px;">
+                    <div id="toolbar1" class="row tbRow">
+                        <div class="col-xs-8 col-md-8">
+                            <div class="btn-group" role="group" aria-label="...">
+                                <button type="button" class="btn btn-default" onclick="addCommProblem()"><i class="fa fa-plus"></i>新增</button>
+                                <!-- 批量删除暂时不做
+                                <button type="button" class="btn btn-default" onclick="deleteCommProblem()"><i class="fa fa-plus"></i>删除</button>
+                                    -->
+                            </div>
+                        </div>
+                        <div class="col-xs-4 col-md-4 text-right">
+                            <form class="form-inline">
+                                <div class="form-group">
+                                    <div class="input-group">
+                                        <input type="input" id="filterParam1" class="form-control" style="width:130px;" placeholder="输入标题查询"/>
+                                        <span class="input-group-btn">
+                                                <button class="btn btn-default" type="button" onclick="doSearch(1)"><i class="fa fa-search"></i>查询</button>
+                                            </span>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <table id="commProblemTablelist">
+
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="dd"></div>
+<div id="commProblem"  class="mydialog">
+    <form id="commProblemForm" method="post" enctype="multipart/form-data">
+        <fieldset>
+            <legend ><b>问题基本信息</b></legend>
+            <table cellpadding="10" align="center" style="border-collapse:separate; border-spacing:5px 10px;">
+                <tr>
+                    <input  type="hidden"id="_id"  name="_id"/>
+                    <td align="right" class="tdLabel">标题:</td>
+                    <td colspan="3"><input disable style="width: 665px" class="easyui-textbox"data-options="required:true, missingMessage:'请输入标题'" id="suggestion_title" name="suggestion_title" /></td>
+                </tr>
+                <tr>
+                    <td align="right" class="tdLabel">解答:</td>
+                    <td colspan="3">
+                        <!-- 加载编辑器的容器 -->
+                        <script id="editor" type="text/plain"></script>
+                        <!-- 配置文件 -->
+                        <script type="text/javascript" src="{{projcfg.appurl}}/static/js/ueditor/ueditor.config.js"></script>
+                        <!-- 编辑器源码文件 -->
+                        <script type="text/javascript" src="{{projcfg.appurl}}/static/js/ueditor/ueditor.all.js"></script>
+                        <script type="text/javascript" charset="utf-8" src="{{projcfg.appurl}}/static/js/ueditor/lang/zh-cn/zh-cn.js"> </script>
+                        <!-- 实例化编辑器 -->
+                        <script type="text/javascript">
+                            var ue = UE.getEditor('editor',{
+                                autoHeightEnabled: true,
+                                autoFloatEnabled: true,
+                                initialFrameWidth:663,
+                                initialFrameHeight:200,
+                                imageScaleEnabled:false,
+                                enableContextMenu:false,
+                                imagePopup:false
+                            });
+                            // 第一加载完执行
+                            ue.ready(function() {
+                                //设置编辑器的内容
+                                ue.setContent($("#answer").val());
+                            });
+                        </script>
+                        <input type="hidden" id="answer" name="answer">
+                    </td>
+                </tr>
+            </table>
+        </fieldset>
+
+    </form>
+
+</div>
+
+<script type="text/javascript">
+    window.is_admin=false;
+    $(document).ready(function () {
+        //加载列表
+        listAnswersDatagrid();
+        checkPower();
+    });
+    //检测权限
+    function checkPower(){
+        $.ajax({
+            url: "{{projcfg.appurl}}/api/suggestion/suggestion/check_power",
+            type: "post",
+            success: function (data) {
+                is_admin=data.isAdmin;
+                console.log(data,is_admin)
+            },
+        })
+    }
+    //时间格式化:new Date().Format("yyyy-MM-dd hh:mm:ss");
+    Date.prototype.Format = function (fmt) { //author: meizz
+        var o = {
+            "M+": this.getMonth() + 1, //月份
+            "d+": this.getDate(), //日
+            "h+": this.getHours(), //小时
+            "m+": this.getMinutes(), //分
+            "s+": this.getSeconds(), //秒
+            "q+": Math.floor((this.getMonth() + 3) / 3), //季度
+            "S": this.getMilliseconds() //毫秒
+        };
+        if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+        for (var k in o)
+            if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+        return fmt;
+    }
+
+    function listAnswersDatagrid(){
+        // 加载问答基本属性列表
+        $('#commProblemTablelist').datagrid({
+            url:'{{projcfg.appurl}}/api/suggestion/common_problem/list_answers',
+            method:'post',
+            rownumbers:true,
+            striped:true,
+            fitColumns:true,
+            border:false,
+            fit:true,
+            toolbar: '#toolbar1',
+            singleSelect:true,
+            selectOnCheck:true,
+            checkOnSelect:true,
+            columns:[[
+                {"field":"_id",checkbox:true},
+                {"field": "suggestion_title","title":"标题","width":50,"align":"center"},
+                //{"field": "answer","title":"解答","width":100},
+                {"field": "creator","title":"创建人","width":40},
+                {"field": "create_time","title":"创建时间","width":40,"align":"center",
+                    formatter:function(value,row,index){
+                        var date = value.substring(0,value.indexOf('.'));
+                        return  new Date(date.replace(/-/g,'/').replace(/T|Z/g,' ')).Format("yyyy-MM-dd hh:mm:ss");
+                    }},
+                {"field": "operation","title":"操作","width":20,"align":"center",formatter(value,row,index){
+                        var html= "<a  onclick=\"delete_by_id('"+row._id+"')\">删除</a> </span>"
+                        return html;
+                    }
+                }
+            ]],
+            onDblClickRow:function(rowIndex, rowData){
+                detail_comm_problem()
+            },
+            onLoadSuccess:function(json) {
+                if(!json.success) {
+                    msgError(json.msg + ',错误代码:' + json.code);
+                }
+            },
+            onLoadError:function() {
+                msgError('加载数据出现时发生错误,请稍候重试...');
+            },
+            pagination:true,
+            loadMsg:'正在加载...'
+        });
+    }
+
+    // 删除
+    function delete_by_id(id){
+        if(confirm("确认删除？删除不可恢复！")){
+            $.ajax({
+                url: "{{projcfg.appurl}}/api/suggestion/common_problem/deleteById",
+                type: "post",
+                data:{"_id":id},
+                success: function (data) {
+                   if(data.success){
+                       alert("删除成功！")
+                       $('#commProblemTablelist').datagrid('reload')
+                   }else{
+                       msgError(data.msg + ',错误代码:' + data.code);
+                   }
+                },
+            })
+        }
+    }
+
+    // 常见问题详情
+    function detail_comm_problem(){
+        var row=$('#commProblemTablelist').datagrid('getSelected')
+        if(row){
+            $('#commProblemForm').form('clear');
+            $('#commProblemForm').form('load', row);
+            if(!is_admin){
+                $('#commProblemForm :input').attr("disabled","disabled")
+            }
+            ue.setContent($("#answer").val());
+            $('#commProblem').show();
+            $('#commProblem').mydialog({
+                title:"常见问题详情",
+                width: 1000,
+                height: 500,
+                top:50,
+                modal: true,
+                myButtons:[
+                    {
+                        text:'提交',
+                        btnCls:'btn btn-blue',
+                        handler:function(){
+                            var validate = $('#commProblem').form('validate');
+                            if(!validate) {
+                                return false;
+                            }
+                            var $answer = ue.getContent();
+                            if(!$answer){
+                                alert("问题解答不能为空");
+                                return false;
+                            }
+                            $("#answer").val($answer);
+                            $.ajax({
+                                //几个参数需要注意一下
+                                type: "POST",//方法类型
+                                dataType: "json",//预期服务器返回的数据类型
+                                url: "{{projcfg.appurl}}/api/suggestion/common_problem/update_problem" ,//url
+                                data: $('#commProblemForm').serialize(),
+                                success: function (json) {
+                                    if(json.success){
+                                        $('#commProblemTablelist').datagrid('reload')
+                                        $('#commProblem').dialog("close");
+                                    }else{
+                                        msgError(json.msg + ',错误代码:' + json.code);
+                                    }
+                                },
+                            });
+                        }
+                    },
+                    {
+                        text:'关闭',
+                        btnCls:'btn btn-danger',
+                        handler:function(){
+                            $('#commProblem').dialog("close");
+                        }
+                    }
+                ]
+            });
+        }
+    }
+    //查询
+   function  doSearch(){
+       $('#commProblemTablelist').datagrid({
+           url: '{{projcfg.appurl}}/api/suggestion/common_problem/list_answers',
+           queryParams: {
+               suggestion_title: $("#filterParam1").val(),
+           }
+       });
+    }
+    //新增常见问题解答
+    function addCommProblem(){
+        //设置编辑器的内容
+        ue.setContent("");
+        $('#commProblemForm').form('clear');
+        $('#commProblem').show();
+        $('#commProblem').mydialog({
+            title:"新增常见问题",
+            width: 1000,
+            height: 500,
+            top:50,
+            modal: true,
+            myButtons:[
+                {
+                    text:'提交',
+                    btnCls:'btn btn-blue',
+                    handler:function(){
+                        var validate = $('#commProblem').form('validate');
+                        if(!validate) {
+                            return false;
+                        }
+                        saveCommProblem();
+                    }
+                },
+                {
+                    text:'关闭',
+                    btnCls:'btn btn-danger',
+                    handler:function(){
+                        $('#commProblem').dialog("close");
+                    }
+                }
+            ]
+        });
+    }
+    // save common problem
+    function  saveCommProblem(){
+        var $answer = ue.getContent();
+        if(!$answer){
+            alert("问题解答不能为空");
+            return false;
+        }
+        $("#answer").val($answer);
+        $.ajax({
+            url:'{{projcfg.appurl}}/api/suggestion/common_problem/saveCommProblem',
+            type:'post',
+            data:$('#commProblemForm').serializeJson(),
+            dataType:'JSON',
+            success:function(data){
+                if(data.success){
+                    $.messager.alert('提示','新增问题成功');
+                    $('#commProblem').dialog("close");
+                    $('#commProblemTablelist').datagrid('reload');
+                }else{
+                    $.messager.alert('错误提示',data.error);
+                }
+            },
+            error:function(status){
+                $.messager.alert("新增问题异常","{" + status +"}");
+            }
+        });
+    }
+    /**
+     * 导出数据
+     */
+</script>

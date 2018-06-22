@@ -1,0 +1,15 @@
+﻿.tdLabel {
+	color: #5495A8;
+	font-size: 13px;
+	width: 100px;
+}
+
+fieldset {
+	border-width: 1px;
+	border-color: #5495A8;
+}
+
+legend {
+	font-size: 13px;
+	color: #5495A8;
+}

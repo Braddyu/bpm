@@ -1,0 +1,17 @@
+{
+  "apps": [
+    {
+      "name": "gdgl",
+      "script"      : "./bin/gdgl",
+      "args"        : [],
+      "watch"       : false,
+      "merge_logs"  : true,
+      "max_memory_restart": "4096M",
+      "env": {
+        "NODE_ENV": "local"
+      },
+      "exec_mode"  : "cluster",
+      "instances": 3
+    }
+  ]
+}

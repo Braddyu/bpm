@@ -1,0 +1,446 @@
+
+    <div class="easyui-tabs" id="tabs" >
+        <div title="工单信息" style="padding:10px">
+        <legend ><b>任务基本信息</b></legend>
+        <form id="orderDetailForm" method="post" enctype="multipart/form-data">
+            <table cellpadding="5" align="center" style="border-collapse:separate; border-spacing:0px 5px;">
+
+                <input  type="hidden"id="node_code"  name="proc_inst_task_code"/>
+                <input  type="hidden"id="next_code" name="next_code" />
+                <input  type="hidden"id="proc_inst_id"  name="proc_inst_id"/>
+                <input  type="hidden"id="proc_task_id"  name="proc_task_id"/>
+                <tr>
+                    <td align="right" class="tdLabel">工单标题:</td>
+                    <td colspan="3"><input disabled style="width: 665px" class="easyui-textbox"data-options="required:true, missingMessage:'请输入工单标题'" id="proc_inst_task_title" name="proc_inst_task_title" ></input></td>
+                </tr>
+                <tr>
+                    <td align="right" class="tdLabel">工单类型:</td>
+                    <td> <input disabled class="easyui-combobox" name="proc_task_code" id="proc_task_code"  style="width: 280px"></td>
+
+                    <td align="right" class="tdLabel">工作天数:</td>
+                    <td><input disabled style="width: 280px"class="easyui-numberbox"data-options="precision:0"  name="work_day" id="work_day"
+                    ></input></td>
+                </tr>
+                <tr>
+                    <td align="right" class="tdLabel">开始时间:</td>
+                    <td><input disabled style="width: 280px"class="easyui-textbox"
+                               id="start_time" name="start_time"></input></td>
+                    <td align="right" class="tdLabel">完成时间:</td>
+                    <td><input disabled style="width: 280px"  class="easyui-textbox"
+                               id="end_time" name="end_time"></input></td>
+                    <td colspan="2"></td>
+
+
+                </tr>
+                <tr>
+                    <td align="right" class="tdLabel">发起人角色:</td>
+                    <td><input disabled style="width: 280px"class="easyui-textbox"
+                               name="start_user" ></input></td>
+
+                    <td align="right" class="tdLabel">发起人:</td>
+                    <td><input disabled style="width: 280px" class="easyui-textbox"
+                               name="start_user_name" ></input></td>
+
+                </tr>
+
+
+                <tr>
+                    <td align="right" class="tdLabel">派单内容:</td>
+                    <td colspan="3"><input disabled
+                                           style="width: 670px; height: 100px; resize: none;" cols="30"
+                                           name="remark" rows="4"  class="easyui-textbox"  labelPosition="top" multiline="true"/>
+
+                    </td>
+                </tr>
+            </table>
+
+            <legend><b>流程日志</b></legend>
+            <table cellpadding="5" align="center">
+                <tr>
+                    <td colspan="4">
+                        <table id="dg"></table>
+                    </td>
+                </tr>
+
+            </table>
+
+            <fieldset id="order_detail">
+            <legend><b>节点处理</b></legend>
+
+            <table  cellpadding="5" align="center" style="border-collapse:separate; border-spacing:0px 5px;">
+
+
+                <tr>
+                    <td align="right" class="tdLabel">当前节点:</td>
+                    <td colspan="3"><input disabled style="width: 670px" class="easyui-textbox" name="proc_inst_task_name" id="proc_inst_task_name" ></input></td>
+
+
+
+                </tr>
+                <tr id="tr_4">
+                    <td align="right" class="tdLabel">操作:</td>
+                    <td colspan="3" class="tdLabel">
+                        <select class="easyui-combobox" name="handle"
+                                style="width: 80px;" id="handle"   panelHeight="auto">
+
+                        </select>
+
+
+                    </td>
+                </tr>
+                <tr id="tr_5">
+                    <td align="right" class="tdLabel">下一节点处理人:</td>
+                    <td colspan="3"><select class="easyui-combobox"
+                                            id="nextJobHandler" name="assign_user_no"  style="width: 180px;">
+
+                    </select> </td>
+
+
+                </tr>
+
+
+                <tr>
+                    <td align="right" class="tdLabel">处理意见:</td>
+                    <td colspan="2"><input name="memo" class="easyui-textbox"  labelPosition="top" multiline="true" style="width: 670px; height: 54px; resize: none;"/>
+
+                    </td>
+
+                </tr>
+
+                <input type='hidden' name='_csrf' value='{{ _csrfToken }}'/>
+
+            </table>
+                <div style="padding:5px 0;" align="center" id="button_group">
+                    <a href="javascript:void(0);" id="submitButton" class="easyui-linkbutton" onclick="submitTask()" style="width: 100px;">提交</a>
+                </div>
+            </fieldset>
+
+        </form>
+
+
+</div>
+        <div title="流程图" style="padding:10px">
+
+            <iframe id="iframeId" frameborder=0 width=1200 height=830 marginheight=0 marginwidth=0 scrolling=no src=></iframe>
+        </div>
+
+    </div>
+
+<script type="text/javascript">
+    //是否属于归档节点
+    var endFlag=false;
+    var status='{{status}}'
+    var change_id='{{change_id}}'
+    var proc_code='{{proc_code}}'
+    $(document).ready(function () {
+
+        //状态1:已发起的工单,2：我的待办,3:我的已办，4：新增操作
+/*        var status=GetQueryString("status");
+
+        //状态为2时表示任务id，1和3时为实例id
+        var change_id=GetQueryString("change_id");*/
+        if(status==1 ||status==3){
+            //隐藏处理操作
+            $("#order_detail").hide();
+        }else if(status==2){
+            //待办操作
+        }
+
+
+        $.ajax({
+            url: '{{projcfg.appurl}}/api/order_manage/order_list/orderDetail',
+            type: 'post',
+            dataType:'json',
+            data: {
+                "change_id":change_id,
+                "status":status
+            },
+            success: function (data) {
+                if(data.success){
+                    //业务数据
+                    var proc_vars=data.data.proc_vars;
+                    //工单标题
+                    var proc_title='';
+                    //实例id
+                    var inst_id;
+
+                    var proc_vars_json=JSON.parse(proc_vars);
+                    //待办标题字段不同
+                    if(status==2){
+                        proc_title=  data.data.proc_inst_task_title;
+                        inst_id=data.data.proc_inst_id;
+                        //当前节点
+                        var node_code=data.data.proc_inst_task_code;
+                        //任务id
+                        var task_id=data.data._id;
+
+                        //当前节点名称
+                        var proc_inst_task_name= data.data.proc_inst_task_name;
+                        $("#proc_inst_task_name").textbox("setValue",proc_inst_task_name);
+                        //操作下拉框初始化
+                        isEndNode(proc_code,node_code,task_id,inst_id);
+
+                        $("#node_code").val(node_code);
+                        $("#proc_inst_id").val(inst_id);
+                        $("#proc_task_id").val(task_id);
+
+
+                    }else{
+                        proc_title=  data.data.proc_title;
+                        inst_id=change_id;
+
+                    }
+                    $('#orderDetailForm').form('load', proc_vars_json);
+                    $("#proc_inst_task_title").textbox("setValue",proc_title);
+                    $("#proc_task_code").combobox("setValue",proc_code);
+
+                    //重新加载流程图
+                    $('#tabs').tabs({
+                        border:false,
+                        onSelect:function(title,index){
+                            if(title=='流程图'){
+                                var url='{{projcfg.appurl}}/api/process/show/progressed?proc_inst_id='+inst_id;
+                                document.getElementById("iframeId").src=url;
+                            }
+
+                        }
+                    });
+
+                    //流程日志
+                    $('#dg').datagrid({
+                        url:'{{projcfg.appurl}}/api/order_manage/order_complete/logs',
+                        width:800,
+                        queryParams: {
+                            inst_id: inst_id
+                        },
+                        method:'post',
+                        columns:[[
+                            {field:'proc_inst_task_name',title:'节点名称',width:130, halign:'center',
+                                formatter:function(value,row,index){
+
+                                    return "<span title='" + value + "'>" + value + "</span>";
+
+                                }},
+                            {field:'proc_inst_task_assignee_name',title:'处理人',width:100, halign:'center'},
+                            {field:'proc_inst_task_complete_time',title:'处理时间',width:145, halign:'center',
+                                formatter:function(value,row,index){
+                                    if(value!=null){
+                                        var isoDateStr = value.substring(0,value.indexOf('.'));
+                                        var date=new Date(isoDateStr.replace(/-/g,'/').replace(/T|Z/g,' '));
+                                        date.setHours(date.getHours()+8)
+                                        return  date.Format("yyyy-MM-dd hh:mm:ss");
+                                    }else{
+                                        return '';
+                                    }
+
+                                }},
+                            {field:'proc_inst_task_remark',title:'处理意见',width:350,
+                                halign:'center',
+                                formatter: function (value) {
+                                    return "<span  style='width:80%;word-break:normal;display:block;white-space:pre-wrap;overflow:hidden;' title='" + value + "'>"+value+"</span>";
+                                }}
+                        ]]
+                    })
+
+
+
+
+
+                }else{
+                    $.messager.alert('错误提示','工单创建失败');
+
+                }
+            }
+        });
+
+        //初始化工单类型下拉框
+        getAllProBase();
+
+
+
+    });
+    function GetQueryString(name) {
+        var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
+        var r = window.location.search.substr(1).match(reg);
+        if(r!=null)
+            return  unescape(r[2]);
+        return null;
+    }
+    /**
+     * 初始化工单类型下拉框
+     */
+    function getAllProBase(){
+        $("#proc_task_code").combobox({
+            method: 'get',
+            url: '{{projcfg.appurl}}/api/order_manage/order_list/proBase',
+            valueField:'proc_code',
+            textField:'proc_name'
+        });
+
+    }
+    //时间格式化:new Date().Format("yyyy-MM-dd hh:mm:ss");
+    Date.prototype.Format = function (fmt) { //author: meizz
+        var o = {
+            "M+": this.getMonth() + 1, //月份
+            "d+": this.getDate(), //日
+            "h+": this.getHours(), //小时
+            "m+": this.getMinutes(), //分
+            "s+": this.getSeconds(), //秒
+            "q+": Math.floor((this.getMonth() + 3) / 3), //季度
+            "S": this.getMilliseconds() //毫秒
+        };
+        if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+        for (var k in o)
+            if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+        return fmt;
+    }
+
+    /**
+     * 获取下一节点处理人
+     */
+    function getNextNodeUser(node_code,proc_task_id,proc_inst_id){
+        $.ajax({
+            url: '{{projcfg.appurl}}/api/order_manage/order_list/nextNodeUser',
+            type: 'post',
+            dataType:'json',
+            data: {
+                node_code:node_code,
+                proc_task_id:proc_task_id,
+                proc_inst_id:proc_inst_id
+            },
+            success: function (data) {
+                if(data.success){
+                    //初始化加载
+                    $("#nextJobHandler").combobox({
+                        method: 'get',
+                        valueField:'user_no',
+                        textField:'user_name',
+                        onSelect:function(record){
+                            //下一节点处理编码赋值
+                            $("#next_code").val(record.node_code);
+
+                        }
+                    });
+                    $("#nextJobHandler").combobox("loadData",data.data);
+                }else{
+                    $.messager.alert('错误提示','获取下一节点处理人失败，请联系管理员');
+                }
+            }
+        });
+
+
+    }
+
+    //判断当前节点是否是归档节点
+    function isEndNode(proc_code,node_code,task_id,inst_id){
+        //判断是否是归档节点
+        $.ajax({
+            url: '{{projcfg.appurl}}/api/order_manage/order_list/procDefineDetail',
+            type: 'post',
+            dataType:'json',
+            data: {
+                proc_code:proc_code,
+                node_code:node_code
+            },
+            success: function (data) {
+                if(data.success){
+                    var comboboxData=[];
+
+                    //归档节点
+                    if(data.data.isEnd){
+                        //是归档节点不需要下一节点处理人
+                        $("#tr_5").hide();
+                        endFlag=true;
+                        comboboxData.push({ value: '1', text: '归档' })  ;
+                    }else{
+                        //获取下一节点处理人
+                        getNextNodeUser(node_code,task_id,inst_id);
+                        $("#tr_5").show();
+                        comboboxData.push({ value: '1', text: '通过' })  ;
+                    }
+                    if(data.data.haveRefuse){
+                    //是否存在拒绝节点
+                        comboboxData.push({ value: '0', text: '拒绝' })  ;
+                    }
+                    $("#handle") .combobox('loadData',comboboxData) ;
+                    $("#handle") .combobox('setValue','1') ;
+                }else{
+                    $.messager.alert('错误提示',data.error);
+                }
+            }
+        });
+    }
+
+    //提交任务
+    function submitTask(){
+
+        // 验证表单
+       var validate = $('#orderDetailForm').form('validate');
+        if(!validate) {
+            return false;
+        }
+        var nextNodeUser= $('#nextJobHandler').combobox('getValue');
+        if(!nextNodeUser && !endFlag){
+            $.messager.alert('提示','请选择下一节点处理人');
+            return false;
+
+        }
+        $.messager.progress({
+            title: '提示',
+            msg: '处理中，请稍候……',
+            text: ''
+        });
+        var formData=$('#orderDetailForm').serializeArray();
+        //归档
+        if(endFlag){
+            $.ajax({
+                url: '{{projcfg.appurl}}/api/order_manage/order_list/complete',
+                type: 'post',
+                dataType:'json',
+                data: formData,
+                success: function (data) {
+                
+                    if(data.success){
+                        parent.$("#dd").dialog('close');
+                        parent.$('#orderTablelist').datagrid('reload');
+                        $.messager.alert('提示','处理成功');
+                    }else{
+                        $.messager.alert('错误提示',data.msg);
+                    }
+                    $.messager.progress('close');
+                }
+            });
+        }else{
+            //中间节点处理
+
+            //easyui textbox 设置为禁用 serializeJson 不能获取json
+            formData.push({"name":"proc_inst_task_title",
+                        "value":$("#proc_inst_task_title").textbox('getValue')});
+
+          $.ajax({
+                url: '{{projcfg.appurl}}/api/order_manage/order_list/assignTask',
+                type: 'post',
+                dataType:'json',
+                data: formData,
+                success: function (data) {
+                    if(data.success){
+                        parent.$("#dd").dialog('close');
+                        parent.$('#orderTablelist').datagrid('reload');
+                        $.messager.alert('提示','处理成功');
+                    }else{
+                        $.messager.alert('错误提示',data.error);
+                    }
+                    $.messager.progress('close');
+                }
+            });
+        }
+
+    }
+
+
+
+    </script>
+
+
+
+

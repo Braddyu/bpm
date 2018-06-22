@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>登录中......</title>
+    <script src="../js/easyui/jquery.min.js"></script>
+    <script src="../js/common/md5.js"></script>
+    <script src="../js/common/security.mini.js"></script>
+</head>
+<body>
+
+<form style="display: none;" class="m-t" id="loginForm" role="form" action="/ywcj/login" method="post">
+    <div class="loginbox-textbox">
+        <input id="username" name='username'  value='admin' type="text" class="form-control"/>
+    </div>
+    <div class="loginbox-textbox">
+        <input id="password_" name='password_'  value='123456' type="password" class="form-control"/>
+        <input type="hidden" id="password" name="password"/>
+    </div>
+
+
+</form>
+<script>
+    $(function(){
+        var password_ = document.getElementById('password_').value;
+        var key3 = hex_md5('cmcc_gz_' + formatTime('yyyyMMdd'));
+        document.getElementById('password').value = strEnc(hex_md5(password_),'ea5456ffa698a9d7b469bcdd768bc104', '180831b7e2e6daba6ee89dbdf7846293', key3);
+        document.getElementById('password_').value = "";
+        $('#loginForm').submit();
+    });
+
+
+     function formatTime(format) {
+        var date=new Date();
+        var year = (date.getYear() < 1900) ? date.getYear() + 1900 : date.getYear();
+        var o = {
+            "M+" :  date.getMonth() + 1,  //month
+            "d+" :  date.getDate(),     //day
+            "h+" :  date.getHours(),    //hour
+            "m+" :  date.getMinutes(),  //minute
+            "ss" :  date.getSeconds(), //second
+            "ms" :  date.getMilliseconds()
+        };
+
+        if(/(y+)/.test(format)) {
+            format = format.replace(RegExp.$1, (year+"").substr(4 - RegExp.$1.length));
+        }
+
+        for(var k in o) {
+            if(new RegExp("("+ k +")").test(format)) {
+                format = format.replace(RegExp.$1, RegExp.$1.length==1 ? o[k] : ("00"+ o[k]).substr((""+ o[k]).length));
+            }
+        }
+        return format;
+    }
+</script>
+</body>
+</html>

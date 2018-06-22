@@ -1,0 +1,329 @@
+<link rel="stylesheet" type="text/css" href="{{projcfg.appurl}}/static/order/css/order_detail.css">
+
+<div id="processDiv" class="row">
+    <div class="col-xs-12 col-md-12">
+        <div class="widget">
+            <div class="widget-body">
+                <div id="processLayout" class="easyui-layout" style="height:auto;width: auto">
+                    <div id="form1" style="height:650px">
+                        <div class="easyui-tabs" id="tabs1" data-options="fit:true" style = "...">
+                            <div title="我的待办"  style = "height: 100%;width: 100%;overflow: auto">
+
+                                <table id="orderTablelist" ></table>
+                            </div>
+                            <div title="我的已办"  style = "height: 100%;width: 100%;overflow: auto" >
+
+                                <table id="orderTablelist2"></table>
+                            </div>
+                            <div title="已归档" style = "height: 100%;width: 100%;overflow: auto">
+
+                                <table id="orderTablelist3"></table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="dd"></div>
+<script type="text/javascript">
+    //归档标志
+    var endFlag=false;
+    $(document).ready(function () {
+        // $("#tabs1").tabs('select',2);
+        //待办加载
+        loadOrderTodaoListDatagrid();
+        getAllProBase();
+        $("#assign_user_no") .combobox('setValue','') ;
+        $('#tabs1').tabs({
+            border:false,
+            onSelect:function(title,index){
+                //alert(title+' is selected');
+                if(title=='我的已办'){
+                    loadOrderCompleteteListDatagrid();
+                    getAllProBase();
+                    $("#assign_user_no") .combobox('setValue','') ;
+                }
+                if(title=='已归档'){
+                    loadOrderArchiveListDatagrid();
+                    getAllProBase();
+                    $("#assign_user_no") .combobox('setValue','') ;
+                }
+            }
+        });
+
+
+
+    });
+
+    //时间格式化:new Date().Format("yyyy-MM-dd hh:mm:ss");
+    Date.prototype.Format = function (fmt) { //author: meizz
+        var o = {
+            "M+": this.getMonth() + 1, //月份
+            "d+": this.getDate(), //日
+            "h+": this.getHours(), //小时
+            "m+": this.getMinutes(), //分
+            "s+": this.getSeconds(), //秒
+            "q+": Math.floor((this.getMonth() + 3) / 3), //季度
+            "S": this.getMilliseconds() //毫秒
+        };
+        if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+        for (var k in o)
+            if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+        return fmt;
+    }
+    function loadOrderTodaoListDatagrid(){
+        // 加载待办工单基本属性列表
+        $('#orderTablelist').datagrid({
+            url:'{{projcfg.appurl}}/api/order_manage/order_todo/list',
+            method:'post',
+            rownumbers:true,
+            striped:true,
+            fitColumns:true,
+            border:false,
+            fit:true,
+            singleSelect:true,
+            selectOnCheck:true,
+            checkOnSelect:true,
+            columns:[[
+                {"field": "work_order_number","title":"工单编号","width":55},
+                {"field": "proc_inst_task_title","title":"工单标题","width":100,
+                    formatter:function(value,row,index){
+                        return "<span title='" + value + "'>" + value + "</span>";
+
+                    }},
+                {"field": "proc_name","title":"工单类型","width":50},
+                {"field": "proc_inst_task_sign","title":"操作类型","width":50,
+                    formatter:function(value,row,index){
+                        if(value==0){
+                            return "待认领";
+                        }else{
+                            return "待处理";
+                        }
+
+
+                    }},
+                {"field": "proc_inst_task_name","title":"当前处理节点","width":50},
+                {"field": "proc_task_start_name","title":"申请人","width":50},
+                {"field": "proc_inst_task_arrive_time","title":"到达时间","width":80,
+                    formatter:function(value,row,index){
+                        var isoDateStr = value.substring(0,value.indexOf('.'));
+                        var date=new Date(isoDateStr.replace(/-/g,'/').replace(/T|Z/g,' '));
+                        date.setHours(date.getHours()+8)
+                        return  date.Format("yyyy-MM-dd hh:mm:ss");
+                    }}
+            ]],
+            onDblClickRow:function(rowIndex, rowData){
+                if(rowData.proc_code != 'p-108') {
+                    //待办传状态为2
+                    var url = '{{projcfg.appurl}}/api/order_manage/order_list/showDetailView?proc_code=' + rowData.proc_code + '&status=2&change_id=' + rowData._id;
+                    // var content = '<iframe src="'+url+'" width="100%" height="99%" frameborder="0" scrolling="yes"></iframe>';
+
+
+                    $('#dd').dialog({
+                        title: '工单详情',
+                        width: 1250,
+                        height: 650,
+                        closed: false,
+                        cache: false,
+                        href: url,
+                        modal: true
+                    });
+                }
+            },
+            onLoadSuccess:function(json) {
+                if(!json.success) {
+                    msgError(json.msg + ',错误代码:' + json.code);
+                }
+            },
+            onLoadError:function() {
+                msgError('加载数据出现时发生错误,请稍候重试...');
+            },
+            pagination:true,
+            loadMsg:'正在加载...',
+            pageSize: 20,
+        });
+    }
+
+    function getAllProBase(){
+        $("#proc_task_code").combobox({
+            method: 'get',
+            url: '{{projcfg.appurl}}/api/order_manage/order_list/proBase',
+            valueField:'proc_code',
+            textField:'proc_name'
+        });
+
+    }
+
+    //完成工单加载
+    function loadOrderCompleteteListDatagrid(){
+
+        // 加载已办工单基本属性列表
+        $('#orderTablelist2').datagrid({
+            url:'{{projcfg.appurl}}/api/order_manage/order_complete/list',
+            method:'post',
+            rownumbers:true,
+            striped:true,
+            fitColumns:true,
+            border:false,
+            fit:true,
+            pageSize: 20,
+            singleSelect:true,
+            selectOnCheck:true,
+            checkOnSelect:true,
+            columns:[[
+                {"field":"proc_inst_id",hidden:true},
+                {"field": "work_order_number","title":"工单编号","width":55},
+                {"field": "proc_inst_task_title","title":"工单标题","width":50,
+                    formatter:function(value,row,index){
+                        return "<span title='" + value + "'>" + value + "</span>";
+
+                    }},
+                {"field": "proc_name","title":"工单类型","width":55,
+                    formatter:function(value,row,index){
+                        return "<span title='" + value + "'>" + value + "</span>";
+
+                    }},
+                {"field": "proc_inst_task_remark","title":"处理意见","width":55,
+                    formatter:function(value,row,index){
+                        return "<span title='" + value + "'>" + value + "</span>";
+
+                    }},
+                {"field": "proc_inst_task_name","title":"处理节点","width":55,
+                    formatter:function(value,row,index){
+                        return "<span title='" + value + "'>" + value + "</span>";
+
+                    }},
+                {"field": "proc_inst_task_complete_time","title":"处理时间","width":80,
+                    formatter:function(value,row,index){
+                        var isoDateStr = value.substring(0,value.indexOf('.'));
+                        var date=new Date(isoDateStr.replace(/-/g,'/').replace(/T|Z/g,' '));
+                        date.setHours(date.getHours()+8)
+                        return  date.Format("yyyy-MM-dd hh:mm:ss");
+                    }},
+                {"field": "proc_task_start_name","title":"发起人","width":50,
+                    formatter:function(value,row,index){
+                        return "<span title='" + value + "'>" + value + "</span>";
+
+                    }}
+            ]],
+            onDblClickRow:function(rowIndex, rowData){
+                if(rowData.proc_code != 'p-108') {
+                    var url = '{{projcfg.appurl}}/api/order_manage/order_list/showDetailView?proc_code=' + rowData.proc_code + '&status=3&change_id=' + rowData.proc_inst_id;
+                    //   var content = '<iframe src="'+url+'" width="100%" height="99%" frameborder="0" scrolling="yes"></iframe>';
+
+
+                    $('#dd').dialog({
+                        title: '工单详情',
+                        width: 1250,
+                        height: 650,
+                        closed: false,
+                        cache: false,
+                        href: url,
+                        modal: true
+                    });
+                }
+            },
+            onLoadSuccess:function(json) {
+                if(!json.success) {
+                    msgError(json.msg + ',错误代码:' + json.code);
+                }
+            },
+            onLoadError:function() {
+                msgError('加载数据出现时发生错误,请稍候重试...');
+            },
+            pagination:true,
+            loadMsg:'正在加载...'
+        });
+    }
+
+    function loadOrderArchiveListDatagrid(){
+        // 加载已归档工单基本属性列表
+        $('#orderTablelist3').datagrid({
+            url:'{{projcfg.appurl}}/api/order_manage/order_file/list',
+            method:'post',
+            rownumbers:true,
+            striped:true,
+            fitColumns:true,
+            border:false,
+            fit:true,
+            pageSize: 20,
+            singleSelect:true,
+            selectOnCheck:true,
+            checkOnSelect:true,
+            columns:[[
+                {"field":"_id",hidden:true},
+                {"field": "work_order_number","title":"工单编号","width":"200px"},
+                {"field": "proc_title","title":"工单标题","width":"300px",
+                    formatter:function(value,row,index){
+                        return "<span title='" + value + "'>" + value + "</span>";
+
+                    }},
+                {"field": "proc_name","title":"工单类型","width":"150px"},
+                {"field": "proc_start_user_name","title":"派单人","width":"100px"},
+                {"field": "proc_start_time","title":"派单时间","width":"150px",
+                    formatter:function(value,row,index){
+                        var isoDateStr = value.substring(0,value.indexOf('.'));
+                        var date=new Date(isoDateStr.replace(/-/g,'/').replace(/T|Z/g,' '));
+                        date.setHours(date.getHours()+8)
+                        return  date.Format("yyyy-MM-dd hh:mm:ss");
+                    }},
+                {"field": "proc_inst_task_complete_time","title":"归档时间","width":"150px",
+                    formatter:function(value,row,index){
+                        var isoDateStr = value.substring(0,value.indexOf('.'));
+                        var date=new Date(isoDateStr.replace(/-/g,'/').replace(/T|Z/g,' '));
+                        date.setHours(date.getHours()+8)
+                        return  date.Format("yyyy-MM-dd hh:mm:ss");
+                    }},
+                {"field": "refuse_number","title":"未归档次数","width":"90px",
+                    formatter:function(value,row,index){
+                        return value+"次";
+                    }},
+                {"field": "is_overtime","title":"是否超时","width":"70px",
+                    formatter:function(value,row,index){
+                        if(value==0){
+                            return "<span style='color:green'>未超时</span>";
+                        }else{
+                            return "<span style='color:red'>超时</span>";
+                        }
+
+                    }},
+                {"field": "proc_vars","title":"超时时间","width":"150px"
+                    ,formatter:function(value,row,index){
+                    var proc_vars=JSON.parse(value)
+                    return  proc_vars.end_time;
+                }},
+
+            ]],
+            onDblClickRow:function(rowIndex, rowData){
+                if(rowData.proc_code != 'p-108') {
+                    var url = '{{projcfg.appurl}}/api/order_manage/order_list/showDetailView?proc_code=' + rowData.proc_code + '&status=4&change_id=' + rowData._id;
+                    //  var content = '<iframe src="'+url+'" width="100%" height="99%" frameborder="0" scrolling="yes"></iframe>';
+
+
+                    $('#dd').dialog({
+                        title: '工单详情',
+                        width: 1250,
+                        height: 650,
+                        closed: false,
+                        cache: false,
+                        href: url,
+                        modal: true
+                    });
+                }
+            },
+            onLoadSuccess:function(json) {
+                if(!json.success) {
+                    msgError(json.msg + ',错误代码:' + json.code);
+                }
+            },
+            onLoadError:function() {
+                msgError('加载数据出现时发生错误,请稍候重试...');
+            },
+            pagination:true,
+            loadMsg:'正在加载...'
+        });
+    }
+</script>

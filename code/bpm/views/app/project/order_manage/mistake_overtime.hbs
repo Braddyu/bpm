@@ -1,0 +1,244 @@
+<link rel="stylesheet" type="text/css" href="{{projcfg.appurl}}/static/order/css/order_detail.css">
+<div id="processDiv" class="row">
+    <div class="col-xs-12 col-md-12">
+        <div class="widget">
+            <div class="widget-body">
+                <div id="processLayout" class="easyui-layout" data-options="fit:true" style="width:600px;height:666px;">
+
+                        <div id="toolbar1" class="row tbRow">
+                            <div class="col-xs-8 col-md-8">
+
+                                <div class="btn-group" role="group" aria-label="...">
+
+                                    <label for="filterParam3">工单编号：</label>
+                                    <input class="easyui-textbox"id="work_order_number"  style="width: 180px;height:31px;">
+                                    </input>
+                                </div>
+
+
+                                <div class="btn-group" role="group" aria-label="...">
+                                    <label for="filterParam3">地州：</label>
+                                    <select class="easyui-combobox"id="city_code" style="width: 100px;height:31px;">
+                                        <option value="">=全省=</option>
+                                        <option value="850">贵安</option>
+                                        <option value="851">贵阳</option>
+                                        <option value="852">遵义</option>
+                                        <option value="853">安顺</option>
+                                        <option value="854">黔南</option>
+                                        <option value="855">黔东南</option>
+                                        <option value="856">铜仁</option>
+                                        <option value="857">毕节</option>
+                                        <option value="858">六盘水</option>
+                                        <option value="859">黔西南</option>
+
+                                    </select>
+                                </div>
+                                <div class="btn-group" role="group" aria-label="...">
+
+                                </div>
+                            </div>
+
+                            <div class="col-xs-4 col-md-4 text-right">
+                                <form class="form-inline">
+
+
+                                    <div class="form-group">
+                                        <div class="input-group">
+                                            <span class="input-group-btn">
+                                                <button class="btn btn-default" type="button" onclick="doSearch()"><i class="fa fa-search"></i>查询</button>
+                                               <button class="btn btn-default" type="button" id="exportData"><i class="glyphicon glyphicon-open"></i>导出</button>
+                                            </span>
+
+                                        </div>
+
+                                    </div>
+                                </form>
+
+                            </div>
+                        </div>
+                        <table id="mistakeTablelist">
+
+                        </table>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="dd"></div>
+
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        //加载列表
+        loadMistakeListDatagrid();
+        $('#queryDate').datebox().datebox('calendar').calendar({
+            validator: function(date){
+                var now = new Date();
+                var d1 = new Date(now.getFullYear(), now.getMonth(), now.getDate()-1);
+                return  date<=d1;
+
+            }
+        });
+    });
+
+    function loadMistakeListDatagrid(){
+        // 加载工单基本属性列表
+        $('#mistakeTablelist').datagrid({
+            url:'{{projcfg.appurl}}/api/order_manage/mistake_list/overtimeList',
+            method:'post',
+            rownumbers:true,
+            striped:true,
+            fitColumns:true,
+            border:false,
+            fit:true,
+            pageSize: 20,
+            selectOnCheck:true,
+            checkOnSelect:true,
+            toolbar: '#toolbar1',
+            columns:[[
+                {"field":"_id",hidden:true},
+                {"field": "city_name","title":"地州","width":"120px"},
+                {"field": "country_name","title":"区县","width":"100px"},
+                {"field": "channel_code","title":"渠道编码","width":"90px"},
+                {"field": "channel_name","title":"营业厅名称","width":"220px",
+                    formatter:function(value,row,index){
+                        if(value)
+                         return "<span title='" + value + "'>" + value + "</span>";
+
+                    }},
+                {"field": "work_id","title":"工号","width":"90px"},
+                {"field": "t1","title":"客户号码","width":"100px",
+                    formatter:function(value,row,index){
+                        var proc_vars=JSON.parse(row.proc_vars);
+                        return proc_vars.client_tel
+                }},
+                {"field": "work_order_number","title":"客户订单号","width":"160px",
+                    formatter:function(value,row,index){
+                        return "<span title='" + value + "'>" + value + "</span>";
+
+                    }},
+                {"field": "business_name","title":"受理业务","width":"200px",
+                    formatter:function(value,row,index){
+                    var proc_vars=JSON.parse(row.proc_vars);
+                        return "<span title='" + proc_vars.business_name + "'>" + proc_vars.business_name + "</span>";
+
+                }},
+                {"field": "remark","title":"稽核结果","width":"300px",
+                    formatter:function(value,row,index){
+                    var proc_vars=JSON.parse(row.proc_vars);
+                        return "<span title='" + proc_vars.remark + "'>" + proc_vars.remark + "</span>";
+                }},
+                {"field": "proc_vars","title":"超时时间","width":"200px",
+                    formatter:function(value,row,index){
+                        //归档则用归档时间计算
+                       if(row.proc_inst_status==4){
+                           var json=JSON.parse(value)
+                           var end_time=new Date(json.end_time.replace(/-/g,'/').replace(/T|Z/g,' ')).getTime();
+                           var complete_time=new Date(row.proc_inst_task_complete_time.replace(/-/g,'/').replace(/T|Z/g,' ')).getTime();
+                           return formatDuring(complete_time - end_time);
+                       }else{
+                           var json=JSON.parse(value)
+                           var end_time=new Date(json.end_time.replace(/-/g,'/').replace(/T|Z/g,' ')).getTime();
+                           var now=new Date().getTime();
+                           return formatDuring(now - end_time);
+                       }
+
+
+                    }
+                    },
+                {"field": "refuse_number","title":"未归档次数","width":"100px",
+                    formatter:function(value,row,index){
+                       return value+"次";
+                    }
+                },
+                {"field": "proc_inst_status","title":"是否归档","width":"80px",
+                    formatter:function(value,row,index){
+                        if(value == '4'){
+                            return "归档";
+                        }else{
+                            return "未归档";
+                        }
+
+                    }},
+
+            ]],
+            onDblClickRow:function(rowIndex, rowData){
+                var url='{{projcfg.appurl}}/api/order_manage/order_list/showDetailView?proc_code='+rowData.proc_code+'&change_id='+rowData._id+'&status=1';
+             //   var content = '<iframe src="'+url+'" width="100%" height="99%" frameborder="0" scrolling="yes"></iframe>';
+
+
+                $('#dd').dialog({
+                    title : '工单详情',
+                    width : 1250,
+                    height : 750,
+                    closed : false,
+                    cache : false,
+                    href :url ,
+                    modal : true
+                });
+
+            },
+            onLoadSuccess:function(json) {
+                if(!json.success) {
+                    msgError(json.msg + ',错误代码:' + json.code);
+                }
+            },
+            onLoadError:function() {
+                msgError('加载数据出现时发生错误,请稍候重试...');
+            },
+            pagination:true,
+            loadMsg:'正在加载...'
+        });
+    }
+
+    function formatDuring(mss) {
+        var days = parseInt(mss / (1000 * 60 * 60 * 24));
+        var hours = parseInt((mss % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        var minutes = parseInt((mss % (1000 * 60 * 60)) / (1000 * 60));
+        return days + " 天 " + hours + " 小时 " + minutes + " 分钟 " ;
+    }
+    //搜索
+    function doSearch(){
+
+     $('#mistakeTablelist').datagrid(
+             {   url:'{{projcfg.appurl}}/api/order_manage/mistake_list/overtimeList',
+                 queryParams:{
+                     city_code:$('#city_code').combobox('getValue'),
+                     work_order_number:$("#work_order_number").val(),
+                 }
+             }
+     );
+ }
+    //导出查询结果
+    $("#exportData").click(function () {
+        $.messager.confirm('导出', '确定要导出吗?', function(r) {
+            if (r) {
+                downloadExcel();
+            }
+        });
+    });
+    /**
+     * 是否在下载中 防止重复点击
+     */
+    var downloadExcelIng = false;
+    /**
+     * 下载excel
+     */
+    function downloadExcel() {
+        if (downloadExcelIng) {
+            return;
+        }
+        downloadExcelIng = true;
+
+        var downloadUrl = '{{projcfg.appurl}}/api/order_manage/mistake_list/export_overtimeList?city_code='+$('#city_code').combobox('getValue')+'&work_order_number='+$("#work_order_number").val();
+
+
+        window.location.href=downloadUrl;
+        downloadExcelIng = false;
+    }
+
+</script>

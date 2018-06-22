@@ -1,0 +1,136 @@
+<div id="processDiv" class="row">
+    <div class="col-xs-12 col-md-12">
+        <div class="widget">
+            <div class="widget-body">
+                <div id="processLayout" class="easyui-layout" data-options="fit:true" style="padding-bottom:60px;background:#eee;width:1000px;height:666px;"  >
+                    <div id="toolbar1" class="row tbRow">
+                        <div class="col-xs-11 col-md-11">
+                            <div class="btn-group" role="group" aria-label="...">
+                                <label for="filterParam3">开始时间：</label>
+                                <input id="startDate" class="easyui-datebox" label="Start Date:" labelPosition="top" style="width:100px;height:25px">
+                            </div>
+                            <div class="btn-group" role="group" aria-label="...">
+                                <label for="filterParam3">结束时间：</label>
+                                <input id="endDate" class="easyui-datebox" label="Start Date:" labelPosition="top" style="width:100px;height:25px">
+                            </div>
+                            <div class="btn-group" role="group" aria-label="...">
+                                <label for="filterParam3">boss工号：</label>
+                                <input class="easyui-textbox"id="work_id"  style="width: 130px;height:25px;">
+                                </input>
+                            </div>
+                        </div>
+                        <div class="col-xs-1 col-md-1 text-right">
+                            <form class="form-inline">
+                                <div class="form-group">
+                                    <div class="input-group">
+                                        <span class="input-group-btn">
+                                                <button class="btn btn-default" type="button" onclick="doSearch()"><i class="fa fa-search"></i>查询</button>
+                                        </span>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <table id="orderTablelist">
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        //设置时间
+        var curr_time = new Date();
+        $("#startDate").datebox("setValue",myformatter(curr_time));
+        $("#endDate").datebox("setValue",myformatter(curr_time));
+        //加载我的待办列表
+        loadOrderTodaoListDatagrid();
+        doSearch();
+
+    });
+
+
+    function myformatter(date){
+        var y = date.getFullYear();
+        var m = date.getMonth()+1;
+        var d = date.getDate();
+        return y+'-'+(m<10?('0'+m):m)+'-'+(d<10?('0'+d):d);
+    }
+
+    function myparser(s){
+        if (!s) return new Date();
+        var ss = (s.split('-'));
+        var y = parseInt(ss[0],10);
+        var m = parseInt(ss[1],10);
+        var d = parseInt(ss[2],10);
+        if (!isNaN(y) && !isNaN(m) && !isNaN(d)){
+            return new Date(y,m-1,d);
+        } else {
+            return new Date();
+        }
+    }
+
+    //时间格式化:new Date().Format("yyyy-MM-dd hh:mm:ss");
+    Date.prototype.Format = function (fmt) { //author: meizz
+        var o = {
+            "M+": this.getMonth() + 1, //月份
+            "d+": this.getDate(), //日
+            "h+": this.getHours(), //小时
+            "m+": this.getMinutes(), //分
+            "s+": this.getSeconds(), //秒
+            "q+": Math.floor((this.getMonth() + 3) / 3), //季度
+            "S": this.getMilliseconds() //毫秒
+        };
+        if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+        for (var k in o)
+            if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+        return fmt;
+
+    }
+    // 加载工单基本属性列表
+    function loadOrderTodaoListDatagrid(){
+        $('#orderTablelist').datagrid({
+            url:'{{projcfg.appurl}}/api/order_manage/order_task_histroy/list',
+            method:'post',
+            rownumbers:true,
+            striped:true,
+            border:false,
+            fitColumns:true,
+            fit:true,
+            pageSize: 30,
+            selectOnCheck:true,
+            checkOnSelect:true,
+            columns:[[
+                //{"field":"_id",checkbox:true},
+                {"field": "work_id","title":"boss工号","width":"33%"},
+                {"field": "user_name","title":"管理员姓名","width":"33%",
+                    formatter:function(value,row,index){
+                        return "<span title='" + value + "'>" + value + "</span>";
+                    }},
+                {"field": "count","title":"处理工单数","width":"33%"},
+            ]],
+            onLoadError:function() {
+                msgError('加载数据出现时发生错误,请稍候重试...');
+            },
+			onDblClickRow:function(rowIndex, rowData){
+                orderHistoryDetail(rowData);
+            },
+            pagination:true,
+            loadMsg:'正在加载...'
+        });
+
+    }
+    //查询
+    function  doSearch(){
+        $('#orderTablelist').datagrid({
+            url:'{{projcfg.appurl}}/api/order_manage/order_task_histroy/list',
+            queryParams: {
+                startDate: $("#startDate").datebox('getValue'),
+                endDate: $("#endDate").datebox('getValue'),
+                work_id:$("#work_id").val(),
+            }
+        });
+    }
+</script>

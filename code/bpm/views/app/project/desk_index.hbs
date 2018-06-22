@@ -1,0 +1,247 @@
+<script type="text/javascript" src="{{projcfg.appurl}}/static/js/mydatetimetools.js"></script>
+<div id="workbench" class="row">
+    <div class="col-xs-12 col-md-12">
+        <div class="widget">
+            <div class="widget-body">
+
+                <div class="row">
+
+                    <div class="col-xs-12 col-md-12">
+                        <div class="widget">
+                            <div class="widget-header bordered-bottom bordered-themeprimary">
+                                <i class="widget-icon fa fa-tags themeprimary"></i>
+                                <span class="widget-caption themeprimary">我的待办</span>
+                                <div class="widget-buttons">
+
+                                </div>
+                            </div>
+                            <div class="widget-body no-padding" style="height: 400px;">
+                                <table id="worksheet_datatable"></table>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 处理日志 -->
+<div id="logsModal" class="mydialog" style="padding-top:0px;">
+    <div class="easyui-layout" data-options="fit:true,border:false">
+        <div data-options="region:'center',border:false,fit:true" style="overflow-x:hidden;overflow-y:hidden">
+            <table id="logsTablelist">
+
+            </table>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+
+    var proc = {};//流程引擎参数
+
+    $(document).ready(function () {
+        initWorksheet();//待办工单
+    });
+
+    /**
+     * 待办工单
+     */
+    function initWorksheet() {
+
+        $('#worksheet_datatable').datagrid({
+            method: 'get',
+            url: '{{projcfg.appurl}}/api/desk/desk',
+            rownumbers: true,
+            striped: true,
+            fitColumns: true,
+            //toolbar: '#',
+            fit: true,
+            border: false,
+            singleSelect: true,
+            selectOnCheck: false,
+            columns: [[
+                {
+                    "field": "proc_inst_task_title", "title": "标题", "width": 40,
+                    formatter: function (value, rowData, rowIndex) {
+                        if (value) {
+                            return value;
+                        }
+                    }
+                },
+                {
+                    "field": "proc_inst_task_name", "title": "当前步骤", "width": 25,
+                    formatter: function (value, rowData, rowIndex) {
+                        if (value) {
+                            return value;
+                        }
+                    }
+                },
+                {
+                    "field": "proc_inst_task_arrive_time", "title": "派单时间", "width": 50,
+                    formatter: function (value, rowData, rowIndex) {
+                        if (value) {
+                            return new Date(value).toLocaleString();
+                        }
+                    }
+                },
+                {
+                    "field": "proc_inst_task_assignee_name", "title": "处理人", "width": 25,
+                    formatter: function (value, rowData, rowIndex) {
+                        return value;
+                    }
+                },
+                {
+                    "field": "pro_mark", "title": "操作", "width": 40, "align": 'center',
+                    formatter: function (value, rowData, rowIndex) {
+
+                        return '<span class="btn btn-primary btn-xs" onclick="openProOrder(\'' + rowIndex + '\')">工单处理</span>&nbsp;&nbsp;<span class="btn btn-success btn-xs" onclick="openTask(\'' + rowData.proc_inst_id + '\')">处理日志</span>';
+
+                    }
+                }
+            ]],
+            onLoadSuccess: function (json) {
+                if (!json.success) {
+                    msgError('提示,' + json.msg + ',错误代码:' + json.code);
+                }
+            },
+            onLoadError: function () {
+                msgError('提示,加载数据出现时发生错误,请稍候重试...');
+            },
+            pagination: true,
+            loadMsg: '正在加载...'
+        });
+    }
+
+    /**
+     * 处理日志
+     * @param proc_inst_id
+     */
+    function openTask(proc_inst_id){
+        //var process_engine_url = '{{projcfg.process_engine_url}}';
+        //var process_engine_port_demo = '{{projcfg.process_engine_port_demo}}';
+        //var url = process_engine_url + ":" + process_engine_port_demo + "/process/show/progressed?proc_inst_id=" + proc_inst_id;
+        //window.open(url);
+        //初始化grid
+        $('#logsTablelist').datagrid({
+            url: '{{projcfg.appurl}}/api/process/engine/logs',
+            method: 'get',
+            queryParams: {proc_inst_id: proc_inst_id},
+            rownumbers: true,
+            striped: true,
+            fitColumns: true,
+            border: true,
+            //toolbar: '#toolbar',
+            fit: true,
+            singleSelect: true,
+            selectOnCheck: true,
+            checkOnSelect: true,
+            columns: [[
+                {"field": "proc_inst_task_name", "title": "处理节点", "width": 80},
+                {
+                    "field": "proc_inst_task_remark", "title": "处理内容", "width": 150,
+                    "formatter": function (value, rowData, rowIndex) {
+
+                        if(value){
+                            return '<span title=" '+ value + '">' + value + '</span>';
+                        }else{
+                            return '<span class="text-muted">无</span>';
+                        }
+
+                    }
+                },
+                {
+                    "field": "proc_inst_task_assignee_name", "title": "处理人员", "width": 80,
+                    "formatter": function (value, rowData, rowIndex) {
+                        return value;
+                    }
+                },
+                {
+                    "field": "proc_inst_task_handle_time", "title": "处理时间", "width": 120,
+                    formatter: function (value, rowData, rowIndex) {
+                        return new Date(value).toLocaleString();
+                    }
+                },
+                {
+                    "field": "proc_inst_task_status", "title": "处理状态", "width": 50,
+                    "formatter": function (value, rowData, rowIndex) {
+                        if(value==1){
+                            return '<span class="text-success">已处理</span>';
+                        }else{
+                            return '<span class="text-danger">处理中</span>';
+                        }
+
+                    }
+                }
+
+            ]],
+            onLoadSuccess: function (json) {
+                if (!json.success) {
+                    msgError(json.msg + ',错误代码:' + json.code);
+                }
+            },
+            onLoadError: function () {
+                msgError('加载数据出现时发生错误,请稍候重试...');
+            },
+            pagination: true,
+            loadMsg: '正在加载...'
+        });
+
+        var scrollTop = window.pageYOffset
+                || document.documentElement.scrollTop
+                || document.body.scrollTop
+                || 0;
+        var top = ($(window).height() - 400) / 2 + scrollTop;
+
+        $('#logsModal').show();
+        $('#logsModal').mydialog({
+            title: "<i class='widget-icon fa fa-tags themeprimary'></i>&nbsp;<span class='widget-caption themeprimary'>处理日志</span>",
+            width: 800,
+            height: 400,
+            top: top,
+            modal: true,
+            myButtons: [
+                {
+                    text: '确定',
+                    btnCls: 'btn btn-blue',
+                    handler: function () {
+
+                        $('#logsModal').dialog('close');
+
+                    }
+                },
+                {
+                    text: '关闭',
+                    btnCls: 'btn btn-danger',
+                    handler: function () {
+                        $('#logsModal').dialog('close');
+                    }
+                }
+            ]
+        });
+
+    }
+
+    /**
+     * 待办工单-处理
+     * @param title
+     * @param value
+     * @param modal
+     * @param callback
+     */
+    function openProOrder(rowIndex) {
+        var rows = $('#worksheet_datatable').datagrid('getRows');
+        proc = rows[rowIndex];
+        var p_url = 'portal/module/59b23dfd63a7f025e4be458e';
+        window.open(p_url);
+    }
+
+    /**
+     * 传值到新页面
+     */
+    function getVal(){
+        return proc;
+    }
+
+</script>

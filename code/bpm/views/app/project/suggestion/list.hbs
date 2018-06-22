@@ -1,0 +1,396 @@
+<link rel="stylesheet" type="text/css" href="{{projcfg.appurl}}/static/order/css/order_detail.css">
+<div id="processDiv" class="row">
+    <div class="col-xs-12 col-md-12">
+        <div class="widget">
+            <div class="widget-body">
+                <div id="processLayout" class="easyui-layout" data-options="fit:true" style="width:600px;height:666px;">
+
+                        <div id="toolbar1" class="row tbRow">
+                            <div class="col-xs-8 col-md-8">
+                                <div class="btn-group" role="group" aria-label="...">
+                                    <!--<button type="button" class="btn btn-default" onclick="addNewOrder()"><i class="fa fa-plus"></i>新增</button>-->
+                                    <label for="filterParam3">建议发起人：</label>
+                                    <select class="easyui-combobox" id="user_name"  style="width: 180px;height:31px;">
+                                    </select>
+                                </div>
+                                <div class="btn-group" role="group" aria-label="...">
+                                    <label for="filterParam3">开始时间：</label>
+                                    <input id="start_date" class="easyui-datebox" label="Start Date:" labelPosition="top" style="width:130px;height:30px">
+                                </div>
+                                <div class="btn-group" role="group" aria-label="...">
+                                    <label for="filterParam3">结束时间：</label>
+                                    <input id="end_date" class="easyui-datebox" label="Start Date:" labelPosition="top" style="width:130px;height:30px">
+                                </div>
+                                <div class="btn-group" role="group" aria-label="...">
+                                    <label for="filterParam3">工单类型：</label>
+                                    <select  id="order_type_query" class="easyui-combobox combobox-f combo-f textbox-f" style="width: 180px;height:31px;">
+                                        <option value="">---请选择---</option>
+                                        <option value ="1">稽核差错工单</option>
+                                        <option value ="2">渠道指标预警工单</option>
+                                        <option value="3">资金稽核工单</option>
+                                        <option value="4">深度稽核工单</option>
+                                    </select>
+                                </div>
+                                <div class="btn-group" role="group" aria-label="...">
+                                    <label for="filterParam3">处理状态：</label>
+                                    <select  id="handle_status"  class="easyui-combobox combobox-f combo-f textbox-f"style="width: 180px;height:31px;">
+                                        <option value="">---请选择---</option>
+                                        <option value ="0">未处理</option>
+                                        <option value ="1">已经处理</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-xs-4 col-md-4 text-right">
+                                <form class="form-inline">
+                                    <div class="form-group">
+
+                                        <div class="input-group">
+                                            <!--<input type="input" id="filterParam1" class="form-control" style="width:130px;" placeholder="输入标题查询"/>-->
+                                            <span class="input-group-btn">
+                                                <button class="btn btn-default" type="button" onclick="doSearch()"><i class="fa fa-search"></i>查询</button>
+                                               <!-- <button class="btn btn-default" type="button" id="exportData"><i class="glyphicon glyphicon-open"></i>导出</button>-->
+                                            </span>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        <table id="suggestionTablelist">
+                        </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="dd"></div>
+<div id="orderDetail"  class="mydialog"  >
+    <form id="orderDetailForm" method="post" enctype="multipart/form-data">
+            <table cellpadding="5" style="border-collapse:separate; border-spacing:0px 5px;">
+                <tr>
+                    <td align="right" class="tdLabel">工单类型</td>
+                    <td >
+                        <div class="btn-group" role="group" aria-label="...">
+                            <select  id="order_type" disabled  name="order_type" class="easyui-combobox combobox-f combo-f textbox-f" style="width: 180px;height:31px;">
+                                <option value="">---请选择---</option>
+                                <option value ="1">稽核差错工单</option>
+                                <option value ="2">渠道指标预警工单</option>
+                                <option value="3">资金稽核工单</option>
+                                <option value="4">深度稽核工单</option>
+                            </select>
+                        </div>
+                    </td>
+                </tr><tr>
+                    <td align="right" class="tdLabel">提议人</td>
+                    <td><input  disabled style="width: 280px"class="easyui-textbox"
+                                id="user_name" name="user_name" readonly="readonly"></input></td>
+                </tr><tr>
+                    <td align="right" class="tdLabel">提议人机构</td>
+                    <td><input disabled style="width: 280px"class="easyui-textbox"
+                               id="user_org" name="user_org"></input></td>
+                </tr><tr>
+                    <td align="right" class="tdLabel">提议人电话</td>
+                    <td><input disabled style="width: 280px"class="easyui-textbox"
+                               id="user_tel" name="user_tel"></input></td>
+                </tr><tr>
+                    <td align="right" class="tdLabel">提议时间</td>
+                    <td><input disabled style="width:280px" class="easyui-textbox"
+                               id="create_date" name="create_date"></input>
+                    </td>
+                </tr><tr>
+                    <input  type="hidden"id="_id"  name="_id"/>
+                    <td align="right" class="tdLabel">建议标题</td>
+                    <td colspan="3"><input disabled style="width: 665px" class="easyui-textbox"data-options="required:true, missingMessage:'请输入建议标题'" id="suggestion_title" name="suggestion_title" ></input></td>
+                </tr><tr>
+                    <td align="right" class="tdLabel">建议内容</td>
+                    <td colspan="3">
+                        <!-- 加载编辑器的容器 -->
+                        <script id="editor" type="text/plain"></script>
+                        <!-- 配置文件 -->
+                        <script type="text/javascript" src="{{projcfg.appurl}}/static/js/ueditor/ueditor.config.js"></script>
+                        <!-- 编辑器源码文件 -->
+                        <script type="text/javascript" src="{{projcfg.appurl}}/static/js/ueditor/ueditor.all.js"></script>
+                        <script type="text/javascript" charset="utf-8" src="{{projcfg.appurl}}/static/js/ueditor/lang/zh-cn/zh-cn.js"> </script>
+                        <!-- 实例化编辑器 -->
+                        <script type="text/javascript">
+                            var ue = UE.getEditor('editor',{
+                                autoHeightEnabled: true,
+                                autoFloatEnabled: true,
+                                initialFrameWidth:663,
+                                initialFrameHeight:200,
+                                imageScaleEnabled:false,
+                                enableContextMenu:false,
+                                imagePopup:false
+                            });
+                            ue.ready(function() {
+                                //设置编辑器的内容
+                                ue.setContent($("#sugg_content").text());
+                            });
+                        </script>
+                        <div id="sugg_content"style="display:none"></div>
+                    </td>
+                </tr><tr>
+                    <td align="right" class="tdLabel">处理意见</td>
+                    <td colspan="3"><input style="width: 663px; height: 80px; resize: none;" cols="30" name="handle_contents" id="handle_contents" rows="4"  class="easyui-textbox"  labelPosition="top" multiline="true" data-options="required:true, missingMessage:'处理意见不能为空'"/>
+                    </td>
+                    </td>
+                </tr>
+            </table>
+    </form>
+</div>
+<style type="text/css">
+    .tdLabel{
+        padding-right:15px;
+    }
+    .panel-title{
+        padding-left:25px;
+    }
+    #edui1{
+        z-index: 2147483647 !important;
+    }
+</style>
+<script type="text/javascript">
+    window.is_admin=false;
+    $(document).ready(function () {
+        //加载列表
+        loadOrderListDatagrid();
+        checkPower()
+        //初始化工单类型下拉框
+        getAllProBase();
+        $('#start_date').datebox().datebox('calendar').calendar({
+            validator: function(date){
+                var endDate = new Date($('#end_date').datebox('getValue'));
+                if($('#end_date').datebox('getValue')){
+                    var d1 = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate());
+                    return  date<=d1;
+                }else{
+                    return true;
+                }
+            }
+        });
+
+        $('#end_date').datebox().datebox('calendar').calendar({
+            validator: function(date){
+                var startDate = new Date($('#start_date').datebox('getValue'));
+                if($('#start_date').datebox('getValue')){
+                    var d1 = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
+                    return  date>=d1;
+                }else{
+                    return true;
+                }
+            }
+        });
+    });
+    //检测权限
+    function checkPower(){
+        $.ajax({
+            url: "{{projcfg.appurl}}/api/suggestion/suggestion/check_power",
+            type: "post",
+            success: function (data) {
+                is_admin=data.isAdmin;
+            },
+        })
+    }
+    //时间格式化:new Date().Format("yyyy-MM-dd hh:mm:ss");
+    Date.prototype.Format = function (fmt) { //author: meizz
+        var o = {
+            "M+": this.getMonth() + 1, //月份
+            "d+": this.getDate(), //日
+            "h+": this.getHours(), //小时
+            "m+": this.getMinutes(), //分
+            "s+": this.getSeconds(), //秒
+            "q+": Math.floor((this.getMonth() + 3) / 3), //季度
+            "S": this.getMilliseconds() //毫秒
+        };
+        if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+        for (var k in o)
+            if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+        return fmt;
+    }
+
+    function loadOrderListDatagrid(){
+        // 加载工单基本属性列表
+        $('#suggestionTablelist').datagrid({
+            url:'{{projcfg.appurl}}/api/suggestion/suggestion/suggestion_list',
+            method:'post',
+            rownumbers:true,
+            striped:true,
+            fitColumns:true,
+            border:false,
+            fit:true,
+            toolbar: '#toolbar1',
+            singleSelect:true,
+            selectOnCheck:true,
+            checkOnSelect:true,
+            pageSize: 20,
+            columns:[[
+                {"field":"_id",checkbox:true},
+                {"field": "suggestion_title","title":"建议标题","width":50},
+                {"field": "order_type","title":"工单类型","width":50,formatter(value,row ,index){
+                        var val = "";
+                        if(1 == value){
+                            val = "稽核差错工单";
+                        }else if(2 == value){
+                            val = "渠道指标预警工单";
+                        }else if(3 == value){
+                            val = "资金稽核工单";
+                        }else if(3 == value){
+                            val = "深度稽核工单";
+                        }
+                        return val;
+                    }},
+                //{"field": "suggestion_contents","title":"建议内容","width":50,"hidden":true},
+                {"field": "user_name","title":"建议人","width":35},
+                {"field": "user_tel","title":"建议人电话","width":40},
+                {"field": "handle_status","title":"处理状态","width":40,formatter(value,row ,index){
+                    return value?"已处理":"未处理"
+                    }},
+                {"field": "create_date","title":"创建时间","width":80,
+                    formatter:function(value,row,index){
+                        var date = value.substring(0,value.indexOf('.'));
+                        return  new Date(date.replace(/-/g,'/').replace(/T|Z/g,' ')).Format("yyyy-MM-dd hh:mm:ss");
+                    }},
+                {"field": "handle_date","title":"处理时间","width":80,
+                    formatter:function(value,row,index){
+                        if (value) {
+                            var date = value.substring(0,value.indexOf('.'));
+                            return  new Date(date.replace(/-/g,'/').replace(/T|Z/g,' ')).Format("yyyy-MM-dd hh:mm:ss");
+                        }
+                    }},
+                {"field": "operation","title":"操作","width":20,formatter(value,row,index){
+                        var html= "<a  onclick=\"delete_by_id('"+row._id+"')\">删除</a> </span>"
+                        return html;
+                    }
+                }
+            ]],
+            onDblClickRow:function(rowIndex, rowData){
+                detail_suggestion()
+            },
+            onLoadSuccess:function(json) {
+                if(!json.success) {
+                    msgError(json.msg + ',错误代码:' + json.code);
+                }
+            },
+            onLoadError:function() {
+                msgError('加载数据出现时发生错误,请稍候重试...');
+            },
+            pagination:true,
+            loadMsg:'正在加载...'
+        });
+    }
+
+
+    function delete_by_id(id){
+        if(is_admin){
+            if(confirm("确认删除？删除不可恢复！")){
+                $.ajax({
+                    url: "{{projcfg.appurl}}/api/suggestion/suggestion/deleteById",
+                    type: "post",
+                    data:{"_id":id},
+                    success: function (data) {
+                       if(data.success){
+                           alert("删除成功！")
+                           $('#suggestionTablelist').datagrid('reload')
+                       }else{
+                           msgError(data.msg + ',错误代码:' + data.code);
+                       }
+                    },
+                })
+            }
+        }else{
+            alert("只有管理员才能进行此操作！")
+        }
+    }
+
+    function detail_suggestion(){
+        var row=$('#suggestionTablelist').datagrid('getSelected')
+        //--------------时间格式化开始---------
+        var create_date = row.create_date;
+        var date = create_date.substring(0,create_date.indexOf('.'));
+        if(date){
+            var fmtDate = new Date(date.replace(/-/g,'/').replace(/T|Z/g,' ')).Format("yyyy-MM-dd hh:mm:ss");
+            row.create_date = fmtDate;
+        }
+        $("#sugg_content").text(row.suggestion_contents);
+        //---------------结束------------------
+        if(row){
+            ue.setContent($("#sugg_content").text());
+            $('#orderDetailForm').form('clear');
+            $('#orderDetailForm').form('load', row);
+            $('#orderDetail').show();
+            $('#orderDetail').mydialog({
+                title:"意见详情",
+                width: 1000,
+                height: 600,
+                top:10,
+                modal: true,
+                myButtons:[
+                    {
+                        text:'提交',
+                        btnCls:'btn btn-blue',
+                        handler:function(){
+                            var validate = $('#orderDetailForm').form('validate');
+                            if(!validate) {
+                                return false;
+                            }
+                            if(is_admin){
+                                //有权限可以提交
+                                $.ajax({
+                                    //几个参数需要注意一下
+                                    type: "POST",//方法类型
+                                    dataType: "json",//预期服务器返回的数据类型
+                                    url: "{{projcfg.appurl}}/api/suggestion/suggestion/update_suggestion" ,//url
+                                    data: $('#orderDetailForm').serialize(),
+                                    success: function (json) {
+                                        if(json.success){
+                                            alert("处理问题成功!");
+                                            $('#suggestionTablelist').datagrid('reload')
+                                            $('#orderDetail').dialog("close");
+                                        }else{
+                                            msgError(json.msg + ',错误代码:' + json.code);
+                                        }
+                                    },
+                                });
+                            }else{
+                                alert("只有管理员才能修改提交")
+                            }
+                        }
+                    },
+                    {
+                        text:'关闭',
+                        btnCls:'btn btn-danger',
+                        handler:function(){
+                            $('#orderDetail').dialog("close");
+                        }
+                    }
+                ]
+            });
+        }
+    }
+    /**
+     * 初始化工单类型下拉框
+     */
+    function getAllProBase(){
+        $("#user_name").combobox({
+            method: 'post',
+            url: '{{projcfg.appurl}}/api/suggestion/suggestion/find_user',
+            valueField:'user_name',
+            textField:'user_name'
+        });
+
+    }
+
+
+    //查询
+   function  doSearch(){
+       $('#suggestionTablelist').datagrid({
+           url: '{{projcfg.appurl}}/api/suggestion/suggestion/suggestion_list',
+           queryParams: {
+               user_name: $("#user_name").combobox('getValue'),
+               start_date: $("#start_date").datebox('getValue'),
+               end_date: $("#end_date").datebox('getValue'),
+               handle_status:$("#handle_status").combobox('getValue'),
+               order_type:$("#order_type_query").combobox('getValue'),
+           }
+       });
+    }
+</script>
